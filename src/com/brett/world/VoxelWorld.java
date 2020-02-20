@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -16,6 +17,7 @@ import com.brett.renderer.datatypes.SixBoolean;
 import com.brett.renderer.shaders.VoxelShader;
 import com.brett.renderer.world.Chunk;
 import com.brett.renderer.world.MeshStore;
+import com.brett.tools.MouseBlockPicker;
 import com.brett.world.cameras.Camera;
 
 /**
@@ -29,39 +31,41 @@ public class VoxelWorld {
 	private VoxelShader shader;
 	private Loader loader;
 	
-	private Map<Coord, Chunk> chunks = new HashMap<Coord, Chunk>();
+	private MouseBlockPicker picker;
+	public ChunkStore chunk;
 	
-	public VoxelWorld(MasterRenderer renderer, Loader loader) {
+	public VoxelWorld(MasterRenderer renderer, Loader loader, Camera cam) {
 		this.loader = loader;
 		shader = new VoxelShader();
 		shader.start();
 		shader.loadProjectionMatrix(renderer.getProjectionMatrix());
 		shader.stop();
 		resolveMeshes();
+		chunk = new ChunkStore(cam, loader);
 		
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < 5; j++) {
-				chunks.put(new Coord(i,j), new Chunk(loader, new Vector3f(i*16,0,j*16)));
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				chunk.setChunk(new Chunk(loader, i, j), i, j);
 			}
 		}
 		
 		// reduces ram at cost of CPU
 		// not much anymore but at a time
 		// this freed much ram
-		/*new Thread(new Runnable() {		
+		new Thread(new Runnable() {		
 			@Override
 			public void run() {
 				while (!Display.isCloseRequested()) {
 					System.gc();
 					try {
-						Thread.sleep(5000);
+						Thread.sleep(10000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
 			}
-		}).start();*/
-		
+		}).start();
+		picker = new MouseBlockPicker(cam, renderer.getProjectionMatrix(), this);
 	}
 	
 	public void render(Camera camera) {
@@ -70,11 +74,14 @@ public class VoxelWorld {
 		MasterRenderer.enableCulling();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		
-		Iterator<Entry<Coord, Chunk>> ic = chunks.entrySet().iterator();
+		System.out.println(picker.getCurrentTerrainPoint());
+		
+		/*Iterator<Entry<Coord, Chunk>> ic = chunks.entrySet().iterator();
 		while (ic.hasNext()) {
 			Entry<Coord, Chunk> w = ic.next();
 			w.getValue().render(shader);
-		}
+		}*/
+		chunk.renderChunks(shader);
 		
 		//System.gc();
 		

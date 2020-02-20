@@ -125,7 +125,7 @@ public class Main {
 		//spawnableEnts.put("weird", entity);
 		//spawnableEnts.put("w_lamp", ground_lamp);
 		console.registerCommand("spawn", new SpawnCommand(picker, world, loader));
-		Entity big_box = new Entity(box_model, new Vector3f(-35, 10, 35), 0, 0, 0, 10);
+		Entity big_box = new Entity(box_model, new Vector3f(0, 70, 0), 0, 0, 0, 10);
 		
 		//ThirdPersonPlayer player = new ThirdPersonPlayer(TexturedModel.createTexturedModel(loader, "person", "playerTexture", 10, 1), new Vector3f(0, 0, -5), 0, 0, 0, 1);
 		//ThirdPersonCamera rdCamera = new ThirdPersonCamera(player, 10, 80, 8);
@@ -186,7 +186,7 @@ public class Main {
 		//client.start();
 		//client.sendData("test".getBytes());
 		
-		VoxelWorld vworld = new VoxelWorld(renderer, loader);
+		VoxelWorld vworld = new VoxelWorld(renderer, loader, camera);
 		
 		Mouse.setGrabbed(true);
 		

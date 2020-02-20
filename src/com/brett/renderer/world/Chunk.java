@@ -34,20 +34,21 @@ public class Chunk {
 	public static final float GREEN = 0.62f;
 	public static final float BLUE = 0.69f;
 	
-	private int x = 16;
-	private int y = 128;
-	private int z = 16;
+	public static int x = 16;
+	public static int y = 128;
+	public static int z = 16;
 	
 	private int[][][] blocks = new int[x][y][z];
 	private RawModel[][][] blocksModels = new RawModel[x][y][z];
 	List<Block> bls = new ArrayList<Block>();
-	private Vector3f offset;
+	private int xoff,zoff;
 	
 	public static RawModel fullBlock;
 	public static RawModel emptyBlock;
 	
-	public Chunk(Loader loader, Vector3f offset) {
-		this.offset = offset;
+	public Chunk(Loader loader, int xoff, int zoff) {
+		this.xoff = xoff;
+		this.zoff = zoff;
 		Chunk.fullBlock = loader.loadToVAO(MeshStore.verts, MeshStore.uv, MeshStore.indicies);
 		Chunk.emptyBlock = loader.loadToVAO(MeshStore.vertsNONE, MeshStore.uvNONE, MeshStore.indiciesNONE);
 		for (int i =0; i < x; i++) {
@@ -66,6 +67,38 @@ public class Chunk {
 					}
 				}
 			}	
+		}
+		
+		new Thread(new Runnable() {		
+			@Override
+			public void run() {
+				System.out.println("Mesher Thread Start");
+				for (int i =0; i < x; i++) {
+					for (int j = 0; j < y; j++) {
+						for (int k = 0; k < z; k++) {
+							mesh(i,j,k);
+						}
+					}
+				}
+				System.out.println("Mesher Thread Dead");
+			}
+		}).start();
+	}
+	
+	public Chunk(Loader loader, int[][][] blocks, int xoff, int zoff) {
+		this.xoff = xoff;
+		this.zoff = zoff;
+		Chunk.fullBlock = loader.loadToVAO(MeshStore.verts, MeshStore.uv, MeshStore.indicies);
+		Chunk.emptyBlock = loader.loadToVAO(MeshStore.vertsNONE, MeshStore.uvNONE, MeshStore.indiciesNONE);
+		
+		this.blocks = blocks;
+		
+		for (int i =0; i < x; i++) {
+			for (int j = 0; j < y; j++) {
+				for (int k = 0; k < z; k++) {
+					blocksModels[i][j][k] = fullBlock;
+				}
+			}
 		}
 		
 		new Thread(new Runnable() {		
@@ -176,7 +209,7 @@ public class Chunk {
 					GL30.glBindVertexArray(rawModel.getVaoID());
 					GL20.glEnableVertexAttribArray(0);
 					GL20.glEnableVertexAttribArray(1);
-					Matrix4f transformationMatrix = Maths.createTransformationMatrixCube(i+offset.x,j+offset.y,k+offset.z);
+					Matrix4f transformationMatrix = Maths.createTransformationMatrixCube(i+(x*xoff),j,k+(z*zoff));
 					shader.loadTransformationMatrix(transformationMatrix);
 					GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getID());
 					GL11.glDrawElements(MasterRenderer.DRAWMODE, rawModel.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
@@ -189,14 +222,32 @@ public class Chunk {
 		
 	}
 	
+	public int getBlock(int x, int y, int z) {
+		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z)
+			return 0;
+		return blocks[x][y][z];
+	}
+	
+	public Block getBlockE(int x, int y, int z) {
+		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z)
+			return null;
+		return Block.blocks.get(getBlock(x, y, z));
+	}
+	
+	public boolean isBlockUnderGround(int x, int y, int z) {
+		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z)
+			return false;
+		return blocks[x][y + 1][z] == 0 ? true : false;
+	}
+	
+	public int[][][] getBlocks(){
+		return blocks;
+	}
+	
 	// locking prevents race conditions!
 	// right?
 	// i did this right
 	// if its not it works so i don't care.
-	
-	public Vector3f getOffset() {
-		return offset;
-	}
 	
 	public void enableCulling() {
 		GL11.glEnable(GL11.GL_CULL_FACE);
