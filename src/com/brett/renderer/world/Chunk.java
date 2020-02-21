@@ -122,8 +122,6 @@ public class Chunk {
 	// TODO: improve this
 	// this is rough code
 	private void mesh(int i, int j, int k) {
-		if (blocks[i][j][k] == 0)
-			return;
 		boolean top = true;
 		boolean bottom = true;
 		boolean left = true;
@@ -173,7 +171,7 @@ public class Chunk {
 				System.out.println("Remesher Thread Start");
 				for (int i =0; i < blocks.length; i++) {
 					for (int j = 0; j < blocks[i].length; j++) {
-						for (int k = 0; k < blocks[j][j].length; k++) {
+						for (int k = 0; k < blocks[i][j].length; k++) {
 							mesh(i,j,k);
 						}
 					}
@@ -223,25 +221,70 @@ public class Chunk {
 	}
 	
 	public int getBlock(int x, int y, int z) {
-		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z)
+		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
 			return 0;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
 		return blocks[x][y][z];
 	}
 	
 	public Block getBlockE(int x, int y, int z) {
-		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z)
+		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
 			return null;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
 		return Block.blocks.get(getBlock(x, y, z));
 	}
 	
 	public boolean isBlockUnderGround(int x, int y, int z) {
 		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z)
 			return false;
-		return blocks[x][y + 1][z] == 0 ? true : false;
+		if (y < 0)
+			return true;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
+		return blocks[x][y + 1][z] == 0 ? false : true;
+	}
+	
+	public int getHeight(int x, int z) {
+		if (x >= Chunk.x || y <= 0 || z >= Chunk.z)
+			return 0;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
+		if (y > Chunk.y)
+			return Chunk.y;
+		for (int i = 0; i < 128; i++) {
+			if (blocks[x][i][z] == 0) {
+				return i;
+			}
+		}
+		return 0;
 	}
 	
 	public int[][][] getBlocks(){
 		return blocks;
+	}
+	
+	public void setBlock(int x, int y, int z, int block) {
+		if (x >= Chunk.x || z >= Chunk.z)
+			return;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
+		if (y > Chunk.y)
+			y = Chunk.y;
+		if (y < 0)
+			y = 0;
+		blocks[x][y][z] = block;
 	}
 	
 	// locking prevents race conditions!

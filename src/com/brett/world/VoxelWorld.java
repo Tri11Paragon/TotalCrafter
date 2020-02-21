@@ -1,17 +1,12 @@
 package com.brett.world;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
-import com.brett.renderer.datatypes.Coord;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.SixBoolean;
 import com.brett.renderer.shaders.VoxelShader;
@@ -71,10 +66,19 @@ public class VoxelWorld {
 	public void render(Camera camera) {
 		shader.start();
 		shader.loadViewMatrix(camera);
+		picker.update();
 		MasterRenderer.enableCulling();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		
-		System.out.println(picker.getCurrentTerrainPoint());
+		while (Mouse.next()){
+			if (Mouse.getEventButtonState()) {
+				if (Mouse.getEventButton() == 0) {
+					picker.setCurrectBlockPoint(0);
+				}
+			}
+		}
+		
+
 		
 		/*Iterator<Entry<Coord, Chunk>> ic = chunks.entrySet().iterator();
 		while (ic.hasNext()) {
@@ -99,8 +103,8 @@ public class VoxelWorld {
 							for (int u = 0; u < 2; u++) {
 								// i don't like this.
 								// trust me i tried for loop booleans
-								SixBoolean boo = createSixBooleans(new SixBoolean(t == 0 ? false : true, l == 0 ? false : true, r == 0 ? false : true, 
-										f == 0 ? false : true, b == 0 ? false : true, u == 0 ? false : true));
+								SixBoolean boo = createSixBooleans(new SixBoolean(t == 0 ? false : true, u == 0 ? false : true, l == 0 ? false : true, r == 0 ? false : true, 
+										f == 0 ? false : true, b == 0 ? false : true));
 								int[] ind = {};
 								float[] verts = {};
 								float[] uvs = {};

@@ -110,16 +110,9 @@ public class ChunkStore {
 	 * I would avoid this if possible.
 	 */
 	public Chunk getChunkUn(int x, int z) {
-		x = x/Chunk.x;
-		z = z/Chunk.z;
-		if (x < 0 && z < 0)
-			return chunksnn[(x*-1)-1][(z*-1) - 1];
-		else if (x < 0 && z >= 0) 
-			return chunksnp[(x*-1)-1][z];
-		else if (z < 0 && x >= 0)
-			return chunkspn[x][(z*-1) - 1];
-		else 
-			return chunkspp[x][z];
+		x /= Chunk.x;
+		z /= Chunk.z;
+		return getChunk(x, z);
 	}
 	
 }

@@ -188,7 +188,7 @@ public class Main {
 		
 		VoxelWorld vworld = new VoxelWorld(renderer, loader, camera);
 		
-		Mouse.setGrabbed(true);
+		Mouse.setGrabbed(false);
 		
 		while (!Display.isCloseRequested()) {
 			double startTime = Sys.getTime() * 1000 / Sys.getTimerResolution();

@@ -7,8 +7,10 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import com.brett.renderer.world.Chunk;
 import com.brett.world.VoxelWorld;
 import com.brett.world.cameras.Camera;
+import com.brett.world.terrain.Terrain;
 
 /**
 *
@@ -22,8 +24,8 @@ public class MouseBlockPicker {
 	// http://antongerdelan.net/opengl/raycasting.html
 	
 	// amount of times the binary search can run
-	private static final int RECURSION_COUNT = 100;
-	private static final float RAY_RANGE = 600;
+	private static final int RECURSION_COUNT = 500;
+	private static final float RAY_RANGE = 10;
 
 	private Vector3f currentRay = new Vector3f();
 
@@ -53,10 +55,36 @@ public class MouseBlockPicker {
 	}
 	
 	public Vector3f getCurrentTerrainPoint() {
-		if (intersectionInRange(0, RAY_RANGE, currentRay))
+		if (intersectionInRange(0, RAY_RANGE, currentRay)) {
+			///System.out.println("SEACHING");
 			return binarySearch(0, 0, RAY_RANGE, currentRay);
-		else
+		}else
 			return null;
+	}
+	
+	public int getCurrentBlockPoint() {
+		if (intersectionInRange(0, RAY_RANGE, currentRay)) {
+			///System.out.println("SEACHING");
+			Vector3f pos = binarySearch(0, 0, RAY_RANGE, currentRay);
+			System.out.println(pos);
+			Chunk c = getTerrain(pos.x, pos.z);
+			if (c == null)
+				return 0;
+			return c.getBlock((int)(pos.x)%16, (int)pos.y, (int)(pos.z)%16);
+		}else
+			return 0;
+	}
+	
+	public void setCurrectBlockPoint(int block) {
+		if (intersectionInRange(0, RAY_RANGE, currentRay)) {
+			///System.out.println("SEACHING");
+			Vector3f pos = binarySearch(0, 0, RAY_RANGE, currentRay);
+			Chunk c = getTerrain(pos.x, pos.z);
+			if (c == null)
+				return;
+			c.setBlock((int)(pos.x)%16, (int)pos.y, (int)(pos.z)%16, block);
+			c.remesh();
+		}
 	}
 
 	public Vector3f getCurrentRay() {
@@ -66,6 +94,7 @@ public class MouseBlockPicker {
 	public void update() {
 		viewMatrix = Maths.createViewMatrix(camera);
 		currentRay = calculateMouseRay();
+		
 		// DEPRECATED
 		/*if (intersectionInRange(0, RAY_RANGE, currentRay)) {
 			currentTerrainPoint = binarySearch(0, 0, RAY_RANGE, currentRay);
@@ -118,7 +147,8 @@ public class MouseBlockPicker {
 		float half = start + ((finish - start) / 2f);
 		if (count >= RECURSION_COUNT) {
 			Vector3f endPoint = getPointOnRay(ray, half);
-			if (world.chunk.getChunkUn((int)endPoint.getX(), (int)endPoint.getZ()) != null) {
+			Chunk terrain = getTerrain(endPoint.getX(), endPoint.getZ());
+			if (terrain != null) {
 				return endPoint;
 			} else {
 				return null;
@@ -142,10 +172,23 @@ public class MouseBlockPicker {
 	}
 
 	private boolean isUnderGround(Vector3f testPoint) {
-		int x = (int) testPoint.x;
-		int z = (int) testPoint.z;
-		return world.chunk.getChunkUn(x, z).isBlockUnderGround(x, (int) testPoint.y, z);
+		Chunk terrain = getTerrain(testPoint.getX(), testPoint.getZ());
+		float height = 0;
+		if (terrain != null) {
+			height = terrain.getHeight((int)testPoint.getX() % 16, (int)testPoint.getZ() % 16);
+		}
+		if (testPoint.y < height) {
+			return true;
+		} else {
+			return false;
+		}
 	}
+
+	private Chunk getTerrain(float worldX, float worldZ) {
+		//System.out.println(world.chunk.getChunk((int) (worldX/16.0), (int) (worldZ/16.0)).getHeight((int)worldX, (int)worldZ));
+		return world.chunk.getChunk((int) (worldX/16.0), (int) (worldZ/16.0));
+	}
+	
 	
 	
 }
