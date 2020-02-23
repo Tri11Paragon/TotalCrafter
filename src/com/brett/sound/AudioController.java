@@ -1,6 +1,7 @@
 package com.brett.sound;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +15,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
+import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.openal.OggData;
 import org.newdawn.slick.openal.OggDecoder;
 import org.newdawn.slick.util.Log;
@@ -37,16 +39,46 @@ public class AudioController {
 		}
 	}
 	
+	/**
+	 * Sets position of the listener
+	 */
 	public static void setListenerData(float x, float y, float z) {
 		AL10.alListener3f(AL10.AL_POSITION, x, y, z);
 		AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
 	}
 	
+	public static void setListenerPosition(Vector3f f) {
+		AL10.alListener3f(AL10.AL_POSITION, f.x, f.y, f.z);
+	}
+	
+	public static int[] loadSoundFolder(String folder) {
+		folder = "resources/sound/" + folder;
+		File sfolder = new File(folder);
+		File[] sfiles = sfolder.listFiles();
+		List<Integer> ints = new ArrayList<Integer>();
+		for (int i = 0; i < sfiles.length; i++) {
+			if (sfiles[i].isFile()) {
+				if (sfiles[i].getName().endsWith(".ogg"))
+					ints.add(loadS(sfiles[i].getAbsolutePath()));
+			}
+		}
+		// java for some reason does not have easy object[] to int[] conversion :/
+		int[] is = new int[ints.size()];
+		for (int i = 0; i < is.length; i++)
+			is[i] = ints.get(i);
+		
+		return is;
+	}
+	
 	public static int loadSound(String file) {
+		return loadS("resources/sound/" + file);
+	}
+	
+	public static int loadS(String file) {
 		int buffer = AL10.alGenBuffers();
 		buffers.add(buffer);
 		try {
-			buffer = getOgg(new BufferedInputStream(new FileInputStream("resources/sound/" + file)));
+			buffer = getOgg(new BufferedInputStream(new FileInputStream(file)));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

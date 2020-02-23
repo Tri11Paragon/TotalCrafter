@@ -27,14 +27,14 @@ public class Test {
 		source.setRollOffFactor(5);
 		source.setMaxDistance(15);
 		
-		float xpos = 8;
-		source.setPosition(xpos, 0, 0);
+		float xpos = 3;
+		source.setPosition(xpos, 0, 1);
 		
 		char c = ' ';
 		while (c != 'q') {
 			//c = (char)System.in.read();
 			
-			xpos -= 0.03f;
+			xpos -= 0.01f;
 			System.out.println(xpos);
 			source.setPosition(xpos, 0, 0);
 			Thread.sleep(10);

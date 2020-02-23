@@ -8,6 +8,7 @@ import org.lwjgl.util.vector.Vector4f;
 
 import com.brett.renderer.world.Chunk;
 import com.brett.world.VoxelWorld;
+import com.brett.world.blocks.Block;
 import com.brett.world.cameras.Camera;
 import com.tester.Main;
 
@@ -60,12 +61,13 @@ public class MouseBlockPicker {
 			return 0;
 	}
 	
+	@Deprecated
+	Vector3f z = new Vector3f(0,0,0);
 	/**
 	 * Old please use setCurrentBlockPointNEW
 	 * this one has issues.
 	 */
 	@Deprecated
-	Vector3f z = new Vector3f(0,0,0);
 	public Vector3f setCurrectBlockPoint(int block) {
 		if (intersectionInRange(0, RAY_RANGE, currentRay)) {
 			Vector3f pos = accountForFloatErrors(binarySearch(0, 0, RAY_RANGE, currentRay));
@@ -77,6 +79,8 @@ public class MouseBlockPicker {
 				System.out.println(pos);
 				System.out.println((int)(pos.x) + " " + (int)pos.y + " " + (int)(pos.z));
 				System.out.println((int)(pos.x)%16 + " " + (int)pos.y + " " + (int)(pos.z)%16);
+				// TODO: REMOVE THIS
+				Block.blocks.get(c.getBlock((int)(pos.x)%16, (int)pos.y, (int)(pos.z)%16)).playBreakSound((int)(pos.x), (int)pos.y, (int)(pos.z));
 				c.setBlock((int)(pos.x)%16, (int)pos.y, (int)(pos.z)%16, block);
 				c.remesh();
 				return pos;

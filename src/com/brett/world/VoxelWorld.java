@@ -74,6 +74,7 @@ public class VoxelWorld {
 		while (Mouse.next()){
 			if (Mouse.getEventButtonState()) {
 				if (Mouse.getEventButton() == 0) {
+					@SuppressWarnings("deprecation")
 					Vector3f d = picker.setCurrectBlockPoint(0);
 					int dx = (int)(d.x)/Chunk.x;
 					int dz = (int)(d.z)/Chunk.z;

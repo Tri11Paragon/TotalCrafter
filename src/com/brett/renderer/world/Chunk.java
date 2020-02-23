@@ -25,13 +25,6 @@ import com.brett.world.blocks.Block;
 
 public class Chunk {
 	
-	public static float FOV = 90;
-	public static final float NEAR_PLANE = 0.1f;
-	public static final float FAR_PLANE = 1000;
-	public static final float RED = 0.5444f;
-	public static final float GREEN = 0.62f;
-	public static final float BLUE = 0.69f;
-	
 	public static int x = 16;
 	public static int y = 128;
 	public static int z = 16;
@@ -59,10 +52,6 @@ public class Chunk {
 						blocks[i][j][k] = 2;
 						blocksModels[i][j][k] = fullBlock;
 					} else if (j < 60) {
-						// TODO: make use master block.
-						// blocks should only have a position and nothing more
-						// hopefully will use less ram
-						// maybe don't store position in the block but use array and the offset
 						blocks[i][j][k] = 1;
 						blocksModels[i][j][k] = fullBlock;
 					} else {

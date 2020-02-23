@@ -5,6 +5,8 @@ import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.AL11;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 import com.brett.DisplayManager;
@@ -21,6 +23,8 @@ import com.brett.renderer.gui.UIMaster;
 import com.brett.renderer.lighting.Light;
 import com.brett.renderer.particles.ParticleMaster;
 import com.brett.renderer.postprocessing.PostProcessing;
+import com.brett.sound.AudioController;
+import com.brett.sound.AudioSource;
 import com.brett.tools.MousePicker;
 import com.brett.tools.SettingsLoader;
 import com.brett.tools.obj.OBJLoader;
@@ -37,10 +41,16 @@ public class Main {
 	public static OperatingSystemMXBean os;
 	public static Entity hitent;
 	public static boolean isOpen = true;
+	public static AudioSource staticSource;
 	
 	public static void main(String[] args) {
 		SettingsLoader.loadSettings();
 		DisplayManager.createDisplay("Icon", false);
+		// audio stuff
+		AudioController.init();
+		AudioController.setListenerData(0, 0, 0);
+		AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE_CLAMPED);
+		staticSource = new AudioSource();
 		
 		os = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 		// MAIN STUFF (REQUIRED FOR GAME TO RUN)
@@ -178,6 +188,7 @@ public class Main {
 		while (!Display.isCloseRequested()) {
 			double startTime = Sys.getTime() * 1000 / Sys.getTimerResolution();
 			camera.move();
+			AudioController.setListenerPosition(camera.getPosition());
 			//rdCamera.move();
 			//rdCamera.checkCollision(terrain);
 			//player.update();
@@ -217,6 +228,8 @@ public class Main {
 		}
 		//testserver.close();
 		//client.close();
+		staticSource.delete();
+		AudioController.cleanup();
 		PostProcessing.cleanUp();
 		world.cleanup();
 		ui.cleanup();

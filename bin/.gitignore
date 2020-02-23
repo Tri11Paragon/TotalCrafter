@@ -14,3 +14,6 @@
 /com/
 /jarsplice-0.40.jar
 /textures/
+/lwjgl.jar
+/lwjgl_util.jar
+/sound/
