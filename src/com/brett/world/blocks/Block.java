@@ -27,7 +27,9 @@ public class Block {
 	
 	public static void registerBlocks(Loader loader) {
 		blocks.put(0, new BlockAir());
-		blocks.put(1, new Block(new ModelTexture(loader.loadTexture("dirt"))));
+		blocks.put(1, new Block(new ModelTexture(loader.loadTexture("stone"))));
+		blocks.put(2, new Block(new ModelTexture(loader.loadTexture("dirt"))));
+		blocks.put(3, new Block(new ModelTexture(loader.loadTexture("grassy3"))));
 	}
 	
 }

@@ -19,7 +19,7 @@ public class EscapeMenu implements IMenu {
 	public boolean enabled = false;
 	
 	public EscapeMenu(UIMaster master, Loader loader) {
-		elements.add(master.addCenteredTexture(-1, -1, -1, 0, 0, 200, 200, new Vector3f(0,0,0)));
+		//elements.add(master.addCenteredTexture(-1, -1, -1, 0, 0, 200, 200, new Vector3f(0,0,0)));
 	}
 	
 	@Override

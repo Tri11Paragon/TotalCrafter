@@ -6,8 +6,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
-
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.ModelTexture;
@@ -54,7 +52,13 @@ public class Chunk {
 		for (int i =0; i < x; i++) {
 			for (int j = 0; j < y; j++) {
 				for (int k = 0; k < z; k++) {
-					if (j < 60) {
+					if (j == 70) {
+						blocks[i][j][k] = 3;
+						blocksModels[i][j][k] = fullBlock;
+					} else if (j <= 69 && j >= 60) {
+						blocks[i][j][k] = 2;
+						blocksModels[i][j][k] = fullBlock;
+					} else if (j < 60) {
 						// TODO: make use master block.
 						// blocks should only have a position and nothing more
 						// hopefully will use less ram
@@ -72,7 +76,7 @@ public class Chunk {
 		new Thread(new Runnable() {		
 			@Override
 			public void run() {
-				System.out.println("Mesher Thread Start");
+				//System.out.println("Mesher Thread Start");
 				for (int i =0; i < x; i++) {
 					for (int j = 0; j < y; j++) {
 						for (int k = 0; k < z; k++) {
@@ -80,7 +84,7 @@ public class Chunk {
 						}
 					}
 				}
-				System.out.println("Mesher Thread Dead");
+				//System.out.println("Mesher Thread Dead");
 			}
 		}).start();
 	}
@@ -121,7 +125,11 @@ public class Chunk {
 	// it is not good.
 	// TODO: improve this
 	// this is rough code
-	private void mesh(int i, int j, int k) {
+	public void mesh(int i, int j, int k) {
+		if(blocks[i][j][k] == 0) {
+			blocksModels[i][j][k] = emptyBlock;
+			return;
+		}
 		boolean top = true;
 		boolean bottom = true;
 		boolean left = true;
@@ -168,7 +176,7 @@ public class Chunk {
 		new Thread(new Runnable() {		
 			@Override
 			public void run() {
-				System.out.println("Remesher Thread Start");
+				//System.out.println("Remesher Thread Start");
 				for (int i =0; i < blocks.length; i++) {
 					for (int j = 0; j < blocks[i].length; j++) {
 						for (int k = 0; k < blocks[i][j].length; k++) {
@@ -176,14 +184,143 @@ public class Chunk {
 						}
 					}
 				}
-				System.out.println("Remesher Thread Dead");
+				//System.out.println("Remesher Thread Dead");
 			}
 		}).start();
 	}
 	
-	//TODO: this
-	public void chunkRemesh() {
+	public void remesh(Chunk l, Chunk r, Chunk f, Chunk b) {
+		new Thread(new Runnable() {		
+			@Override
+			public void run() {
+				//System.out.println("Remesher Thread Start");
+				for (int i =0; i < blocks.length; i++) {
+					for (int j = 0; j < blocks[i].length; j++) {
+						for (int k = 0; k < blocks[i][j].length; k++) {
+							chunkRemesh(i, j, k, l, r, f, b);
+						}
+					}
+				}
+				//System.out.println("Remesher Thread Dead");
+			}
+		}).start();
+	}
+	
+	public void remeshSpecial(int i, int j, int k, int side) {
+		if(blocks[i][j][k] == 0) {
+			blocksModels[i][j][k] = emptyBlock;
+			return;
+		}
+		boolean top = true;
+		boolean bottom = true;
+		boolean left = true;
+		boolean right = true;
+		boolean front = true;
+		boolean back = true;
+		if (side != 0) {
+			try {
+				if (blocks[i][j + 1][k] != 0) {
+					top = false;
+				}
+			} catch (IndexOutOfBoundsException e) {
+				top = false; // we can assume that at chunk bounds there is going to be another chunk. anyways the chunk mesh will handle this.
+			}
+		}
+		if (side != 1) {
+			try {
+				if (blocks[i][j - 1][k] != 0) {
+					bottom = false;
+				}
+			} catch (IndexOutOfBoundsException e) {bottom = false;}
+		}
+		if (side != 2) {
+			try {
+				if (blocks[i - 1][j][k] != 0) {
+					left = false;
+				}
+			} catch (IndexOutOfBoundsException e) {left = false;}
+		}
+		if (side != 3) {
+			try {
+				if (blocks[i + 1][j][k] != 0) {
+					right = false;
+				}
+			} catch (IndexOutOfBoundsException e) {right = false;}
+		}
+		if (side != 4) {
+			try {
+				if (blocks[i][j][k + 1] != 0) {
+					front = false;
+				}
+			} catch (IndexOutOfBoundsException e) {front = false;}
+		}
+		if (side != 5) {
+			try {
+				if (blocks[i][j][k - 1] != 0) {
+					back = false;
+				}
+			} catch (IndexOutOfBoundsException e) {back = false;}
+		}
 		
+		blocksModels[i][j][k] = MeshStore.models.get(VoxelWorld.createSixBooleans(new SixBoolean(top, bottom, left, right, front, back)));
+	}
+	
+	//TODO: this
+	private void chunkRemesh(int i, int j, int k, Chunk l, Chunk r, Chunk f, Chunk b) {
+		if(blocks[i][j][k] == 0) {
+			blocksModels[i][j][k] = emptyBlock;
+			return;
+		}
+		boolean top = true;
+		boolean bottom = true;
+		boolean left = true;
+		boolean right = true;
+		boolean front = true;
+		boolean back = true;
+		try {
+			if (blocks[i][j + 1][k] != 0) {top = false;}
+		} catch (IndexOutOfBoundsException e) {}
+		try {
+			if (blocks[i][j - 1][k] != 0) {bottom = false;}
+		} catch (IndexOutOfBoundsException e) {bottom = false;}
+		try {
+			if (blocks[i + 1][j][k] != 0) {right = false;}
+		} catch (IndexOutOfBoundsException e) {
+			try {
+				if(r.blocks[0][j][k] != 0) {
+					right = false;
+				} 
+			} catch (Exception d) {right = false;}
+		}
+		try {
+			if (blocks[i - 1][j][k] != 0) {left = false;}
+		} catch (IndexOutOfBoundsException e) {
+			try {
+				if (l.blocks[Chunk.x-1][j][k] != 0) {
+					left = false;
+				}
+			} catch (Exception d) {left = false;}
+		}
+		try {
+			if (blocks[i][j][k + 1] != 0) {front = false;}
+		} catch (IndexOutOfBoundsException e) {
+			try {
+				if (f.blocks[i][j][0] != 0) {
+					front = false;
+				}
+			} catch (Exception d) {front = false;}
+		}
+		try {
+			if (blocks[i][j][k - 1] != 0) {back = false;}
+		} catch (IndexOutOfBoundsException e) {
+			try {
+				if (b.blocks[i][j][Chunk.z-1] != 0) {
+					back = false;
+				}
+			} catch (Exception d) {back = false;}
+		}
+		
+		blocksModels[i][j][k] = MeshStore.models.get(VoxelWorld.createSixBooleans(new SixBoolean(top, bottom, left, right, front, back)));
 	}
 	
 	public void render(VoxelShader shader) {
@@ -263,7 +400,7 @@ public class Chunk {
 			return Chunk.y;
 		for (int i = 0; i < 128; i++) {
 			if (blocks[x][i][z] == 0) {
-				return i;
+				return i-1;
 			}
 		}
 		return 0;
@@ -284,6 +421,8 @@ public class Chunk {
 			y = Chunk.y;
 		if (y < 0)
 			y = 0;
+		if (block == 0)
+			blocksModels[x][y][z] = emptyBlock;
 		blocks[x][y][z] = block;
 	}
 	

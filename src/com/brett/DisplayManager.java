@@ -1,10 +1,17 @@
 package com.brett;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
+import javax.imageio.ImageIO;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
+import org.newdawn.slick.opengl.ImageIOImageData;
 
 public class DisplayManager {
 
@@ -27,13 +34,18 @@ public class DisplayManager {
 				Display.create(new PixelFormat().withSamples(4), attribs);
 			else
 				Display.create(new PixelFormat(), attribs);
-			Display.setTitle("RMS - V0.0.9 // Mɪɴᴇᴄʀᴀғᴛ³ - V0.0.1");
+			Display.setTitle("RMS - V0.10A // Mɪɴᴇᴄʀᴀғᴛ³ - V0.21A");
 			GL11.glEnable(GL13.GL_MULTISAMPLE);
 		} catch (LWJGLException e) {e.printStackTrace();}
 		
 		GL11.glViewport(0, 0, WIDTH, HEIGHT);
 		lastFrameTime = getCurrentTime();
-		//Display.setIcon(list);
+		ByteBuffer[] list = new ByteBuffer[2];
+		try {
+			list[0] = new ImageIOImageData().imageToByteBuffer(ImageIO.read(new File("resources/textures/icon/icon16.png")), false, true, null);
+			list[1] = new ImageIOImageData().imageToByteBuffer(ImageIO.read(new File("resources/textures/icon/icon32.png")), false, true, null);
+		} catch (IOException e) {}
+		Display.setIcon(list);
 	}
 	
 	public static void updateDisplay() {

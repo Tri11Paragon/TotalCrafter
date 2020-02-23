@@ -1,0 +1,5 @@
+#This is a comment
+#This is also a comment
+#This is the Field of view for the game. 
+FOV: 70.0
+FPS: 120

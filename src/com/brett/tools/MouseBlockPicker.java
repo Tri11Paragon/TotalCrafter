@@ -1,6 +1,5 @@
 package com.brett.tools;
 
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
@@ -10,7 +9,7 @@ import org.lwjgl.util.vector.Vector4f;
 import com.brett.renderer.world.Chunk;
 import com.brett.world.VoxelWorld;
 import com.brett.world.cameras.Camera;
-import com.brett.world.terrain.Terrain;
+import com.tester.Main;
 
 /**
 *
@@ -24,8 +23,8 @@ public class MouseBlockPicker {
 	// http://antongerdelan.net/opengl/raycasting.html
 	
 	// amount of times the binary search can run
-	private static final int RECURSION_COUNT = 500;
-	private static final float RAY_RANGE = 10;
+	private static final int RECURSION_COUNT = 200;
+	private static final float RAY_RANGE = 100;
 
 	private Vector3f currentRay = new Vector3f();
 
@@ -34,24 +33,12 @@ public class MouseBlockPicker {
 	private Camera camera;
 	
 	private VoxelWorld world;
-	private Vector3f currentTerrainPoint;
 
 	public MouseBlockPicker(Camera cam, Matrix4f projection, VoxelWorld terrain) {
 		camera = cam;
 		projectionMatrix = projection;
 		viewMatrix = Maths.createViewMatrix(camera);
 		this.world = terrain;
-	}
-	
-	/**
-	 * Returns the current point on the terrain. This should not be used
-	 * and will be removed
-	 * 
-	 * @return the current terrain point
-	 */
-	@Deprecated
-	public Vector3f getCurrentTerrainPointFast() {
-		return currentTerrainPoint;
 	}
 	
 	public Vector3f getCurrentTerrainPoint() {
@@ -64,9 +51,7 @@ public class MouseBlockPicker {
 	
 	public int getCurrentBlockPoint() {
 		if (intersectionInRange(0, RAY_RANGE, currentRay)) {
-			///System.out.println("SEACHING");
-			Vector3f pos = binarySearch(0, 0, RAY_RANGE, currentRay);
-			System.out.println(pos);
+			Vector3f pos = accountForFloatErrors(binarySearch(0, 0, RAY_RANGE, currentRay));
 			Chunk c = getTerrain(pos.x, pos.z);
 			if (c == null)
 				return 0;
@@ -75,16 +60,33 @@ public class MouseBlockPicker {
 			return 0;
 	}
 	
-	public void setCurrectBlockPoint(int block) {
+	/**
+	 * Old please use setCurrentBlockPointNEW
+	 * this one has issues.
+	 */
+	@Deprecated
+	Vector3f z = new Vector3f(0,0,0);
+	public Vector3f setCurrectBlockPoint(int block) {
 		if (intersectionInRange(0, RAY_RANGE, currentRay)) {
-			///System.out.println("SEACHING");
-			Vector3f pos = binarySearch(0, 0, RAY_RANGE, currentRay);
-			Chunk c = getTerrain(pos.x, pos.z);
-			if (c == null)
-				return;
-			c.setBlock((int)(pos.x)%16, (int)pos.y, (int)(pos.z)%16, block);
-			c.remesh();
+			Vector3f pos = accountForFloatErrors(binarySearch(0, 0, RAY_RANGE, currentRay));
+			try {
+				Chunk c = getTerrain(pos.x, pos.z);
+				if (c == null)
+					return pos;
+				Main.hitent.setPosition(pos);
+				System.out.println(pos);
+				System.out.println((int)(pos.x) + " " + (int)pos.y + " " + (int)(pos.z));
+				System.out.println((int)(pos.x)%16 + " " + (int)pos.y + " " + (int)(pos.z)%16);
+				c.setBlock((int)(pos.x)%16, (int)pos.y, (int)(pos.z)%16, block);
+				c.remesh();
+				return pos;
+			} catch (Exception e) {}
 		}
+		return z;
+	}
+	
+	public void setCurrentBlockPointNEW(int block) {
+		
 	}
 
 	public Vector3f getCurrentRay() {
@@ -94,18 +96,11 @@ public class MouseBlockPicker {
 	public void update() {
 		viewMatrix = Maths.createViewMatrix(camera);
 		currentRay = calculateMouseRay();
-		
-		// DEPRECATED
-		/*if (intersectionInRange(0, RAY_RANGE, currentRay)) {
-			currentTerrainPoint = binarySearch(0, 0, RAY_RANGE, currentRay);
-		} else {
-			currentTerrainPoint = null;
-		}*/
 	}
 
 	private Vector3f calculateMouseRay() {
-		float mouseX = Mouse.getX();
-		float mouseY = Mouse.getY();
+		float mouseX = Display.getWidth()/2;
+		float mouseY = Display.getHeight()/2;
 		Vector2f normalizedCoords = getNormalisedDeviceCoordinates(mouseX, mouseY);
 		Vector4f clipCoords = new Vector4f(normalizedCoords.x, normalizedCoords.y, -1.0f, 1.0f);
 		Vector4f eyeCoords = toEyeCoords(clipCoords);
@@ -175,7 +170,7 @@ public class MouseBlockPicker {
 		Chunk terrain = getTerrain(testPoint.getX(), testPoint.getZ());
 		float height = 0;
 		if (terrain != null) {
-			height = terrain.getHeight((int)testPoint.getX() % 16, (int)testPoint.getZ() % 16);
+			height = terrain.getHeight((int)testPoint.getX() % 16, (int)testPoint.getZ() % 16) - 0.0001f;
 		}
 		if (testPoint.y < height) {
 			return true;
@@ -185,10 +180,17 @@ public class MouseBlockPicker {
 	}
 
 	private Chunk getTerrain(float worldX, float worldZ) {
-		//System.out.println(world.chunk.getChunk((int) (worldX/16.0), (int) (worldZ/16.0)).getHeight((int)worldX, (int)worldZ));
 		return world.chunk.getChunk((int) (worldX/16.0), (int) (worldZ/16.0));
 	}
 	
+	private Vector3f accountForFloatErrors(Vector3f x) {
+		if (x == null)
+			return x;
+		x.x = Math.round(x.x);
+		x.y = Math.round(x.y);
+		x.z = Math.round(x.z);
+		return x;
+	}
 	
 	
 }

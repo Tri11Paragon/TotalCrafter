@@ -127,34 +127,36 @@ public class Loader {
 	}
 	
 	public int loadTexture(String filename) {
-		return loadTextureIn(filename, -0.2f);
+		return loadTexture(filename, -0.2f);
 	}
 	
 	public int loadTexture(String filename, float bias) {
-		return loadTextureIn(filename, bias);
-	}
-	
-	private int loadTextureIn(String fileName, float bias) {
 		Texture texture = null;
 		try {
 			texture = TextureLoader.getTexture("PNG",
-					new FileInputStream("resources/textures/" + fileName + ".png"));
+					new FileInputStream("resources/textures/" + filename + ".png"), GL11.GL_NEAREST);
 			//if (SettingsLoader.USEMIPMAP)
 				GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+				//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+				//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+				// this is needed for mipmaping to work.
 				GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-				GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0); // -0.4f? negative decrease amount. don't too much or lose preformacne
+				// changes the level of detail
+				// i don't remember how this works out with it but as the other comment says, lower value = more detail at
+				// longer distances?
+				GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, bias); // -0.4f? negative decrease amount. don't too much or lose preformacne
 			if (GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic) {
 				//float amount = Math.min(SettingsLoader.ASF, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
 				float amount = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
 				//if (SettingsLoader.ENABLEASF)
-					GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
+				GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
 			} else {
 				System.out.println("ERROR IN LOADER. NOT SUPPORTED ANISOTROPIC FILTERING");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("Tried to load texture " + fileName + ".png , didn't work");
-			if (fileName.toLowerCase().equals("error")) {
+			System.err.println("Tried to load texture " + filename + ".png , didn't work");
+			if (filename.toLowerCase().equals("error")) {
 				System.exit(-1);
 			} else {
 				return loadTexture("error");

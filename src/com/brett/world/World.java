@@ -26,6 +26,7 @@ import com.brett.world.cameras.Camera;
 import com.brett.world.entities.Entity;
 import com.brett.world.terrain.Terrain;
 
+@SuppressWarnings("unused")
 public class World {
 
 	private List<Entity> ents;
@@ -65,14 +66,14 @@ public class World {
 		normalMapEntities = new ArrayList<Entity>();
 		lights = new ArrayList<Light>();
 		terrains = new TerrainArray();
-		multisampleFbo = new Fbo(Display.getWidth(), Display.getHeight());
-		outputFbo = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_TEXTURE);
-		brightOutputFbo = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_TEXTURE);
-		waterRenderer = new WaterRenderer(loader, new WaterShader(), renderer.getProjectionMatrix(), waterFBO);
+		//multisampleFbo = new Fbo(Display.getWidth(), Display.getHeight());
+		//outputFbo = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_TEXTURE);
+		//brightOutputFbo = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_TEXTURE);
+		//waterRenderer = new WaterRenderer(loader, new WaterShader(), renderer.getProjectionMatrix(), waterFBO);
 	}
 	
 	public void render(Camera camera, VoxelWorld world, Light sun, boolean renderWaterFBOs) {
-		if (renderWaterFBOs) {
+		/*if (renderWaterFBOs) {
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 			waterFBO.bindReflectionFrameBuffer();
 			float distance = 2 * (camera.getPosition().y - waterHeight);
@@ -87,20 +88,23 @@ public class World {
 			renderer.renderScene(ents, normalMapEntities, terrains.getAll(), lights, camera, new Vector4f(0, -1, 0, waterHeight));
 			waterFBO.unbindCurrentFrameBuffer();
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
-		}
-		renderer.renderShadowMap(ents, sun);
+		}*/
+		//renderer.renderShadowMap(ents, sun);
 		
 		
-		multisampleFbo.bindFrameBuffer();
+		/**
+		 * the multisample FBO allows for some neat pp effects.
+		 */
+		//multisampleFbo.bindFrameBuffer();
 		renderer.renderScene(ents, normalMapEntities, terrains.getAll(), lights, camera, new Vector4f(0, 0, 0, 0));
 		world.render(camera);
-		waterRenderer.render(waterTiles, camera, sun);
+		//waterRenderer.render(waterTiles, camera, sun);
 		ParticleMaster.renderParticles(camera);
-		multisampleFbo.unbindFrameBuffer();
-		multisampleFbo.resolveToFBO(GL30.GL_COLOR_ATTACHMENT0, outputFbo);
-		multisampleFbo.resolveToFBO(GL30.GL_COLOR_ATTACHMENT1, brightOutputFbo);
+		//multisampleFbo.unbindFrameBuffer();
+		//multisampleFbo.resolveToFBO(GL30.GL_COLOR_ATTACHMENT0, outputFbo);
+		//multisampleFbo.resolveToFBO(GL30.GL_COLOR_ATTACHMENT1, brightOutputFbo);
 		
-		PostProcessing.doPostProcessing(outputFbo.getColourTexture(), brightOutputFbo.getColourTexture());
+		//PostProcessing.doPostProcessing(outputFbo.getColourTexture(), brightOutputFbo.getColourTexture());
 	}
 	
 	public void update() {
@@ -110,11 +114,11 @@ public class World {
 	}
 	
 	public void cleanup() {
-		multisampleFbo.cleanUp();
-		outputFbo.cleanUp();
-		brightOutputFbo.cleanUp();
-		waterFBO.cleanUp();
-		waterRenderer.cleanup();
+		//multisampleFbo.cleanUp();
+		//outputFbo.cleanUp();
+		//brightOutputFbo.cleanUp();
+		//waterFBO.cleanUp();
+		//waterRenderer.cleanup();
 	}
 	
 	public void spawnEntity(Entity e) {

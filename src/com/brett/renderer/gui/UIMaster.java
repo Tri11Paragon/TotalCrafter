@@ -51,23 +51,33 @@ public class UIMaster {
 	}
 	
 	public GUITexture addUITexture(int texture, int texture2, int texture3, float x, float y, float width, float height) {
-		return new GUITexture(texture, texture2, texture3, calcVec(x, y), calcVec(width, height));
+		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec(x, y), calcVec(width, height));
+		guitextures.add(t);
+		return t;
 	}
 	
 	public GUITexture addUITexture(int texture, int texture2, int texture3, float x, float y, float width, float height, Vector3f color) {
-		return new GUITexture(texture, texture2, texture3, calcVec(x, y), calcVec(width, height)).setColor(color);
+		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec(x, y), calcVec(width, height)).setColor(color);
+		guitextures.add(t);
+		return t;
 	}
 	
 	public UIButton addUIButton(int texture, int hovertexture, UIControl event, float x, float y, float width, float height) {
-		return new UIButton(texture, hovertexture, event, this, x, y, width, height);
+		UIButton b = new UIButton(texture, hovertexture, event, this, x, y, width, height);
+		guitextures.add(b);
+		return b;
 	}
 	
 	public GUITexture addCenteredTexture(int texture, int texture2, int texture3, float xoff, float yoff, float width, float height) {
-		return new GUITexture(texture, texture2, texture3, calcVec((this.SWIDTH/2 - width/2) + xoff, (this.SHEIGHT/2 - height/2) + yoff), calcVec(width, height));
+		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec((this.SWIDTH/2 - width/2) + xoff, (this.SHEIGHT/2 - height/2) + yoff), calcVec(width, height));
+		guitextures.add(t);
+		return t;
 	}
 	
 	public GUITexture addCenteredTexture(int texture, int texture2, int texture3, float xoff, float yoff, float width, float height, Vector3f color) {
-		return new GUITexture(texture, texture2, texture3, calcVec((this.SWIDTH/2 - width/2) + xoff, (this.SHEIGHT/2 - height/2) + yoff), calcVec(width, height)).setColor(color);
+		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec((this.SWIDTH/2 - width/2) + xoff, (this.SHEIGHT/2 - height/2) + yoff), calcVec(width, height)).setColor(color);
+		guitextures.add(t);
+		return t;
 	}
 	
 	public Vector2f calcVec(float x, float y) {

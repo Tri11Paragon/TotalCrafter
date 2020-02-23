@@ -2,86 +2,70 @@ package com.tester;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import com.brett.DisplayManager;
 import com.brett.console.Console;
 import com.brett.console.commands.SpawnCommand;
-import com.brett.networking.Client;
-import com.brett.networking.Server;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
-import com.brett.renderer.datatypes.GUITexture;
 import com.brett.renderer.datatypes.ModelTexture;
-import com.brett.renderer.datatypes.TerrainTexture;
-import com.brett.renderer.datatypes.TerrainTexturePack;
 import com.brett.renderer.datatypes.TexturedModel;
 import com.brett.renderer.datatypes.WaterTile;
 import com.brett.renderer.font.FontType;
-import com.brett.renderer.font.GUIText;
 import com.brett.renderer.font.fontRendering.TextMaster;
-import com.brett.renderer.gui.EscapeMenu;
-import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.renderer.lighting.Light;
 import com.brett.renderer.particles.ParticleMaster;
 import com.brett.renderer.postprocessing.PostProcessing;
-import com.brett.renderer.world.Chunk;
-import com.brett.renderer.world.MeshStore;
 import com.brett.tools.MousePicker;
 import com.brett.tools.SettingsLoader;
 import com.brett.tools.obj.OBJLoader;
 import com.brett.world.VoxelWorld;
 import com.brett.world.World;
-import com.brett.world.cameras.Camera;
 import com.brett.world.cameras.CreativeFirstPersonCamera;
 import com.brett.world.entities.Entity;
-import com.brett.world.entities.FirstPersonPlayer;
-import com.brett.world.entities.LightEntity;
-import com.brett.world.terrain.HeightGenerator;
-import com.brett.world.terrain.Terrain;
-import com.brett.world.terrain.noisefunctions.PerlinNoiseFunction;
 import com.sun.management.OperatingSystemMXBean;
-import com.sun.prism.Mesh;
 
 public class Main {
 	
 	public static double frameRate = 120;
 	public static double  averageFrameTimeMilliseconds = 8;
 	public static OperatingSystemMXBean os;
+	public static Entity hitent;
+	public static boolean isOpen = true;
 	
 	public static void main(String[] args) {
 		SettingsLoader.loadSettings();
-		DisplayManager.createDisplay("Icon", true);
+		DisplayManager.createDisplay("Icon", false);
 		
 		os = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 		// MAIN STUFF (REQUIRED FOR GAME TO RUN)
 		Loader loader = new Loader();
-		CreativeFirstPersonCamera camera = new CreativeFirstPersonCamera(new Vector3f(0, 60, 0));
-		TexturedModel box_model = new TexturedModel(loader.loadToVAO(OBJLoader.loadOBJ("box")), new ModelTexture(loader.loadTexture("box"), loader.loadTexture("box_spec"), 0.5f));
+		CreativeFirstPersonCamera camera = new CreativeFirstPersonCamera(new Vector3f(0, 72, 0));
+		TexturedModel box_model = new TexturedModel(loader.loadToVAO(OBJLoader.loadOBJ("box")), new ModelTexture(loader.loadTexture("box")));
+		TexturedModel circleModel = new TexturedModel(loader.loadToVAO(OBJLoader.loadOBJ("hitmodel")), new ModelTexture(loader.loadTexture("error")));
 		//FirstPersonPlayer player = new FirstPersonPlayer(box_model, new Vector3f(0, 0, 0), new Vector3f(0, 2, 0), 0, 0, 0, 1);
 		//Camera camera = player.getCamera();
 		MasterRenderer renderer = new MasterRenderer(loader, camera);
 		UIMaster ui = new UIMaster(loader);
+		ui.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);
 		World world = new World(renderer, loader, -5);
 		TextMaster.init(loader);
 		ParticleMaster.init(loader, renderer.getProjectionMatrix());
 		HashMap<String, Entity> spawnableEnts = new HashMap<String, Entity>();
 		
 		// TERRAIN TEXTURES
-		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
-		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
-		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("pinkFlowers"));
-		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
+		//TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
+		//TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
+		//TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("pinkFlowers"));
+		//TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
 		
-		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
-		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("terrain/blendMap"));
+		//TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
+		//TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("terrain/blendMap"));
 		
 		// LIGHTING
 		Light sun = new Light(new Vector3f(1000000, 1500000, -1000000), new Vector3f(1f, 1f, 1f));
@@ -117,16 +101,16 @@ public class Main {
 		MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), world.getTerrains());
 		// ENTITIES
 		//Entity entity = new Entity(TexturedModel.createTexturedModel(loader, "cursed-totem", "cursed-totem", 10, 1), new Vector3f(0, 0, -20), 0, 0, 0, 1);
-		Light l = new Light(null, new Vector3f(1f, 1f, 1f), new Vector3f(1, 0.01f, 0.002f));
-		world.add(l);
-		TexturedModel lamp = TexturedModel.createTexturedModel(loader, "ground_lamp", "ground_lamp");
-		LightEntity ground_lamp = new LightEntity(lamp, l, new Vector3f(20, 5, -20), new Vector3f(0, 2.36f, 0), 0, 0, 0, 1);
+		//Light l = new Light(new Vector3f(20, 5, -20), new Vector3f(1f, 1f, 1f), new Vector3f(1, 0.01f, 0.002f));
+		//world.add(l);
+		//TexturedModel lamp = TexturedModel.createTexturedModel(loader, "ground_lamp", "ground_lamp");
+		//LightEntity ground_lamp = new LightEntity(lamp, l, new Vector3f(20, 5, -20), new Vector3f(0, 2.36f, 0), 0, 0, 0, 1);
 		//Entity ent = new Entity(lamp, new Vector3f(45, 25, -45), 0, 0, 0, 1);
 		//spawnableEnts.put("weird", entity);
 		//spawnableEnts.put("w_lamp", ground_lamp);
 		console.registerCommand("spawn", new SpawnCommand(picker, world, loader));
-		Entity big_box = new Entity(box_model, new Vector3f(0, 70, 0), 0, 0, 0, 10);
-		
+		Entity big_box = new Entity(box_model, new Vector3f(0, 80, 0), 0, 0, 0, 10);
+		hitent = new Entity(circleModel, new Vector3f(0, 0, 0), 0, 0, 0, 1);
 		//ThirdPersonPlayer player = new ThirdPersonPlayer(TexturedModel.createTexturedModel(loader, "person", "playerTexture", 10, 1), new Vector3f(0, 0, -5), 0, 0, 0, 1);
 		//ThirdPersonCamera rdCamera = new ThirdPersonCamera(player, 10, 80, 8);
 		
@@ -148,6 +132,7 @@ public class Main {
 		//world.spawnEntity(ground_lamp);
 		//entities.add(player);texturename
 		world.spawnEntity(big_box);
+		world.spawnEntity(hitent);
 		//world.spawnEntity(ent);
 		//world.spawnEntity(player);
 		
@@ -225,7 +210,7 @@ public class Main {
 			if(deltaTime > 1000) {
 				frameRate = (double)frames*0.5d + frameRate*0.5d;
 				averageFrameTimeMilliseconds  = 1000.0/(frameRate==0?0.001:frameRate);
-				System.out.println("Frames per Seconds: " + (int)frameRate);
+				//System.out.println("Frames per Seconds: " + (int)frameRate);
 				frames = 0;
 				deltaTime = 0;
 			}
@@ -240,6 +225,7 @@ public class Main {
 		world.cleanup();
 		loader.cleanUp();
 		SettingsLoader.saveSettings();
+		isOpen = false;
 		DisplayManager.closeDisplay();
 	}
 

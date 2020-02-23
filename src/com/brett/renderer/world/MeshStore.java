@@ -25,8 +25,6 @@ public class MeshStore {
 	public static List<SixBoolean> booleans = new ArrayList<SixBoolean>();
 	
 	public static Map<SixBoolean, RawModel> models = new HashMap<SixBoolean, RawModel>();
-	// i thought this was better then storing and probing each block.
-	//public static Map<SixBoolean, Tuple<UnmeshedRawModel, List<Block>>> unmeshedModels = new HashMap<SixBoolean, Tuple<UnmeshedRawModel, List<Block>>>();
 	public static int boolEmpty = 0;
 	// make this better
 	

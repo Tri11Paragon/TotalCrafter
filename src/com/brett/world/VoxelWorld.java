@@ -14,6 +14,7 @@ import com.brett.renderer.world.Chunk;
 import com.brett.renderer.world.MeshStore;
 import com.brett.tools.MouseBlockPicker;
 import com.brett.world.cameras.Camera;
+import com.tester.Main;
 
 /**
 *
@@ -50,7 +51,7 @@ public class VoxelWorld {
 		new Thread(new Runnable() {		
 			@Override
 			public void run() {
-				while (!Display.isCloseRequested()) {
+				while (Main.isOpen) {
 					System.gc();
 					try {
 						Thread.sleep(10000);
@@ -73,7 +74,13 @@ public class VoxelWorld {
 		while (Mouse.next()){
 			if (Mouse.getEventButtonState()) {
 				if (Mouse.getEventButton() == 0) {
-					picker.setCurrectBlockPoint(0);
+					Vector3f d = picker.setCurrectBlockPoint(0);
+					int dx = (int)(d.x)/Chunk.x;
+					int dz = (int)(d.z)/Chunk.z;
+					Chunk c = chunk.getChunk(dx, dz);
+					if (c == null)
+						return;
+					c.remesh(chunk.getChunk(dx-1, dz), chunk.getChunk(dx+1, dz), chunk.getChunk(dx, dz+1), chunk.getChunk(dx, dz-1));
 				}
 			}
 		}
