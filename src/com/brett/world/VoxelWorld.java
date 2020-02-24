@@ -70,12 +70,21 @@ public class VoxelWorld {
 		picker.update();
 		MasterRenderer.enableCulling();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+
+		/*Iterator<Entry<Coord, Chunk>> ic = chunks.entrySet().iterator();
+		while (ic.hasNext()) {
+			Entry<Coord, Chunk> w = ic.next();
+			w.getValue().render(shader);
+		}*/
+		chunk.renderChunks(shader);
 		
 		while (Mouse.next()){
 			if (Mouse.getEventButtonState()) {
 				if (Mouse.getEventButton() == 0) {
-					@SuppressWarnings("deprecation")
-					Vector3f d = picker.setCurrectBlockPoint(0);
+					picker.setCurrentBlockPointNEW(0);
+					Vector3f d = picker.getCurrentTerrainPoint();
+					if (d == null)
+						return;
 					int dx = (int)(d.x)/Chunk.x;
 					int dz = (int)(d.z)/Chunk.z;
 					Chunk c = chunk.getChunk(dx, dz);
@@ -85,15 +94,6 @@ public class VoxelWorld {
 				}
 			}
 		}
-		
-
-		
-		/*Iterator<Entry<Coord, Chunk>> ic = chunks.entrySet().iterator();
-		while (ic.hasNext()) {
-			Entry<Coord, Chunk> w = ic.next();
-			w.getValue().render(shader);
-		}*/
-		chunk.renderChunks(shader);
 		
 		//System.gc();
 		
