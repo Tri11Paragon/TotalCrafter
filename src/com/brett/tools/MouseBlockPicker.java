@@ -1,6 +1,7 @@
 package com.brett.tools;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -94,12 +95,16 @@ public class MouseBlockPicker {
 		Vector3f pos = camera.getPosition();
 		Vector3f pointRay = this.currentRay;
 		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
-		float norm = (currentRay.x + currentRay.y + currentRay.z)/3;
-		float normb = (pointRay.x + pointRay.y + pointRay.z)/3;
+		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
+		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
+		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
 		
-		System.out.println(norm + " " + normb);
-		for (float i = 0; i < RAY_RANGE; i+=norm) {
-			Vector3f posadj = new Vector3f(pos.x + i, pos.y + i, pos.z + i);
+		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
+		for (float i = 0; i < RE_MNT; i++) {
+			walked.x += xStep;
+			walked.y += yStep;
+			walked.z += zStep;
+			Vector3f posadj = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
 			Chunk c = getTerrain(posadj.x, posadj.z);
 			if (c == null)
 				continue;
@@ -108,9 +113,7 @@ public class MouseBlockPicker {
 				continue;
 			c.setBlock((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16, block);
 			c.remesh();
-			System.out.println(posadj);
-			System.out.println((int) (posadj.x) + " " + (int) posadj.y + " " + (int) (posadj.z));
-			System.out.println((int) (posadj.x) % 16 + " " + (int) posadj.y + " " + (int) (posadj.z) % 16);
+			return;
 		}
 	}
 

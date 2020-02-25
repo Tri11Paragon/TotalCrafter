@@ -102,7 +102,6 @@ public class VoxelWorld {
 	}
 	
 	public void resolveMeshes() {
-		
 		for (int t = 0; t < 2; t++) {
 			for (int l = 0; l < 2; l++) {
 				for (int r = 0; r < 2; r++) {

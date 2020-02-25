@@ -23,6 +23,7 @@ import com.brett.renderer.gui.UIMaster;
 import com.brett.renderer.lighting.Light;
 import com.brett.renderer.particles.ParticleMaster;
 import com.brett.renderer.postprocessing.PostProcessing;
+import com.brett.renderer.shaders.LineShader;
 import com.brett.sound.AudioController;
 import com.brett.sound.AudioSource;
 import com.brett.tools.MousePicker;
@@ -40,8 +41,10 @@ public class Main {
 	public static double  averageFrameTimeMilliseconds = 8;
 	public static OperatingSystemMXBean os;
 	public static Entity hitent;
+	public static Entity outlineEnt;
 	public static boolean isOpen = true;
 	public static AudioSource staticSource;
+	public static LineShader ls;
 	
 	public static void main(String[] args) {
 		SettingsLoader.loadSettings();
@@ -56,11 +59,13 @@ public class Main {
 		// MAIN STUFF (REQUIRED FOR GAME TO RUN)
 		Loader loader = new Loader();
 		CreativeFirstPersonCamera camera = new CreativeFirstPersonCamera(new Vector3f(0, 72, 0));
+		ls = new LineShader();
 		TexturedModel box_model = new TexturedModel(loader.loadToVAO(OBJLoader.loadOBJ("box")), new ModelTexture(loader.loadTexture("box")));
 		TexturedModel circleModel = new TexturedModel(loader.loadToVAO(OBJLoader.loadOBJ("hitmodel")), new ModelTexture(loader.loadTexture("error")));
 		//FirstPersonPlayer player = new FirstPersonPlayer(box_model, new Vector3f(0, 0, 0), new Vector3f(0, 2, 0), 0, 0, 0, 1);
 		//Camera camera = player.getCamera();
 		MasterRenderer renderer = new MasterRenderer(loader, camera);
+		ls.loadProjectionMatrix(renderer.getProjectionMatrix());
 		UIMaster ui = new UIMaster(loader);
 		ui.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);
 		World world = new World(renderer, loader, -5);
@@ -121,6 +126,7 @@ public class Main {
 		console.registerCommand("spawn", new SpawnCommand(picker, world, loader));
 		Entity big_box = new Entity(box_model, new Vector3f(0, 80, 0), 0, 0, 0, 10);
 		hitent = new Entity(circleModel, new Vector3f(0, 0, 0), 0, 0, 0, 1);
+		outlineEnt = new Entity(new TexturedModel(circleModel.getRawModel(), circleModel.getTexture()), new Vector3f(0, 0, 0), 0, 0, 0, 1);
 		//ThirdPersonPlayer player = new ThirdPersonPlayer(TexturedModel.createTexturedModel(loader, "person", "playerTexture", 10, 1), new Vector3f(0, 0, -5), 0, 0, 0, 1);
 		//ThirdPersonCamera rdCamera = new ThirdPersonCamera(player, 10, 80, 8);
 		
@@ -188,6 +194,7 @@ public class Main {
 		while (!Display.isCloseRequested()) {
 			double startTime = Sys.getTime() * 1000 / Sys.getTimerResolution();
 			camera.move();
+			ls.loadViewMatrix(camera);
 			AudioController.setListenerPosition(camera.getPosition());
 			//rdCamera.move();
 			//rdCamera.checkCollision(terrain);
@@ -226,6 +233,7 @@ public class Main {
 				deltaTime = 0;
 			}
 		}
+		Mouse.setGrabbed(false);
 		//testserver.close();
 		//client.close();
 		staticSource.delete();
@@ -235,6 +243,7 @@ public class Main {
 		ui.cleanup();
 		TextMaster.cleanUp();
 		ParticleMaster.cleanUp();
+		ls.cleanUp();
 		world.cleanup();
 		loader.cleanUp();
 		SettingsLoader.saveSettings();

@@ -1,0 +1,12 @@
+#version 150
+
+in vec3 position;
+
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+
+void main(void){
+	vec4 positionRelativeToCam = viewMatrix * worldPosition * vec4(position,1.0);
+	gl_Position = projectionMatrix * positionRelativeToCam;
+	
+}

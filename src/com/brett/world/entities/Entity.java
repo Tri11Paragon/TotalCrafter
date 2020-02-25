@@ -2,6 +2,7 @@ package com.brett.world.entities;
 
 import org.lwjgl.util.vector.Vector3f;
 
+import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.TexturedModel;
 import com.brett.tools.TerrainArray;
 import com.brett.world.World;
@@ -109,6 +110,10 @@ public class Entity {
 
 	public void setModel(TexturedModel model) {
 		this.model = model;
+	}
+	
+	public void setRawModel(RawModel model) {
+		this.model.setRawModel(model);
 	}
 
 	public Vector3f getPosition() {
