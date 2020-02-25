@@ -25,6 +25,7 @@ public class MouseBlockPicker {
 	
 	// amount of times the binary search can run
 	private static final int RECURSION_COUNT = 200;
+	private static final int RE_MNT = 200;
 	private static final float RAY_RANGE = 6;
 
 	private Vector3f currentRay = new Vector3f();
@@ -91,28 +92,25 @@ public class MouseBlockPicker {
 	
 	public void setCurrentBlockPointNEW(int block) {
 		Vector3f pos = camera.getPosition();
-		System.out.println(currentRay.x + " " + currentRay.y + " " + currentRay.z);
-		Vector3f currentRay = biasVector(this.currentRay);
-		for (float i = currentRay.x; i < currentRay.x*RAY_RANGE; i++) {
-			for (float j = currentRay.y; j < currentRay.y*RAY_RANGE; j++) {
-				for (float k = currentRay.z; k < currentRay.z*RAY_RANGE; k++) {
-					Vector3f posadj = new Vector3f(pos.x + i, pos.y + j, pos.z + k);
-					System.out.println(posadj.x + " " + posadj.z);
-					Chunk c = getTerrain(posadj.x, posadj.z);
-					if (c == null)
-						continue;
-					Main.hitent.setPosition(posadj);
-					System.out.println(c.getBlock((int)(posadj.x)%16, (int)posadj.y, (int)(posadj.z)%16));
-					if (c.getBlock((int)(posadj.x)%16, (int)posadj.y, (int)(posadj.z)%16) == 0)
-						continue;
-					c.setBlock((int)(posadj.x)%16, (int)posadj.y, (int)(posadj.z)%16, block);
-					c.remesh();
-					System.out.println(posadj);
-					System.out.println((int)(posadj.x) + " " + (int)posadj.y + " " + (int)(posadj.z));
-					System.out.println((int)(posadj.x)%16 + " " + (int)posadj.y + " " + (int)(posadj.z)%16);
-					
-				}
-			}
+		Vector3f pointRay = this.currentRay;
+		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
+		float norm = (currentRay.x + currentRay.y + currentRay.z)/3;
+		float normb = (pointRay.x + pointRay.y + pointRay.z)/3;
+		
+		System.out.println(norm + " " + normb);
+		for (float i = 0; i < RAY_RANGE; i+=norm) {
+			Vector3f posadj = new Vector3f(pos.x + i, pos.y + i, pos.z + i);
+			Chunk c = getTerrain(posadj.x, posadj.z);
+			if (c == null)
+				continue;
+			Main.hitent.setPosition(posadj);
+			if (c.getBlock((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16) == 0)
+				continue;
+			c.setBlock((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16, block);
+			c.remesh();
+			System.out.println(posadj);
+			System.out.println((int) (posadj.x) + " " + (int) posadj.y + " " + (int) (posadj.z));
+			System.out.println((int) (posadj.x) % 16 + " " + (int) posadj.y + " " + (int) (posadj.z) % 16);
 		}
 	}
 
@@ -210,11 +208,8 @@ public class MouseBlockPicker {
 		return world.chunk.getChunk((int) (worldX/Chunk.x), (int) (worldZ/Chunk.z));
 	}
 	
-	private Vector3f biasVector(Vector3f v) {
-		v.x += 1;
-		v.y += 1;
-		v.z += 1;
-		return v;
+	private Vector3f biasVector(Vector3f v, float x) {
+		return new Vector3f(v.x * x, v.y * x, v.z * x);
 	}
 	
 	private Vector3f accountForFloatErrors(Vector3f x) {
