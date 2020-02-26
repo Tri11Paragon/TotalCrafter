@@ -24,6 +24,7 @@ import com.brett.renderer.lighting.Light;
 import com.brett.renderer.particles.ParticleMaster;
 import com.brett.renderer.postprocessing.PostProcessing;
 import com.brett.renderer.shaders.LineShader;
+import com.brett.renderer.shaders.PointShader;
 import com.brett.sound.AudioController;
 import com.brett.sound.AudioSource;
 import com.brett.tools.MousePicker;
@@ -45,6 +46,7 @@ public class Main {
 	public static boolean isOpen = true;
 	public static AudioSource staticSource;
 	public static LineShader ls;
+	public static PointShader pt;
 	
 	public static void main(String[] args) {
 		SettingsLoader.loadSettings();
@@ -60,12 +62,18 @@ public class Main {
 		Loader loader = new Loader();
 		CreativeFirstPersonCamera camera = new CreativeFirstPersonCamera(new Vector3f(0, 72, 0));
 		ls = new LineShader();
+		pt = new PointShader();
 		TexturedModel box_model = new TexturedModel(loader.loadToVAO(OBJLoader.loadOBJ("box")), new ModelTexture(loader.loadTexture("box")));
 		TexturedModel circleModel = new TexturedModel(loader.loadToVAO(OBJLoader.loadOBJ("hitmodel")), new ModelTexture(loader.loadTexture("error")));
 		//FirstPersonPlayer player = new FirstPersonPlayer(box_model, new Vector3f(0, 0, 0), new Vector3f(0, 2, 0), 0, 0, 0, 1);
 		//Camera camera = player.getCamera();
 		MasterRenderer renderer = new MasterRenderer(loader, camera);
+		ls.start();
 		ls.loadProjectionMatrix(renderer.getProjectionMatrix());
+		ls.stop();
+		pt.start();
+		pt.loadProjectionMatrix(renderer.getProjectionMatrix());
+		pt.stop();
 		UIMaster ui = new UIMaster(loader);
 		ui.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);
 		World world = new World(renderer, loader, -5);
@@ -194,7 +202,12 @@ public class Main {
 		while (!Display.isCloseRequested()) {
 			double startTime = Sys.getTime() * 1000 / Sys.getTimerResolution();
 			camera.move();
+			ls.start();
 			ls.loadViewMatrix(camera);
+			ls.stop();
+			pt.start();
+			pt.loadViewMatrix(camera);
+			pt.stop();
 			AudioController.setListenerPosition(camera.getPosition());
 			//rdCamera.move();
 			//rdCamera.checkCollision(terrain);

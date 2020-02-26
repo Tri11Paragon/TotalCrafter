@@ -100,7 +100,9 @@ public class MouseBlockPicker {
 		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
 		
 		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
-		for (float i = 0; i < RE_MNT; i++) {
+		Vector3f[] vf = new Vector3f[RE_MNT];
+		for (int i = 0; i < RE_MNT; i++) {
+			vf[i] = new Vector3f(walked.x + pos.x, walked.y + pos.y, walked.z + pos.z);
 			walked.x += xStep;
 			walked.y += yStep;
 			walked.z += zStep;
@@ -109,8 +111,12 @@ public class MouseBlockPicker {
 			if (c == null)
 				continue;
 			Main.hitent.setPosition(posadj);
-			if (c.getBlock((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16) == 0)
+			Main.ls.createStaticLine(pos, posadj);
+			Main.pt.createStaticPoints(vf);
+			int blockid = c.getBlock((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16);
+			if (blockid == 0)
 				continue;
+			Block.blocks.get(blockid).playBreakSound((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16);;
 			c.setBlock((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16, block);
 			c.remesh();
 			return;

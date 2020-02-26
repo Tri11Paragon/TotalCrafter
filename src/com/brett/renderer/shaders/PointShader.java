@@ -1,9 +1,3 @@
-/** 
-*	Brett Terpstra
-*	Feb 25, 2020
-*	
-*/ 
-
 package com.brett.renderer.shaders;
 
 import java.nio.FloatBuffer;
@@ -19,20 +13,26 @@ import org.lwjgl.util.vector.Vector3f;
 import com.brett.tools.Maths;
 import com.brett.world.cameras.Camera;
 
-public class LineShader extends ShaderProgram {
+/**
+*
+* @author brett
+* @date Feb. 25, 2020
+*/
+
+public class PointShader extends ShaderProgram {
 
 	private int vao = 0;
 	private int count = 0;
 	private int vbo = 0;
 	
-	private static final String VERTEX_FILE = "lineVertexShader.txt";
-	private static final String FRAGMENT_FILE = "lineFragmentShader.txt";
+	private static final String VERTEX_FILE = "pointVertexShader.txt";
+	private static final String FRAGMENT_FILE = "pointFragmentShader.txt";
 	
 	private int location_projectionMatrix;
 	private int location_viewMatrix;
 	private int location_translationMatrix;
 	
-	public LineShader() {
+	public PointShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
 		this.start();
 		this.loadTranslationMatrix();
@@ -46,22 +46,8 @@ public class LineShader extends ShaderProgram {
 		location_translationMatrix = super.getUniformLocation("translationMatrix");
 	}
 	
-	public void renderIN(Vector3f pos1, Vector3f pos2) {
-		this.start();
-		int vaoID = GL30.glGenVertexArrays();
-		GL30.glBindVertexArray(vaoID);
-		float[] f = {pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z};
-		int vboID = storeDataInAttributeList(0, 3, f);
-		GL20.glEnableVertexAttribArray(0);
-		GL11.glDrawArrays(GL11.GL_LINES, 0, f.length);
-		GL20.glDisableVertexAttribArray(0);
-		GL30.glBindVertexArray(0);
-		GL15.glDeleteBuffers(vboID);
-		GL30.glDeleteVertexArrays(vaoID);
-		this.stop();
-	}
-	
-	public void createStaticLine(Vector3f pos1, Vector3f pos2) {
+	// TODO: add persistant lines
+	public void createStaticPoints(Vector3f[] points) {
 		if (vao != 0)
 			GL30.glDeleteVertexArrays(vao);
 		if (vbo != 0)
@@ -69,7 +55,14 @@ public class LineShader extends ShaderProgram {
 		vao = 0;
 		vao = GL30.glGenVertexArrays();
 		GL30.glBindVertexArray(vao);
-		float[] f = {pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z};
+		float[] f = new float[points.length*3];
+		for (int i = 0; i < f.length/3; i+=3) {
+			if (points[i] == null)
+				continue;
+			f[i] = points[i].x;
+			f[i+1] = points[i].y;
+			f[i+2] = points[i].z;
+		}
 		count = f.length;
 		vbo = 0;
 		vbo = storeDataInAttributeList(0, 3, f);
@@ -83,9 +76,10 @@ public class LineShader extends ShaderProgram {
 		if (vao == 0)
 			return;
 		this.start();
+		GL11.glPointSize(5);
 		GL30.glBindVertexArray(vao);
 		GL20.glEnableVertexAttribArray(0);
-		GL11.glDrawArrays(GL11.GL_LINES, 0, count);
+		GL11.glDrawArrays(GL11.GL_POINTS, 0, count);
 		GL20.glDisableVertexAttribArray(0);
 		GL30.glBindVertexArray(0);
 		this.stop();
@@ -134,3 +128,4 @@ public class LineShader extends ShaderProgram {
 	}
 
 }
+

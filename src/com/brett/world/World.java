@@ -25,6 +25,7 @@ import com.brett.world.blocks.Block;
 import com.brett.world.cameras.Camera;
 import com.brett.world.entities.Entity;
 import com.brett.world.terrain.Terrain;
+import com.tester.Main;
 
 @SuppressWarnings("unused")
 public class World {
@@ -98,6 +99,9 @@ public class World {
 		//multisampleFbo.bindFrameBuffer();
 		renderer.renderScene(ents, normalMapEntities, terrains.getAll(), lights, camera, new Vector4f(0, 0, 0, 0));
 		world.render(camera);
+		Main.ls.render();
+		Main.ls.renderIN(new Vector3f(0,70,0), new Vector3f(0,90,0));
+		Main.pt.render();
 		//waterRenderer.render(waterTiles, camera, sun);
 		ParticleMaster.renderParticles(camera);
 		//multisampleFbo.unbindFrameBuffer();
