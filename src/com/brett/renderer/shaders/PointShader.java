@@ -76,7 +76,7 @@ public class PointShader extends ShaderProgram {
 		if (vao == 0)
 			return;
 		this.start();
-		GL11.glPointSize(5);
+		GL11.glPointSize(500);
 		GL30.glBindVertexArray(vao);
 		GL20.glEnableVertexAttribArray(0);
 		GL11.glDrawArrays(GL11.GL_POINTS, 0, count);

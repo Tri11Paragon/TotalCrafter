@@ -1,7 +1,20 @@
 #version 150
 
+in vec3 pos;
 out vec4 out_Color;
 
+float circleshape(vec2 position, float radius){
+	return step(radius, length(position - vec2(0.5)));
+}
+
 void main(void){
-    out_Color = vec4(0.0f, 1.0f, 0.0f, 1.0f);
+	vec2 position = gl_FragCoord.xy / vec2(1280, 720);
+	
+	vec3 color = vec3(0.0);
+	
+	float circle = circleshape(position, 0.109f);
+	
+	color = vec3(circle);
+
+    out_Color = vec4(color, 1.0f);
 }

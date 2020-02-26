@@ -329,7 +329,6 @@ public class Chunk {
 					if (rawModel.getVaoID() == MeshStore.boolEmpty)
 						continue;
 					
-					
 					GL30.glBindVertexArray(rawModel.getVaoID());
 					GL20.glEnableVertexAttribArray(0);
 					GL20.glEnableVertexAttribArray(1);
