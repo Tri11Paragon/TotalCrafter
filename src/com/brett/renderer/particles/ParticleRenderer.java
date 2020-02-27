@@ -86,8 +86,8 @@ public class ParticleRenderer {
 		shader.loadNumberOfRows(texture.getNumberOfRows());
 	}
 	
+	Matrix4f modelMatrix = new Matrix4f();
 	private void updateModelViewMatrix(Vector3f position, float rotation, float scale, Matrix4f viewMatrix, float[] vboData) {
-		Matrix4f modelMatrix = new Matrix4f();
 		Matrix4f.translate(position, modelMatrix, modelMatrix);
 		modelMatrix.m00 = viewMatrix.m00;
 		modelMatrix.m01 = viewMatrix.m10;

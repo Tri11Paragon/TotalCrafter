@@ -12,25 +12,38 @@ import com.brett.world.cameras.Camera;
 public class Maths {
 	
 	public static enum colors { NULL, COLOR_RED, COLOR_BLUE, COLOR_GREEN };
-
-	public static Matrix4f createTransformationMatrix(Vector3f translation, float rx, float ry,
-			float rz, float scale) {
-		Matrix4f matrix = new Matrix4f();
-		matrix.setIdentity();
-		Matrix4f.translate(translation, matrix, matrix);
-		Matrix4f.rotate((float) Math.toRadians(rx), new Vector3f(1,0,0), matrix, matrix);
-		Matrix4f.rotate((float) Math.toRadians(ry), new Vector3f(0,1,0), matrix, matrix);
-		Matrix4f.rotate((float) Math.toRadians(rz), new Vector3f(0,0,1), matrix, matrix);
-		Matrix4f.scale(new Vector3f(scale,scale,scale), matrix, matrix);
-		return matrix;
+	
+	public static Vector3f rx = new Vector3f(1,0,0);
+	public static Vector3f ry = new Vector3f(0,1,0);
+	public static Vector3f rz = new Vector3f(0,0,1);
+	
+	static Matrix4f mtx = new Matrix4f();
+	public static Matrix4f createTransformationMatrix(Vector3f translation, float rx, float ry, float rz, float scale) {
+		mtx.setIdentity();
+		Matrix4f.translate(translation, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(rx), Maths.rx, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(ry), Maths.ry, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(rz), Maths.rz, mtx, mtx);
+		Matrix4f.scale(new Vector3f(scale,scale,scale), mtx, mtx);
+		return mtx;
 	}
 	
+	static Matrix4f mrx = new Matrix4f();
 	public static Matrix4f createTransformationMatrix(Vector3f translation, float scale) {
-		Matrix4f matrix = new Matrix4f();
-		matrix.setIdentity();
-		Matrix4f.translate(translation, matrix, matrix);
-		Matrix4f.scale(new Vector3f(scale,scale,scale), matrix, matrix);
-		return matrix;
+		mrx.setIdentity();
+		Matrix4f.translate(translation, mrx, mrx);
+		Matrix4f.scale(new Vector3f(scale,scale,scale), mrx, mrx);
+		return mrx;
+	}
+	
+	// i use different matrix for each function to make sure that
+	// there is no concurrent modification errors.
+	// i know it won't happen but just in case
+	static Matrix4f mrxx = new Matrix4f();
+	public static Matrix4f createTransformationMatrix(Vector3f translation) {
+		mrxx.setIdentity();
+		Matrix4f.translate(translation, mrxx, mrxx);
+		return mrxx;
 	}
 	
 	static Matrix4f matrix = new Matrix4f();

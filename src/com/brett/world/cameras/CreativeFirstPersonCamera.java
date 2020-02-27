@@ -25,6 +25,8 @@ public class CreativeFirstPersonCamera extends Camera {
 			return;
 		if (Keyboard.isKeyDown(Keyboard.KEY_LMENU)) {
 			speed = 5f;
+			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+				speed=1f;
 		} else
 			speed = 40f;
 		

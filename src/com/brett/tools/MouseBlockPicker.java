@@ -112,7 +112,7 @@ public class MouseBlockPicker {
 				continue;
 			Main.hitent.setPosition(posadj);
 			Main.ls.createStaticLine(pos, posadj);
-			Main.pt.createStaticPoints(vf);
+			Main.pt.createStaticPoints(vf, 0.5f);
 			int blockid = c.getBlock((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16);
 			if (blockid == 0)
 				continue;

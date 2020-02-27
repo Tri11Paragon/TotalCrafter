@@ -1,6 +1,8 @@
 package com.brett.renderer.shaders;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -22,8 +24,19 @@ import com.brett.world.cameras.Camera;
 public class PointShader extends ShaderProgram {
 
 	private int vao = 0;
-	private int count = 0;
 	private int vbo = 0;
+	private float scale = 0;
+	private Vector3f[] point = null;
+	
+	private List<Vector3f> points = new ArrayList<Vector3f>();
+	private float[] plane = {
+			-0.5f, 0.5f, 0.0f,
+		     -0.5f, -0.5f, 0.0f,
+		     0.5f,  -0.5f, 0.0f,
+		     -0.5f, 0.5f, 0.0f,
+		     0.5f, -0.5f, 0.0f,
+		     0.5f,  0.5f, 0.0f
+		};  
 	
 	private static final String VERTEX_FILE = "pointVertexShader.txt";
 	private static final String FRAGMENT_FILE = "pointFragmentShader.txt";
@@ -31,12 +44,16 @@ public class PointShader extends ShaderProgram {
 	private int location_projectionMatrix;
 	private int location_viewMatrix;
 	private int location_translationMatrix;
+	private int location_time;
+	private int location_scale;
+	private float timeSinceStart = 0;
 	
 	public PointShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
-		this.start();
-		this.loadTranslationMatrix();
-		this.stop();
+		vao = GL30.glGenVertexArrays();
+		GL30.glBindVertexArray(vao);
+		vbo = storeDataInAttributeList(0, 3, plane);
+		GL30.glBindVertexArray(0);
 	}
 
 	@Override
@@ -44,44 +61,38 @@ public class PointShader extends ShaderProgram {
 		location_projectionMatrix = super.getUniformLocation("projectionMatrix");
 		location_viewMatrix = super.getUniformLocation("viewMatrix");
 		location_translationMatrix = super.getUniformLocation("translationMatrix");
+		location_time = super.getUniformLocation("time");
+		location_scale = super.getUniformLocation("scale");
 	}
 	
-	// TODO: add persistant lines
-	public void createStaticPoints(Vector3f[] points) {
-		if (vao != 0)
-			GL30.glDeleteVertexArrays(vao);
-		if (vbo != 0)
-			GL15.glDeleteBuffers(vbo);
-		vao = 0;
-		vao = GL30.glGenVertexArrays();
-		GL30.glBindVertexArray(vao);
-		float[] f = new float[points.length*3];
-		for (int i = 0; i < f.length/3; i+=3) {
-			if (points[i] == null)
-				continue;
-			f[i] = points[i].x;
-			f[i+1] = points[i].y;
-			f[i+2] = points[i].z;
-		}
-		count = f.length;
-		vbo = 0;
-		vbo = storeDataInAttributeList(0, 3, f);
-		GL30.glBindVertexArray(0);
+	/**
+	 * This draws only one line and will erase the old line drawn with this function.
+	 */
+	public void createStaticPoints(Vector3f[] points, float scale) {
+		this.point = points;
+		this.scale = scale;
 	}
 	
 	/**
 	 * renderers the last static line.
 	 */
 	public void render() {
-		if (vao == 0)
-			return;
+		timeSinceStart += 0.049230f/4;
 		this.start();
-		GL11.glPointSize(500);
-		GL30.glBindVertexArray(vao);
-		GL20.glEnableVertexAttribArray(0);
-		GL11.glDrawArrays(GL11.GL_POINTS, 0, count);
-		GL20.glDisableVertexAttribArray(0);
-		GL30.glBindVertexArray(0);
+		super.loadFloat(location_time, timeSinceStart);
+		if (point != null) {
+			GL30.glBindVertexArray(vao);
+			GL20.glEnableVertexAttribArray(0);
+			for (int i = 0; i < point.length; i++) {
+				if (point[i] == null)
+					continue;
+				this.loadTranslationMatrix(point[i]);
+				this.loadFloat(location_scale, scale);
+				GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, plane.length);
+			}
+			GL20.glDisableVertexAttribArray(0);
+			GL30.glBindVertexArray(0);
+		}
 		this.stop();
 	}
 	
@@ -118,8 +129,8 @@ public class PointShader extends ShaderProgram {
 		super.loadMatrix(location_projectionMatrix, projection);
 	}
 	
-	public void loadTranslationMatrix() {
-		super.loadMatrix(location_translationMatrix, Maths.createTransformationMatrix(new Vector3f(0,0,0), 0, 0, 0, 1));
+	public void loadTranslationMatrix(Vector3f pos) {
+		super.loadMatrix(location_translationMatrix, Maths.createTransformationMatrix(pos));
 	}
 	
 	public void loadViewMatrix(Camera camera){
