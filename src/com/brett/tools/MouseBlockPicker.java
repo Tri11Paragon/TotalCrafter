@@ -1,13 +1,12 @@
 package com.brett.tools;
 
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import com.brett.renderer.world.Chunk;
+import com.brett.world.Chunk;
 import com.brett.world.VoxelWorld;
 import com.brett.world.blocks.Block;
 import com.brett.world.cameras.Camera;
@@ -26,7 +25,7 @@ public class MouseBlockPicker {
 	
 	// amount of times the binary search can run
 	private static final int RECURSION_COUNT = 200;
-	private static final int RE_MNT = 200;
+	private static final int RE_MNT = 12;
 	private static final float RAY_RANGE = 6;
 
 	private Vector3f currentRay = new Vector3f();
@@ -101,25 +100,32 @@ public class MouseBlockPicker {
 		
 		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
 		Vector3f[] vf = new Vector3f[RE_MNT];
+		Vector3f[] vfi = new Vector3f[RE_MNT];
 		for (int i = 0; i < RE_MNT; i++) {
 			vf[i] = new Vector3f(walked.x + pos.x, walked.y + pos.y, walked.z + pos.z);
 			walked.x += xStep;
 			walked.y += yStep;
 			walked.z += zStep;
 			Vector3f posadj = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
+			vfi[i] = new Vector3f((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16);
 			Chunk c = getTerrain(posadj.x, posadj.z);
 			if (c == null)
 				continue;
 			Main.hitent.setPosition(posadj);
 			Main.ls.createStaticLine(pos, posadj);
-			Main.pt.createStaticPoints(vf, 0.5f);
-			int blockid = c.getBlock((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16);
+			System.out.println((int) (posadj.x) % 16 + " " + (int) posadj.y + " " +  (int) (posadj.z) % 16);
+			System.out.println((posadj.x) % 16 + " DD " + posadj.y + " DD " + (posadj.z) % 16);
+			int blockid = c.getBlock((posadj.x) % 16,posadj.y, (posadj.z) % 16);
 			if (blockid == 0)
 				continue;
 			Block.blocks.get(blockid).playBreakSound((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16);;
-			c.setBlock((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16, block);
+			c.setBlock((posadj.x) % 16, posadj.y,  (posadj.z) % 16, block);
 			c.remesh();
-			return;
+			// this is bad because this loops $RE_MNT amount of times
+			Main.pt.createStaticPoints(vf, 0.1f);
+			Main.pt.addStaticPoints(vf);
+			Main.pt.addStaticPoints(vfi);
+			
 		}
 	}
 

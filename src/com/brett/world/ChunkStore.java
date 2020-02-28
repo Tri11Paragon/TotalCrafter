@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.brett.renderer.Loader;
 import com.brett.renderer.shaders.VoxelShader;
-import com.brett.renderer.world.Chunk;
 import com.brett.world.cameras.Camera;
 
 /**
@@ -57,7 +56,7 @@ public class ChunkStore {
 						String line;
 						while((line = reader.readLine())!=null){
 							
-						}
+						}	
 						reader.close();
 					}catch(IOException e){
 						e.printStackTrace();

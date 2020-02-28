@@ -27,6 +27,7 @@ public class SettingsLoader {
 	private static final HashMap<Integer, String> comments = new HashMap<Integer, String>();
 	
 	public static int KEY_CONSOLE = Keyboard.KEY_GRAVE;
+	public static int KEY_CLEAR = Keyboard.KEY_F6;
 	
 	private static int readLines = 1;
 	public static void loadSettings() {
@@ -41,17 +42,18 @@ public class SettingsLoader {
 				}
 				String[] name = line.split(":");
 				name[0] = name[0].toLowerCase();
-				if (name[0].equals("fov")) {
+				if (name[0].equals("fov"))
 					MasterRenderer.FOV = Float.parseFloat(name[1]);
-				}
-				if (name[0].equals("fps")) {
+				if (name[0].equals("fps"))
 					DisplayManager.FPS_MAX = (int) Float.parseFloat(name[1]);
-				}
+				if (name[0].equals("key_console"))
+					KEY_CONSOLE = (int) Float.parseFloat(name[1]);
+				if (name[0].equals("key_clear"))
+					KEY_CLEAR = (int) Float.parseFloat(name[1]);
 			}
 			reader.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return;
+			saveSettings();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -64,7 +66,8 @@ public class SettingsLoader {
 			writer.write("");
 			writeLine(writer, "FOV: " + MasterRenderer.FOV);
 			writeLine(writer, "FPS: " + DisplayManager.FPS_MAX);
-			
+			writeLine(writer, "key_console: " + KEY_CONSOLE);
+			writeLine(writer, "key_clear: " + KEY_CLEAR);
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();

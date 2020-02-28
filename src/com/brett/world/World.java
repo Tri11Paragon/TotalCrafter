@@ -14,6 +14,7 @@ import com.brett.renderer.Fbo;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.WaterTile;
+import com.brett.renderer.illegal.RenderedPortal;
 import com.brett.renderer.lighting.Light;
 import com.brett.renderer.particles.ParticleMaster;
 import com.brett.renderer.postprocessing.PostProcessing;
@@ -47,18 +48,20 @@ public class World {
 	private Fbo brightOutputFbo;
 	private WaterFrameBuffers waterFBO;
 	
-	public World(MasterRenderer renderer, Loader loader) {
+	private RenderedPortal portal;
+	
+	public World(MasterRenderer renderer, Loader loader, Camera camera) {
 		this.renderer = renderer;
-		setup(loader);
+		setup(loader, camera);
 	}
 	
-	public World(MasterRenderer renderer, Loader loader, float waterHeight) {
+	public World(MasterRenderer renderer, Loader loader, Camera camera, float waterHeight) {
 		this.renderer = renderer;
 		this.waterHeight = waterHeight;
-		setup(loader);
+		setup(loader, camera);
 	}
 	
-	private void setup(Loader loader) {
+	private void setup(Loader loader, Camera camera) {
 		Block.registerBlocks(loader);
 		sentities = new HashMap<String, Entity>();
 		waterFBO = new WaterFrameBuffers();
@@ -67,6 +70,8 @@ public class World {
 		normalMapEntities = new ArrayList<Entity>();
 		lights = new ArrayList<Light>();
 		terrains = new TerrainArray();
+		portal = new RenderedPortal(loader, camera, renderer.getProjectionMatrix(), null, new Vector3f(0, 71, 0), 
+				new Vector3f(10, 71, 10), new Vector3f(0,0,0), new Vector3f(0,0,0), new Vector3f(10, 10, 1), new Vector3f(10, 10, 1));
 		//multisampleFbo = new Fbo(Display.getWidth(), Display.getHeight());
 		//outputFbo = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_TEXTURE);
 		//brightOutputFbo = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_TEXTURE);
@@ -92,6 +97,15 @@ public class World {
 		}*/
 		//renderer.renderShadowMap(ents, sun);
 		
+		portal.prepareRenderFrontFBO();
+		renderer.renderScene(ents, normalMapEntities, terrains.getAll(), lights, camera, new Vector4f(0, 0, 0, 0));
+		world.render(camera);
+		portal.unbindFrontFBO();
+		
+		portal.prepareRenderBackFBO();
+		renderer.renderScene(ents, normalMapEntities, terrains.getAll(), lights, camera, new Vector4f(0, 0, 0, 0));
+		world.render(camera);
+		portal.unbindBackFBO();
 		
 		/**
 		 * the multisample FBO allows for some neat pp effects.
@@ -102,6 +116,7 @@ public class World {
 		Main.ls.render();
 		Main.ls.renderIN(new Vector3f(0,70,0), new Vector3f(0,90,0));
 		Main.pt.render();
+		portal.render();
 		//waterRenderer.render(waterTiles, camera, sun);
 		ParticleMaster.renderParticles(camera);
 		//multisampleFbo.unbindFrameBuffer();
@@ -118,6 +133,7 @@ public class World {
 	}
 	
 	public void cleanup() {
+		portal.cleanup();
 		//multisampleFbo.cleanUp();
 		//outputFbo.cleanUp();
 		//brightOutputFbo.cleanUp();

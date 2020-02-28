@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -13,6 +14,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.tools.Maths;
+import com.brett.tools.SettingsLoader;
 import com.brett.world.cameras.Camera;
 
 /**
@@ -74,26 +76,62 @@ public class PointShader extends ShaderProgram {
 	}
 	
 	/**
+	 * Changes the scale of the points
+	 * @param scale
+	 */
+	public void changeScale(float scale) {
+		this.scale = scale;
+	}
+	
+	/**
+	 * Adds a point to the world
+	 * only can be cleared with the key set in settings
+	 * @param point to be added
+	 */
+	public void addStaticPoint(Vector3f point) {
+		this.points.add(point);
+	}
+	
+	/**
+	 * Adds a points to the world
+	 * only can be cleared with the key set in settings
+	 * @param points to be added
+	 */
+	public void addStaticPoints(Vector3f[] points) {
+		for (int i = 0; i < points.length; i++)
+			this.points.add(points[i]);
+	}
+	
+	/**
 	 * renderers the last static line.
 	 */
 	public void render() {
 		timeSinceStart += 0.049230f/4;
 		this.start();
 		super.loadFloat(location_time, timeSinceStart);
+		GL30.glBindVertexArray(vao);
+		GL20.glEnableVertexAttribArray(0);
 		if (point != null) {
-			GL30.glBindVertexArray(vao);
-			GL20.glEnableVertexAttribArray(0);
 			for (int i = 0; i < point.length; i++) {
 				if (point[i] == null)
 					continue;
 				this.loadTranslationMatrix(point[i]);
 				this.loadFloat(location_scale, scale);
-				GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, plane.length);
+				GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, plane.length/3);
 			}
-			GL20.glDisableVertexAttribArray(0);
-			GL30.glBindVertexArray(0);
 		}
+		for (Vector3f v : points){
+			if (v == null)
+				continue;
+			this.loadTranslationMatrix(v);
+			this.loadFloat(location_scale, scale);
+			GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, plane.length/3);
+		}
+		GL20.glDisableVertexAttribArray(0);
+		GL30.glBindVertexArray(0);
 		this.stop();
+		if(Keyboard.isKeyDown(SettingsLoader.KEY_CLEAR)) 
+			points.clear();
 	}
 	
 	private FloatBuffer storeDataInFloatBuffer(float[] data){

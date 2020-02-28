@@ -28,6 +28,16 @@ public class Maths {
 		return mtx;
 	}
 	
+	public static Matrix4f createTransformationMatrix(Vector3f translation, Vector3f rotation, Vector3f scale) {
+		mtx.setIdentity();
+		Matrix4f.translate(translation, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(rotation.x), Maths.rx, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(rotation.y), Maths.ry, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(rotation.z), Maths.rz, mtx, mtx);
+		Matrix4f.scale(scale, mtx, mtx);
+		return mtx;
+	}
+	
 	static Matrix4f mrx = new Matrix4f();
 	public static Matrix4f createTransformationMatrix(Vector3f translation, float scale) {
 		mrx.setIdentity();

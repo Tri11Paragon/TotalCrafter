@@ -33,6 +33,7 @@ public class MasterRenderer {
 	private static final float DENSITY = 0.004f;
 	private static final float GRADIANT = 2.5f;
 	public static final int DRAWMODE = GL11.GL_TRIANGLES;
+	public static Loader global_loader;
 	
 	public static final float RED = 0.5444f;
 	public static final float GREEN = 0.62f;
@@ -54,6 +55,7 @@ public class MasterRenderer {
 	private List<Terrain> terrains = new ArrayList<Terrain>();
 	
 	public MasterRenderer(Loader loader, Camera cam){
+		MasterRenderer.global_loader = loader;
 		enableCulling();
 		createProjectionMatrix();
 		shader = new StaticShader();

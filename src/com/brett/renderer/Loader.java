@@ -90,6 +90,15 @@ public class Loader {
 		
 	}
 	
+	public RawModel loadToVAO(float[] positions, int dimensions, float[] textureCoords) {
+		int vaoID = createVAO();
+		this.storeDataInAttributeList(0, dimensions, positions);
+		this.storeDataInAttributeList(1, 2, textureCoords);
+		unbindVAO();
+		return new RawModel(vaoID, positions.length/dimensions);
+		
+	}
+	
 	public int createEmptyVBO(int floatCount) {
 		int vbo = GL15.glGenBuffers();
 		vbos.add(vbo);

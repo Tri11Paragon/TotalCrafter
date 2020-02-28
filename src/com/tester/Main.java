@@ -47,6 +47,7 @@ public class Main {
 	public static AudioSource staticSource;
 	public static LineShader ls;
 	public static PointShader pt;
+	public static UIMaster ui;
 	
 	public static void main(String[] args) {
 		SettingsLoader.loadSettings();
@@ -74,9 +75,9 @@ public class Main {
 		pt.start();
 		pt.loadProjectionMatrix(renderer.getProjectionMatrix());
 		pt.stop();
-		UIMaster ui = new UIMaster(loader);
+		ui = new UIMaster(loader);
 		ui.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);
-		World world = new World(renderer, loader, -5);
+		World world = new World(renderer, loader, camera, -5);
 		TextMaster.init(loader);
 		ParticleMaster.init(loader, renderer.getProjectionMatrix());
 		HashMap<String, Entity> spawnableEnts = new HashMap<String, Entity>();
@@ -132,7 +133,7 @@ public class Main {
 		//spawnableEnts.put("weird", entity);
 		//spawnableEnts.put("w_lamp", ground_lamp);
 		console.registerCommand("spawn", new SpawnCommand(picker, world, loader));
-		Entity big_box = new Entity(box_model, new Vector3f(0, 80, 0), 0, 0, 0, 10);
+		Entity big_box = new Entity(box_model, new Vector3f(15, 80, 0), 0, 0, 0, 10);
 		hitent = new Entity(circleModel, new Vector3f(0, 0, 0), 0, 0, 0, 1);
 		outlineEnt = new Entity(new TexturedModel(circleModel.getRawModel(), circleModel.getTexture()), new Vector3f(0, 0, 0), 0, 0, 0, 1);
 		//ThirdPersonPlayer player = new ThirdPersonPlayer(TexturedModel.createTexturedModel(loader, "person", "playerTexture", 10, 1), new Vector3f(0, 0, -5), 0, 0, 0, 1);

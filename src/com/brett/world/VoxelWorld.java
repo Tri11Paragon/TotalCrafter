@@ -10,7 +10,6 @@ import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.SixBoolean;
 import com.brett.renderer.shaders.VoxelShader;
-import com.brett.renderer.world.Chunk;
 import com.brett.renderer.world.MeshStore;
 import com.brett.tools.MouseBlockPicker;
 import com.brett.world.cameras.Camera;

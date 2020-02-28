@@ -18,6 +18,7 @@ import org.lwjgl.opengl.GL30;
 /**
 *
 * @author Karl & Brett
+* (if its not commented its made by me)
 *
 */
 
@@ -103,7 +104,7 @@ public class Fbo {
 	}
 
 	/**
-	 * Binds the current FBO to be read from (not used in tutorial 43).
+	 * Binds the current FBO to be read from.
 	 */
 	public void bindToRead() {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);

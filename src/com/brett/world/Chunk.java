@@ -1,4 +1,4 @@
-package com.brett.renderer.world;
+package com.brett.world;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +12,8 @@ import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.SixBoolean;
 import com.brett.renderer.shaders.VoxelShader;
+import com.brett.renderer.world.MeshStore;
 import com.brett.tools.Maths;
-import com.brett.world.VoxelWorld;
 import com.brett.world.blocks.Block;
 
 /**
@@ -353,6 +353,32 @@ public class Chunk {
 		if (z < 0)
 			z *= -1;
 		return blocks[x][y][z];
+	}
+	
+	public int getBlock(float x, float y, float z) {
+		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
+			return 0;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
+		return blocks[(int)x][(int)y][(int)z];
+	}
+	
+	public void setBlock(float x, float y, float z, int block) {
+		if (x >= Chunk.x || z >= Chunk.z)
+			return;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
+		if (y > Chunk.y)
+			y = Chunk.y;
+		if (y < 0)
+			y = 0;
+		if (block == 0)
+			blocksModels[(int)x][(int)y][(int)z] = emptyBlock;
+		blocks[(int)x][(int)y][(int)z] = block;
 	}
 	
 	public Block getBlockE(int x, int y, int z) {
