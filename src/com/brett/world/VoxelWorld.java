@@ -66,17 +66,15 @@ public class VoxelWorld {
 	public void render(Camera camera) {
 		shader.start();
 		shader.loadViewMatrix(camera);
-		picker.update();
 		MasterRenderer.enableCulling();
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-
-		/*Iterator<Entry<Coord, Chunk>> ic = chunks.entrySet().iterator();
-		while (ic.hasNext()) {
-			Entry<Coord, Chunk> w = ic.next();
-			w.getValue().render(shader);
-		}*/
-		chunk.renderChunks(shader);
-		
+			GL13.glActiveTexture(GL13.GL_TEXTURE0);
+			chunk.renderChunks(shader);
+		MasterRenderer.disableCulling();
+		shader.stop();
+	}
+	
+	public void update() {
+		picker.update();
 		while (Mouse.next()){
 			if (Mouse.getEventButtonState()) {
 				if (Mouse.getEventButton() == 0) {
@@ -93,11 +91,6 @@ public class VoxelWorld {
 				}
 			}
 		}
-		
-		//System.gc();
-		
-		MasterRenderer.disableCulling();
-		shader.stop();
 	}
 	
 	public void resolveMeshes() {

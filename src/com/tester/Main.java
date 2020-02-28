@@ -156,7 +156,7 @@ public class Main {
 		//world.spawnEntity(entity);
 		//world.spawnEntity(ground_lamp);
 		//entities.add(player);texturename
-		world.spawnEntity(big_box);
+		//world.spawnEntity(big_box);
 		world.spawnEntity(hitent);
 		//world.spawnEntity(ent);
 		//world.spawnEntity(player);

@@ -35,7 +35,7 @@ public class RenderedShader extends ShaderProgram {
 	@Override
 	protected void bindAttributes() {
 		super.bindAttribute(0, "position");
-		//super.bindAttribute(1, "textureUVs");
+		super.bindAttribute(1, "textureCoord");
 	}
 
 	public void loadProjectionMatrix(Matrix4f projection){

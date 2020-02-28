@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
@@ -70,8 +72,8 @@ public class World {
 		normalMapEntities = new ArrayList<Entity>();
 		lights = new ArrayList<Light>();
 		terrains = new TerrainArray();
-		portal = new RenderedPortal(loader, camera, renderer.getProjectionMatrix(), null, new Vector3f(0, 71, 0), 
-				new Vector3f(10, 71, 10), new Vector3f(0,0,0), new Vector3f(0,0,0), new Vector3f(10, 10, 1), new Vector3f(10, 10, 1));
+		portal = new RenderedPortal(renderer.getProjectionMatrix(), null, new Vector3f(0, 0, 0), 
+				new Vector3f(10, 71, 10), new Vector3f(0,0,0), new Vector3f(0,0,0), new Vector3f(10, 10, 10), new Vector3f(10, 10, 10));
 		//multisampleFbo = new Fbo(Display.getWidth(), Display.getHeight());
 		//outputFbo = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_TEXTURE);
 		//brightOutputFbo = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_TEXTURE);
@@ -97,15 +99,17 @@ public class World {
 		}*/
 		//renderer.renderShadowMap(ents, sun);
 		
-		portal.prepareRenderFrontFBO();
+		portal.prepareRenderFrontFBO(camera);
 		renderer.renderScene(ents, normalMapEntities, terrains.getAll(), lights, camera, new Vector4f(0, 0, 0, 0));
 		world.render(camera);
-		portal.unbindFrontFBO();
+		portal.render(camera);
+		portal.unbindFrontFBO(camera);
 		
-		portal.prepareRenderBackFBO();
+		portal.prepareRenderBackFBO(camera);
 		renderer.renderScene(ents, normalMapEntities, terrains.getAll(), lights, camera, new Vector4f(0, 0, 0, 0));
 		world.render(camera);
-		portal.unbindBackFBO();
+		portal.render(camera);
+		portal.unbindBackFBO(camera);
 		
 		/**
 		 * the multisample FBO allows for some neat pp effects.
@@ -113,10 +117,11 @@ public class World {
 		//multisampleFbo.bindFrameBuffer();
 		renderer.renderScene(ents, normalMapEntities, terrains.getAll(), lights, camera, new Vector4f(0, 0, 0, 0));
 		world.render(camera);
+		world.update();
 		Main.ls.render();
 		Main.ls.renderIN(new Vector3f(0,70,0), new Vector3f(0,90,0));
 		Main.pt.render();
-		portal.render();
+		portal.render(camera);
 		//waterRenderer.render(waterTiles, camera, sun);
 		ParticleMaster.renderParticles(camera);
 		//multisampleFbo.unbindFrameBuffer();

@@ -1,6 +1,7 @@
 #version 150
 
 in vec3 position;
+in vec3 textureCoord;
 out vec2 textureCoords;
 
 uniform mat4 projectionMatrix;
