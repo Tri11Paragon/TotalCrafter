@@ -7,8 +7,15 @@
 package com.brett.renderer.shaders;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -17,13 +24,18 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.tools.Maths;
+import com.brett.tools.SettingsLoader;
 import com.brett.world.cameras.Camera;
 
 public class LineShader extends ShaderProgram {
 
-	private int vao = 0;
-	private int count = 0;
-	private int vbo = 0;
+	// TODO: make this a list
+	// this is not needed since the size is fixed due to there being only 2 points in our lines.
+	private Map<Integer, Integer> vaols = new HashMap<Integer, Integer>();
+	private List<Integer> vbols = new ArrayList<Integer>();
+	private int vao;
+	private int vbo;
+	private int count;
 	
 	private static final String VERTEX_FILE = "lineVertexShader.txt";
 	private static final String FRAGMENT_FILE = "lineFragmentShader.txt";
@@ -61,6 +73,18 @@ public class LineShader extends ShaderProgram {
 		this.stop();
 	}
 	
+	public void addLine(Vector3f pos1, Vector3f pos2) {
+		int vao = 0;
+		vao = GL30.glGenVertexArrays();
+		GL30.glBindVertexArray(vao);
+		float[] f = {pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z};
+		vaols.put(vao, f.length);
+		int vbo = 0;
+		vbo = storeDataInAttributeList(0, 3, f);
+		vbols.add(vbo);
+		GL30.glBindVertexArray(0);
+	}
+	
 	public void createStaticLine(Vector3f pos1, Vector3f pos2) {
 		if (vao != 0)
 			GL30.glDeleteVertexArrays(vao);
@@ -77,9 +101,22 @@ public class LineShader extends ShaderProgram {
 	}
 	
 	/**
-	 * renderers the last static line.
+	 * renderers the lines
 	 */
 	public void render() {
+		Iterator<Entry<Integer, Integer>> is = vaols.entrySet().iterator();
+		while (is.hasNext()) {
+			this.start();
+			Entry<Integer, Integer> nxt = is.next();
+			GL30.glBindVertexArray(nxt.getKey());
+			GL20.glEnableVertexAttribArray(0);
+			GL11.glDrawArrays(GL11.GL_LINES, 0, nxt.getValue());
+			GL20.glDisableVertexAttribArray(0);
+			GL30.glBindVertexArray(0);
+			this.stop();
+		}
+		if(Keyboard.isKeyDown(SettingsLoader.KEY_CLEAR)) 
+			clearLines();
 		if (vao == 0)
 			return;
 		this.start();
@@ -108,11 +145,26 @@ public class LineShader extends ShaderProgram {
 		return vboID;
 	}
 	
+	public void clearLines() {
+		for (Integer i : vbols)
+			GL15.glDeleteBuffers(i);
+		Iterator<Entry<Integer, Integer>> is = vaols.entrySet().iterator();
+		while (is.hasNext())
+			GL30.glDeleteVertexArrays(is.next().getKey());
+		vbols.clear();
+		vaols.clear();
+	}
+	
 	@Override
 	public void cleanUp() {
 		super.cleanUp();
 		GL30.glDeleteVertexArrays(vao);
 		GL15.glDeleteBuffers(vbo);
+		for (Integer i : vbols)
+			GL15.glDeleteBuffers(i);
+		Iterator<Entry<Integer, Integer>> is = vaols.entrySet().iterator();
+		while (is.hasNext())
+			GL30.glDeleteVertexArrays(is.next().getKey());
 	}
 	
 	@Override

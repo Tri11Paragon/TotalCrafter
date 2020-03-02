@@ -7,6 +7,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.renderer.Loader;
@@ -101,7 +103,33 @@ public class GUIRenderer {
 			GL13.glActiveTexture(GL13.GL_TEXTURE2);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex3);
 		}
-		shader.loadTransformation(Maths.createTransformationMatrix(SWIDTH, SHEIGHT, x, y, width, height));
+		shader.loadTransformation(Maths.createTransformationMatrix(calcVec(x, y), calcVec(width, height)));
+		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
+	}
+	
+	/**
+	 * !!IMPORTANT!!
+	 * startrender() needs to be called before and stoprender() needs to be called after
+	 * note this can be after all rendering of dynamic gui is done.
+	 */
+	public void render(int texture, float x, float y, float width, float height) {
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
+		shader.loadTransformation(Maths.createTransformationMatrix(calcVec(x + width/2, y + height/2), calcVec(width/2, height/2)));
+		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
+	}
+	
+	/**
+	 * !!IMPORTANT!!
+	 * startrender() needs to be called before and stoprender() needs to be called after
+	 * note this can be after all rendering of dynamic gui is done.
+	 * 
+	 * Note: renderer renders middle out.
+	 */
+	public void render(int texture, Matrix4f translationMatrix) {
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
+		shader.loadTransformation(translationMatrix);
 		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
 	}
 	
@@ -112,6 +140,10 @@ public class GUIRenderer {
 		GL30.glBindVertexArray(0);
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		shader.stop();
+	}
+	
+	public Vector2f calcVec(float x, float y) {
+		return new Vector2f(x / SWIDTH, y / SHEIGHT);
 	}
 	
 	public void cleanup() {

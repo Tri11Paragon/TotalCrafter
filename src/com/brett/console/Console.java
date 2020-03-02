@@ -9,6 +9,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 
 import com.brett.console.commands.ClearCommand;
+import com.brett.console.commands.TeleportCommand;
 import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.GUITexture;
 import com.brett.renderer.font.FontType;
@@ -30,7 +31,6 @@ public class Console {
 	public static String lineStart = ">";
 	public static float fontSize = 0.8f;
 	
-	private List<UIElement> textures = new ArrayList<UIElement>();
 	private List<GUIDynamicText> texts = new ArrayList<GUIDynamicText>(); 
 	private HashMap<String, Command> commands = new HashMap<String, Command>();
 	
@@ -48,12 +48,11 @@ public class Console {
 		this.darkgrey = loader.loadTexture("darkgrey");
 		this.lightgrey = loader.loadTexture("lightgrey");
 		this.renderer = renderer;
-		this.textures.add(new GUITexture(grey, new Vector2f(-1f + 0.01f, -0.8f - 0.035f), new Vector2f(0.9f, 1.80f)));
-		this.textures.add(new GUITexture(darkgrey, new Vector2f(-1f + 0.01f, 1f - 0.035f), new Vector2f(0.9f, 0.02f)));
-		this.textures.add(new GUITexture(lightgrey, new Vector2f(-1f + 0.01f, -0.8f - 0.035f), new Vector2f(0.9f, 0.05f)));
 		texts.add(new GUIDynamicText(inputTextBuffer, fontSize, font, new Vector2f(0.007f,0.9f - 0.005f), 0.45f, false, 1));
 		texts.add(new GUIDynamicText(textBuffer, fontSize, font, new Vector2f(0.007f, 0.020f), 0.45f, false));
 		this.registerCommand("clear", new ClearCommand(this));
+		String[] tele = {"teleport", "tp"};
+		this.registerCommand(tele, new TeleportCommand());
 	}
 	
 	public void update() {
@@ -93,12 +92,21 @@ public class Console {
 				}
 			}
 		}
-		if (isOpen)
-			renderer.render(textures);
+		if (isOpen) {
+			renderer.startrender();
+			renderer.render(grey, 5, 10, 400, 700);
+			renderer.stoprender();
+		}
 	}
 	
 	public void registerCommand(String name, Command command) {
 		this.commands.put(name, command);
+	}
+	
+	public void registerCommand(String[] alias, Command command) {
+		for (int i = 0; i < alias.length; i++) {
+			this.commands.put(alias[i], command);
+		}
 	}
 	
 	private void enterCommand() {
@@ -124,10 +132,6 @@ public class Console {
 	
 	public void setIsOpen(boolean b) {
 		this.isOpen = b;
-	}
-	
-	public List<UIElement> getTextures(){
-		return textures;
 	}
 	
 	public List<GUIDynamicText> getTexts(){
