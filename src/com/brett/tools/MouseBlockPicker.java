@@ -113,8 +113,8 @@ public class MouseBlockPicker {
 				continue;
 			Main.hitent.setPosition(posadj);
 			Main.ls.createStaticLine(pos, posadj);
-			System.out.println((int) (posadj.x) % 16 + " " + (int) posadj.y + " " +  (int) (posadj.z) % 16);
-			System.out.println((posadj.x) % 16 + " DD " + posadj.y + " DD " + (posadj.z) % 16);
+			//System.out.println((int) (posadj.x) % 16 + " " + (int) posadj.y + " " +  (int) (posadj.z) % 16);
+			//System.out.println((posadj.x) % 16 + " DD " + posadj.y + " DD " + (posadj.z) % 16);
 			int blockid = c.getBlock((posadj.x) % 16,posadj.y, (posadj.z) % 16);
 			if (blockid == 0)
 				continue;
@@ -125,7 +125,7 @@ public class MouseBlockPicker {
 			Main.pt.createStaticPoints(vf, 0.1f);
 			Main.pt.addStaticPoints(vf);
 			Main.pt.addStaticPoints(vfi);
-			
+			return;
 		}
 	}
 
@@ -220,7 +220,8 @@ public class MouseBlockPicker {
 	}
 
 	private Chunk getTerrain(float worldX, float worldZ) {
-		return world.chunk.getChunk((int) (worldX/Chunk.x), (int) (worldZ/Chunk.z));
+		System.out.println(worldX+" // " + Math.round(worldX/(float)Chunk.x) + " - " + worldZ + " // " + Math.round(worldZ/(float)Chunk.z));
+		return world.chunk.getChunk(Math.round(worldX/(float)Chunk.x), Math.round(worldZ/(float)Chunk.z));
 	}
 	
 	private Vector3f biasVector(Vector3f v, float x) {

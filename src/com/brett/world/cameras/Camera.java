@@ -24,6 +24,24 @@ public class Camera {
 	public void setPosition(Vector3f position) {
 		this.position = position;
 	}
+	
+	public void setPitch(float pitch) {
+		this.pitch = pitch;
+	}
+
+	public void setYaw(float yaw) {
+		this.yaw = yaw;
+	}
+	
+	public void setYawPitchRoll(float yaw, float pitch, float roll) {
+		this.yaw = yaw;
+		this.pitch = pitch;
+		this.roll = roll;
+	}
+
+	public void setRoll(float roll) {
+		this.roll = roll;
+	}
 
 	public float getPitch() {
 		return pitch;

@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.map.MultiKeyMap;
+
 import com.brett.renderer.Loader;
 import com.brett.renderer.shaders.VoxelShader;
 import com.brett.world.cameras.Camera;
@@ -24,10 +26,9 @@ public class ChunkStore {
 	public static File wfolder = new File(worldLocation);
 	public static File[] wfiles = wfolder.listFiles();
 	
-	private Chunk[][] chunkspp = new Chunk[500][500];
-	private Chunk[][] chunksnn = new Chunk[500][500];
-	private Chunk[][] chunksnp = new Chunk[500][500];
-	private Chunk[][] chunkspn = new Chunk[500][500];
+	// actually the best way of storing chunk data.
+	// however will need to add a way of moving between active and non active chunks.
+	private MultiKeyMap<Integer, Chunk> chunks = new MultiKeyMap<Integer, Chunk>();
 	
 	@SuppressWarnings("unused")
 	private List<Chunk> activeChunks = new ArrayList<Chunk>();
@@ -36,7 +37,6 @@ public class ChunkStore {
 	private Loader loader;
 	
 	public ChunkStore(Camera cam, Loader loader) {
-		System.out.println("LN "+chunkspp.length);
 		this.cam = cam;
 		this.loader = loader;
 		new Thread(new Runnable() {
@@ -48,6 +48,9 @@ public class ChunkStore {
 	}
 	
 	public Chunk generateChunk(int x, int z) {
+		// add the world gen...
+		if(wfiles == null)
+			return new Chunk(loader, x, z);
 		for (int i = 0; i < wfiles.length; i++) {
 			if (wfiles[i].isFile()) {
 				if (wfiles[i].getName().compareTo("c-"+ x + "-" + z) == 0) {
@@ -75,33 +78,21 @@ public class ChunkStore {
 				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
 				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
 				Chunk c = getChunk(cx, cz);
-				if (c == null)
-					continue;
+				if (c == null) {
+					c = generateChunk(cx, cz);
+					setChunk(c, cx, cz);
+				}
 				c.render(shader);
 			}
 		}
 	}
 	
 	public void setChunk(Chunk c, int x, int z) {
-		if (x < 0 && z < 0)
-			chunksnn[(x*-1)-1][(z*-1) - 1] = c;
-		else if (x < 0 && z >= 0) 
-			chunksnp[(x*-1)-1][z] = c;
-		else if (z < 0 && x >= 0)
-			chunkspn[x][(z*-1) - 1] = c;
-		else 
-			chunkspp[x][z] = c;
+		chunks.put(x, z, c);
 	}
 	
 	public Chunk getChunk(int x, int z) {
-		if (x < 0 && z < 0)
-			return chunksnn[(x*-1)-1][(z*-1) - 1];
-		else if (x < 0 && z >= 0) 
-			return chunksnp[(x*-1)-1][z];
-		else if (z < 0 && x >= 0)
-			return chunkspn[x][(z*-1) - 1];
-		else 
-			return chunkspp[x][z];
+		return chunks.get(x,z);
 	}
 	
 	/**

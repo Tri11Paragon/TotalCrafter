@@ -16,6 +16,7 @@ import com.brett.renderer.Fbo;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.shaders.RenderedShader;
+import com.brett.tools.Maths;
 import com.brett.world.cameras.Camera;
 import com.tester.Main;
 
@@ -23,12 +24,18 @@ import com.tester.Main;
 *
 * @author brett
 * @date Feb. 27, 2020
+* 
+* This is currently put on hold.
+* 
 */
 
 public class RenderedPortal {
 	
 	private Vector3f temp;
 	private Vector3f temp2;
+	private float yaw;
+	private float pitch;
+	private float roll;
 	
 	private Vector3f inrotation;
 	private Vector3f outrotation;
@@ -39,6 +46,7 @@ public class RenderedPortal {
 	private Fbo front;
 	private Fbo back;
 	private RenderedShader shader;
+	private Camera camera;
 	
 	private int vao;
 	private int vbo;
@@ -54,7 +62,7 @@ public class RenderedPortal {
 	 * @param inpos 
 	 * @param outpos 
 	 */
-	public RenderedPortal(Matrix4f perspective, RawModel model, Vector3f inpos, Vector3f outpos,  
+	public RenderedPortal(Camera camera, Matrix4f perspective, RawModel model, Vector3f inpos, Vector3f outpos,  
 			Vector3f inrotation, Vector3f outrotation, Vector3f inscale, Vector3f outscale) {
 		shader = new RenderedShader();
 		shader.start();
@@ -67,6 +75,7 @@ public class RenderedPortal {
 		GL30.glBindVertexArray(0);
 		temp = new Vector3f(0.0f,0.0f,0.0f);
 		temp2 = new Vector3f(0.0f,0.0f,0.0f);
+		this.camera = camera;
 		this.inrotation = inrotation;
 		this.outrotation = outrotation;
 		this.inscale = inscale;
@@ -75,42 +84,52 @@ public class RenderedPortal {
 		this.outpos = outpos;
 		this.front = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_RENDER_BUFFER);
 		this.back = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_RENDER_BUFFER);
-		Main.ui.addUITexture(front.getColourTexture(), -1, -1, 0, 0, 500, 500);
 	}
 	
-	public void prepareRenderFrontFBO(Camera camera) {
+	public Vector3f prepareRenderFrontFBO() {
 		temp = protectVectors(camera.getPosition());
 		front.bindFrameBuffer();
-		camera.getPosition().x = (outpos.x);
-		camera.getPosition().y = (outpos.y);
-		camera.getPosition().z = (outpos.z);
+		Vector3f cameraYawHyp = Maths.distance(temp, inpos);
+		Vector3f.add(outpos, cameraYawHyp, camera.getPosition());
+		yaw=camera.getYaw();
+		pitch=camera.getPitch();
+		roll=camera.getRoll();
+		float angle = (float) Math.toDegrees(Math.atan(cameraYawHyp.x / cameraYawHyp.z));
+		if (angle < 0)
+			angle = 360 - (1-angle);
+		camera.setYawPitchRoll(outrotation.y - angle, outrotation.x, outrotation.z);
+		return camera.getPosition();
 	}
 	
-	public void unbindFrontFBO(Camera camera) {
+	public void unbindFrontFBO() {
 		front.unbindFrameBuffer();
 		//camera.setPosition(temp);
-		camera.getPosition().x = (temp.x);
-		camera.getPosition().y = (temp.y);
-		camera.getPosition().z = (temp.z);
+		camera.setPosition(temp);
+		camera.setYawPitchRoll(yaw, pitch, roll);
 	}
 	
-	public void prepareRenderBackFBO(Camera camera) {
+	public Vector3f prepareRenderBackFBO() {
 		back.bindFrameBuffer();
 		temp2 = protectVectors(camera.getPosition());
-		camera.getPosition().x = (inpos.x);
-		camera.getPosition().y = (inpos.y);
-		camera.getPosition().z = (inpos.z);
+		Vector3f cameraYawHyp = Maths.distance(temp2, outpos);
+		Vector3f.add(inpos, cameraYawHyp, camera.getPosition());
+		yaw=camera.getYaw();
+		pitch=camera.getPitch();
+		roll=camera.getRoll();
+		float angle = (float) Math.toDegrees(Math.atan(cameraYawHyp.x / cameraYawHyp.z));
+		if (angle < 0)
+			angle = 360 - (1-angle);
+		camera.setYawPitchRoll(inrotation.y - angle, inrotation.x, inrotation.z);
+		return camera.getPosition();
 	}
 	
-	public void unbindBackFBO(Camera camera) {
+	public void unbindBackFBO() {
 		back.unbindFrameBuffer();
-		//camera.setPosition(temp2);
-		camera.getPosition().x = (temp2.x);
-		camera.getPosition().y = (temp2.y);
-		camera.getPosition().z = (temp2.z);
+		camera.setPosition(temp2);
+		camera.setYawPitchRoll(yaw, pitch, roll);
 	}
 	
-	public void render(Camera camera) {
+	public void render() {
 		this.shader.start();
 		this.shader.loadViewMatrix(camera);
 		MasterRenderer.disableCulling();
@@ -120,12 +139,12 @@ public class RenderedPortal {
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		this.shader.loadTranslationMatrix(inpos, inrotation, inscale);
-		//GL11.glBindTexture(GL11.GL_TEXTURE_2D, front.getColourTexture());
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, front.getColourTexture());
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, planePoints.length/3);
 		
-		//this.shader.loadTranslationMatrix(outpos, outrotation, outscale);
-		//GL11.glBindTexture(GL11.GL_TEXTURE_2D, back.getColourTexture());
-		//GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, planePoints.length/3);
+		this.shader.loadTranslationMatrix(outpos, outrotation, outscale);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, back.getColourTexture());
+		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, planePoints.length/3);
 		
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
@@ -152,7 +171,7 @@ public class RenderedPortal {
 	
 	private float[] planeUVs = {
 			0, 1,
-			1, 1,
+			0, 0,
 			1, 0,
 			0, 1,
 			1, 0,

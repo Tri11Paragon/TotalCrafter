@@ -190,12 +190,10 @@ public class Maths {
 	    return new Vector3f(x, y, z);
 	}
 	public static Vector3f distance(Vector3f point1, Vector3f point2) {
-		Vector3f vec = new Vector3f(point1.x - point2.x, point1.y - point2.y, point1.z - point2.z);
-		return vec;
+		return new Vector3f(point1.x - point2.x, point1.y - point2.y, point1.z - point2.z);
 	}
 	public static Vector3f distanceABS(Vector3f point1, Vector3f point2) {
-		Vector3f vec = new Vector3f(Math.abs(point1.x - point2.x), Math.abs(point1.y - point2.y), Math.abs(point1.z - point2.z));
-		return vec;
+		return new Vector3f(Math.abs(point1.x - point2.x), Math.abs(point1.y - point2.y), Math.abs(point1.z - point2.z));
 	}
 	
 	public static Vector3f decodeRGB255(int r, int g, int b) {
