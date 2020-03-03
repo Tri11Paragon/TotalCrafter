@@ -2,7 +2,6 @@ package com.tester;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import java.util.HashMap;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.openal.AL10;
@@ -20,6 +19,7 @@ import com.brett.renderer.datatypes.WaterTile;
 import com.brett.renderer.font.FontType;
 import com.brett.renderer.font.fontRendering.TextMaster;
 import com.brett.renderer.gui.UIMaster;
+import com.brett.renderer.gui.screens.LoadingScreen;
 import com.brett.renderer.lighting.Light;
 import com.brett.renderer.particles.ParticleMaster;
 import com.brett.renderer.postprocessing.PostProcessing;
@@ -47,11 +47,12 @@ public class Main {
 	public static AudioSource staticSource;
 	public static LineShader ls;
 	public static PointShader pt;
+	public static LoadingScreen loadingScreen;
 	public static UIMaster ui;
 	
 	public static void main(String[] args) {
 		SettingsLoader.loadSettings();
-		DisplayManager.createDisplay("Icon", false);
+		DisplayManager.createDisplay(false);
 		// audio stuff
 		AudioController.init();
 		AudioController.setListenerData(0, 0, 0);
@@ -64,7 +65,7 @@ public class Main {
 		CreativeFirstPersonCamera camera = new CreativeFirstPersonCamera(new Vector3f(0, 72, 0));
 		ls = new LineShader();
 		pt = new PointShader();
-		TexturedModel box_model = new TexturedModel(loader.loadToVAO(OBJLoader.loadOBJ("box")), new ModelTexture(loader.loadTexture("box")));
+		//TexturedModel box_model = new TexturedModel(loader.loadToVAO(OBJLoader.loadOBJ("box")), new ModelTexture(loader.loadTexture("box")));
 		TexturedModel circleModel = new TexturedModel(loader.loadToVAO(OBJLoader.loadOBJ("hitmodel")), new ModelTexture(loader.loadTexture("error")));
 		//FirstPersonPlayer player = new FirstPersonPlayer(box_model, new Vector3f(0, 0, 0), new Vector3f(0, 2, 0), 0, 0, 0, 1);
 		//Camera camera = player.getCamera();
@@ -76,11 +77,12 @@ public class Main {
 		pt.loadProjectionMatrix(renderer.getProjectionMatrix());
 		pt.stop();
 		ui = new UIMaster(loader);
+		loadingScreen = new LoadingScreen(loader, ui.getRenderer(), 100);
+		loadingScreen.render(5);
 		ui.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);
 		World world = new World(renderer, loader, camera, -5);
 		TextMaster.init(loader);
 		ParticleMaster.init(loader, renderer.getProjectionMatrix());
-		HashMap<String, Entity> spawnableEnts = new HashMap<String, Entity>();
 		
 		// TERRAIN TEXTURES
 		//TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
@@ -105,6 +107,7 @@ public class Main {
 		// FONT
 		FontType monospaced = new FontType(loader.loadTexture("fonts/monospaced-72", 0), new File("resources/textures/fonts/monospaced-72.fnt"));
 		Console console = new Console(loader, monospaced, ui.getRenderer());
+		loadingScreen.render(5);
 		//new GUIText("Hello" + '\n' + "There!", 3, monospaced, new Vector2f(0, 0), 0.5f, false, 0);
 		
 		// ENTITY MODELS
@@ -133,11 +136,12 @@ public class Main {
 		//spawnableEnts.put("weird", entity);
 		//spawnableEnts.put("w_lamp", ground_lamp);
 		console.registerCommand("spawn", new SpawnCommand(picker, world, loader));
-		Entity big_box = new Entity(box_model, new Vector3f(15, 80, 0), 0, 0, 0, 10);
+		//Entity big_box = new Entity(box_model, new Vector3f(15, 80, 0), 0, 0, 0, 10);
 		hitent = new Entity(circleModel, new Vector3f(0, 0, 0), 0, 0, 0, 1);
 		outlineEnt = new Entity(new TexturedModel(circleModel.getRawModel(), circleModel.getTexture()), new Vector3f(0, 0, 0), 0, 0, 0, 1);
 		//ThirdPersonPlayer player = new ThirdPersonPlayer(TexturedModel.createTexturedModel(loader, "person", "playerTexture", 10, 1), new Vector3f(0, 0, -5), 0, 0, 0, 1);
 		//ThirdPersonCamera rdCamera = new ThirdPersonCamera(player, 10, 80, 8);
+		loadingScreen.render(5);
 		
 		//TexturedModel cobblestone_floor_02 = new TexturedModel(NormalMappedObjLoader.loadOBJ("plane", loader), new ModelTexture(loader.loadTexture("terrain/diffuses/cobblestone_floor_02_diff_2k"), loader.loadTexture("terrain/normalmaps/cobblestone_floor_02_nor_2k"), 20.0f, 0.5f));
 		
@@ -168,7 +172,7 @@ public class Main {
 		world.add(tile);
 		WaterTile tile2 = new WaterTile(-150, -5, -150, 125);
 		world.add(tile2);
-		
+		loadingScreen.render(5);
 		/*ParticleTexture tempTexture = new ParticleTexture(loader.loadTexture("particles/particleAtlas"), 4).useAdditiveBlending();
 		ParticleTexture fireTexture = new ParticleTexture(loader.loadTexture("particles/fire"), 8);
 		ParticleTexture smokeTexture = new ParticleTexture(loader.loadTexture("particles/smoke"), 8);
@@ -197,6 +201,7 @@ public class Main {
 		//client.sendData("test".getBytes());
 		
 		VoxelWorld vworld = new VoxelWorld(renderer, loader, camera);
+		loadingScreen.render(5);
 		
 		Mouse.setGrabbed(false);
 		
@@ -253,7 +258,7 @@ public class Main {
 		staticSource.delete();
 		AudioController.cleanup();
 		PostProcessing.cleanUp();
-		world.cleanup();
+		vworld.cleanup();
 		ui.cleanup();
 		TextMaster.cleanUp();
 		ParticleMaster.cleanUp();

@@ -18,6 +18,6 @@ public abstract class Command {
 	 * @data the whole text entered into the text bar.
 	 * @return command response
 	 */
-	public abstract String run(String data);
+	public abstract String run(String data, String[] vars);
 	
 }

@@ -3,8 +3,6 @@ package com.brett.renderer.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.util.vector.Vector3f;
-
 import com.brett.renderer.Loader;
 
 /**

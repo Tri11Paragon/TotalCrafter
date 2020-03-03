@@ -22,7 +22,7 @@ public class DisplayManager {
 	private static long lastFrameTime;
 	private static float delta;
 	
-	public static void createDisplay(String icon, boolean isUsingFBOs) {
+	public static void createDisplay(boolean isUsingFBOs) {
 		
 		ContextAttribs attribs = new ContextAttribs(3, 3).withForwardCompatible(true).withProfileCore(true);
 		

@@ -29,7 +29,7 @@ public class Chunk {
 	public static int y = 128;
 	public static int z = 16;
 	
-	private int[][][] blocks = new int[x][y][z];
+	private short[][][] blocks = new short[x][y][z];
 	private RawModel[][][] blocksModels = new RawModel[x][y][z];
 	List<Block> bls = new ArrayList<Block>();
 	private int xoff,zoff;
@@ -78,7 +78,7 @@ public class Chunk {
 		}).start();
 	}
 	
-	public Chunk(Loader loader, int[][][] blocks, int xoff, int zoff) {
+	public Chunk(Loader loader, short[][][] blocks, int xoff, int zoff) {
 		this.xoff = xoff;
 		this.zoff = zoff;
 		Chunk.fullBlock = loader.loadToVAO(MeshStore.verts, MeshStore.uv, MeshStore.indicies);
@@ -97,7 +97,6 @@ public class Chunk {
 		new Thread(new Runnable() {		
 			@Override
 			public void run() {
-				System.out.println("Mesher Thread Start");
 				for (int i =0; i < x; i++) {
 					for (int j = 0; j < y; j++) {
 						for (int k = 0; k < z; k++) {
@@ -105,7 +104,6 @@ public class Chunk {
 						}
 					}
 				}
-				System.out.println("Mesher Thread Dead");
 			}
 		}).start();
 	}
@@ -320,7 +318,7 @@ public class Chunk {
 						continue;
 					
 					// make this based on texture id?
-					ModelTexture model = Block.blocks.get(blocks[i][j][k]).model;
+					ModelTexture model = Block.blocks.get((int)blocks[i][j][k]).model;
 					RawModel rawModel = blocksModels[i][j][k];
 					
 					if (rawModel == null)
@@ -378,7 +376,7 @@ public class Chunk {
 			y = 0;
 		if (block == 0)
 			blocksModels[(int)x][(int)y][(int)z] = emptyBlock;
-		blocks[(int)x][(int)y][(int)z] = block;
+		blocks[(int)x][(int)y][(int)z] = (short)block;
 	}
 	
 	public Block getBlockE(int x, int y, int z) {
@@ -420,8 +418,16 @@ public class Chunk {
 		return 0;
 	}
 	
-	public int[][][] getBlocks(){
+	public short[][][] getBlocks(){
 		return blocks;
+	}
+	
+	public int getX() {
+		return xoff;
+	}
+	
+	public int getZ() {
+		return zoff;
 	}
 	
 	public void setBlock(int x, int y, int z, int block) {
@@ -437,7 +443,7 @@ public class Chunk {
 			y = 0;
 		if (block == 0)
 			blocksModels[x][y][z] = emptyBlock;
-		blocks[x][y][z] = block;
+		blocks[x][y][z] = (short)block;
 	}
 	
 	// locking prevents race conditions!

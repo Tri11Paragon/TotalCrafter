@@ -10,8 +10,9 @@ import com.brett.console.Command;
 public class TeleportCommand extends Command {
 
 	@Override
-	public String run(String data) {
-		
+	public String run(String data, String[] vars) {
+		if (vars.length < 3)
+			return "Please enter";
 		return "";
 	}
 	

@@ -39,7 +39,7 @@ import com.brett.world.entities.Entity;
 public class BlinnPhongTest {
 
 	public static void main(String[] args) {
-		DisplayManager.createDisplay("icon", false);
+		DisplayManager.createDisplay(false);
 		SettingsLoader.loadSettings();
 		
 		// MAIN STUFF (REQUIRED FOR GAME TO RUN)

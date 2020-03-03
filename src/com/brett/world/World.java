@@ -122,6 +122,7 @@ public class World {
 		world.update();
 		Main.ls.render();
 		Main.ls.renderIN(new Vector3f(0,70,0), new Vector3f(0,90,0));
+		Main.ls.renderIN(new Vector3f(0,70,0), new Vector3f(10,90,10));
 		Main.pt.render();
 		//portal.render();
 		//waterRenderer.render(waterTiles, camera, sun);

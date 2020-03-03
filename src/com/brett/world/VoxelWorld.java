@@ -1,7 +1,6 @@
 package com.brett.world;
 
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -38,11 +37,12 @@ public class VoxelWorld {
 		resolveMeshes();
 		chunk = new ChunkStore(cam, loader);
 		
-		for (int i = 0; i < 10; i++) {
+		/*for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
+				Main.loadingScreen.render(1);
 				chunk.setChunk(new Chunk(loader, i, j), i, j);
 			}
-		}
+		}*/
 		
 		// reduces ram at cost of CPU
 		// not much anymore but at a time
@@ -168,6 +168,7 @@ public class VoxelWorld {
 	}
 	
 	public void cleanup() {
+		chunk.cleanup();
 		shader.cleanUp();
 	}
 	

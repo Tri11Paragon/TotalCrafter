@@ -113,8 +113,12 @@ public class Console {
 		String body = "COMMAND NOT FOUND";
 		String term = inputTextBuffer.toLowerCase().substring(1, inputTextBuffer.length()).split(" ")[0];
 		textBuffer += inputTextBuffer + '\n';
+		String[] vars = {};
+		try {
+			vars = inputTextBuffer.substring(term.length()+2, inputTextBuffer.length()).split(" ");
+		} catch (Exception e) {}
 		if (commands.get(term) != null)
-			body = commands.get(term).run(inputTextBuffer.substring(1, inputTextBuffer.length()));
+			body = commands.get(term).run(inputTextBuffer.substring(1, inputTextBuffer.length()), vars);
 		textBuffer += body + '\n';
 		inputTextBuffer = lineStart;
 		// don't even.

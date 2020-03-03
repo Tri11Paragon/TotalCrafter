@@ -5,7 +5,9 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
@@ -33,6 +35,7 @@ public class Loader {
 	private List<Integer> vaos = new ArrayList<Integer>();
 	private List<Integer> vbos = new ArrayList<Integer>();
 	private List<Integer> textures = new ArrayList<Integer>();
+	public Map<String, Integer> textureMap = new HashMap<String, Integer>();
 	
 	public RawModel loadToVAO(float[] positions,float[] textureCoords,float[] normals,int[] indices){
 		int vaoID = createVAO();
@@ -141,6 +144,8 @@ public class Loader {
 	
 	public int loadTexture(String filename, float bias) {
 		Texture texture = null;
+		if (textureMap.containsKey(filename))
+			return textureMap.get(filename);
 		try {
 			texture = TextureLoader.getTexture("PNG",
 					new FileInputStream("resources/textures/" + filename + ".png"), GL11.GL_NEAREST);
@@ -177,6 +182,7 @@ public class Loader {
 		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 		
 		textures.add(texture.getTextureID());
+		textureMap.put(filename, texture.getTextureID());
 		return texture.getTextureID();
 	}
 	

@@ -11,7 +11,7 @@ public class ClearCommand extends Command {
 	}
 	
 	@Override
-	public String run(String data) {
+	public String run(String data, String[] vars) {
 		c.clear();
 		return "";
 	}

@@ -107,6 +107,10 @@ public class MouseBlockPicker {
 			walked.y += yStep;
 			walked.z += zStep;
 			Vector3f posadj = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
+			if (posadj.x < 0)
+				posadj.x = biasNegative(posadj.x, -Chunk.x);
+			if (posadj.z < 0)
+				posadj.z = biasNegative(posadj.z, -Chunk.z);
 			vfi[i] = new Vector3f((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16);
 			Chunk c = getTerrain(posadj.x, posadj.z);
 			if (c == null)
@@ -115,16 +119,13 @@ public class MouseBlockPicker {
 			Main.ls.createStaticLine(pos, posadj);
 			//System.out.println((int) (posadj.x) % 16 + " " + (int) posadj.y + " " +  (int) (posadj.z) % 16);
 			//System.out.println((posadj.x) % 16 + " DD " + posadj.y + " DD " + (posadj.z) % 16);
-			if (posadj.x < 0)
-				posadj.x = biasNegative(posadj.x, Chunk.x);
-			if (posadj.z < 0)
-				posadj.z = biasNegative(posadj.z, Chunk.z);
 			int blockid = c.getBlock((posadj.x) % 16,posadj.y, (posadj.z) % 16);
 			if (blockid == 0)
 				continue;
 			Block.blocks.get(blockid).playBreakSound((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16);;
 			c.setBlock((posadj.x) % 16, posadj.y,  (posadj.z) % 16, block);
 			c.remesh();
+			System.out.println((posadj.x) % 16 + " " + posadj.y + " " + (posadj.z) % 16);
 			// this is bad because this loops $RE_MNT amount of times
 			Main.pt.createStaticPoints(vf, 0.1f);
 			Main.pt.addStaticPoints(vf);
@@ -229,8 +230,8 @@ public class MouseBlockPicker {
 			xoff = -1;
 		if (worldZ < 0)
 			zoff = -1;
-		//System.out.println(worldX+" // " + (Math.round(worldX/(float)Chunk.x) + xoff) + " - " + worldZ + " // " + (Math.round(worldZ/(float)Chunk.z) + zoff));
-		return world.chunk.getChunk(Math.round(worldX/(float)Chunk.x) + xoff, Math.round(worldZ/(float)Chunk.z) + zoff);
+		//System.out.println(worldX+" // " + ((int)(worldX/(float)Chunk.x) + xoff) + " - " + worldZ + " // " + ((int)(worldZ/(float)Chunk.z) + zoff));
+		return world.chunk.getChunk((int)(worldX/(float)Chunk.x) + xoff, (int)(worldZ/(float)Chunk.z) + zoff);
 	}
 	
 	private Vector3f biasVector(Vector3f v, float x) {

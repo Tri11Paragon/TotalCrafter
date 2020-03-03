@@ -30,7 +30,7 @@ public class SpawnCommand extends Command {
 	}
 	
 	@Override
-	public String run(String data) {
+	public String run(String data, String[] vars) {
 		try {
 			String[] d = data.split(" ");
 			if (d.length == 1)

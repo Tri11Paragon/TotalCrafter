@@ -57,24 +57,17 @@ public class Maths {
 	}
 	
 	static Matrix4f matrix = new Matrix4f();
+	/**
+	 * Creates a transformation matrix for a cube based on its X, Y, Z pos in the world.
+	 */
 	public static Matrix4f createTransformationMatrixCube(float x, float y, float z) {
 		matrix.setIdentity();
-		matrix.m30 += matrix.m00 * x + matrix.m10 * y + matrix.m20 * z;
-		matrix.m31 += matrix.m01 * x + matrix.m11 * y + matrix.m21 * z;
-		matrix.m32 += matrix.m02 * x + matrix.m12 * y + matrix.m22 * z;
-		matrix.m33 += matrix.m03 * x + matrix.m13 * y + matrix.m23 * z;
-		matrix.m00 = matrix.m00 * 0.5f;
-		matrix.m01 = matrix.m01 * 0.5f;
-		matrix.m02 = matrix.m02 * 0.5f;
-		matrix.m03 = matrix.m03 * 0.5f;
-		matrix.m10 = matrix.m10 * 0.5f;
-		matrix.m11 = matrix.m11 * 0.5f;
-		matrix.m12 = matrix.m12 * 0.5f;
-		matrix.m13 = matrix.m13 * 0.5f;
-		matrix.m20 = matrix.m20 * 0.5f;
-		matrix.m21 = matrix.m21 * 0.5f;
-		matrix.m22 = matrix.m22 * 0.5f;
-		matrix.m23 = matrix.m23 * 0.5f;
+		// the 0.5 is added to adjust for cube scale.
+		// took way to long to figure out this.
+		matrix.m30 += matrix.m00 * (x+0.5f) + matrix.m10 * (y+0.5f) + matrix.m20 * (z+0.5f);
+		matrix.m31 += matrix.m01 * (x+0.5f) + matrix.m11 * (y+0.5f) + matrix.m21 * (z+0.5f);
+		matrix.m32 += matrix.m02 * (x+0.5f) + matrix.m12 * (y+0.5f) + matrix.m22 * (z+0.5f);
+		matrix.m33 += matrix.m03 * (x+0.5f) + matrix.m13 * (y+0.5f) + matrix.m23 * (z+0.5f);
 		return matrix;
 	}
 	
@@ -90,6 +83,26 @@ public class Maths {
 		Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();
 		Matrix4f.translate(new Vector2f(x / SWIDTH, y / SHEIGHT), matrix, matrix);
+		Matrix4f.scale(new Vector3f(width / SWIDTH, height / SHEIGHT, 1f), matrix, matrix);
+		return matrix;
+	}
+	
+	/**
+	 * 
+	 */
+	public static Matrix4f createTransformationMatrixCenteredSTATIC(float SWIDTH, float SHEIGHT, float width, float height) {
+		Matrix4f matrix = new Matrix4f();
+		matrix.setIdentity();
+		Matrix4f.translate(new Vector2f(SWIDTH/2 - width/2, SHEIGHT/2 - height/2), matrix, matrix);
+		Matrix4f.scale(new Vector3f(width / SWIDTH, height / SHEIGHT, 1f), matrix, matrix);
+		return matrix;
+	}
+	
+	public static Matrix4f createTransformationMatrixCenteredSTATIC(float SWIDTH, float SHEIGHT, float width, float height, float rot) {
+		Matrix4f matrix = new Matrix4f();
+		matrix.setIdentity();
+		Matrix4f.translate(new Vector2f(SWIDTH/2 - width/2, SHEIGHT/2 - height/2), matrix, matrix);
+		Matrix4f.rotate(rot, rx, matrix, matrix);
 		Matrix4f.scale(new Vector3f(width / SWIDTH, height / SHEIGHT, 1f), matrix, matrix);
 		return matrix;
 	}
