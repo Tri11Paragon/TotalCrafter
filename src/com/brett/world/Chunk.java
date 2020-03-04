@@ -9,12 +9,14 @@ import org.lwjgl.util.vector.Matrix4f;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.ModelTexture;
+import com.brett.renderer.datatypes.RawBlockModel;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.SixBoolean;
 import com.brett.renderer.shaders.VoxelShader;
 import com.brett.renderer.world.MeshStore;
 import com.brett.tools.Maths;
 import com.brett.world.blocks.Block;
+import com.brett.world.terrain.noisefunctions.NoiseFunction;
 
 /**
 *
@@ -30,28 +32,32 @@ public class Chunk {
 	public static int z = 16;
 	
 	private short[][][] blocks = new short[x][y][z];
-	private RawModel[][][] blocksModels = new RawModel[x][y][z];
+	private RawBlockModel[][][] blocksModels = new RawBlockModel[x][y][z];
 	List<Block> bls = new ArrayList<Block>();
 	private int xoff,zoff;
+	private ChunkStore s;
 	
-	public static RawModel fullBlock;
-	public static RawModel emptyBlock;
+	public static RawBlockModel fullBlock;
+	public static RawBlockModel emptyBlock;
 	
-	public Chunk(Loader loader, int xoff, int zoff) {
+	
+	public Chunk(Loader loader, ChunkStore s, NoiseFunction f, int xoff, int zoff) {
 		this.xoff = xoff;
 		this.zoff = zoff;
-		Chunk.fullBlock = loader.loadToVAO(MeshStore.verts, MeshStore.uv, MeshStore.indicies);
-		Chunk.emptyBlock = loader.loadToVAO(MeshStore.vertsNONE, MeshStore.uvNONE, MeshStore.indiciesNONE);
-		for (int i =0; i < x; i++) {
-			for (int j = 0; j < y; j++) {
-				for (int k = 0; k < z; k++) {
-					if (j == 70) {
+		this.s = s;
+		for (int i = 0; i < x; i++) {
+			for (int k = 0; k < z; k++) {
+				int ref = (int) (f.getInterpolatedNoise(((xoff * x) + (i)) / 64.0f, ((zoff * z) + (k)) / 64.0f) * 100) + 60;
+				for (int j = 0; j < y; j++) {
+					// System.out.println(ref + " : " + (f.getInterpolatedNoise((xoff+i)/20,
+					// (zoff+k)/20)*10));
+					if (j == ref) {
 						blocks[i][j][k] = 3;
 						blocksModels[i][j][k] = fullBlock;
-					} else if (j <= 69 && j >= 60) {
+					} else if (j <= ref - 1 && j >= ref - 5) {
 						blocks[i][j][k] = 2;
 						blocksModels[i][j][k] = fullBlock;
-					} else if (j < 60) {
+					} else if (j < ref - 5) {
 						blocks[i][j][k] = 1;
 						blocksModels[i][j][k] = fullBlock;
 					} else {
@@ -59,31 +65,31 @@ public class Chunk {
 						blocksModels[i][j][k] = emptyBlock;
 					}
 				}
-			}	
-		}
-		
-		new Thread(new Runnable() {		
-			@Override
-			public void run() {
-				//System.out.println("Mesher Thread Start");
-				for (int i =0; i < x; i++) {
-					for (int j = 0; j < y; j++) {
-						for (int k = 0; k < z; k++) {
-							mesh(i,j,k);
-						}
-					}
-				}
-				//System.out.println("Mesher Thread Dead");
 			}
-		}).start();
+		}
+
+		/*
+		 * new Thread(new Runnable() {
+		 * 
+		 * @Override public void run() {
+		 */
+		// System.out.println("Mesher Thread Start");
+		for (int i = 0; i < x; i++) {
+			for (int j = 0; j < y; j++) {
+				for (int k = 0; k < z; k++) {
+					mesh(i, j, k);
+				}
+			}
+		}
+		// System.out.println("Mesher Thread Dead");
+		// }
+		// }).start();
 	}
-	
-	public Chunk(Loader loader, short[][][] blocks, int xoff, int zoff) {
+
+	public Chunk(Loader loader, ChunkStore s, short[][][] blocks, int xoff, int zoff) {
 		this.xoff = xoff;
 		this.zoff = zoff;
-		Chunk.fullBlock = loader.loadToVAO(MeshStore.verts, MeshStore.uv, MeshStore.indicies);
-		Chunk.emptyBlock = loader.loadToVAO(MeshStore.vertsNONE, MeshStore.uvNONE, MeshStore.indiciesNONE);
-		
+		this.s = s;
 		this.blocks = blocks;
 		
 		for (int i =0; i < x; i++) {
@@ -127,9 +133,7 @@ public class Chunk {
 			if (blocks[i][j + 1][k] != 0) {
 				top = false;
 			}
-		} catch (IndexOutOfBoundsException e) {
-			top = false; // we can assume that at chunk bounds there is going to be another chunk. anyways the chunk mesh will handle this.
-		}
+		} catch (IndexOutOfBoundsException e) {}
 		try {
 			if (blocks[i][j - 1][k] != 0) {
 				bottom = false;
@@ -139,22 +143,54 @@ public class Chunk {
 			if (blocks[i + 1][j][k] != 0) {
 				right = false;
 			}
-		} catch (IndexOutOfBoundsException e) {right = false;}
+		} catch (IndexOutOfBoundsException e) {
+			Chunk c = s.getChunk(xoff + 1, zoff);
+			if (c == null)
+				right = false;
+			else {
+				if (c.blocks[0][j][k] != 0)
+					right = false;
+			}
+		}
 		try {
 			if (blocks[i - 1][j][k] != 0) {
 				left = false;
 			}
-		} catch (IndexOutOfBoundsException e) {left = false;}
+		} catch (IndexOutOfBoundsException e) {
+			Chunk c = s.getChunk(xoff - 1, zoff);
+			if (c == null)
+				left = false;
+			else {
+				if (c.blocks[x-1][j][k] != 0)
+					left = false;
+			}
+		}
 		try {
 			if (blocks[i][j][k + 1] != 0) {
 				front = false;
 			}
-		} catch (IndexOutOfBoundsException e) {front = false;}
+		} catch (IndexOutOfBoundsException e) {
+			Chunk c = s.getChunk(xoff, zoff + 1);
+			if (c == null)
+				front = false;
+			else {
+				if (c.blocks[i][j][0] != 0)
+					front = false;
+			}
+		}
 		try {
 			if (blocks[i][j][k - 1] != 0) {
 				back = false;
 			}
-		} catch (IndexOutOfBoundsException e) {back = false;}
+		} catch (IndexOutOfBoundsException e) {
+			Chunk c = s.getChunk(xoff, zoff - 1);
+			if (c == null)
+				back = false;
+			else {
+				if (c.blocks[i][j][z-1] != 0)
+					back = false;
+			}
+		}
 		
 		blocksModels[i][j][k] = MeshStore.models.get(VoxelWorld.createSixBooleans(new SixBoolean(top, bottom, left, right, front, back)));
 	}
@@ -184,6 +220,7 @@ public class Chunk {
 				for (int i =0; i < blocks.length; i++) {
 					for (int j = 0; j < blocks[i].length; j++) {
 						for (int k = 0; k < blocks[i][j].length; k++) {
+							mesh(i,j,k);
 							chunkRemesh(i, j, k, l, r, f, b);
 						}
 					}
@@ -191,65 +228,6 @@ public class Chunk {
 				//System.out.println("Remesher Thread Dead");
 			}
 		}).start();
-	}
-	
-	public void remeshSpecial(int i, int j, int k, int side) {
-		if(blocks[i][j][k] == 0) {
-			blocksModels[i][j][k] = emptyBlock;
-			return;
-		}
-		boolean top = true;
-		boolean bottom = true;
-		boolean left = true;
-		boolean right = true;
-		boolean front = true;
-		boolean back = true;
-		if (side != 0) {
-			try {
-				if (blocks[i][j + 1][k] != 0) {
-					top = false;
-				}
-			} catch (IndexOutOfBoundsException e) {
-				top = false; // we can assume that at chunk bounds there is going to be another chunk. anyways the chunk mesh will handle this.
-			}
-		}
-		if (side != 1) {
-			try {
-				if (blocks[i][j - 1][k] != 0) {
-					bottom = false;
-				}
-			} catch (IndexOutOfBoundsException e) {bottom = false;}
-		}
-		if (side != 2) {
-			try {
-				if (blocks[i - 1][j][k] != 0) {
-					left = false;
-				}
-			} catch (IndexOutOfBoundsException e) {left = false;}
-		}
-		if (side != 3) {
-			try {
-				if (blocks[i + 1][j][k] != 0) {
-					right = false;
-				}
-			} catch (IndexOutOfBoundsException e) {right = false;}
-		}
-		if (side != 4) {
-			try {
-				if (blocks[i][j][k + 1] != 0) {
-					front = false;
-				}
-			} catch (IndexOutOfBoundsException e) {front = false;}
-		}
-		if (side != 5) {
-			try {
-				if (blocks[i][j][k - 1] != 0) {
-					back = false;
-				}
-			} catch (IndexOutOfBoundsException e) {back = false;}
-		}
-		
-		blocksModels[i][j][k] = MeshStore.models.get(VoxelWorld.createSixBooleans(new SixBoolean(top, bottom, left, right, front, back)));
 	}
 	
 	//TODO: this
@@ -319,7 +297,7 @@ public class Chunk {
 					
 					// make this based on texture id?
 					ModelTexture model = Block.blocks.get((int)blocks[i][j][k]).model;
-					RawModel rawModel = blocksModels[i][j][k];
+					RawBlockModel rawModel = blocksModels[i][j][k];
 					
 					if (rawModel == null)
 						continue;
@@ -327,13 +305,13 @@ public class Chunk {
 					if (rawModel.getVaoID() == MeshStore.boolEmpty)
 						continue;
 					
-					GL30.glBindVertexArray(rawModel.getVaoID());
+					GL30.glBindVertexArray((int)rawModel.getVaoID());
 					GL20.glEnableVertexAttribArray(0);
 					GL20.glEnableVertexAttribArray(1);
 					Matrix4f transformationMatrix = Maths.createTransformationMatrixCube(i+(x*xoff),j,k+(z*zoff));
 					shader.loadTransformationMatrix(transformationMatrix);
 					GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getID());
-					GL11.glDrawElements(MasterRenderer.DRAWMODE, rawModel.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+					GL11.glDrawElements(MasterRenderer.DRAWMODE, (int)rawModel.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 					GL20.glDisableVertexAttribArray(0);
 					GL20.glDisableVertexAttribArray(1);
 					GL30.glBindVertexArray(0);

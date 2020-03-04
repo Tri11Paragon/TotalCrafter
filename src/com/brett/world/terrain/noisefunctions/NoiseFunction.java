@@ -10,11 +10,12 @@ import java.util.Random;
 
 public abstract class NoiseFunction {
 
-	protected Random random = new Random();
+	protected Random random;
 	protected long seed;
 	
 	public NoiseFunction(long seed) {
 		this.seed = seed;
+		random = new Random(seed);
 	}
 
 	public abstract float getInterpolatedNoise(float x, float z);

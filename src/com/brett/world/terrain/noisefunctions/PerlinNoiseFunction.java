@@ -38,7 +38,7 @@ public class PerlinNoiseFunction extends NoiseFunction {
 		float outers = getSmoothNoise(x - 10, z) + getSmoothNoise(x + 10, z) + getSmoothNoise(x - 10, z + 10) + getSmoothNoise(x + 10, z - 10);
 		float corners = getSmoothNoise(x + 10, z + 10) + getSmoothNoise(x - 10, z - 10) + getSmoothNoise(x + 10, z - 10) + getSmoothNoise(x - 10, z + 10);
 		
-		return centers / 8f;
+		return centers / 8f + outers + corners;
 	}
 	
 	private float getSmoothNoise(float x, float z) {

@@ -252,6 +252,7 @@ public class Main {
 				deltaTime = 0;
 			}
 		}
+		isOpen = false;
 		Mouse.setGrabbed(false);
 		//testserver.close();
 		//client.close();
@@ -266,7 +267,6 @@ public class Main {
 		world.cleanup();
 		loader.cleanUp();
 		SettingsLoader.saveSettings();
-		isOpen = false;
 		DisplayManager.closeDisplay();
 	}
 

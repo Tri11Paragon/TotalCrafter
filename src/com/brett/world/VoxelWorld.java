@@ -6,6 +6,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
+import com.brett.renderer.datatypes.RawBlockModel;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.SixBoolean;
 import com.brett.renderer.shaders.VoxelShader;
@@ -34,6 +35,8 @@ public class VoxelWorld {
 		shader.start();
 		shader.loadProjectionMatrix(renderer.getProjectionMatrix());
 		shader.stop();
+		Chunk.fullBlock = RawBlockModel.convertRawModel(loader.loadToVAO(MeshStore.verts, MeshStore.uv, MeshStore.indicies));
+		Chunk.emptyBlock = RawBlockModel.convertRawModel(loader.loadToVAO(MeshStore.vertsNONE, MeshStore.uvNONE, MeshStore.indiciesNONE));
 		resolveMeshes();
 		chunk = new ChunkStore(cam, loader);
 		
@@ -118,7 +121,7 @@ public class VoxelWorld {
 								RawModel m = loader.loadToVAO(MeshStore.verts, MeshStore.uv, ind);
 								if (t == 0 && l == 0 && r == 0 && f == 0 && b == 0 && u == 0)
 									MeshStore.boolEmpty = m.getVaoID();
-								MeshStore.models.put(boo, m);
+								MeshStore.models.put(boo, RawBlockModel.convertRawModel(m));
 							}
 						}	
 					}	

@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.RawBlockModel;
 import com.brett.renderer.datatypes.SixBoolean;
 
 public class MeshStore {
@@ -24,7 +24,7 @@ public class MeshStore {
 	
 	public static List<SixBoolean> booleans = new ArrayList<SixBoolean>();
 	
-	public static Map<SixBoolean, RawModel> models = new HashMap<SixBoolean, RawModel>();
+	public static Map<SixBoolean, RawBlockModel> models = new HashMap<SixBoolean, RawBlockModel>();
 	public static int boolEmpty = 0;
 	// make this better
 	
