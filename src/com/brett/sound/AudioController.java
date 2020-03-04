@@ -49,6 +49,7 @@ public class AudioController {
 	
 	public static void setListenerPosition(Vector3f f) {
 		AL10.alListener3f(AL10.AL_POSITION, f.x, f.y, f.z);
+		AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
 	}
 	
 	public static int[] loadSoundFolder(String folder) {

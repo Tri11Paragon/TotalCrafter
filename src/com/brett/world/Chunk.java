@@ -10,7 +10,6 @@ import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.renderer.datatypes.RawBlockModel;
-import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.SixBoolean;
 import com.brett.renderer.shaders.VoxelShader;
 import com.brett.renderer.world.MeshStore;
@@ -52,7 +51,7 @@ public class Chunk {
 					// System.out.println(ref + " : " + (f.getInterpolatedNoise((xoff+i)/20,
 					// (zoff+k)/20)*10));
 					if (j == ref) {
-						blocks[i][j][k] = 3;
+						blocks[i][j][k] = 4;
 						blocksModels[i][j][k] = fullBlock;
 					} else if (j <= ref - 1 && j >= ref - 5) {
 						blocks[i][j][k] = 2;
@@ -311,6 +310,7 @@ public class Chunk {
 					Matrix4f transformationMatrix = Maths.createTransformationMatrixCube(i+(x*xoff),j,k+(z*zoff));
 					shader.loadTransformationMatrix(transformationMatrix);
 					GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getID());
+					//GL11.glDrawArrays(MasterRenderer.DRAWMODE, 0, rawModel.getVertexCount());
 					GL11.glDrawElements(MasterRenderer.DRAWMODE, (int)rawModel.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 					GL20.glDisableVertexAttribArray(0);
 					GL20.glDisableVertexAttribArray(1);

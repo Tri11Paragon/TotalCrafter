@@ -76,17 +76,21 @@ public class MeshStore {
 	}; 
 	
 	public static float[] vertsFront = {
-			-0.5f, -0.5f, 0.5f,
-			0.5f, -0.5f, 0.5f,
-			0.5f, 0.5f, 0.5f,
-			-0.5f, 0.5f, 0.5f,
+			-0.5f, -0.5f,  0.5f,  
+		     0.5f, -0.5f,  0.5f,  
+		     0.5f,  0.5f,  0.5f,  
+		     0.5f,  0.5f,  0.5f,  
+		    -0.5f,  0.5f,  0.5f,  
+		    -0.5f, -0.5f,  0.5f, 
 	};
 	
 	public static float[] vertsBack = {
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, 0.5f, -0.5f,
-			0.5f, 0.5f, -0.5f,
-			0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,  
+		     0.5f, -0.5f, -0.5f,  
+		     0.5f,  0.5f, -0.5f,  
+		     0.5f,  0.5f, -0.5f,  
+		    -0.5f,  0.5f, -0.5f,  
+		    -0.5f, -0.5f, -0.5f,  
 	};
 	
 	public static float[] vertsRight = {
@@ -104,10 +108,12 @@ public class MeshStore {
 	};
 	
 	public static float[] vertsTop = {
-			-0.5f, 0.5f, 0.5f,
-			0.5f, 0.5f, 0.5f,
-			0.5f, 0.5f, -0.5f,
-			-0.5f, 0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f, 
+		     0.5f, -0.5f, -0.5f,  
+		     0.5f,  0.5f, -0.5f,  
+		     0.5f,  0.5f, -0.5f,  
+		    -0.5f,  0.5f, -0.5f,  
+		    -0.5f, -0.5f, -0.5f, 
 	}; 
 	
 	public static float[] vertsBottom = {
@@ -151,10 +157,13 @@ public class MeshStore {
 	};
 	
 	public static float[] uvFront = {
-			1, 1, 
-			0, 1,
-			0, 0, 
-			1, 0,
+			0.0f, 0.0f,
+			1.0f, 0.0f,
+			1.0f, 1.0f,
+			1.0f, 1.0f,
+			0.0f, 1.0f,
+			0.0f, 0.0f,
+			
 	};
 	
 	public static float[] uvRight = {
@@ -165,10 +174,12 @@ public class MeshStore {
 	};
 	
 	public static float[] uvBack = {
-			0, 0,
-			0, 1,
-			1, 1,
-			1, 0,
+			0.0f, 0.0f,
+			1.0f, 0.0f,
+			1.0f, 1.0f,
+			1.0f, 1.0f,
+			0.0f, 1.0f,
+			0.0f, 0.0f,
 	};
 
 	public static float[] uvLeft = {
@@ -179,10 +190,12 @@ public class MeshStore {
 	};
 	
 	public static float[] uvTop = {
-			1, 0, 
-			0, 0,
-			0, 1,
-			1, 1,
+			0.0f, 0.0f,
+			1.0f, 0.0f,
+			1.0f, 1.0f,
+			1.0f, 1.0f,
+			0.0f, 1.0f,
+			0.0f, 0.0f,
 	};
 	
 	public static float[] uvBottom = {
@@ -223,6 +236,40 @@ public class MeshStore {
 			0, 1,
 			0, 0,
 			1, 0,
+	};
+	
+	public static float[] test = {
+			
+
+		    
+
+		    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+		     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+		    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+		    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 	
 }

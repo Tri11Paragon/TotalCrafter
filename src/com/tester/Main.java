@@ -58,6 +58,7 @@ public class Main {
 		AudioController.setListenerData(0, 0, 0);
 		AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE_CLAMPED);
 		staticSource = new AudioSource();
+		staticSource.setPosition(0, 0, 0);
 		
 		os = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 		// MAIN STUFF (REQUIRED FOR GAME TO RUN)

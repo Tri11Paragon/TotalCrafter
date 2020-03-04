@@ -67,7 +67,8 @@ public class Block {
 		blocks.put(0, new BlockAir());
 		blocks.put(1, new Block(new ModelTexture(loader.loadTexture("stone"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
 		blocks.put(2, new Block(new ModelTexture(loader.loadTexture("dirt"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
-		blocks.put(3, new Block(new ModelTexture(loader.loadTexture("grassy2"))).setBreakSound(AudioController.loadSoundFolder("test")));
+		blocks.put(3, new Block(new ModelTexture(loader.loadTexture("icon/logo"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
+		blocks.put(4, new Block(new ModelTexture(loader.loadTexture("grassy2"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
 	}
 	
 }

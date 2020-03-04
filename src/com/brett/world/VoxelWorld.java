@@ -119,6 +119,7 @@ public class VoxelWorld {
 								if (b == 0 ? false : true) {ind = addArrays(ind, MeshStore.indiciesBACK); verts = addArrays(verts, MeshStore.vertsBack); uvs = addArrays(uvs, MeshStore.uvBack);}
 								if (u == 0 ? false : true) {ind = addArrays(ind, MeshStore.indiciesBOTTOM); verts = addArrays(verts, MeshStore.vertsBottom); uvs = addArrays(uvs, MeshStore.uvBottom);}
 								RawModel m = loader.loadToVAO(MeshStore.verts, MeshStore.uv, ind);
+								//RawModel m = loader.loadToVAO(verts, 3, uvs);
 								if (t == 0 && l == 0 && r == 0 && f == 0 && b == 0 && u == 0)
 									MeshStore.boolEmpty = m.getVaoID();
 								MeshStore.models.put(boo, RawBlockModel.convertRawModel(m));
