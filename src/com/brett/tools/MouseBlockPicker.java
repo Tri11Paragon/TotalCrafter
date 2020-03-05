@@ -99,37 +99,26 @@ public class MouseBlockPicker {
 		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
 		
 		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
-		Vector3f[] vf = new Vector3f[RE_MNT];
-		Vector3f[] vfi = new Vector3f[RE_MNT];
 		for (int i = 0; i < RE_MNT; i++) {
-			vf[i] = new Vector3f(walked.x + pos.x, walked.y + pos.y, walked.z + pos.z);
 			walked.x += xStep;
 			walked.y += yStep;
 			walked.z += zStep;
 			Vector3f posadj = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
+			Chunk c = getTerrain(posadj.x, posadj.z);
+			if (c == null)
+				continue;
+			posadj.x %= 16;
+			posadj.z %= 16;
 			if (posadj.x < 0)
 				posadj.x = biasNegative(posadj.x, -Chunk.x);
 			if (posadj.z < 0)
 				posadj.z = biasNegative(posadj.z, -Chunk.z);
-			vfi[i] = new Vector3f((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16);
-			Chunk c = getTerrain(posadj.x, posadj.z);
-			if (c == null)
+			int blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
+			if (blockid == 0 || blockid == 3)
 				continue;
-			Main.hitent.setPosition(posadj);
-			Main.ls.createStaticLine(pos, posadj);
-			//System.out.println((int) (posadj.x) % 16 + " " + (int) posadj.y + " " +  (int) (posadj.z) % 16);
-			//System.out.println((posadj.x) % 16 + " DD " + posadj.y + " DD " + (posadj.z) % 16);
-			int blockid = c.getBlock((posadj.x) % 16,posadj.y, (posadj.z) % 16);
-			if (blockid == 0)
-				continue;
-			Block.blocks.get(blockid).playBreakSound((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16);;
-			c.setBlock((posadj.x) % 16, posadj.y,  (posadj.z) % 16, block);
+			Block.blocks.get(blockid).playBreakSound((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16);
+			c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), block);
 			c.remesh();
-			System.out.println((posadj.x) % 16 + " " + posadj.y + " " + (posadj.z) % 16);
-			// this is bad because this loops $RE_MNT amount of times
-			Main.pt.createStaticPoints(vf, 0.1f);
-			Main.pt.addStaticPoints(vf);
-			Main.pt.addStaticPoints(vfi);
 			return;
 		}
 	}

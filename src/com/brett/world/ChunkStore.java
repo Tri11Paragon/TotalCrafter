@@ -1,13 +1,6 @@
 package com.brett.world;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +14,7 @@ import com.brett.renderer.datatypes.Tuple;
 import com.brett.renderer.shaders.VoxelShader;
 import com.brett.world.cameras.Camera;
 import com.brett.world.terrain.noisefunctions.BaseNoiseFunction;
+import com.brett.world.terrain.noisefunctions.ChunkNoiseFunction;
 import com.brett.world.terrain.noisefunctions.NoiseFunction;
 import com.tester.Main;
 
@@ -32,15 +26,16 @@ import com.tester.Main;
 
 public class ChunkStore {
 
-	private static final int renderDistance = 3;
+	private static final int renderDistance = 4;
 	public static final String worldLocation = "worlds/w1/";
+	public static final String dimLocation = "worlds/w1/DIM";
 	public static File wfolder = new File(worldLocation);
 	public static File[] wfiles = wfolder.listFiles();
 
 	// actually the best way of storing chunk data.
 	// however will need to add a way of moving between active and non active
 	// chunks.
-	private MultiKeyMap<Integer, Chunk> chunks = new MultiKeyMap<Integer, Chunk>();
+	private MultiKeyMap<Integer, Region> chunks = new MultiKeyMap<Integer, Region>();
 	private List<Tuple<Integer, Integer>> ungeneratedChunks = Collections.synchronizedList(new ArrayList<Tuple<Integer, Integer>>());
 
 	@SuppressWarnings("unused")
@@ -51,9 +46,10 @@ public class ChunkStore {
 	private NoiseFunction nf;
 
 	public ChunkStore(Camera cam, Loader loader) {
+		new File(dimLocation).mkdirs();
 		this.cam = cam;
 		this.loader = loader;
-		this.nf = new BaseNoiseFunction(694);
+		this.nf = new ChunkNoiseFunction(694);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -69,61 +65,41 @@ public class ChunkStore {
 	}
 
 	public Chunk generateChunk(int x, int z) {
-		// add the world gen...
-		if (wfiles == null)
-			return new Chunk(loader,this, nf, x, z);
-		for (int f = 0; f < wfiles.length; f++) {
-			if (wfiles[f].isFile()) {
-				if (wfiles[f].getName().contentEquals(x + "_" + z + ".chunk")) {
-					try {
-						// buffered readers makes this VERY fast
-						DataInputStream is = new DataInputStream(new BufferedInputStream(new FileInputStream(worldLocation + wfiles[f].getName())));
-						short[][][] blks = new short[Chunk.x][Chunk.y][Chunk.z];
-						for (int i = 0; i < blks.length; i++) {
-							for (int j = 0; j < blks[i].length; j++) {
-								for (int k = 0; k < blks[i][j].length; k++) {
-									blks[i][j][k] = is.readShort();
-								}
-							}
-						}
-						is.close();
-						String[] strs = wfiles[f].getName().split("\\.")[0].split("_");
-						return new Chunk(loader,this, blks, Integer.parseInt(strs[0]), Integer.parseInt(strs[1]));
-					} catch (IOException e) {
-						e.printStackTrace();
-						System.err.println("Missing chunk. Maybe another program deleted it?");
-						System.exit(-1);
-					}
-				}
+		int regionPosX = x / Region.x;
+		int regionPosZ = z / Region.z;
+		if (x < 0)
+			regionPosX -= 1;
+		if (z < 0)
+			regionPosZ -= 1;
+		if (chunks.containsKey(regionPosX, regionPosZ)) {
+			Chunk c = chunks.get(regionPosX, regionPosZ).getChunk(x, z);
+			if (c == null) {
+				c = new Chunk(loader,this, nf, x, z);
+				chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
+				return c;
+			} else {
+				return c;
 			}
+		} else {
+			Region r = Region.loadRegion(loader, this, regionPosX, regionPosZ, worldLocation);
+			chunks.put(regionPosX, regionPosZ, r);
+			Chunk c = r.getChunk(x, z);
+			if (c == null) {
+				c = new Chunk(loader,this, nf, x, z);
+				chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
+				return c;
+			}else
+				return c;
 		}
-		return new Chunk(loader,this, nf, x, z);
 	}
 
 	public void saveChunks() {
 		System.out.println("Saving world");
-		MapIterator<MultiKey<? extends Integer>, Chunk> chunkIt = chunks.mapIterator();
-		while (chunkIt.hasNext()) {
-			MultiKey<? extends Integer> ke = chunkIt.next();
-			try {
-				DataOutputStream os = new DataOutputStream(new BufferedOutputStream(
-						new FileOutputStream(worldLocation + ke.getKey(0) + "_" + ke.getKey(1) + ".chunk")));
-				Chunk c = chunks.get(ke);
-				if (c == null)
-					continue;
-				short[][][] ch = c.getBlocks();
-				for (int i = 0; i < ch.length; i++) {
-					for (int j = 0; j < ch[i].length; j++) {
-						for (int k = 0; k < ch[i][j].length; k++) {
-							os.writeShort(ch[i][j][k]);
-						}
-					}
-				}
-				os.close();
-			} catch (IOException e) {
-				if (!new File(worldLocation).mkdirs())
-					saveChunks();
-			}
+		MapIterator<MultiKey<? extends Integer>, Region> regionIt = chunks.mapIterator();
+		while (regionIt.hasNext()) {
+			regionIt.next();
+			Region val = regionIt.getValue();
+			val.saveRegion(worldLocation);
 		}
 		System.out.println("World Saved");
 	}
@@ -157,12 +133,30 @@ public class ChunkStore {
 	}
 
 	public void setChunk(Chunk c, int x, int z) {
-		chunks.put(x, z, c);
+		int regionPosX = x / Region.x;
+		int regionPosZ = z / Region.z;
+		if (x < 0)
+			regionPosX -= 1;
+		if (z < 0)
+			regionPosZ -= 1;
+		if (chunks.containsKey(regionPosX, regionPosZ)) {
+			chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
+			return;
+		}
+		System.out.println(regionPosX + " " + regionPosZ);
+		chunks.put(regionPosX, regionPosZ, new Region(regionPosX, regionPosZ));
+		chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
 	}
 
 	public Chunk getChunk(int x, int z) {
-		if (chunks.containsKey(x, z))
-			return chunks.get(x, z);
+		int regionPosX = x / Region.x;
+		int regionPosZ = z / Region.z;
+		if (x < 0)
+			regionPosX -= 1;
+		if (z < 0)
+			regionPosZ -= 1;
+		if (chunks.containsKey(regionPosX, regionPosZ))
+			return chunks.get(regionPosX, regionPosZ).getChunk(x, z);
 		else
 			return null;
 	}

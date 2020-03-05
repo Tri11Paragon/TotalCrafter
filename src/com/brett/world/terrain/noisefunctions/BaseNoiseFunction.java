@@ -27,6 +27,7 @@ public class BaseNoiseFunction extends NoiseFunction {
         float i1 = interpolate(v1, v2, fracX);
         float i2 = interpolate(v3, v4, fracX);
         return interpolate(i1, i2, fracZ);
+		//return (float) (Math.cos(x)+Math.sin(z));
 	}
 	
 	private float interpolate(float a, float b, float blend) {

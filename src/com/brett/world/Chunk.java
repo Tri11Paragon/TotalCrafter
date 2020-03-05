@@ -46,7 +46,7 @@ public class Chunk {
 		this.s = s;
 		for (int i = 0; i < x; i++) {
 			for (int k = 0; k < z; k++) {
-				int ref = (int) (f.getInterpolatedNoise(((xoff * x) + (i)) / 64.0f, ((zoff * z) + (k)) / 64.0f) * 100) + 60;
+				int ref = (int) (f.getInterpolatedNoise(((xoff * x) + (i)) / 64.0f, ((zoff * z) + (k)) / 64.0f));
 				for (int j = 0; j < y; j++) {
 					// System.out.println(ref + " : " + (f.getInterpolatedNoise((xoff+i)/20,
 					// (zoff+k)/20)*10));
@@ -55,6 +55,9 @@ public class Chunk {
 						blocksModels[i][j][k] = fullBlock;
 					} else if (j <= ref - 1 && j >= ref - 5) {
 						blocks[i][j][k] = 2;
+						blocksModels[i][j][k] = fullBlock;
+					} else if (j < 1) {
+						blocks[i][j][k] = 3;
 						blocksModels[i][j][k] = fullBlock;
 					} else if (j < ref - 5) {
 						blocks[i][j][k] = 1;
@@ -73,13 +76,7 @@ public class Chunk {
 		 * @Override public void run() {
 		 */
 		// System.out.println("Mesher Thread Start");
-		for (int i = 0; i < x; i++) {
-			for (int j = 0; j < y; j++) {
-				for (int k = 0; k < z; k++) {
-					mesh(i, j, k);
-				}
-			}
-		}
+		remesh();
 		// System.out.println("Mesher Thread Dead");
 		// }
 		// }).start();
@@ -321,42 +318,6 @@ public class Chunk {
 		
 	}
 	
-	public int getBlock(int x, int y, int z) {
-		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
-			return 0;
-		if (x < 0)
-			x *= -1;
-		if (z < 0)
-			z *= -1;
-		return blocks[x][y][z];
-	}
-	
-	public int getBlock(float x, float y, float z) {
-		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
-			return 0;
-		if (x < 0)
-			x *= -1;
-		if (z < 0)
-			z *= -1;
-		return blocks[(int)x][(int)y][(int)z];
-	}
-	
-	public void setBlock(float x, float y, float z, int block) {
-		if (x >= Chunk.x || z >= Chunk.z)
-			return;
-		if (x < 0)
-			x *= -1;
-		if (z < 0)
-			z *= -1;
-		if (y > Chunk.y)
-			y = Chunk.y;
-		if (y < 0)
-			y = 0;
-		if (block == 0)
-			blocksModels[(int)x][(int)y][(int)z] = emptyBlock;
-		blocks[(int)x][(int)y][(int)z] = (short)block;
-	}
-	
 	public Block getBlockE(int x, int y, int z) {
 		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
 			return null;
@@ -365,6 +326,16 @@ public class Chunk {
 		if (z < 0)
 			z *= -1;
 		return Block.blocks.get(getBlock(x, y, z));
+	}
+	
+	public int getBlock(int x, int y, int z) {
+		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
+			return 0;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
+		return blocks[x][y][z];
 	}
 	
 	public boolean isBlockUnderGround(int x, int y, int z) {
