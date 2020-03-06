@@ -25,7 +25,7 @@ import com.tester.Main;
 
 public class ChunkStore {
 
-	public static final int renderDistance = 4;
+	public static final int renderDistance = 3;
 	public static final String worldLocation = "worlds/w1/";
 	public static final String dimLocation = "worlds/w1/DIM";
 	public static File wfolder = new File(worldLocation);
@@ -47,9 +47,10 @@ public class ChunkStore {
 
 	public ChunkStore(Camera cam, Loader loader, VoxelWorld world) {
 		new File(dimLocation).mkdirs();
+		LevelLoader.loadLevelData(worldLocation);
 		this.cam = cam;
 		this.loader = loader;
-		this.nf = new ChunkNoiseFunction(694);
+		this.nf = new ChunkNoiseFunction(LevelLoader.seed);
 		this.world = world;
 		new Thread(new Runnable() {
 			@Override
@@ -102,6 +103,7 @@ public class ChunkStore {
 			Region val = regionIt.getValue();
 			val.saveRegion(worldLocation);
 		}
+		LevelLoader.saveLevelData(worldLocation);
 		System.out.println("World Saved");
 	}
 

@@ -108,6 +108,9 @@ public class VoxelWorld {
 						return;
 					c.remesh();
 				}
+				if (Mouse.getEventButton() == 1) {
+					picker.placeBlock(1);
+				}
 			}
 		}
 	}

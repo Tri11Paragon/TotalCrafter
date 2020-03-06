@@ -96,6 +96,68 @@ public class MouseBlockPicker {
 			return;
 		}
 	}
+	
+	public void mineBlock() {
+		this.setCurrentBlockPoint(0);
+	}
+	
+	public void placeBlock(int block) {
+		Vector3f pos = camera.getPosition();
+		Vector3f pointRay = this.currentRay;
+		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
+		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
+		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
+		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
+		
+		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
+		Vector3f walkedNeg = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
+		for (int i = 0; i < RE_MNT; i++) {
+			walked.x += xStep;
+			walked.y += yStep;
+			walked.z += zStep;
+			Vector3f posadj = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
+			Vector3f posadjUn = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
+			Chunk c = getTerrain(posadj.x, posadj.z);
+			if (c == null)
+				continue;
+			posadj.x %= 16;
+			posadj.z %= 16;
+			if (posadj.x < 0)
+				posadj.x = biasNegative(posadj.x, -Chunk.x);
+			if (posadj.z < 0)
+				posadj.z = biasNegative(posadj.z, -Chunk.z);
+			short blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
+			if (blockid == 0)
+				continue;
+			for (int j = i; j > 0; j--) {
+				walkedNeg.x += xStep;
+				walkedNeg.y += yStep;
+				walkedNeg.z += zStep;
+				posadj = new Vector3f(posadj.x - xStep, posadj.y - yStep, posadj.z - zStep);
+				posadjUn = new Vector3f(posadjUn.x - xStep, posadjUn.y - yStep, posadjUn.z - zStep);
+				
+				c = getTerrain(posadj.x, posadj.z);
+				if (c == null)
+					continue;
+				posadj.x %= 16;
+				posadj.z %= 16;
+				if (posadj.x < 0)
+					posadj.x = biasNegative(posadj.x, -Chunk.x);
+				if (posadj.z < 0)
+					posadj.z = biasNegative(posadj.z, -Chunk.z);
+				blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
+				if (blockid != 0)
+					continue;
+				
+				Block b = Block.blocks.get(blockid);
+				b.playBreakSound((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
+				b.onBlockBreaked((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z), world);
+				c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), block);
+				c.remesh();
+				return;
+			}
+		}
+	}
 
 	public Vector3f getCurrentRay() {
 		return currentRay;

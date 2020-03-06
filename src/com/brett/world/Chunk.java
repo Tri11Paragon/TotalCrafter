@@ -134,9 +134,12 @@ public class Chunk {
 				right = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
-			right = false;
-			if (s.getBlock((xoff*x) + i + 1,j,k + (zoff*z)) == 0) {
-				//right = true;
+			Chunk c = s.getChunk(xoff + 1, zoff);
+			if (c == null)
+				right = false;
+			else {
+				if (c.blocks[0][j][k] != 0)
+					right = false;
 			}
 		}
 		try {
@@ -144,9 +147,12 @@ public class Chunk {
 				left = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
-			left = false;
-			if (s.getBlock((xoff*x) + i - 1,j,k + (zoff*z)) == 0) {
-				//left = true;
+			Chunk c = s.getChunk(xoff - 1, zoff);
+			if (c == null)
+				left = false;
+			else {
+				if (c.blocks[x-1][j][k] != 0)
+					left = false;
 			}
 		}
 		try {
@@ -154,9 +160,12 @@ public class Chunk {
 				front = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
-			front = false;
-			if (s.getBlock((xoff*x) + i, j, k + 1 + (zoff*z)) == 0) {
-				//front = true;
+			Chunk c = s.getChunk(xoff, zoff + 1);
+			if (c == null)
+				front = false;
+			else {
+				if (c.blocks[i][j][0] != 0)
+					front = false;
 			}
 		}
 		try {
@@ -164,9 +173,12 @@ public class Chunk {
 				back = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
-			back = false;
-			if (s.getBlock((xoff*x) + i, j, k + (zoff*z) - 1 ) == 0) {
-				//back = true;
+			Chunk c = s.getChunk(xoff, zoff - 1);
+			if (c == null)
+				back = false;
+			else {
+				if (c.blocks[i][j][z-1] != 0)
+					back = false;
 			}
 		}
 		/*if (s.getBlock((xoff*x) + i + 1,j,k + (zoff*z)) == 0) {
