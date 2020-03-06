@@ -19,7 +19,7 @@ import com.tester.Main;
 
 public class Block {
 	
-	public static final HashMap<Integer, Block> blocks = new HashMap<Integer, Block>();
+	public static final HashMap<Short, Block> blocks = new HashMap<Short, Block>();
 	
 	public ModelTexture model;
 	private int[] breakSound = {0};
@@ -28,8 +28,15 @@ public class Block {
 		this.model = model;
 	}
 	
-	// TODO: use this?
-	public void onBlockBreaked(Vector3f position, VoxelWorld world) {
+	public void onBlockCreated(float x, float y, float z, VoxelWorld world) {
+		
+	}
+	
+	public void onBlockPlaced(float x, float y, float z, VoxelWorld world) {
+		
+	}
+	
+	public void onBlockBreaked(float x, float y, float z, VoxelWorld world) {
 		
 	}
 	
@@ -64,11 +71,14 @@ public class Block {
 	}
 	
 	public static void registerBlocks(Loader loader) {
-		blocks.put(0, new BlockAir());
-		blocks.put(1, new Block(new ModelTexture(loader.loadTexture("stone"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
-		blocks.put(2, new Block(new ModelTexture(loader.loadTexture("dirt"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
-		blocks.put(3, new Block(new ModelTexture(loader.loadTexture("icon/logo"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
-		blocks.put(4, new Block(new ModelTexture(loader.loadTexture("grassy2"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
+		blocks.put((short) 0, new BlockAir());
+		blocks.put((short) 1, new Block(new ModelTexture(loader.loadTexture("stone"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
+		blocks.put((short) 2, new Block(new ModelTexture(loader.loadTexture("dirt"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
+		blocks.put((short) 3, new Block(new ModelTexture(loader.loadTexture("icon/logo"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
+		blocks.put((short) 4, new Block(new ModelTexture(loader.loadTexture("grassy2"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
+		blocks.put((short) 5, new Block(new ModelTexture(loader.loadTexture("sand"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
+		blocks.put((short) 6, new Block(new ModelTexture(loader.loadTexture("clay"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
+		blocks.put((short) 7, new Block(new ModelTexture(loader.loadTexture("snow"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
 	}
 	
 }

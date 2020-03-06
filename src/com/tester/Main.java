@@ -27,6 +27,7 @@ import com.brett.renderer.shaders.LineShader;
 import com.brett.renderer.shaders.PointShader;
 import com.brett.sound.AudioController;
 import com.brett.sound.AudioSource;
+import com.brett.tools.Maths;
 import com.brett.tools.MousePicker;
 import com.brett.tools.SettingsLoader;
 import com.brett.tools.obj.OBJLoader;
@@ -206,16 +207,19 @@ public class Main {
 		
 		Mouse.setGrabbed(false);
 		
+		System.gc();
 		while (!Display.isCloseRequested()) {
 			double startTime = Sys.getTime() * 1000 / Sys.getTimerResolution();
 			camera.move();
+			//camera.generateFrustum(renderer.getProjectionMatrix(), Maths.createViewMatrixOTHER(camera));
+			//System.out.println(camera.planeIntersection(new Vector3f(0,0,0), 1));
+			AudioController.setListenerPosition(camera.getPosition());
 			ls.start();
 			ls.loadViewMatrix(camera);
 			ls.stop();
 			pt.start();
 			pt.loadViewMatrix(camera);
 			pt.stop();
-			AudioController.setListenerPosition(camera.getPosition());
 			//rdCamera.move();
 			//rdCamera.checkCollision(terrain);
 			//player.update();

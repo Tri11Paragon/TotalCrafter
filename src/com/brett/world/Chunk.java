@@ -10,7 +10,6 @@ import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.renderer.datatypes.RawBlockModel;
-import com.brett.renderer.datatypes.SixBoolean;
 import com.brett.renderer.shaders.VoxelShader;
 import com.brett.renderer.world.MeshStore;
 import com.brett.tools.Maths;
@@ -40,21 +39,25 @@ public class Chunk {
 	public static RawBlockModel emptyBlock;
 	
 	
-	public Chunk(Loader loader, ChunkStore s, NoiseFunction f, int xoff, int zoff) {
+	public Chunk(Loader loader, VoxelWorld s, NoiseFunction f, int xoff, int zoff) {
 		this.xoff = xoff;
 		this.zoff = zoff;
-		this.s = s;
+		this.s = s.chunk;
 		for (int i = 0; i < x; i++) {
 			for (int k = 0; k < z; k++) {
-				int ref = (int) (f.getInterpolatedNoise(((xoff * x) + (i)) / 64.0f, ((zoff * z) + (k)) / 64.0f));
+				int ref = (int) (f.getInterpolatedNoise(((xoff * x) + (i)) / 128.0f, ((zoff * z) + (k)) / 128.0f));
 				for (int j = 0; j < y; j++) {
-					// System.out.println(ref + " : " + (f.getInterpolatedNoise((xoff+i)/20,
-					// (zoff+k)/20)*10));
 					if (j == ref) {
-						blocks[i][j][k] = 4;
+						if (ref < 32)
+							blocks[i][j][k] = 5;
+						else 
+							blocks[i][j][k] = 4;
 						blocksModels[i][j][k] = fullBlock;
 					} else if (j <= ref - 1 && j >= ref - 5) {
-						blocks[i][j][k] = 2;
+						if (ref < 32)
+							blocks[i][j][k] = 5;
+						else 
+							blocks[i][j][k] = 2;
 						blocksModels[i][j][k] = fullBlock;
 					} else if (j < 1) {
 						blocks[i][j][k] = 3;
@@ -66,20 +69,11 @@ public class Chunk {
 						blocks[i][j][k] = 0;
 						blocksModels[i][j][k] = emptyBlock;
 					}
+					Block.blocks.get(blocks[i][j][k]).onBlockCreated(i, j, k, s);
 				}
 			}
 		}
-
-		/*
-		 * new Thread(new Runnable() {
-		 * 
-		 * @Override public void run() {
-		 */
-		// System.out.println("Mesher Thread Start");
-		remesh();
-		// System.out.println("Mesher Thread Dead");
-		// }
-		// }).start();
+		//remesh();
 	}
 
 	public Chunk(Loader loader, ChunkStore s, short[][][] blocks, int xoff, int zoff) {
@@ -102,7 +96,7 @@ public class Chunk {
 				for (int i =0; i < x; i++) {
 					for (int j = 0; j < y; j++) {
 						for (int k = 0; k < z; k++) {
-							mesh(i,j,k);
+							//mesh(i,j,k);
 						}
 					}
 				}
@@ -140,12 +134,9 @@ public class Chunk {
 				right = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
-			Chunk c = s.getChunk(xoff + 1, zoff);
-			if (c == null)
-				right = false;
-			else {
-				if (c.blocks[0][j][k] != 0)
-					right = false;
+			right = false;
+			if (s.getBlock((xoff*x) + i + 1,j,k + (zoff*z)) == 0) {
+				//right = true;
 			}
 		}
 		try {
@@ -153,12 +144,9 @@ public class Chunk {
 				left = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
-			Chunk c = s.getChunk(xoff - 1, zoff);
-			if (c == null)
-				left = false;
-			else {
-				if (c.blocks[x-1][j][k] != 0)
-					left = false;
+			left = false;
+			if (s.getBlock((xoff*x) + i - 1,j,k + (zoff*z)) == 0) {
+				//left = true;
 			}
 		}
 		try {
@@ -166,12 +154,9 @@ public class Chunk {
 				front = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
-			Chunk c = s.getChunk(xoff, zoff + 1);
-			if (c == null)
-				front = false;
-			else {
-				if (c.blocks[i][j][0] != 0)
-					front = false;
+			front = false;
+			if (s.getBlock((xoff*x) + i, j, k + 1 + (zoff*z)) == 0) {
+				//front = true;
 			}
 		}
 		try {
@@ -179,16 +164,25 @@ public class Chunk {
 				back = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
-			Chunk c = s.getChunk(xoff, zoff - 1);
-			if (c == null)
-				back = false;
-			else {
-				if (c.blocks[i][j][z-1] != 0)
-					back = false;
+			back = false;
+			if (s.getBlock((xoff*x) + i, j, k + (zoff*z) - 1 ) == 0) {
+				//back = true;
 			}
 		}
+		/*if (s.getBlock((xoff*x) + i + 1,j,k + (zoff*z)) == 0) {
+			right = true;
+		}
+		if (s.getBlock((xoff*x) + i - 1,j,k + (zoff*z)) == 0) {
+			left = true;
+		}
+		if (s.getBlock((xoff*x) + i, j, k + 1 + (zoff*z)) == 0) {
+			front = true;
+		}
+		if (s.getBlock((xoff*x) + i, j, k - 1 + (zoff*z)) == 0) {
+			back = true;
+		}*/
 		
-		blocksModels[i][j][k] = MeshStore.models.get(VoxelWorld.createSixBooleans(new SixBoolean(top, bottom, left, right, front, back)));
+		blocksModels[i][j][k] = MeshStore.models.get(VoxelWorld.createSixBooleans(left, right, front, back, top, bottom));
 	}
 	
 	public void remesh() {
@@ -208,80 +202,16 @@ public class Chunk {
 		}).start();
 	}
 	
-	public void remesh(Chunk l, Chunk r, Chunk f, Chunk b) {
-		new Thread(new Runnable() {		
-			@Override
-			public void run() {
-				//System.out.println("Remesher Thread Start");
-				for (int i =0; i < blocks.length; i++) {
-					for (int j = 0; j < blocks[i].length; j++) {
-						for (int k = 0; k < blocks[i][j].length; k++) {
-							mesh(i,j,k);
-							chunkRemesh(i, j, k, l, r, f, b);
-						}
-					}
+	public void remeshNo() {
+		// System.out.println("Remesher Thread Start");
+		for (int i = 0; i < blocks.length; i++) {
+			for (int j = 0; j < blocks[i].length; j++) {
+				for (int k = 0; k < blocks[i][j].length; k++) {
+					mesh(i, j, k);
 				}
-				//System.out.println("Remesher Thread Dead");
 			}
-		}).start();
-	}
-	
-	//TODO: this
-	private void chunkRemesh(int i, int j, int k, Chunk l, Chunk r, Chunk f, Chunk b) {
-		if(blocks[i][j][k] == 0) {
-			blocksModels[i][j][k] = emptyBlock;
-			return;
 		}
-		boolean top = true;
-		boolean bottom = true;
-		boolean left = true;
-		boolean right = true;
-		boolean front = true;
-		boolean back = true;
-		try {
-			if (blocks[i][j + 1][k] != 0) {top = false;}
-		} catch (IndexOutOfBoundsException e) {}
-		try {
-			if (blocks[i][j - 1][k] != 0) {bottom = false;}
-		} catch (IndexOutOfBoundsException e) {bottom = false;}
-		try {
-			if (blocks[i + 1][j][k] != 0) {right = false;}
-		} catch (IndexOutOfBoundsException e) {
-			try {
-				if(r.blocks[0][j][k] != 0) {
-					right = false;
-				} 
-			} catch (Exception d) {right = false;}
-		}
-		try {
-			if (blocks[i - 1][j][k] != 0) {left = false;}
-		} catch (IndexOutOfBoundsException e) {
-			try {
-				if (l.blocks[Chunk.x-1][j][k] != 0) {
-					left = false;
-				}
-			} catch (Exception d) {left = false;}
-		}
-		try {
-			if (blocks[i][j][k + 1] != 0) {front = false;}
-		} catch (IndexOutOfBoundsException e) {
-			try {
-				if (f.blocks[i][j][0] != 0) {
-					front = false;
-				}
-			} catch (Exception d) {front = false;}
-		}
-		try {
-			if (blocks[i][j][k - 1] != 0) {back = false;}
-		} catch (IndexOutOfBoundsException e) {
-			try {
-				if (b.blocks[i][j][Chunk.z-1] != 0) {
-					back = false;
-				}
-			} catch (Exception d) {back = false;}
-		}
-		
-		blocksModels[i][j][k] = MeshStore.models.get(VoxelWorld.createSixBooleans(new SixBoolean(top, bottom, left, right, front, back)));
+		// System.out.println("Remesher Thread Dead");
 	}
 	
 	public void render(VoxelShader shader) {
@@ -292,7 +222,7 @@ public class Chunk {
 						continue;
 					
 					// make this based on texture id?
-					ModelTexture model = Block.blocks.get((int)blocks[i][j][k]).model;
+					ModelTexture model = Block.blocks.get(blocks[i][j][k]).model;
 					RawBlockModel rawModel = blocksModels[i][j][k];
 					
 					if (rawModel == null)
@@ -328,7 +258,7 @@ public class Chunk {
 		return Block.blocks.get(getBlock(x, y, z));
 	}
 	
-	public int getBlock(int x, int y, int z) {
+	public short getBlock(int x, int y, int z) {
 		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
 			return 0;
 		if (x < 0)

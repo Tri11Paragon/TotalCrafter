@@ -10,7 +10,6 @@ import com.brett.world.Chunk;
 import com.brett.world.VoxelWorld;
 import com.brett.world.blocks.Block;
 import com.brett.world.cameras.Camera;
-import com.tester.Main;
 
 /**
 *
@@ -62,35 +61,7 @@ public class MouseBlockPicker {
 			return 0;
 	}
 	
-	@Deprecated
-	Vector3f z = new Vector3f(0,0,0);
-	/**
-	 * Old please use setCurrentBlockPointNEW
-	 * this one has issues.
-	 */
-	@Deprecated
-	public Vector3f setCurrectBlockPoint(int block) {
-		if (intersectionInRange(0, RAY_RANGE, currentRay)) {
-			Vector3f pos = accountForFloatErrors(binarySearch(0, 0, RAY_RANGE, currentRay));
-			try {
-				Chunk c = getTerrain(pos.x, pos.z);
-				if (c == null)
-					return pos;
-				Main.hitent.setPosition(pos);
-				System.out.println(pos);
-				System.out.println((int)(pos.x) + " " + (int)pos.y + " " + (int)(pos.z));
-				System.out.println((int)(pos.x)%16 + " " + (int)pos.y + " " + (int)(pos.z)%16);
-				// TODO: REMOVE THIS
-				Block.blocks.get(c.getBlock((int)(pos.x)%16, (int)pos.y, (int)(pos.z)%16)).playBreakSound((int)(pos.x), (int)pos.y, (int)(pos.z));
-				c.setBlock((int)(pos.x)%16, (int)pos.y, (int)(pos.z)%16, block);
-				c.remesh();
-				return pos;
-			} catch (Exception e) {}
-		}
-		return z;
-	}
-	
-	public void setCurrentBlockPointNEW(int block) {
+	public void setCurrentBlockPoint(int block) {
 		Vector3f pos = camera.getPosition();
 		Vector3f pointRay = this.currentRay;
 		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
@@ -104,6 +75,7 @@ public class MouseBlockPicker {
 			walked.y += yStep;
 			walked.z += zStep;
 			Vector3f posadj = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
+			Vector3f posadjUn = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
 			Chunk c = getTerrain(posadj.x, posadj.z);
 			if (c == null)
 				continue;
@@ -113,10 +85,12 @@ public class MouseBlockPicker {
 				posadj.x = biasNegative(posadj.x, -Chunk.x);
 			if (posadj.z < 0)
 				posadj.z = biasNegative(posadj.z, -Chunk.z);
-			int blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
+			short blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
 			if (blockid == 0 || blockid == 3)
 				continue;
-			Block.blocks.get(blockid).playBreakSound((int) (posadj.x) % 16, (int) posadj.y, (int) (posadj.z) % 16);
+			Block b = Block.blocks.get(blockid);
+			b.playBreakSound((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
+			b.onBlockBreaked((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z), world);
 			c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), block);
 			c.remesh();
 			return;
@@ -132,6 +106,10 @@ public class MouseBlockPicker {
 		currentRay = calculateMouseRay();
 	}
 
+	/**
+	 * NOT MY CODE BELOW
+	 */
+	
 	private Vector3f calculateMouseRay() {
 		float mouseX = Display.getWidth()/2;
 		float mouseY = Display.getHeight()/2;

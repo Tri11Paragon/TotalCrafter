@@ -32,20 +32,13 @@ public class VoxelWorld {
 	public VoxelWorld(MasterRenderer renderer, Loader loader, Camera cam) {
 		this.loader = loader;
 		shader = new VoxelShader();
+		resolveMeshes();
 		shader.start();
 		shader.loadProjectionMatrix(renderer.getProjectionMatrix());
 		shader.stop();
 		Chunk.fullBlock = RawBlockModel.convertRawModel(loader.loadToVAO(MeshStore.verts, MeshStore.uv, MeshStore.indicies));
 		Chunk.emptyBlock = RawBlockModel.convertRawModel(loader.loadToVAO(MeshStore.vertsNONE, MeshStore.uvNONE, MeshStore.indiciesNONE));
-		resolveMeshes();
-		chunk = new ChunkStore(cam, loader);
-		
-		/*for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
-				Main.loadingScreen.render(1);
-				chunk.setChunk(new Chunk(loader, i, j), i, j);
-			}
-		}*/
+		chunk = new ChunkStore(cam, loader, this);
 		
 		// reduces ram at cost of CPU
 		// not much anymore but at a time
@@ -54,15 +47,38 @@ public class VoxelWorld {
 			@Override
 			public void run() {
 				while (Main.isOpen) {
+					//System.gc();
+					for (int i = -ChunkStore.renderDistance; i < ChunkStore.renderDistance; i++) {
+						for (int k = -ChunkStore.renderDistance; k < ChunkStore.renderDistance; k++) {
+							int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
+							int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
+							Chunk c = chunk.getChunk(cx, cz);
+							if (c == null)
+								continue;
+							c.remeshNo();
+						}
+					}
+					/*try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}*/
+				}
+			}
+		}).start();
+		/*new Thread(new Runnable() {		
+			@Override
+			public void run() {
+				while (Main.isOpen) {
 					System.gc();
 					try {
-						Thread.sleep(10000);
+						Thread.sleep(5000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
 			}
-		}).start();
+		}).start();*/
 		picker = new MouseBlockPicker(cam, renderer.getProjectionMatrix(), this);
 	}
 	
@@ -81,7 +97,7 @@ public class VoxelWorld {
 		while (Mouse.next()){
 			if (Mouse.getEventButtonState()) {
 				if (Mouse.getEventButton() == 0) {
-					picker.setCurrentBlockPointNEW(0);
+					picker.setCurrentBlockPoint(0);
 					Vector3f d = picker.getCurrentTerrainPoint();
 					if (d == null)
 						return;
@@ -90,12 +106,13 @@ public class VoxelWorld {
 					Chunk c = chunk.getChunk(dx, dz);
 					if (c == null)
 						return;
-					c.remesh(chunk.getChunk(dx-1, dz), chunk.getChunk(dx+1, dz), chunk.getChunk(dx, dz+1), chunk.getChunk(dx, dz-1));
+					c.remesh();
 				}
 			}
 		}
 	}
 	
+	byte pos = 0;
 	public void resolveMeshes() {
 		for (int t = 0; t < 2; t++) {
 			for (int l = 0; l < 2; l++) {
@@ -105,7 +122,7 @@ public class VoxelWorld {
 							for (int u = 0; u < 2; u++) {
 								// i don't like this.
 								// trust me i tried for loop booleans
-								SixBoolean boo = createSixBooleans(new SixBoolean(t == 0 ? false : true, u == 0 ? false : true, l == 0 ? false : true, r == 0 ? false : true, 
+								SixBoolean boo = VoxelWorld.createSixBooleans(new SixBoolean(t == 0 ? false : true, u == 0 ? false : true, l == 0 ? false : true, r == 0 ? false : true, 
 										f == 0 ? false : true, b == 0 ? false : true));
 								int[] ind = {};
 								float[] verts = {};
@@ -123,6 +140,7 @@ public class VoxelWorld {
 								if (t == 0 && l == 0 && r == 0 && f == 0 && b == 0 && u == 0)
 									MeshStore.boolEmpty = m.getVaoID();
 								MeshStore.models.put(boo, RawBlockModel.convertRawModel(m));
+								pos++;
 							}
 						}	
 					}	
@@ -139,6 +157,19 @@ public class VoxelWorld {
 				return b;
 			}
 		}
+		MeshStore.booleans.add(b);
+		return b;
+	}
+	
+	public static synchronized SixBoolean createSixBooleans(boolean left, boolean right, boolean front, boolean back, boolean top, boolean bottom) {
+		SixBoolean b;
+		for (int i = 0; i < MeshStore.booleans.size(); i++) {
+			if (MeshStore.booleans.get(i).isYes(top, bottom, left, right, front, back)){
+				b = MeshStore.booleans.get(i);
+				return b;
+			}
+		}
+		b = new SixBoolean(top, bottom, left, right, front, back);
 		MeshStore.booleans.add(b);
 		return b;
 	}

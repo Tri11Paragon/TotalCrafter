@@ -1,5 +1,6 @@
 package com.brett.renderer.gui.screens;
 
+
 /**
 *
 * @author brett
@@ -11,5 +12,5 @@ public class MainMenu {
 	public MainMenu() {
 		
 	}
-	
+
 }

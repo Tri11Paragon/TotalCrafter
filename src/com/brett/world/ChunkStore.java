@@ -13,7 +13,6 @@ import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.Tuple;
 import com.brett.renderer.shaders.VoxelShader;
 import com.brett.world.cameras.Camera;
-import com.brett.world.terrain.noisefunctions.BaseNoiseFunction;
 import com.brett.world.terrain.noisefunctions.ChunkNoiseFunction;
 import com.brett.world.terrain.noisefunctions.NoiseFunction;
 import com.tester.Main;
@@ -26,7 +25,7 @@ import com.tester.Main;
 
 public class ChunkStore {
 
-	private static final int renderDistance = 4;
+	public static final int renderDistance = 4;
 	public static final String worldLocation = "worlds/w1/";
 	public static final String dimLocation = "worlds/w1/DIM";
 	public static File wfolder = new File(worldLocation);
@@ -41,15 +40,17 @@ public class ChunkStore {
 	@SuppressWarnings("unused")
 	private List<Chunk> activeChunks = new ArrayList<Chunk>();
 
-	private Camera cam;
+	protected Camera cam;
 	private Loader loader;
 	private NoiseFunction nf;
+	private VoxelWorld world;
 
-	public ChunkStore(Camera cam, Loader loader) {
+	public ChunkStore(Camera cam, Loader loader, VoxelWorld world) {
 		new File(dimLocation).mkdirs();
 		this.cam = cam;
 		this.loader = loader;
 		this.nf = new ChunkNoiseFunction(694);
+		this.world = world;
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -74,7 +75,7 @@ public class ChunkStore {
 		if (chunks.containsKey(regionPosX, regionPosZ)) {
 			Chunk c = chunks.get(regionPosX, regionPosZ).getChunk(x, z);
 			if (c == null) {
-				c = new Chunk(loader,this, nf, x, z);
+				c = new Chunk(loader,world, nf, x, z);
 				chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
 				return c;
 			} else {
@@ -85,7 +86,7 @@ public class ChunkStore {
 			chunks.put(regionPosX, regionPosZ, r);
 			Chunk c = r.getChunk(x, z);
 			if (c == null) {
-				c = new Chunk(loader,this, nf, x, z);
+				c = new Chunk(loader,world, nf, x, z);
 				chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
 				return c;
 			}else
@@ -109,6 +110,8 @@ public class ChunkStore {
 			for (int k = -renderDistance; k < renderDistance; k++) {
 				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
 				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
+				//if (!cam.planeIntersection(i, k, -16))
+				//	continue;
 				Chunk c = getChunk(cx, cz);
 				if (c == null) {
 					queChunk(cx, cz);
@@ -159,6 +162,36 @@ public class ChunkStore {
 			return chunks.get(regionPosX, regionPosZ).getChunk(x, z);
 		else
 			return null;
+	}
+	
+	public short getBlock(int x, int y, int z) {
+		Chunk c = getChunk(x, z);
+		if (c == null)
+			return 0;
+		x%=16;
+		z%=16;
+		if (x < 0)
+			x = biasNegative(x, -Chunk.x);
+		if (z < 0)
+			z = biasNegative(z, -Chunk.z);
+		return c.getBlock(x, y, z);
+	}
+	
+	public void setBlock(int x, int y, int z, short block) {
+		Chunk c = getChunk(x, z);
+		if (c == null)
+			return;
+		x%=16;
+		z%=16;
+		if (x < 0)
+			x = biasNegative(x, -Chunk.x);
+		if (z < 0)
+			z = biasNegative(z, -Chunk.z);
+		c.setBlock(x, y, z, block);
+	}
+	
+	private int biasNegative(int f, int unitSize) {
+		return unitSize - f;
 	}
 
 	/**

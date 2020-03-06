@@ -14,23 +14,25 @@ public class ChunkNoiseFunction extends NoiseFunction {
 
 	@Override
 	public float getInterpolatedNoise(float x, float z) {
-		return (float) (ImprovedNoise.noise(ImprovedNoise.noise(x, getIntNoise(x, z)/20, z), 
-				ImprovedNoise.noise(x, ImprovedNoise.noise(x, getIntNoise(x, z)/10, z)*10, z)/10, 
-				ImprovedNoise.noise(x, getIntNoise(x, z)/5, z)
-				)*30) + 30;
+		return (float) (ImprovedNoise.noise(ImprovedNoise.noise(x, getIntNoise(x, z, 2)/20, z), 
+				ImprovedNoise.noise(x, ImprovedNoise.noise(x, getIntNoise(x, z, 2)/10, z)*10, z)/10, 
+				ImprovedNoise.noise(x, getIntNoise(x, z, 2)/5, z)
+				)*(getIntNoise(x, z, 3)*40)) + 50;
 	}
 	
-	public float getIntNoise(float x, float z) {
+	public float getIntNoise(float x, float z, int size) {
 		float fd = getSimNoise(x, z);
-		fd = interpolate(fd, getSimNoise(x+1, z+1), getNoise(x, z));
-		fd = interpolate(fd, getSimNoise(x-1, z-1), getNoise(x, z));
+		float factor = 1;
+		for (int i = -size; i < size; i++) {
+			for (int j = -size; j < size; j++) {
+				fd += ImprovedNoise.noise(x+factor*i, this.seed, z+factor*j)*(i/size);
+				fd += ImprovedNoise.noise(x-factor*i, this.seed, z-factor*j)*(j/size);
+				fd += ImprovedNoise.noise(x-factor*i, this.seed, z-factor*j)*(j/size);
+				fd += ImprovedNoise.noise(x+factor*i, this.seed, z+factor*j)*(i/size);
+			}
+		}
+		fd /= size;
 		return fd;
-	}
-	
-	private float interpolate(float a, float b, float blend) {
-		double theta = blend * Math.PI;
-        float f = (float)(1f - Math.cos(theta)) * 0.5f;
-        return a * (1f - f) + b * f;
 	}
 	
 	public float getSimNoise(float x, float z) {
@@ -39,10 +41,6 @@ public class ChunkNoiseFunction extends NoiseFunction {
 		fd += getSmoothNoise(x, z-1)/3;
 		fd += getSmoothNoise(x-1, z)/3;
 		fd += getSmoothNoise(x+1, z)/3;
-		fd += getSmoothNoise(x+2, z)/9;
-		fd += getSmoothNoise(x-2, z)/9;
-		fd += getSmoothNoise(x, z+2)/9;
-		fd += getSmoothNoise(x, z-2)/9;
 		return fd;
 	}
 	
