@@ -11,6 +11,7 @@ import org.lwjgl.util.vector.Vector3f;
 import com.brett.DisplayManager;
 import com.brett.console.Console;
 import com.brett.console.commands.SpawnCommand;
+import com.brett.console.commands.TeleportCommand;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.ModelTexture;
@@ -27,7 +28,6 @@ import com.brett.renderer.shaders.LineShader;
 import com.brett.renderer.shaders.PointShader;
 import com.brett.sound.AudioController;
 import com.brett.sound.AudioSource;
-import com.brett.tools.Maths;
 import com.brett.tools.MousePicker;
 import com.brett.tools.SettingsLoader;
 import com.brett.tools.obj.OBJLoader;
@@ -109,6 +109,7 @@ public class Main {
 		// FONT
 		FontType monospaced = new FontType(loader.loadTexture("fonts/monospaced-72", 0), new File("resources/textures/fonts/monospaced-72.fnt"));
 		Console console = new Console(loader, monospaced, ui.getRenderer());
+		console.registerCommand(new String[] {"tp", "teleport"}, new TeleportCommand(camera));
 		loadingScreen.render(5);
 		//new GUIText("Hello" + '\n' + "There!", 3, monospaced, new Vector2f(0, 0), 0.5f, false, 0);
 		
@@ -203,6 +204,7 @@ public class Main {
 		//client.sendData("test".getBytes());
 		
 		VoxelWorld vworld = new VoxelWorld(renderer, loader, camera);
+		camera.assignWorld(vworld);
 		loadingScreen.render(5);
 		
 		Mouse.setGrabbed(false);

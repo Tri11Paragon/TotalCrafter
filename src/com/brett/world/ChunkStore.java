@@ -25,7 +25,7 @@ import com.tester.Main;
 
 public class ChunkStore {
 
-	public static final int renderDistance = 3;
+	public static int renderDistance = 3;
 	public static final String worldLocation = "worlds/w1/";
 	public static final String dimLocation = "worlds/w1/DIM";
 	public static File wfolder = new File(worldLocation);
@@ -152,7 +152,10 @@ public class ChunkStore {
 		chunks.put(regionPosX, regionPosZ, new Region(regionPosX, regionPosZ));
 		chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
 	}
-
+	
+	/**
+	 * Note this is in chunk pos and not world pos.
+	 */
 	public Chunk getChunk(int x, int z) {
 		int regionPosX = x / Region.x;
 		int regionPosZ = z / Region.z;
@@ -160,16 +163,24 @@ public class ChunkStore {
 			regionPosX -= 1;
 		if (z < 0)
 			regionPosZ -= 1;
-		if (chunks.containsKey(regionPosX, regionPosZ))
-			return chunks.get(regionPosX, regionPosZ).getChunk(x, z);
-		else
+		if (chunks.containsKey(regionPosX, regionPosZ)) {
+			Region r = chunks.get(regionPosX, regionPosZ);
+			if (r == null)
+				return null;
+			return r.getChunk(x, z);
+		}else
 			return null;
 	}
 	
 	public short getBlock(int x, int y, int z) {
-		Chunk c = getChunk(x, z);
+		int xoff = 0,zoff = 0;
+		if (x < 0)
+			xoff = -1;
+		if (z < 0)
+			zoff = -1;
+		Chunk c = getChunk(x/Chunk.x + xoff, z/Chunk.z + zoff);
 		if (c == null)
-			return 0;
+			return -1;
 		x%=16;
 		z%=16;
 		if (x < 0)

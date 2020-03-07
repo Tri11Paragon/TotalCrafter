@@ -1,6 +1,7 @@
 package com.brett.console.commands;
 
 import com.brett.console.Command;
+import com.brett.world.cameras.Camera;
 
 /** 
 *	Brett Terpstra
@@ -8,11 +9,20 @@ import com.brett.console.Command;
 *	
 */
 public class TeleportCommand extends Command {
-
+	
+	public Camera cam;
+	
+	public TeleportCommand(Camera c) {
+		this.cam = c;
+	}
+	
 	@Override
 	public String run(String data, String[] vars) {
 		if (vars.length < 3)
-			return "Please enter";
+			return "Please enter an x,y,z";
+		cam.getPosition().x = Float.parseFloat(vars[0]);
+		cam.getPosition().y = Float.parseFloat(vars[1]);
+		cam.getPosition().z = Float.parseFloat(vars[2]);
 		return "";
 	}
 	

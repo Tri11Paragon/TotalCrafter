@@ -133,26 +133,26 @@ public class MouseBlockPicker {
 				walkedNeg.x += xStep;
 				walkedNeg.y += yStep;
 				walkedNeg.z += zStep;
-				posadj = new Vector3f(posadj.x - xStep, posadj.y - yStep, posadj.z - zStep);
-				posadjUn = new Vector3f(posadjUn.x - xStep, posadjUn.y - yStep, posadjUn.z - zStep);
+				Vector3f posadjNeg = new Vector3f(posadj.x - xStep, posadj.y - yStep, posadj.z - zStep);
+				Vector3f posadjNegUn = new Vector3f(posadjUn.x - xStep, posadjUn.y - yStep, posadjUn.z - zStep);
 				
-				c = getTerrain(posadj.x, posadj.z);
+				c = getTerrain(posadjNeg.x, posadjNeg.z);
 				if (c == null)
 					continue;
-				posadj.x %= 16;
-				posadj.z %= 16;
-				if (posadj.x < 0)
-					posadj.x = biasNegative(posadj.x, -Chunk.x);
-				if (posadj.z < 0)
-					posadj.z = biasNegative(posadj.z, -Chunk.z);
-				blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
+				posadjNeg.x %= 16;
+				posadjNeg.z %= 16;
+				if (posadjNeg.x < 0)
+					posadjNeg.x = biasNegative(posadjNeg.x, -Chunk.x);
+				if (posadjNeg.z < 0)
+					posadjNeg.z = biasNegative(posadjNeg.z, -Chunk.z);
+				blockid = c.getBlock((int)(posadjNeg.x),(int)posadjNeg.y, (int)(posadjNeg.z));
 				if (blockid != 0)
 					continue;
 				
 				Block b = Block.blocks.get(blockid);
-				b.playBreakSound((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
-				b.onBlockBreaked((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z), world);
-				c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), block);
+				b.playBreakSound((int) (posadjNegUn.x), (int) posadjNegUn.y, (int) (posadjNegUn.z));
+				b.onBlockBreaked((int) (posadjNegUn.x), (int) posadjNegUn.y, (int) (posadjNegUn.z), world);
+				c.setBlock((int)(posadjNeg.x), (int)posadjNeg.y,  (int)(posadjNeg.z), block);
 				c.remesh();
 				return;
 			}

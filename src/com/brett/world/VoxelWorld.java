@@ -52,10 +52,12 @@ public class VoxelWorld {
 						for (int k = -ChunkStore.renderDistance; k < ChunkStore.renderDistance; k++) {
 							int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
 							int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
-							Chunk c = chunk.getChunk(cx, cz);
-							if (c == null)
-								continue;
-							c.remeshNo();
+							try {
+								Chunk c = chunk.getChunk(cx, cz);
+								if (c == null)
+									continue;
+								c.remeshNo();
+							} catch (Exception e) {}
 						}
 					}
 					/*try {

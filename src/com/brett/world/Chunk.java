@@ -351,4 +351,15 @@ public class Chunk {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Chunk[");
+		sb.append(xoff);
+		sb.append(", ");
+		sb.append(zoff);
+		sb.append("]");
+		return sb.toString();
+	}
+	
 }

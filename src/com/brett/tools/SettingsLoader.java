@@ -12,6 +12,7 @@ import org.lwjgl.input.Keyboard;
 
 import com.brett.DisplayManager;
 import com.brett.renderer.MasterRenderer;
+import com.brett.world.ChunkStore;
 
 /**
 *
@@ -46,6 +47,8 @@ public class SettingsLoader {
 					MasterRenderer.FOV = Float.parseFloat(name[1]);
 				if (name[0].equals("fps"))
 					DisplayManager.FPS_MAX = (int) Float.parseFloat(name[1]);
+				if (name[0].equals("renderDistance"))
+					ChunkStore.renderDistance = (int) Float.parseFloat(name[1]);
 				if (name[0].equals("key_console"))
 					KEY_CONSOLE = (int) Float.parseFloat(name[1]);
 				if (name[0].equals("key_clear"))
@@ -66,6 +69,7 @@ public class SettingsLoader {
 			writer.write("");
 			writeLine(writer, "FOV: " + MasterRenderer.FOV);
 			writeLine(writer, "FPS: " + DisplayManager.FPS_MAX);
+			writeLine(writer, "renderDistance" + ChunkStore.renderDistance);
 			writeLine(writer, "key_console: " + KEY_CONSOLE);
 			writeLine(writer, "key_clear: " + KEY_CLEAR);
 			writer.close();
