@@ -12,6 +12,7 @@ import com.brett.renderer.datatypes.SixBoolean;
 import com.brett.renderer.shaders.VoxelShader;
 import com.brett.renderer.world.MeshStore;
 import com.brett.tools.MouseBlockPicker;
+import com.brett.world.blocks.Block;
 import com.brett.world.cameras.Camera;
 import com.tester.Main;
 
@@ -92,6 +93,19 @@ public class VoxelWorld {
 			chunk.renderChunks(shader);
 		MasterRenderer.disableCulling();
 		shader.stop();
+	}
+	
+	public void createExplosion(float x, float y, float z, float size) {
+		new Explosion(x, y, z, size, this).explode();;
+	}
+	
+	public void updateBlocksAround(int x, int y, int z) {
+		Block.blocks.get(this.chunk.getBlock(x, y + 1, z)).onBlockUpdated(x, y+1, z, this);
+		Block.blocks.get(this.chunk.getBlock(x, y - 1, z)).onBlockUpdated(x, y-1, z, this);
+		Block.blocks.get(this.chunk.getBlock(x+1, y, z)).onBlockUpdated(x+1, y, z, this);
+		Block.blocks.get(this.chunk.getBlock(x-1, y, z)).onBlockUpdated(x-1, y, z, this);
+		Block.blocks.get(this.chunk.getBlock(x, y, z+1)).onBlockUpdated(x, y, z+1, this);
+		Block.blocks.get(this.chunk.getBlock(x, y, z-1)).onBlockUpdated(x, y, z-1, this);
 	}
 	
 	public void update() {

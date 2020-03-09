@@ -3,6 +3,8 @@ package com.brett.renderer.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.util.vector.Vector3f;
+
 import com.brett.renderer.Loader;
 
 /**
@@ -17,7 +19,7 @@ public class EscapeMenu implements IMenu {
 	public boolean enabled = false;
 	
 	public EscapeMenu(UIMaster master, Loader loader) {
-		//elements.add(master.addCenteredTexture(-1, -1, -1, 0, 0, 200, 200, new Vector3f(0,0,0)));
+		elements.add(master.createCenteredTexture(-1, -1, -1, 0, 0, 200, 200, new Vector3f(0,0,0)));
 	}
 	
 	@Override
@@ -26,6 +28,11 @@ public class EscapeMenu implements IMenu {
 			return elements;
 		else
 			return null;
+	}
+
+	@Override
+	public void update() {
+		
 	}
 	
 }

@@ -3,6 +3,6 @@
 # Keys
 FOV: 70.0
 FPS: 120
-renderDistance3
+renderDistance: 3
 key_console: 41
 key_clear: 64

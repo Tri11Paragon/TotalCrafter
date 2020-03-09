@@ -69,7 +69,7 @@ public class SettingsLoader {
 			writer.write("");
 			writeLine(writer, "FOV: " + MasterRenderer.FOV);
 			writeLine(writer, "FPS: " + DisplayManager.FPS_MAX);
-			writeLine(writer, "renderDistance" + ChunkStore.renderDistance);
+			writeLine(writer, "renderDistance: " + ChunkStore.renderDistance);
 			writeLine(writer, "key_console: " + KEY_CONSOLE);
 			writeLine(writer, "key_clear: " + KEY_CLEAR);
 			writer.close();

@@ -51,7 +51,6 @@ public class Console {
 		texts.add(new GUIDynamicText(inputTextBuffer, fontSize, font, new Vector2f(0.007f,0.9f - 0.005f), 0.45f, false, 1));
 		texts.add(new GUIDynamicText(textBuffer, fontSize, font, new Vector2f(0.007f, 0.020f), 0.45f, false));
 		this.registerCommand("clear", new ClearCommand(this));
-		String[] tele = {"teleport", "tp"};
 	}
 	
 	public void update() {

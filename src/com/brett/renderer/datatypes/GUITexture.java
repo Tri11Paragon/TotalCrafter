@@ -66,10 +66,6 @@ public class GUITexture implements UIElement {
 	}
 
 	@Override
-	public void update() {
-	}
-
-	@Override
 	public int getTexture2() {
 		return texture2;
 	}

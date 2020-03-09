@@ -59,9 +59,13 @@ public class GUIText {
 		this.lineMaxSize = maxLineLength;
 		this.centerText = centered;
 		this.maxNumberOfLines = maxNumberOfLines;
-		TextMaster.loadText(this);
+		//TextMaster.loadText(this);
 	}
-
+	
+	public void setText(String test) {
+		this.textString = test;
+	}
+	
 	public void remove() {
 		TextMaster.removeText(this);
 	}

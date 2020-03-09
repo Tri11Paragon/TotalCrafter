@@ -28,6 +28,16 @@ public class UIButton extends GUITexture implements UIElement {
 		this.event = event;
 	}
 	
+	public UIButton(int texture, int hovertexture, GUITexture tex, UIControl event, float x, float y, float width, float height) {
+		super(tex.getTexture(), tex.getTexture2(), tex.getTexture3(), tex.getPosition(), tex.getScale());
+		this.px = x;
+		this.py = y;
+		this.pw = width;
+		this.ph = height;
+		this.ht = hovertexture;
+		this.event = event;
+	}
+	
 	public void update() {
 		float mx = Mouse.getX();
 		float my = Mouse.getY();

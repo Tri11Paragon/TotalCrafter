@@ -28,15 +28,19 @@ public class Block {
 		this.model = model;
 	}
 	
-	public void onBlockCreated(float x, float y, float z, VoxelWorld world) {
+	public void onBlockCreated(int x, int y, int z, VoxelWorld world) {
 		
 	}
 	
-	public void onBlockPlaced(float x, float y, float z, VoxelWorld world) {
+	public void onBlockPlaced(int x, int y, int z, VoxelWorld world) {
 		
 	}
 	
-	public void onBlockBreaked(float x, float y, float z, VoxelWorld world) {
+	public void onBlockBreaked(int x, int y, int z, VoxelWorld world) {
+		
+	}
+	
+	public void onBlockUpdated(int x, int y, int z, VoxelWorld world) {
 		
 	}
 	
@@ -76,7 +80,7 @@ public class Block {
 		blocks.put((short) 2, new Block(new ModelTexture(loader.loadTexture("dirt"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
 		blocks.put((short) 3, new Block(new ModelTexture(loader.loadTexture("icon/logo"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
 		blocks.put((short) 4, new Block(new ModelTexture(loader.loadTexture("grassy2"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
-		blocks.put((short) 5, new Block(new ModelTexture(loader.loadTexture("sand"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
+		blocks.put((short) 5, new BlockSand(new ModelTexture(loader.loadTexture("sand")), (short) 5).setBreakSound(AudioController.loadSound("bounce.ogg")));
 		blocks.put((short) 6, new Block(new ModelTexture(loader.loadTexture("clay"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
 		blocks.put((short) 7, new Block(new ModelTexture(loader.loadTexture("snow"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
 	}

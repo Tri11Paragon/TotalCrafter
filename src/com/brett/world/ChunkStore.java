@@ -112,7 +112,7 @@ public class ChunkStore {
 			for (int k = -renderDistance; k < renderDistance; k++) {
 				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
 				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
-				//if (!cam.planeIntersection(i, k, -16))
+				//if (!cam.isPointInFrustum(i, cam.getPosition().y, k))
 				//	continue;
 				Chunk c = getChunk(cx, cz);
 				if (c == null) {
@@ -173,6 +173,10 @@ public class ChunkStore {
 	}
 	
 	public short getBlock(int x, int y, int z) {
+		if (y < 0)
+			return 0;
+		if (y > Chunk.y)
+			return 0;
 		int xoff = 0,zoff = 0;
 		if (x < 0)
 			xoff = -1;
@@ -191,6 +195,19 @@ public class ChunkStore {
 	}
 	
 	public void setBlock(int x, int y, int z, short block) {
+		Chunk c = getChunk(x, z);
+		if (c == null)
+			return;
+		x%=16;
+		z%=16;
+		if (x < 0)
+			x = biasNegative(x, -Chunk.x);
+		if (z < 0)
+			z = biasNegative(z, -Chunk.z);
+		c.setBlock(x, y, z, block);
+	}
+	
+	public void setBlock(int x, int y, int z, int block) {
 		Chunk c = getChunk(x, z);
 		if (c == null)
 			return;

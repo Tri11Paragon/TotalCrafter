@@ -28,6 +28,7 @@ import com.brett.renderer.shaders.LineShader;
 import com.brett.renderer.shaders.PointShader;
 import com.brett.sound.AudioController;
 import com.brett.sound.AudioSource;
+import com.brett.tools.Maths;
 import com.brett.tools.MousePicker;
 import com.brett.tools.SettingsLoader;
 import com.brett.tools.obj.OBJLoader;
@@ -36,6 +37,7 @@ import com.brett.world.World;
 import com.brett.world.cameras.CreativeFirstPersonCamera;
 import com.brett.world.entities.Entity;
 import com.sun.management.OperatingSystemMXBean;
+import com.sun.org.apache.bcel.internal.classfile.PMGClass;
 
 public class Main {
 	
@@ -164,18 +166,18 @@ public class Main {
 		//world.spawnEntity(ground_lamp);
 		//entities.add(player);texturename
 		//world.spawnEntity(big_box);
-		world.spawnEntity(hitent);
+		//world.spawnEntity(hitent);
 		//world.spawnEntity(ent);
 		//world.spawnEntity(player);
 		
 		//normalMapEntities.add(new Entity(cobblestone_floor_02, new Vector3f(75, 5, -75), 0, 0, 0, 1f));
 		
 		// water
-		WaterTile tile = new WaterTile(150, -5, -150, 125);
-		world.add(tile);
-		WaterTile tile2 = new WaterTile(-150, -5, -150, 125);
-		world.add(tile2);
-		loadingScreen.render(5);
+		//WaterTile tile = new WaterTile(150, -5, -150, 125);
+		//world.add(tile);
+		//WaterTile tile2 = new WaterTile(-150, -5, -150, 125);
+		//world.add(tile2);
+		//loadingScreen.render(5);
 		/*ParticleTexture tempTexture = new ParticleTexture(loader.loadTexture("particles/particleAtlas"), 4).useAdditiveBlending();
 		ParticleTexture fireTexture = new ParticleTexture(loader.loadTexture("particles/fire"), 8);
 		ParticleTexture smokeTexture = new ParticleTexture(loader.loadTexture("particles/smoke"), 8);
@@ -213,7 +215,7 @@ public class Main {
 		while (!Display.isCloseRequested()) {
 			double startTime = Sys.getTime() * 1000 / Sys.getTimerResolution();
 			camera.move();
-			//camera.generateFrustum(renderer.getProjectionMatrix(), Maths.createViewMatrixOTHER(camera));
+			//camera.calculateFrustum(renderer.getProjectionMatrix(), Maths.createViewMatrixOTHER(camera));
 			//System.out.println(camera.planeIntersection(new Vector3f(0,0,0), 1));
 			AudioController.setListenerPosition(camera.getPosition());
 			ls.start();

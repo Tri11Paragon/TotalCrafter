@@ -12,4 +12,6 @@ public interface IMenu {
 	
 	public List<UIElement> render();
 	
+	public void update();
+	
 }

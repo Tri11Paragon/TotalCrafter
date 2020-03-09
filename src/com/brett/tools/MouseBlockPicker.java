@@ -91,6 +91,7 @@ public class MouseBlockPicker {
 			Block b = Block.blocks.get(blockid);
 			b.playBreakSound((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
 			b.onBlockBreaked((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z), world);
+			world.updateBlocksAround((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
 			c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), block);
 			c.remesh();
 			return;
