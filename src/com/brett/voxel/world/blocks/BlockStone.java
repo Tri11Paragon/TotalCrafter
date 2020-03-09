@@ -1,4 +1,4 @@
-package com.brett.world.blocks;
+package com.brett.voxel.world.blocks;
 
 /**
 *

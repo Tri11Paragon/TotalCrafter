@@ -32,7 +32,8 @@ import com.brett.tools.Maths;
 import com.brett.tools.MousePicker;
 import com.brett.tools.SettingsLoader;
 import com.brett.tools.obj.OBJLoader;
-import com.brett.world.VoxelWorld;
+import com.brett.voxel.gui.MainMenu;
+import com.brett.voxel.world.VoxelWorld;
 import com.brett.world.World;
 import com.brett.world.cameras.CreativeFirstPersonCamera;
 import com.brett.world.entities.Entity;
@@ -84,6 +85,7 @@ public class Main {
 		loadingScreen = new LoadingScreen(loader, ui.getRenderer(), 100);
 		loadingScreen.render(5);
 		ui.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);
+		ui.addMenu(new MainMenu(ui, loader));
 		World world = new World(renderer, loader, camera, -5);
 		TextMaster.init(loader);
 		ParticleMaster.init(loader, renderer.getProjectionMatrix());

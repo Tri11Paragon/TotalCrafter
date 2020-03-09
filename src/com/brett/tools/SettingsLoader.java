@@ -12,7 +12,7 @@ import org.lwjgl.input.Keyboard;
 
 import com.brett.DisplayManager;
 import com.brett.renderer.MasterRenderer;
-import com.brett.world.ChunkStore;
+import com.brett.voxel.world.ChunkStore;
 
 /**
 *

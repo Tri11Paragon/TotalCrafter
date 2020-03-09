@@ -1,4 +1,4 @@
-package com.brett.world.blocks;
+package com.brett.voxel.world.blocks;
 
 import java.util.HashMap;
 
@@ -8,7 +8,7 @@ import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.sound.AudioController;
 import com.brett.tools.Maths;
-import com.brett.world.VoxelWorld;
+import com.brett.voxel.world.VoxelWorld;
 import com.tester.Main;
 
 /**

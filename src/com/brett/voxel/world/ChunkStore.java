@@ -1,4 +1,4 @@
-package com.brett.world;
+package com.brett.voxel.world;
 
 import java.io.File;
 import java.util.ArrayList;

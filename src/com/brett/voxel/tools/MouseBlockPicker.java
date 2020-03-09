@@ -1,4 +1,4 @@
-package com.brett.tools;
+package com.brett.voxel.tools;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
@@ -6,9 +6,10 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import com.brett.world.Chunk;
-import com.brett.world.VoxelWorld;
-import com.brett.world.blocks.Block;
+import com.brett.tools.Maths;
+import com.brett.voxel.world.Chunk;
+import com.brett.voxel.world.VoxelWorld;
+import com.brett.voxel.world.blocks.Block;
 import com.brett.world.cameras.Camera;
 
 /**

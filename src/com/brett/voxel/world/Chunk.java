@@ -1,4 +1,4 @@
-package com.brett.world;
+package com.brett.voxel.world;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +11,8 @@ import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.renderer.datatypes.RawBlockModel;
 import com.brett.renderer.shaders.VoxelShader;
-import com.brett.renderer.world.MeshStore;
 import com.brett.tools.Maths;
-import com.brett.world.blocks.Block;
+import com.brett.voxel.world.blocks.Block;
 import com.brett.world.terrain.noisefunctions.NoiseFunction;
 
 /**

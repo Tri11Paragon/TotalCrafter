@@ -4,7 +4,7 @@
 *	
 */ 
 
-package com.brett.renderer.world;
+package com.brett.voxel.world;
 
 import java.util.ArrayList;
 import java.util.HashMap;

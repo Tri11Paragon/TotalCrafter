@@ -1,4 +1,4 @@
-package com.brett.world;
+package com.brett.voxel.world;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL13;
@@ -10,9 +10,8 @@ import com.brett.renderer.datatypes.RawBlockModel;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.SixBoolean;
 import com.brett.renderer.shaders.VoxelShader;
-import com.brett.renderer.world.MeshStore;
-import com.brett.tools.MouseBlockPicker;
-import com.brett.world.blocks.Block;
+import com.brett.voxel.tools.MouseBlockPicker;
+import com.brett.voxel.world.blocks.Block;
 import com.brett.world.cameras.Camera;
 import com.tester.Main;
 
@@ -130,7 +129,7 @@ public class VoxelWorld {
 			}
 		}
 	}
-	
+	//TODO move this to the mesh store.
 	byte pos = 0;
 	public void resolveMeshes() {
 		for (int t = 0; t < 2; t++) {

@@ -1,4 +1,4 @@
-package com.brett.world;
+package com.brett.voxel.world;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

@@ -6,7 +6,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.DisplayManager;
 import com.brett.tools.TerrainArray;
-import com.brett.world.VoxelWorld;
+import com.brett.voxel.world.VoxelWorld;
 import com.brett.world.terrain.Terrain;
 
 public class CreativeFirstPersonCamera extends Camera {

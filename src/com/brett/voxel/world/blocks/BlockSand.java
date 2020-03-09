@@ -1,7 +1,7 @@
-package com.brett.world.blocks;
+package com.brett.voxel.world.blocks;
 
 import com.brett.renderer.datatypes.ModelTexture;
-import com.brett.world.VoxelWorld;
+import com.brett.voxel.world.VoxelWorld;
 
 /**
 *

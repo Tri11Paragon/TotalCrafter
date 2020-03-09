@@ -1,4 +1,4 @@
-package com.brett.renderer.gui.screens;
+package com.brett.voxel.gui;
 
 import java.util.ArrayList;
 import java.util.List;
