@@ -164,7 +164,9 @@ public class PointShader extends ShaderProgram {
 	}
 	
 	public void loadProjectionMatrix(Matrix4f projection){
+		this.start();
 		super.loadMatrix(location_projectionMatrix, projection);
+		this.stop();
 	}
 	
 	public void loadTranslationMatrix(Vector3f pos) {
@@ -172,8 +174,10 @@ public class PointShader extends ShaderProgram {
 	}
 	
 	public void loadViewMatrix(Camera camera){
+		this.start();
 		Matrix4f viewMatrix = Maths.createViewMatrix(camera);
 		super.loadMatrix(location_viewMatrix, viewMatrix);
+		this.stop();
 	}
 
 }

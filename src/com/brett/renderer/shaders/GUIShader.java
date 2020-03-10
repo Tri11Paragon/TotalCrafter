@@ -10,6 +10,7 @@ public class GUIShader extends ShaderProgram{
      
     private int location_transformationMatrix;
     private int location_color;
+    private int location_using_textures;
  
     public GUIShader() {
         super(VERTEX_FILE, FRAGMENT_FILE);
@@ -22,12 +23,18 @@ public class GUIShader extends ShaderProgram{
     public void loadColor(Vector3f color) {
     	super.loadVector(location_color, color);
     }
- 
+    
+    public void loadTextureAmount(int amount) {
+    	super.loadInt(location_using_textures, amount);
+    }
+    
     @Override
     protected void getAllUniformLocations() {
         location_transformationMatrix = super.getUniformLocation("transformationMatrix");
         location_color = super.getUniformLocation("color");
+        location_using_textures = super.getUniformLocation("using_textures");
     }
+  
  
     @Override
     protected void bindAttributes() {

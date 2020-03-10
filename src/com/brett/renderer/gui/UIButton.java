@@ -1,6 +1,7 @@
 package com.brett.renderer.gui;
 
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 
 import com.brett.renderer.datatypes.GUITexture;
 
@@ -28,24 +29,16 @@ public class UIButton extends GUITexture implements UIElement {
 		this.event = event;
 	}
 	
-	public UIButton(int texture, int hovertexture, GUITexture tex, UIControl event, float x, float y, float width, float height) {
-		super(tex.getTexture(), tex.getTexture2(), tex.getTexture3(), tex.getPosition(), tex.getScale());
-		this.px = x;
-		this.py = y;
-		this.pw = width;
-		this.ph = height;
-		this.ht = hovertexture;
-		this.event = event;
-	}
-	
 	public void update() {
 		float mx = Mouse.getX();
 		float my = Mouse.getY();
+		my = Display.getHeight() - my;
 		if (mx > px && mx < (px + pw)) {
 			if (my > py && my < (py + ph)) {
 				super.texture2 = ht;
-				if (Mouse.isButtonDown(1))
+				if (Mouse.isButtonDown(0)) {
 					event.event(null);
+				}
 			} else {
 				super.texture2 = -1;
 			}

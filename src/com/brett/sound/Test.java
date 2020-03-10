@@ -16,7 +16,7 @@ public class Test {
 	public static void main(String[] args) throws IOException, InterruptedException {
 
 		AudioController.init();
-		AudioController.setListenerData(0, 0, 0);
+		//AudioController.setListenerData(0, 0, 0);
 		
 		int buffer = AudioController.loadSound("bounce.ogg");
 		AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE_CLAMPED);

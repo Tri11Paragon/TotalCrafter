@@ -10,10 +10,10 @@ import com.brett.renderer.datatypes.RawBlockModel;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.SixBoolean;
 import com.brett.renderer.shaders.VoxelShader;
+import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.tools.MouseBlockPicker;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.world.cameras.Camera;
-import com.tester.Main;
 
 /**
 *
@@ -31,6 +31,7 @@ public class VoxelWorld {
 	
 	public VoxelWorld(MasterRenderer renderer, Loader loader, Camera cam) {
 		this.loader = loader;
+		Block.registerBlocks(loader);
 		shader = new VoxelShader();
 		resolveMeshes();
 		shader.start();
@@ -46,7 +47,7 @@ public class VoxelWorld {
 		new Thread(new Runnable() {		
 			@Override
 			public void run() {
-				while (Main.isOpen) {
+				while (VoxelScreenManager.isOpen) {
 					//System.gc();
 					for (int i = -ChunkStore.renderDistance; i < ChunkStore.renderDistance; i++) {
 						for (int k = -ChunkStore.renderDistance; k < ChunkStore.renderDistance; k++) {

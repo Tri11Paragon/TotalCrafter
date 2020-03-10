@@ -77,6 +77,7 @@ public class MasterRenderer {
 	
 	public void render(List<Light> lights,Camera camera, Vector4f clipPlane){
 		prepare();
+		enableShadows();
 		shader.start();
 		shader.loadLight(lights);
 		shader.loadViewMatrix(camera);
@@ -96,6 +97,16 @@ public class MasterRenderer {
 		entities.clear();
 		terrains.clear();
 		normalEntities.clear();
+	}
+	
+	public void renderSky(Camera camera) {
+		prepare();
+		skyboxRenderer.render(camera);
+	}
+	
+	public void renderSkyNone(Camera camera) {
+		GL11.glClearColor(RED, GREEN, BLUE, 1);
+		skyboxRenderer.render(camera);
 	}
 	
 	public void renderScene(List<Entity> entities, List<Entity> normalEnts, List<Terrain> terrains, List<Light> lights, Camera camera, Vector4f clipPlane) {
@@ -171,6 +182,9 @@ public class MasterRenderer {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glClearColor(RED, GREEN, BLUE, 1);
+	}
+	
+	public void enableShadows() {
 		GL13.glActiveTexture(GL13.GL_TEXTURE5);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, getShadowMapTexture());
 	}

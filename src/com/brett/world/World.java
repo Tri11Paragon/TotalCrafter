@@ -24,6 +24,7 @@ import com.brett.renderer.shaders.WaterShader;
 import com.brett.renderer.world.water.WaterFrameBuffers;
 import com.brett.renderer.world.water.WaterRenderer;
 import com.brett.tools.TerrainArray;
+import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.world.cameras.Camera;
@@ -65,7 +66,6 @@ public class World {
 	}
 	
 	private void setup(Loader loader, Camera camera) {
-		Block.registerBlocks(loader);
 		sentities = new HashMap<String, Entity>();
 		waterFBO = new WaterFrameBuffers();
 		ents = new ArrayList<Entity>();
@@ -81,7 +81,7 @@ public class World {
 		//waterRenderer = new WaterRenderer(loader, new WaterShader(), renderer.getProjectionMatrix(), waterFBO);
 	}
 	
-	public void render(Camera camera, VoxelWorld world, Light sun, boolean renderWaterFBOs) {
+	public void render(Camera camera, Light sun, boolean renderWaterFBOs) {
 		/*if (renderWaterFBOs) {
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 			waterFBO.bindReflectionFrameBuffer();
@@ -119,12 +119,6 @@ public class World {
 		 */
 		//multisampleFbo.bindFrameBuffer();
 		renderer.renderScene(ents, normalMapEntities, terrains.getAll(), lights, camera, new Vector4f(0, 0, 0, 0));
-		world.render(camera);
-		world.update();
-		Main.ls.render();
-		Main.ls.renderIN(new Vector3f(0,70,0), new Vector3f(0,90,0));
-		Main.ls.renderIN(new Vector3f(0,70,0), new Vector3f(10,90,10));
-		Main.pt.render();
 		//portal.render();
 		//waterRenderer.render(waterTiles, camera, sun);
 		ParticleMaster.renderParticles(camera);

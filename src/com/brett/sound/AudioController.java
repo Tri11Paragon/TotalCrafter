@@ -42,14 +42,16 @@ public class AudioController {
 	/**
 	 * Sets position of the listener
 	 */
-	public static void setListenerData(float x, float y, float z) {
+	public static void setListenerData(float x, float y, float z, float yaw, float pitch, float roll) {
 		AL10.alListener3f(AL10.AL_POSITION, x, y, z);
 		AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
+		AL10.alListener3f(AL10.AL_DIRECTION, pitch, yaw, roll);
 	}
 	
-	public static void setListenerPosition(Vector3f f) {
+	public static void setListenerPosition(Vector3f f, float yaw, float pitch, float roll) {
 		AL10.alListener3f(AL10.AL_POSITION, f.x, f.y, f.z);
 		AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
+		AL10.alListener3f(AL10.AL_DIRECTION, pitch, yaw, roll);
 	}
 	
 	public static int[] loadSoundFolder(String folder) {

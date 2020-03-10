@@ -8,8 +8,8 @@ import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.sound.AudioController;
 import com.brett.tools.Maths;
+import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.world.VoxelWorld;
-import com.tester.Main;
 
 /**
 *
@@ -59,11 +59,11 @@ public class Block {
 	}
 	
 	public void playBreakSound(float x, float y, float z) {
-		Main.staticSource.setPosition(x, y, z);
-		Main.staticSource.play(breakSound[Maths.randInt(0, breakSound.length-1)]);
-		Main.staticSource.setReferenceDistance(6);
-		Main.staticSource.setRollOffFactor(5);
-		Main.staticSource.setMaxDistance(15);
+		VoxelScreenManager.staticSource.setPosition(x, y, z);
+		VoxelScreenManager.staticSource.play(breakSound[Maths.randInt(0, breakSound.length-1)]);
+		VoxelScreenManager.staticSource.setReferenceDistance(6);
+		VoxelScreenManager.staticSource.setRollOffFactor(5);
+		VoxelScreenManager.staticSource.setMaxDistance(15);
 	}
 	
 	public int[] getBreakSounds() {

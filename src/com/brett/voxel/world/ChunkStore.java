@@ -12,6 +12,7 @@ import org.apache.commons.collections4.map.MultiKeyMap;
 import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.Tuple;
 import com.brett.renderer.shaders.VoxelShader;
+import com.brett.voxel.VoxelScreenManager;
 import com.brett.world.cameras.Camera;
 import com.brett.world.terrain.noisefunctions.ChunkNoiseFunction;
 import com.brett.world.terrain.noisefunctions.NoiseFunction;
@@ -55,7 +56,7 @@ public class ChunkStore {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				while(Main.isOpen) {
+				while(VoxelScreenManager.isOpen) {
 					for (int i = 0; i < ungeneratedChunks.size(); i++) {
 						Tuple<Integer, Integer> g = ungeneratedChunks.get(i);
 						setChunk(generateChunk(g.getX(), g.getY()), g.getX(), g.getY());
