@@ -13,6 +13,10 @@ import org.lwjgl.util.vector.Vector3f;
 
 public interface UIElement {
 	
+	public float getTextureScaleX();
+	
+	public float getTextureScaleY();
+	
 	public int getTexture();
 	
 	public int getTexture2();

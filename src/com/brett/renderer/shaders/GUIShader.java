@@ -11,6 +11,11 @@ public class GUIShader extends ShaderProgram{
     private int location_transformationMatrix;
     private int location_color;
     private int location_using_textures;
+    private int location_textureScaleX;
+    private int location_textureScaleY;
+    private int location_texture1;
+    private int location_texture2;
+    private int location_texture3;
  
     public GUIShader() {
         super(VERTEX_FILE, FRAGMENT_FILE);
@@ -24,8 +29,19 @@ public class GUIShader extends ShaderProgram{
     	super.loadVector(location_color, color);
     }
     
+    public void connectTextureUnits() {
+		super.loadInt(location_texture1, 0);
+		super.loadInt(location_texture2, 1);
+		super.loadInt(location_texture3, 2);
+	}
+    
     public void loadTextureAmount(int amount) {
     	super.loadInt(location_using_textures, amount);
+    }
+    
+    public void loadTextureScale(float scaleX, float scaleY) {
+    	super.loadFloat(location_textureScaleX, scaleX);
+    	super.loadFloat(location_textureScaleY, scaleY);
     }
     
     @Override
@@ -33,6 +49,11 @@ public class GUIShader extends ShaderProgram{
         location_transformationMatrix = super.getUniformLocation("transformationMatrix");
         location_color = super.getUniformLocation("color");
         location_using_textures = super.getUniformLocation("using_textures");
+        location_textureScaleX = super.getUniformLocation("textureScaleX");
+        location_textureScaleY = super.getUniformLocation("textureScaleY");
+        location_texture1 = super.getUniformLocation("guiTexture");
+        location_texture2 = super.getUniformLocation("guiTexture2");
+        location_texture3 = super.getUniformLocation("guiTexture3");
     }
   
  

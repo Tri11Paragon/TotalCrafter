@@ -38,10 +38,10 @@ public class MainMenu implements DisplaySource {
 		this.vrenderer = new VoxelRenderer(renderer, camera, world);
 		this.renderer = master.getRenderer();
 		int localWidth = Display.getWidth()/2;
-		elements.add(master.createUITexture(loader.loadTexture("icon/logo"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight()));
-		elements.add(master.createUITexture(loader.loadTexture("icon/banner"), -1, -1, localWidth-1000/3, 100, 1000, 288));
-		UIButton b = new UIButton(loader.loadTexture("dirt"), loader.loadTexture("dirt"), new SinglePlayer(vrenderer), master, localWidth-200, 350, 400, 75);
-		GUIText t = master.createDynamicText("Single Player", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 370, 400, true);
+		elements.add(master.createUITexture(loader.loadTexture("dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+		elements.add(master.createUITexture(loader.loadSpecialTexture("gui/banner"), -1, -1, localWidth-640/2, 100, 640, 360/2));
+		UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new SinglePlayer(vrenderer), master, localWidth-200, 320, 400, 60);
+		GUIText t = master.createDynamicText("Single Player", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 335, 400, true);
 		TextMaster.loadText(t);
 		master.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);
 		texts.add(t);

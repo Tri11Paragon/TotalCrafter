@@ -212,8 +212,16 @@ public class VoxelScreenManager {
 			double startTime = Sys.getTime() * 1000 / Sys.getTimerResolution();
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-			
 			scene.render();
+			
+			if (Mouse.isButtonDown(2)) {
+				Vector3f pos = camera.getPosition();
+				for (int i = -4; i <= 4; i++) {
+					for (int k = -4; k <= 4; k++) {
+						world.chunk.setBlock(i+pos.x, pos.y-1, k+pos.z, 1);
+					}
+				}
+			}
 			
 			//System.out.println(camera.getPosition());
 			//sun.update();

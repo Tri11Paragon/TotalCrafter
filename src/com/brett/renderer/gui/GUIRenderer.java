@@ -31,6 +31,9 @@ public class GUIRenderer {
 		float[] positions = {-1, 1, -1, -1, 1, 1, 1, -1};
 		quad = loader.loadToVAO(positions);
 		shader = new GUIShader();
+		shader.start();
+		shader.connectTextureUnits();
+		shader.stop();
 	}
 	
 	public void render(List<UIElement> textures) {
@@ -44,12 +47,11 @@ public class GUIRenderer {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		
-		
+		int amount = 0;
 		for (int i = 0; i < textures.size(); i++) {
 			UIElement texture = textures.get(i);
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTexture());
-			int amount = 0;
 			int tex2 = texture.getTexture2();
 			if (tex2 > -1) {
 				GL13.glActiveTexture(GL13.GL_TEXTURE1);
@@ -63,6 +65,7 @@ public class GUIRenderer {
 				amount = 2;
 			}
 			shader.loadTextureAmount(amount);
+			shader.loadTextureScale(texture.getTextureScaleX(), texture.getTextureScaleY());
 			shader.loadTransformation(Maths.createTransformationMatrix(texture.getPosition(), texture.getScale()));
 			Vector3f color = texture.getColor();
 			if (color != null)

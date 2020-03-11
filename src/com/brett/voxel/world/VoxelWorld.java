@@ -100,12 +100,12 @@ public class VoxelWorld {
 	}
 	
 	public void updateBlocksAround(int x, int y, int z) {
-		Block.blocks.get(this.chunk.getBlock(x, y + 1, z)).onBlockUpdated(x, y+1, z, this);
-		Block.blocks.get(this.chunk.getBlock(x, y - 1, z)).onBlockUpdated(x, y-1, z, this);
-		Block.blocks.get(this.chunk.getBlock(x+1, y, z)).onBlockUpdated(x+1, y, z, this);
-		Block.blocks.get(this.chunk.getBlock(x-1, y, z)).onBlockUpdated(x-1, y, z, this);
-		Block.blocks.get(this.chunk.getBlock(x, y, z+1)).onBlockUpdated(x, y, z+1, this);
-		Block.blocks.get(this.chunk.getBlock(x, y, z-1)).onBlockUpdated(x, y, z-1, this);
+		Block.blocks.get(this.chunk.getBlockBIAS(x, y + 1, z)).onBlockUpdated(x, y + 1, z, this);
+		Block.blocks.get(this.chunk.getBlockBIAS(x, y - 1, z)).onBlockUpdated(x, y - 1, z, this);
+		Block.blocks.get(this.chunk.getBlockBIAS(x+1, y, z)).onBlockUpdated(x+1, y, z, this);
+		Block.blocks.get(this.chunk.getBlockBIAS(x-1, y, z)).onBlockUpdated(x-1, y, z, this);
+		Block.blocks.get(this.chunk.getBlockBIAS(x, y, z+1)).onBlockUpdated(x, y, z+1, this);
+		Block.blocks.get(this.chunk.getBlockBIAS(x, y, z-1)).onBlockUpdated(x, y, z-1, this);
 	}
 	
 	public void update() {

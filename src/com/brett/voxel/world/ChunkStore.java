@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
-
 import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.Tuple;
 import com.brett.renderer.shaders.VoxelShader;
@@ -16,7 +15,6 @@ import com.brett.voxel.VoxelScreenManager;
 import com.brett.world.cameras.Camera;
 import com.brett.world.terrain.noisefunctions.ChunkNoiseFunction;
 import com.brett.world.terrain.noisefunctions.NoiseFunction;
-import com.tester.Main;
 
 /**
  *
@@ -173,7 +171,7 @@ public class ChunkStore {
 			return null;
 	}
 	
-	public short getBlock(int x, int y, int z) {
+	public short getBlock(float x, float y, float z) {
 		if (y < 0)
 			return 0;
 		if (y > Chunk.y)
@@ -183,7 +181,7 @@ public class ChunkStore {
 			xoff = -1;
 		if (z < 0)
 			zoff = -1;
-		Chunk c = getChunk(x/Chunk.x + xoff, z/Chunk.z + zoff);
+		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
 		if (c == null)
 			return -1;
 		x%=16;
@@ -192,36 +190,64 @@ public class ChunkStore {
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
-		return c.getBlock(x, y, z);
+		return c.getBlock((int)x, (int)y, (int)z);
 	}
 	
-	public void setBlock(int x, int y, int z, short block) {
-		Chunk c = getChunk(x, z);
+	public void setBlock(float x, float y, float z, short block) {
+		if (y < 0)
+			return;
+		if (y > Chunk.y)
+			return;
+		int xoff = 0,zoff = 0;
+		if (x < 0)
+			xoff = -1;
+		if (z < 0)
+			zoff = -1;
+		Chunk c = getChunk((int)(x/(float)Chunk.x) + xoff, (int)(z/(float)Chunk.z) + zoff);
 		if (c == null)
 			return;
-		x%=16;
-		z%=16;
+		x %= 16;
+		z %= 16;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
-		c.setBlock(x, y, z, block);
+		c.setBlock((int)x,(int)y, (int)z, block);
 	}
 	
-	public void setBlock(int x, int y, int z, int block) {
-		Chunk c = getChunk(x, z);
-		if (c == null)
-			return;
-		x%=16;
-		z%=16;
+	public void setBlockBIAS(float x, float y, float z, short block) {
 		if (x < 0)
-			x = biasNegative(x, -Chunk.x);
+			x -= 1;
 		if (z < 0)
-			z = biasNegative(z, -Chunk.z);
-		c.setBlock(x, y, z, block);
+			z -= 1;
+		setBlock(x, y, z, block);
 	}
 	
-	private int biasNegative(int f, int unitSize) {
+	public void setBlockBIAS(float x, float y, float z, int block) {
+		if (x < 0)
+			x -= 1;
+		if (z < 0)
+			z -= 1;
+		setBlock(x, y, z, block);
+	}
+	
+	public short getBlockBIAS(float x, float y, float z) {
+		// fix for something that is not broken but this is needed
+		// yes
+
+		// this is actually one of those
+		if (x < 0)
+			x -= 1;
+		if (z < 0)
+			z -= 1;
+		return getBlock(x, y, z);
+	}
+	
+	public void setBlock(float x, float y, float z, int block) {
+		setBlock(x, y, z, (short)block);
+	}
+	
+	private float biasNegative(float f, int unitSize) {
 		return unitSize - f;
 	}
 

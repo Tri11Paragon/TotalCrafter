@@ -94,6 +94,16 @@ public class UIMaster {
 		return t;
 	}
 	
+	public GUITexture createUITexture(int texture, int texture2, int texture3, float x, float y, float width, float height, Vector3f color, float textureScaleX, float textureScaleY) {
+		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec(x, y), calcVec(width, height), textureScaleX, textureScaleY).setColor(color);
+		return t;
+	}
+	
+	public GUITexture createUITexture(int texture, int texture2, int texture3, float x, float y, float width, float height, float textureScaleX, float textureScaleY) {
+		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec(x, y), calcVec(width, height), textureScaleX, textureScaleY);
+		return t;
+	}
+	
 	public UIButton createUIButton(int texture, int hovertexture, UIControl event, float x, float y, float width, float height) {
 		UIButton b = new UIButton(texture, hovertexture, event, this, x, y, width, height);
 		return b;
