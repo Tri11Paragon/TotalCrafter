@@ -8,7 +8,6 @@ uniform mat4 viewMatrix;
 uniform mat4 translationMatrix;
 uniform float time;
 
-#extension GL_OES_standard_derivatives : enable
 
 #define PI 3.141592
 #define iTime time

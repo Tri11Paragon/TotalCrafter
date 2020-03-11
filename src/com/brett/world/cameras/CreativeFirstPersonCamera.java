@@ -94,7 +94,7 @@ public class CreativeFirstPersonCamera extends Camera {
 		
 		float cond = 1.0f;
 		// really basic collision.
-		if (world.chunk.getBlock((int)posx, (int)posy, (int)posz) != 0) {
+		if (world.chunk.getBlockBIAS((int)posx, (int)posy, (int)posz) != 0) {
 			position.x -= dx*cond;
 			position.y -= dy*cond;
 			position.z -= dz*cond;
