@@ -24,7 +24,7 @@ import com.brett.world.terrain.noisefunctions.NoiseFunction;
 
 public class ChunkStore {
 
-	public static int renderDistance = 3;
+	public static int renderDistance = 1;
 	public static final String worldLocation = "worlds/w1/";
 	public static final String dimLocation = "worlds/w1/DIM";
 	public static File wfolder = new File(worldLocation);
