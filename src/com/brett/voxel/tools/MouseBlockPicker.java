@@ -64,7 +64,7 @@ public class MouseBlockPicker {
 	
 	public void setCurrentBlockPoint(int block) {
 		Vector3f pos = camera.getPosition();
-		Vector3f pointRay = this.currentRay;
+		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
 		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
 		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
 		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
@@ -105,7 +105,7 @@ public class MouseBlockPicker {
 	
 	public void placeBlock(int block) {
 		Vector3f pos = camera.getPosition();
-		Vector3f pointRay = this.currentRay;
+		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
 		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
 		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
 		float yStep = (currentRay.y-pointRay.y)/RE_MNT;

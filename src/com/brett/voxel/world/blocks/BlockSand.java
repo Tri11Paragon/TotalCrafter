@@ -13,11 +13,9 @@ public class BlockSand extends Block {
 
 	// TODO: add in blockfalling class
 	// TODO: improove this:
-	private short id;
 	
-	public BlockSand(ModelTexture model, short id) {
+	public BlockSand(ModelTexture model) {
 		super(model);
-		this.id = id;
 	}
 	
 	@Override
@@ -36,7 +34,7 @@ public class BlockSand extends Block {
 		// please don't remove marks for this
 		if (world.chunk.getBlockBIAS(x, y - 1, z) == 0) {
 			world.chunk.setBlockBIAS(x, y, z, 0);
-			world.chunk.setBlockBIAS(x, y - 1, z, id);
+			world.chunk.setBlockBIAS(x, y - 1, z, Block.BLOCK_SAND);
 			world.updateBlocksAround(x, y, z);
 			world.updateBlocksAround(x, y - 1, z);
 		}

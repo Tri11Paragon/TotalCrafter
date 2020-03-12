@@ -52,7 +52,7 @@ public class Region {
 	 * then take the world x and z, divide by your chunk size and then finally divide by
 	 * the region size. (Defined as x and z statically in this class.)
 	 */
-	public static Region loadRegion(Loader loader, ChunkStore s, int x, int z, String worldLocation) {
+	public static Region loadRegion(Loader loader, VoxelWorld s, int x, int z, String worldLocation) {
 		Region r = new Region(x, z);
 		DataInputStream is = null;
 		try {

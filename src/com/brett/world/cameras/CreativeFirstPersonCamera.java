@@ -82,24 +82,13 @@ public class CreativeFirstPersonCamera extends Camera {
 		float dy = (float) (moveAtX * Math.sin(Math.toRadians(roll))) + moveAtY;
 		float dz = (float) ((moveAtX) * Math.cos(Math.toRadians(yaw))) + (float) -((moveatZ) * Math.sin(Math.toRadians(yaw)));
 		
-		position.x += dx;
-		position.y += dy;
-		position.z += dz;
 		
-		float posx = position.x;
-		float posy = position.y;
-		float posz = position.z;
-		
-		//System.out.println(world.chunk.getBlock((int)posx, (int)posy, (int)posz));
-		
-		float cond = 1.0f;
-		// really basic collision.
-		if (world.chunk.getBlockBIAS((int)posx, (int)posy, (int)posz) != 0) {
-			position.x -= dx*cond;
-			position.y -= dy*cond;
-			position.z -= dz*cond;
-		}
-		
+		if (world.chunk.getBlock(position.x + dx, position.y, position.z) == 0)
+			position.x += dx;
+		if (world.chunk.getBlock(position.x, position.y + dy, position.z) == 0)
+			position.y += dy;
+		if (world.chunk.getBlock(position.x , position.y, position.z + dz) == 0)
+			position.z += dz;
 	}
 	
 	public void checkCollision(TerrainArray terrains) {

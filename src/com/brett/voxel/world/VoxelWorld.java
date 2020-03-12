@@ -1,5 +1,7 @@
 package com.brett.voxel.world;
 
+import java.util.Random;
+
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.util.vector.Vector3f;
@@ -28,6 +30,7 @@ public class VoxelWorld {
 	
 	private MouseBlockPicker picker;
 	public ChunkStore chunk;
+	public Random random = new Random();
 	
 	public VoxelWorld(MasterRenderer renderer, Loader loader, Camera cam) {
 		this.loader = loader;
@@ -40,6 +43,7 @@ public class VoxelWorld {
 		Chunk.fullBlock = RawBlockModel.convertRawModel(loader.loadToVAO(MeshStore.verts, MeshStore.uv, MeshStore.indicies));
 		Chunk.emptyBlock = RawBlockModel.convertRawModel(loader.loadToVAO(MeshStore.vertsNONE, MeshStore.uvNONE, MeshStore.indiciesNONE));
 		chunk = new ChunkStore(cam, loader, this);
+		random.setSeed(LevelLoader.seed);
 		
 		// reduces ram at cost of CPU
 		// not much anymore but at a time

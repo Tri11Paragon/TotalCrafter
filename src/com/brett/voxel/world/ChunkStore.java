@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
@@ -24,7 +25,7 @@ import com.brett.world.terrain.noisefunctions.NoiseFunction;
 
 public class ChunkStore {
 
-	public static int renderDistance = 1;
+	public static int renderDistance = 3;
 	public static final String worldLocation = "worlds/w1/";
 	public static final String dimLocation = "worlds/w1/DIM";
 	public static File wfolder = new File(worldLocation);
@@ -82,7 +83,7 @@ public class ChunkStore {
 				return c;
 			}
 		} else {
-			Region r = Region.loadRegion(loader, this, regionPosX, regionPosZ, worldLocation);
+			Region r = Region.loadRegion(loader, world, regionPosX, regionPosZ, worldLocation);
 			chunks.put(regionPosX, regionPosZ, r);
 			Chunk c = r.getChunk(x, z);
 			if (c == null) {

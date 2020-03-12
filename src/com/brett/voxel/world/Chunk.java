@@ -32,7 +32,7 @@ public class Chunk {
 	private RawBlockModel[][][] blocksModels = new RawBlockModel[x][y][z];
 	List<Block> bls = new ArrayList<Block>();
 	private int xoff,zoff;
-	private ChunkStore s;
+	private VoxelWorld s;
 	
 	public static RawBlockModel fullBlock;
 	public static RawBlockModel emptyBlock;
@@ -41,7 +41,7 @@ public class Chunk {
 	public Chunk(Loader loader, VoxelWorld s, NoiseFunction f, int xoff, int zoff) {
 		this.xoff = xoff;
 		this.zoff = zoff;
-		this.s = s.chunk;
+		this.s = s;
 		for (int i = 0; i < x; i++) {
 			for (int k = 0; k < z; k++) {
 				int ref = (int) (f.getInterpolatedNoise(((xoff * x) + (i)) / 128.0f, ((zoff * z) + (k)) / 128.0f));
@@ -75,7 +75,7 @@ public class Chunk {
 		//remesh();
 	}
 
-	public Chunk(Loader loader, ChunkStore s, short[][][] blocks, int xoff, int zoff) {
+	public Chunk(Loader loader, VoxelWorld s, short[][][] blocks, int xoff, int zoff) {
 		this.xoff = xoff;
 		this.zoff = zoff;
 		this.s = s;
@@ -133,7 +133,7 @@ public class Chunk {
 				right = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
-			Chunk c = s.getChunk(xoff + 1, zoff);
+			Chunk c = s.chunk.getChunk(xoff + 1, zoff);
 			if (c == null)
 				right = false;
 			else {
@@ -146,7 +146,7 @@ public class Chunk {
 				left = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
-			Chunk c = s.getChunk(xoff - 1, zoff);
+			Chunk c = s.chunk.getChunk(xoff - 1, zoff);
 			if (c == null)
 				left = false;
 			else {
@@ -159,7 +159,7 @@ public class Chunk {
 				front = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
-			Chunk c = s.getChunk(xoff, zoff + 1);
+			Chunk c = s.chunk.getChunk(xoff, zoff + 1);
 			if (c == null)
 				front = false;
 			else {
@@ -172,7 +172,7 @@ public class Chunk {
 				back = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
-			Chunk c = s.getChunk(xoff, zoff - 1);
+			Chunk c = s.chunk.getChunk(xoff, zoff - 1);
 			if (c == null)
 				back = false;
 			else {
@@ -226,6 +226,13 @@ public class Chunk {
 	}
 	
 	public void render(VoxelShader shader) {
+		// TODO: add update that runs on seperate thread to handle this.
+		int xz = s.random.nextInt(Chunk.x);
+		int yz = s.random.nextInt(Chunk.y);
+		int zz = s.random.nextInt(Chunk.z);
+		if (blocks[xz][yz][zz] != 0)
+			Block.blocks.get(blocks[xz][yz][zz]).onBlockTick(xz, yz, zz, s);
+		
 		for (int i =0; i < x; i++) {
 			for (int j = 0; j < y; j++) {
 				for (int k = 0; k < z; k++) {

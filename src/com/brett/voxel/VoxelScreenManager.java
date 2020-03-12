@@ -68,7 +68,7 @@ public class VoxelScreenManager {
 		os = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 		// MAIN STUFF (REQUIRED FOR GAME TO RUN)
 		Loader loader = new Loader();
-		CreativeFirstPersonCamera camera = new CreativeFirstPersonCamera(new Vector3f(0, 72, 0));
+		CreativeFirstPersonCamera camera = new CreativeFirstPersonCamera(new Vector3f(0, 90, 0));
 		ls = new LineShader();
 		pt = new PointShader();
 		//TexturedModel box_model = new TexturedModel(loader.loadToVAO(OBJLoader.loadOBJ("box")), new ModelTexture(loader.loadTexture("box")));
