@@ -82,12 +82,11 @@ public class CreativeFirstPersonCamera extends Camera {
 		float dy = (float) (moveAtX * Math.sin(Math.toRadians(roll))) + moveAtY;
 		float dz = (float) ((moveAtX) * Math.cos(Math.toRadians(yaw))) + (float) -((moveatZ) * Math.sin(Math.toRadians(yaw)));
 		
-		
-		if (world.chunk.getBlock(position.x + dx, position.y, position.z) == 0)
+		if (world.chunk.getBlock(position.x + (dx), position.y, position.z) == 0)
 			position.x += dx;
-		if (world.chunk.getBlock(position.x, position.y + dy, position.z) == 0)
+		if (world.chunk.getBlock(position.x, position.y + (dy), position.z) == 0)
 			position.y += dy;
-		if (world.chunk.getBlock(position.x , position.y, position.z + dz) == 0)
+		if (world.chunk.getBlock(position.x , position.y, position.z + (dz)) == 0)
 			position.z += dz;
 	}
 	

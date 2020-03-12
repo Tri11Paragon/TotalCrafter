@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 
+import com.brett.DisplayManager;
 import com.brett.renderer.Loader;
 import com.brett.renderer.gui.GUIRenderer;
 import com.brett.tools.Maths;
@@ -55,7 +56,7 @@ public class LoadingScreen {
 		renderer.render(lightgrey, 0, 0, 200*(current/max), 50);
 		renderer.stoprender();
 		Display.update();
-		
+		Display.sync(DisplayManager.FPS_MAX);
 	}
 	
 }
