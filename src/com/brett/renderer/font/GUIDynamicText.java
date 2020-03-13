@@ -12,6 +12,8 @@ import com.brett.renderer.font.fontRendering.TextMaster;
 
 public class GUIDynamicText extends GUIText {
 	
+	private boolean enabled = false;
+	
 	public GUIDynamicText(String text, float fontSize, FontType font, Vector2f position, float maxLineLength, boolean centered) {
 		super(text, fontSize, font, position, maxLineLength, centered);
 	}
@@ -26,16 +28,24 @@ public class GUIDynamicText extends GUIText {
 	 * @param text
 	 */
 	public void changeText(String text) {
-		TextMaster.removeText(this);
+		if (enabled)
+			TextMaster.removeText(this);
 		super.textString = text;
-		TextMaster.loadText(this);
+		if (enabled)
+			TextMaster.loadText(this);
+	}
+	
+	public void changeTextNoUpdate(String text) {
+		super.textString = text;
 	}
 	
 	public void disableText() {
+		enabled = false;
 		TextMaster.removeText(this);
 	}
 	
 	public void enableText() {
+		enabled = true;
 		TextMaster.loadText(this);
 	}
 }

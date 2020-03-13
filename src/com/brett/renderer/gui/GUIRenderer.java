@@ -47,12 +47,13 @@ public class GUIRenderer {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		
-		int amount = 0;
+		
 		for (int i = 0; i < textures.size(); i++) {
 			UIElement texture = textures.get(i);
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTexture());
 			int tex2 = texture.getTexture2();
+			int amount = 0;
 			if (tex2 > -1) {
 				GL13.glActiveTexture(GL13.GL_TEXTURE1);
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex2);
@@ -101,16 +102,21 @@ public class GUIRenderer {
 	public void render(GUITexture textures, float x, float y, float width, float height) {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textures.getTexture());
+		int amount = 0;
 		int tex2 = textures.getTexture2();
 		if (tex2 > -1) {
 			GL13.glActiveTexture(GL13.GL_TEXTURE1);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex2);
+			amount = 1;
 		}
 		int tex3 = textures.getTexture3();
 		if (tex3 > -1) {
 			GL13.glActiveTexture(GL13.GL_TEXTURE2);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex3);
+			amount = 2;
 		}
+		shader.loadTextureAmount(amount);
+		shader.loadTextureScale(textures.getTextureScaleX(), textures.getTextureScaleY());
 		shader.loadTransformation(Maths.createTransformationMatrix(calcVec(x, y), calcVec(width, height)));
 		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
 	}
@@ -123,7 +129,18 @@ public class GUIRenderer {
 	public void render(int texture, float x, float y, float width, float height) {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
+		shader.loadTextureAmount(0);
+		shader.loadTextureScale(1, 1);
 		shader.loadTransformation(Maths.createTransformationMatrix(calcVec(x + width/2, y + height/2), calcVec(width/2, height/2)));
+		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
+	}
+	
+	public void render(int texture, Vector2f pos, Vector2f scale) {
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
+		shader.loadTextureAmount(0);
+		shader.loadTextureScale(1, 1);
+		shader.loadTransformation(Maths.createTransformationMatrix(calcVec(pos.x, pos.y), calcVec(scale.x, scale.y)));
 		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
 	}
 	
@@ -137,6 +154,8 @@ public class GUIRenderer {
 	public void render(int texture, Matrix4f translationMatrix) {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
+		shader.loadTextureAmount(0);
+		shader.loadTextureScale(1, 1);
 		shader.loadTransformation(translationMatrix);
 		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
 	}

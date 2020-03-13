@@ -23,7 +23,7 @@ public class EscapeMenu implements IMenu {
 	}
 	
 	@Override
-	public List<UIElement> render() {
+	public List<UIElement> render(UIMaster ui) {
 		if (enabled)
 			return elements;
 		else
@@ -33,6 +33,11 @@ public class EscapeMenu implements IMenu {
 	@Override
 	public void update() {
 		
+	}
+
+	@Override
+	public List<UIElement> secondardRender(UIMaster ui) {
+		return null;
 	}
 	
 }

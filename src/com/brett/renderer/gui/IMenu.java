@@ -10,7 +10,9 @@ import java.util.List;
 
 public interface IMenu {
 	
-	public List<UIElement> render();
+	public List<UIElement> render(UIMaster ui);
+	
+	public List<UIElement> secondardRender(UIMaster ui);
 	
 	public void update();
 	

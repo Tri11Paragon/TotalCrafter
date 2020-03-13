@@ -40,7 +40,8 @@ public class UIMaster {
 		for (int i = 0; i < guimenus.size(); i++) {
 			IMenu m = guimenus.get(i);
 			m.update();
-			renderer.render(m.render());
+			renderer.render(m.render(this));
+			renderer.render(m.secondardRender(this));
 		}
 	}
 	

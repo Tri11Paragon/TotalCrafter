@@ -27,7 +27,8 @@ public class Item {
 	}
 	
 	public static void registerItems(Loader loader) {
-		
+		registerItem((short)1, new ModelTexture(loader.loadSpecialTexture("dirt")));
+		registerItem((short)2, new ModelTexture(loader.loadSpecialTexture("stone")));
 	}
 	
 	public ModelTexture getTexture() {
@@ -38,11 +39,11 @@ public class Item {
 		return id;
 	}
 
-	protected void registerItem(short id, ModelTexture texture) {
+	protected static void registerItem(short id, ModelTexture texture) {
 		items.put(id, new Item(id, texture));
 	}
 	
-	protected Item registerItemBlock(short id, Block b) {
+	protected static Item registerItemBlock(short id, Block b) {
 		Item i = new Item(id, b.model);
 		itemBlocks.put(i, b);
 		items.put(id, i);

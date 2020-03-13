@@ -13,8 +13,10 @@ import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.SixBoolean;
 import com.brett.renderer.shaders.VoxelShader;
 import com.brett.voxel.VoxelScreenManager;
+import com.brett.voxel.inventory.InventoryMaster;
 import com.brett.voxel.tools.MouseBlockPicker;
 import com.brett.voxel.world.blocks.Block;
+import com.brett.voxel.world.items.Item;
 import com.brett.world.cameras.Camera;
 
 /**
@@ -35,6 +37,8 @@ public class VoxelWorld {
 	public VoxelWorld(MasterRenderer renderer, Loader loader, Camera cam) {
 		this.loader = loader;
 		Block.registerBlocks(loader);
+		Item.registerItems(loader);
+		InventoryMaster.init(loader);
 		shader = new VoxelShader();
 		resolveMeshes();
 		shader.start();

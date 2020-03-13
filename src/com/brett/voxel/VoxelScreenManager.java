@@ -29,6 +29,9 @@ import com.brett.sound.AudioController;
 import com.brett.sound.AudioSource;
 import com.brett.tools.SettingsLoader;
 import com.brett.voxel.gui.MainMenu;
+import com.brett.voxel.inventory.Inventory;
+import com.brett.voxel.inventory.InventoryMaster;
+import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.world.cameras.CreativeFirstPersonCamera;
 import com.brett.world.entities.Entity;
@@ -207,6 +210,8 @@ public class VoxelScreenManager {
 		scene = new MainMenu(ui, renderer, camera, world, loader);
 		//scene = new VoxelRenderer(renderer, camera, world);
 		
+		PlayerInventory pi = new PlayerInventory(ui);
+		
 		System.gc();
 		while (!Display.isCloseRequested()) {
 			double startTime = Sys.getTime() * 1000 / Sys.getTimerResolution();
@@ -229,7 +234,9 @@ public class VoxelScreenManager {
 			/**
 			 * Everything below here must be rendered
 			 */
+			pi.update();
 			ui.render();
+			InventoryMaster.render(ui.getRenderer());
 			console.update();
 			TextMaster.render();
 			DisplayManager.updateDisplay();
