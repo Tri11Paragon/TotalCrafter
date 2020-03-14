@@ -1,5 +1,6 @@
 package com.brett.voxel.tools;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
@@ -101,10 +102,14 @@ public class MouseBlockPicker {
 	}
 	
 	public int mineBlock() {
-		return this.setCurrentBlockPoint(0);
+		if (Mouse.isGrabbed())
+			return this.setCurrentBlockPoint(0);
+		return 0;
 	}
 	
 	public boolean placeBlock(int block) {
+		if (!Mouse.isGrabbed())
+			return false;
 		Vector3f pos = camera.getPosition();
 		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
 		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
@@ -154,7 +159,6 @@ public class MouseBlockPicker {
 	/**
 	 * NOT MY CODE BELOW
 	 */
-	
 	private Vector3f calculateMouseRay() {
 		float mouseX = Display.getWidth()/2;
 		float mouseY = Display.getHeight()/2;

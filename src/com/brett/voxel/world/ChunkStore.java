@@ -100,7 +100,7 @@ public class ChunkStore {
 		while (regionIt.hasNext()) {
 			try {
 			regionIt.next();
-			} catch (ConcurrentModificationException e) {System.err.println("Tried saving map while loading it. \nPlease wait for map to complete loading before exiting game.");}
+			} catch (ConcurrentModificationException e) {System.err.println("Tried saving map while loading it. \nPlease wait for map to complete loading before exiting game."); return;}
 			Region val = regionIt.getValue();
 			val.saveRegion(worldLocation);
 		}

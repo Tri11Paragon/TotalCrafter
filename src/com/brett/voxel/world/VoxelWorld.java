@@ -39,7 +39,6 @@ public class VoxelWorld {
 	// replace pi with a player
 	public VoxelWorld(MasterRenderer renderer, Loader loader, Camera cam, PlayerInventory i) {
 		this.loader = loader;
-		GameRegistry.init(loader);
 		shader = new VoxelShader();
 		resolveMeshes();
 		shader.start();
@@ -123,7 +122,7 @@ public class VoxelWorld {
 		while (Mouse.next()){
 			if (Mouse.getEventButtonState()) {
 				if (Mouse.getEventButton() == 0) {
-					int id = picker.setCurrentBlockPoint(0);
+					int id = picker.mineBlock();
 					if (id != 0)
 						i.addItemToInventory(new ItemStack(Item.items.get((short) id), 1));
 					Vector3f d = picker.getCurrentTerrainPoint();
@@ -239,6 +238,7 @@ public class VoxelWorld {
 	
 	public void cleanup() {
 		chunk.cleanup();
+		i.saveInventory();
 		shader.cleanUp();
 	}
 	

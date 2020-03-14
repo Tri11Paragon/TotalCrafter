@@ -1,7 +1,16 @@
 package com.brett.voxel.inventory;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
@@ -10,6 +19,8 @@ import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.IMenu;
 import com.brett.renderer.gui.UIElement;
 import com.brett.renderer.gui.UIMaster;
+import com.brett.voxel.world.ChunkStore;
+import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemStack;
 
 /**
@@ -20,8 +31,19 @@ import com.brett.voxel.world.items.ItemStack;
 
 public class Inventory implements IMenu {
 	
-	public Inventory() {
-		
+	private final String NBTID;
+	
+	public Inventory(int seed) {
+		StringBuilder b = new StringBuilder();
+		Random r = new Random(seed);
+		for(int i = 0; i < 30; i++) {
+			b.append((int)Math.abs(r.nextInt(10)));
+		}
+		NBTID = b.toString();
+	}
+	
+	public Inventory(String NBTID) {
+		this.NBTID = NBTID;
 	}
 	
 	private List<Slot> slots = new ArrayList<Slot>();
@@ -134,5 +156,52 @@ public class Inventory implements IMenu {
 				s.text.disableText();
 		}
 	}
-
+	
+	public void saveInventory() {
+		System.out.println("Saving Inventory");
+		DataOutputStream is = null;
+		try {
+			is = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(ChunkStore.worldLocation + "/" + NBTID + ".dat")));
+		} catch (FileNotFoundException e) {return;}
+		try {
+			
+			for (int i = 0; i < slots.size(); i++) {
+				is.writeInt(i);
+				Slot s = slots.get(i);
+				if(s.getItemStack() != null) {
+					is.writeShort(Item.inverseItems.get(s.getItem()));
+					is.writeInt(s.getItemsAmount());
+				} else {
+					is.writeShort(-1);
+					is.writeInt(0);
+				}
+			}
+			
+			is.close();
+		} catch (IOException e) {}
+		System.out.println("Inventory Saved");
+	}
+	
+	public void loadInventory() {
+		DataInputStream is = null;
+		try {
+			is = new DataInputStream(new BufferedInputStream(new FileInputStream(ChunkStore.worldLocation + "/" + NBTID + ".dat")));
+		} catch (FileNotFoundException e) {return;}
+		try {
+			
+			for (int i = 0; i < slots.size(); i++) {
+				is.readInt();
+				Slot s = slots.get(i);
+				short id = is.readShort();
+				int amt = is.readInt();
+				if (id < 0)
+					continue;
+				s.setItemStack(new ItemStack(Item.items.get(id), amt));
+				s.updateText();
+			}
+			
+			is.close();
+		} catch (IOException e) {}
+	}
+	
 }

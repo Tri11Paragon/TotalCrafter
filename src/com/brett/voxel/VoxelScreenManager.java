@@ -20,7 +20,6 @@ import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.font.FontType;
 import com.brett.renderer.font.fontRendering.TextMaster;
 import com.brett.renderer.gui.UIMaster;
-import com.brett.renderer.lighting.Light;
 import com.brett.renderer.particles.ParticleMaster;
 import com.brett.renderer.postprocessing.PostProcessing;
 import com.brett.renderer.shaders.LineShader;
@@ -29,9 +28,9 @@ import com.brett.sound.AudioController;
 import com.brett.sound.AudioSource;
 import com.brett.tools.SettingsLoader;
 import com.brett.voxel.gui.MainMenu;
-import com.brett.voxel.inventory.Inventory;
 import com.brett.voxel.inventory.InventoryMaster;
 import com.brett.voxel.inventory.PlayerInventory;
+import com.brett.voxel.world.GameRegistry;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.world.cameras.CreativeFirstPersonCamera;
 import com.brett.world.entities.Entity;
@@ -96,7 +95,7 @@ public class VoxelScreenManager {
 		//TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("terrain/blendMap"));
 		
 		// LIGHTING
-		Light sun = new Light(new Vector3f(1000000, 1500000, -1000000), new Vector3f(1f, 1f, 1f));
+		//Light sun = new Light(new Vector3f(1000000, 1500000, -1000000), new Vector3f(1f, 1f, 1f));
 		//lights.add(new Light(new Vector3f(15, 7, -15), new Vector3f(1f, 1f, 1f), new Vector3f(1, 0.01f, 0.002f)));
 		//world.add(sun);
 		
@@ -203,6 +202,7 @@ public class VoxelScreenManager {
 		//client.sendData("test".getBytes());
 		
 		InventoryMaster.init(loader);
+		GameRegistry.init(loader);
 		PlayerInventory pi = new PlayerInventory(ui);
 		
 		VoxelWorld world = new VoxelWorld(renderer, loader, camera, pi);
