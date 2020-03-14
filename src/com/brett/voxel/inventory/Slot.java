@@ -23,7 +23,7 @@ public class Slot extends UIButton {
 	
 	public Slot(float x, float y, float width, float height) {
 		super(texture, hovertexture, null, x, y, width, height);
-		text = new GUIDynamicText("", 0.8f, VoxelScreenManager.monospaced, calcVec(x, y), width/Display.getWidth(), false);
+		text = new GUIDynamicText("", 0.8f, VoxelScreenManager.monospaced, calcVec(x+width-21, y+height-19), width/Display.getWidth(), false);
 	}
 	
 	public ItemStack changeItem(ItemStack stack) {
@@ -39,7 +39,25 @@ public class Slot extends UIButton {
 	}
 	
 	public int removeItems(int i) {
-		return stack.decreaseStack(i);
+		int amt = stack.decreaseStack(i);
+		text.changeTextNoUpdate(Integer.toString(stack.getAmountInStack()));
+		if (stack.getAmountInStack() <= 0) {
+			stack = null;
+			text.changeTextNoUpdate("");
+		}
+		return amt;
+	}
+	
+	public void updateText() {
+		text.changeText(Integer.toString(stack.getAmountInStack()));
+	}
+	
+	public int getItemsAmount() {
+		return stack.getAmountInStack();
+	}
+	
+	public void setItemStack(ItemStack stack) {
+		this.stack = stack;
 	}
 	
 	public ItemStack getItemStack() {
@@ -63,26 +81,27 @@ public class Slot extends UIButton {
 				super.texture2 = ht;
 				if (!prevState && Mouse.isButtonDown(0)) {
 					if (stack == null) {
-						if (PlayerSlot.itemInHand != null) {
-							stack = PlayerSlot.itemInHand;
-							PlayerSlot.itemInHand = null;
+						if (PlayerSlot.getStack() != null) {
+							stack = PlayerSlot.getStack();
+							PlayerSlot.changeStack(null);
 							text.changeText(Integer.toString(stack.getAmountInStack()));
 						}
 					} else {
-						if (PlayerSlot.itemInHand == null) {
-							PlayerSlot.itemInHand = stack;
+						if (PlayerSlot.getStack() == null) {
+							PlayerSlot.changeStack(stack);
 							stack = null;
 							text.changeText("");
 						} else {
-							if (PlayerSlot.itemInHand.getItem() == stack.getItem()) {
-								int amt = stack.increaseStack(PlayerSlot.itemInHand.getAmountInStack());
-								PlayerSlot.itemInHand.setStack(amt);
+							if (PlayerSlot.getStack().getItem() == stack.getItem()) {
+								int amt = stack.increaseStack(PlayerSlot.getStack().getAmountInStack());
+								PlayerSlot.getStack().setStack(amt);
+								PlayerSlot.change();
 								if (amt == 0)
-									PlayerSlot.itemInHand = null;
+									PlayerSlot.changeStack(null);
 								text.changeText(Integer.toString(stack.getAmountInStack()));
 							} else {
-								ItemStack s = PlayerSlot.itemInHand;
-								PlayerSlot.itemInHand = stack;
+								ItemStack s = PlayerSlot.getStack();
+								PlayerSlot.changeStack(stack);
 								stack = s;
 								text.changeText(Integer.toString(stack.getAmountInStack()));
 							}
@@ -91,12 +110,13 @@ public class Slot extends UIButton {
 				}
 				if(!prevState2 && Mouse.isButtonDown(1)) {
 					if (stack != null) {
-						if(PlayerSlot.itemInHand != null) {
-							if (PlayerSlot.itemInHand.getItem() == stack.getItem()) {
-								int amt = stack.increaseStack(PlayerSlot.itemInHand.getAmountInStack()/2);
-								PlayerSlot.itemInHand.setStack(PlayerSlot.itemInHand.getAmountInStack()/2 + amt);
-								if ((PlayerSlot.itemInHand.getAmountInStack()/2 + amt) == 0)
-									PlayerSlot.itemInHand = null;
+						if(PlayerSlot.getStack() != null) {
+							if (PlayerSlot.getStack().getItem() == stack.getItem()) {
+								int amt = stack.increaseStack(PlayerSlot.getStack().getAmountInStack()/2);
+								PlayerSlot.getStack().setStack(PlayerSlot.getStack().getAmountInStack()/2 + amt);
+								PlayerSlot.change();
+								if ((PlayerSlot.getStack().getAmountInStack()/2 + amt) == 0)
+									PlayerSlot.changeStack(null);
 								text.changeText(Integer.toString(stack.getAmountInStack()));
 							}
 						}

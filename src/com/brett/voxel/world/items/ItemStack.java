@@ -27,6 +27,9 @@ public class ItemStack {
 		this.amountInStack = amount;
 	}
 	
+	/**
+	 * Returns the amount of items not added to the stack
+	 */
 	public int increaseStack(int amount) {
 		int last = amountInStack;
 		if (amountInStack + amount > stackSize) {

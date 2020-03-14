@@ -3,6 +3,7 @@ package com.brett.voxel.world;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
@@ -97,7 +98,9 @@ public class ChunkStore {
 		System.out.println("Saving world");
 		MapIterator<MultiKey<? extends Integer>, Region> regionIt = chunks.mapIterator();
 		while (regionIt.hasNext()) {
+			try {
 			regionIt.next();
+			} catch (ConcurrentModificationException e) {System.err.println("Tried saving map while loading it. \nPlease wait for map to complete loading before exiting game.");}
 			Region val = regionIt.getValue();
 			val.saveRegion(worldLocation);
 		}

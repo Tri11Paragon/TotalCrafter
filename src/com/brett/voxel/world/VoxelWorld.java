@@ -13,10 +13,11 @@ import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.SixBoolean;
 import com.brett.renderer.shaders.VoxelShader;
 import com.brett.voxel.VoxelScreenManager;
-import com.brett.voxel.inventory.InventoryMaster;
+import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.tools.MouseBlockPicker;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.items.Item;
+import com.brett.voxel.world.items.ItemStack;
 import com.brett.world.cameras.Camera;
 
 /**
@@ -33,12 +34,12 @@ public class VoxelWorld {
 	private MouseBlockPicker picker;
 	public ChunkStore chunk;
 	public Random random = new Random();
+	protected PlayerInventory i;
 	
-	public VoxelWorld(MasterRenderer renderer, Loader loader, Camera cam) {
+	// replace pi with a player
+	public VoxelWorld(MasterRenderer renderer, Loader loader, Camera cam, PlayerInventory i) {
 		this.loader = loader;
-		Block.registerBlocks(loader);
-		Item.registerItems(loader);
-		InventoryMaster.init(loader);
+		GameRegistry.init(loader);
 		shader = new VoxelShader();
 		resolveMeshes();
 		shader.start();
@@ -48,6 +49,7 @@ public class VoxelWorld {
 		Chunk.emptyBlock = RawBlockModel.convertRawModel(loader.loadToVAO(MeshStore.vertsNONE, MeshStore.uvNONE, MeshStore.indiciesNONE));
 		chunk = new ChunkStore(cam, loader, this);
 		random.setSeed(LevelLoader.seed);
+		this.i = i;
 		
 		// reduces ram at cost of CPU
 		// not much anymore but at a time
@@ -121,7 +123,9 @@ public class VoxelWorld {
 		while (Mouse.next()){
 			if (Mouse.getEventButtonState()) {
 				if (Mouse.getEventButton() == 0) {
-					picker.setCurrentBlockPoint(0);
+					int id = picker.setCurrentBlockPoint(0);
+					if (id != 0)
+						i.addItemToInventory(new ItemStack(Item.items.get((short) id), 1));
 					Vector3f d = picker.getCurrentTerrainPoint();
 					if (d == null)
 						return;
@@ -133,7 +137,11 @@ public class VoxelWorld {
 					c.remesh();
 				}
 				if (Mouse.getEventButton() == 1) {
-					picker.placeBlock(1);
+					if (i.heldSlot.getItemStack() != null) {
+						if (picker.placeBlock(Item.inverseItems.get(i.heldSlot.getItem()))) {
+							i.heldSlot.removeItems(1);
+						}
+					}
 				}
 			}
 		}

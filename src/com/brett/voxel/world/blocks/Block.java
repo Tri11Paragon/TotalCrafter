@@ -4,9 +4,7 @@ import java.util.HashMap;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.ModelTexture;
-import com.brett.sound.AudioController;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.world.VoxelWorld;
@@ -20,7 +18,16 @@ import com.brett.voxel.world.VoxelWorld;
 public class Block {
 	
 	public static final HashMap<Short, Block> blocks = new HashMap<Short, Block>();
-	private static final HashMap<Block, Short> inverseBlocks = new HashMap<Block, Short>();
+	public static final HashMap<Block, Short> inverseBlocks = new HashMap<Block, Short>();
+	
+	public static short BLOCK_AIR = 0;
+	public static short BLOCK_STONE = 1;
+	public static short BLOCK_DIRT = 2;
+	public static short BLOCK_WILL = 3;
+	public static short BLOCK_GRASS = 4;
+	public static short BLOCK_SAND = 5;
+	public static short BLOCK_CLAY = 6;
+	public static short BLOCK_SNOW = 7;
 	
 	public ModelTexture model;
 	private int[] breakSound = {0};
@@ -77,35 +84,6 @@ public class Block {
 	
 	public int getBreakSound() {
 		return breakSound[0];
-	}
-	
-	public static short BLOCK_AIR = 0;
-	public static short BLOCK_STONE = 1;
-	public static short BLOCK_DIRT = 2;
-	public static short BLOCK_WILL = 3;
-	public static short BLOCK_GRASS = 4;
-	public static short BLOCK_SAND = 5;
-	public static short BLOCK_CLAY = 6;
-	public static short BLOCK_SNOW = 7;
-	
-	public static void registerBlocks(Loader loader) {
-		registerBlock((short) BLOCK_AIR, new BlockAir());
-		registerBlock((short) BLOCK_STONE, new Block(new ModelTexture(loader.loadTexture("stone"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
-		registerBlock((short) BLOCK_DIRT, new Block(new ModelTexture(loader.loadTexture("dirt"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
-		registerBlock((short) BLOCK_WILL, new Block(new ModelTexture(loader.loadTexture("icon/logo"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
-		registerBlock((short) BLOCK_GRASS, new BlockGrass(new ModelTexture(loader.loadTexture("grassy2"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
-		registerBlock((short) BLOCK_SAND, new BlockSand(new ModelTexture(loader.loadTexture("sand"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
-		registerBlock((short) BLOCK_CLAY, new Block(new ModelTexture(loader.loadTexture("clay"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
-		registerBlock((short) BLOCK_SNOW, new Block(new ModelTexture(loader.loadTexture("snow"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
-	}
-	
-	private static void registerBlock(short id, Block b) {
-		blocks.put(id, b);
-		inverseBlocks.put(b, id);
-	}
-	
-	public static short getIdByBlock(Block b) {
-		return inverseBlocks.get(b);
 	}
 	
 }

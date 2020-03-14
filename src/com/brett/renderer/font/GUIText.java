@@ -14,7 +14,7 @@ public class GUIText {
 	private int vertexCount;
 	private Vector3f colour = new Vector3f(0f, 0f, 0f);
 
-	private Vector2f position;
+	protected Vector2f position;
 	private float lineMaxSize;
 	private int numberOfLines;
 	private float height = 0;

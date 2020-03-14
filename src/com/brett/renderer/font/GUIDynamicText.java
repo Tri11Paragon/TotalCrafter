@@ -22,6 +22,10 @@ public class GUIDynamicText extends GUIText {
 		super(text, fontSize, font, position, maxLineLength, centered);
 	}
 	
+	public void setPosition(Vector2f pos) {
+		this.position = pos;
+	}
+	
 	/**
 	 * use this if the text is known to be being drawn on the screen
 	 * and you are using static TextMaster rendering
@@ -47,5 +51,9 @@ public class GUIDynamicText extends GUIText {
 	public void enableText() {
 		enabled = true;
 		TextMaster.loadText(this);
+	}
+	
+	public boolean getEnabled() {
+		return enabled;
 	}
 }

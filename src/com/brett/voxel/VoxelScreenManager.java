@@ -202,15 +202,16 @@ public class VoxelScreenManager {
 		//client.start();
 		//client.sendData("test".getBytes());
 		
-		VoxelWorld world = new VoxelWorld(renderer, loader, camera);
+		InventoryMaster.init(loader);
+		PlayerInventory pi = new PlayerInventory(ui);
+		
+		VoxelWorld world = new VoxelWorld(renderer, loader, camera, pi);
 		camera.assignWorld(world);
 		
 		Mouse.setGrabbed(false);
 		
 		scene = new MainMenu(ui, renderer, camera, world, loader);
 		//scene = new VoxelRenderer(renderer, camera, world);
-		
-		PlayerInventory pi = new PlayerInventory(ui);
 		
 		System.gc();
 		while (!Display.isCloseRequested()) {

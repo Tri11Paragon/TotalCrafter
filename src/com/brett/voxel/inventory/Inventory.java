@@ -10,6 +10,7 @@ import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.IMenu;
 import com.brett.renderer.gui.UIElement;
 import com.brett.renderer.gui.UIMaster;
+import com.brett.voxel.world.items.ItemStack;
 
 /**
 *
@@ -34,6 +35,27 @@ public class Inventory implements IMenu {
 		slotAsElements.add(s);
 	}
 	
+	public void addItemToInventory(ItemStack i) {
+		for (Slot s : slots) {
+			if (s.getItem() == i.getItem()) {
+				int amount = s.getItemStack().increaseStack(i.getAmountInStack());
+				i.setStack(amount);
+				s.updateText();
+				if (amount == 0) {
+					i = null;
+					return;
+				}
+				continue;
+			}
+		}
+		for (Slot s : slots) {
+			if (s.getItemStack() == null) {
+				s.setItemStack(i);
+				s.updateText();
+				return;
+			}
+		}
+	}
 
 	@Override
 	public List<UIElement> render(UIMaster ui) {

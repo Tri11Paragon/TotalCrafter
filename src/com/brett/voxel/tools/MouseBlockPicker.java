@@ -62,7 +62,7 @@ public class MouseBlockPicker {
 			return 0;
 	}
 	
-	public void setCurrentBlockPoint(int block) {
+	public int setCurrentBlockPoint(int block) {
 		Vector3f pos = camera.getPosition();
 		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
 		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
@@ -95,15 +95,16 @@ public class MouseBlockPicker {
 			c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), block);
 			world.updateBlocksAround((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
 			c.remesh();
-			return;
+			return blockid;
 		}
+		return 0;
 	}
 	
-	public void mineBlock() {
-		this.setCurrentBlockPoint(0);
+	public int mineBlock() {
+		return this.setCurrentBlockPoint(0);
 	}
 	
-	public void placeBlock(int block) {
+	public boolean placeBlock(int block) {
 		Vector3f pos = camera.getPosition();
 		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
 		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
@@ -135,9 +136,10 @@ public class MouseBlockPicker {
 				c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), block);
 				world.updateBlocksAround((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
 				c.remesh();
-				return;
+				return true;
 			}
 		}
+		return false;
 	}
 
 	public Vector3f getCurrentRay() {
