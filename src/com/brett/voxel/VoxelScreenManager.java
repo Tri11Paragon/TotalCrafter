@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.DisplayManager;
+import com.brett.KeyMaster;
 import com.brett.console.Console;
 import com.brett.console.commands.TeleportCommand;
 import com.brett.renderer.DisplaySource;
@@ -34,6 +35,7 @@ import com.brett.voxel.world.GameRegistry;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.world.cameras.CreativeFirstPersonCamera;
 import com.brett.world.entities.Entity;
+import com.sun.corba.se.impl.oa.poa.ActiveObjectMap.Key;
 import com.sun.management.OperatingSystemMXBean;
 
 /** 
@@ -60,6 +62,7 @@ public class VoxelScreenManager {
 	public static void init() {
 		SettingsLoader.loadSettings();
 		DisplayManager.createDisplay(false);
+		KeyMaster.init();
 		// audio stuff
 		AudioController.init();
 		AudioController.setListenerData(0, 0, 0, 0, 0, 0);
@@ -108,6 +111,7 @@ public class VoxelScreenManager {
 		// FONT
 		monospaced = new FontType(loader.loadTexture("fonts/monospaced-72", 0), new File("resources/textures/fonts/monospaced-72.fnt"));
 		Console console = new Console(loader, monospaced, ui.getRenderer());
+		KeyMaster.registerKeyRequester(console);
 		console.registerCommand(new String[] {"tp", "teleport"}, new TeleportCommand(camera));
 		//new GUIText("Hello" + '\n' + "There!", 3, monospaced, new Vector2f(0, 0), 0.5f, false, 0);
 		
@@ -206,6 +210,7 @@ public class VoxelScreenManager {
 		PlayerInventory pi = new PlayerInventory(ui);
 		
 		VoxelWorld world = new VoxelWorld(renderer, loader, camera, pi);
+		KeyMaster.registerKeyRequester(pi);
 		camera.assignWorld(world);
 		
 		Mouse.setGrabbed(false);
@@ -219,6 +224,7 @@ public class VoxelScreenManager {
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 			scene.render();
+			KeyMaster.update();
 			
 			if (Mouse.isButtonDown(2)) {
 				Vector3f pos = camera.getPosition();
@@ -240,6 +246,7 @@ public class VoxelScreenManager {
 			InventoryMaster.render(ui.getRenderer());
 			console.update();
 			TextMaster.render();
+			
 			DisplayManager.updateDisplay();
 			double lastFrame = Sys.getTime() * 1000 / Sys.getTimerResolution();
 			deltaTime += lastFrame - startTime;

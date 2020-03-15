@@ -8,14 +8,13 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 
+import com.brett.IKeyState;
+import com.brett.KeyMaster;
 import com.brett.console.commands.ClearCommand;
-import com.brett.console.commands.TeleportCommand;
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.GUITexture;
 import com.brett.renderer.font.FontType;
 import com.brett.renderer.font.GUIDynamicText;
 import com.brett.renderer.gui.GUIRenderer;
-import com.brett.renderer.gui.UIElement;
 import com.brett.tools.SettingsLoader;
 
 /**
@@ -25,8 +24,8 @@ import com.brett.tools.SettingsLoader;
 * please don't judge
 *
 */
-
-public class Console {
+@SuppressWarnings("unused")
+public class Console implements IKeyState {
 
 	public static String lineStart = ">";
 	public static float fontSize = 0.8f;
@@ -54,23 +53,12 @@ public class Console {
 	}
 	
 	public void update() {
-		if (Keyboard.isKeyDown(SettingsLoader.KEY_CONSOLE) && Keyboard.next()) {
-			if(Keyboard.getEventKeyState()) {
-				Mouse.setGrabbed(isOpen);
-				isOpen = !isOpen;
-				if(isOpen)
-					for(GUIDynamicText t : texts)
-						t.enableText();
-				else
-					for(GUIDynamicText t : texts)
-						t.disableText();
-			}
-		}
-		
-		while (Keyboard.next()) {
+		if (KeyMaster.state) {
 			if (isOpen) {
 				if(Keyboard.getEventKeyState()) {
 					char c = Keyboard.getEventCharacter();
+					if (c == SettingsLoader.KEY_CONSOLE)
+						return;
 					if (c == 8) {
 						if (inputTextBuffer.length() > 1)
 							inputTextBuffer = inputTextBuffer.substring(0, inputTextBuffer.length() - 1);
@@ -138,6 +126,24 @@ public class Console {
 	
 	public List<GUIDynamicText> getTexts(){
 		return texts;
+	}
+
+	@Override
+	public void onKeyPressed() {
+		if (Keyboard.isKeyDown(SettingsLoader.KEY_CONSOLE)) {
+			Mouse.setGrabbed(isOpen);
+			isOpen = !isOpen;
+			if(isOpen)
+				for(GUIDynamicText t : texts)
+					t.enableText();
+			else
+				for(GUIDynamicText t : texts)
+					t.disableText();
+		}
+	}
+
+	@Override
+	public void onKeyReleased() {
 	}
 	
 }

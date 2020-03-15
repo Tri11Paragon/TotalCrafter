@@ -123,8 +123,10 @@ public class VoxelWorld {
 			if (Mouse.getEventButtonState()) {
 				if (Mouse.getEventButton() == 0) {
 					int id = picker.mineBlock();
-					if (id != 0)
-						i.addItemToInventory(new ItemStack(Item.items.get((short) id), 1));
+					if (id != 0) {
+						i.addItemToInventory(new ItemStack(Item.items.get(Block.inverseBlocks.get(Block.blocks.get((short)id).getBlockDropped())), 
+								Block.blocks.get((short)id).getAmountDropped()));
+					}
 					Vector3f d = picker.getCurrentTerrainPoint();
 					if (d == null)
 						return;

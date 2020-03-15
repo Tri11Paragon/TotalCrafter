@@ -5,6 +5,7 @@ import java.util.List;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
+import com.brett.IKeyState;
 import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.voxel.world.items.ItemStack;
@@ -15,7 +16,7 @@ import com.brett.voxel.world.items.ItemStack;
 * @date Mar. 12, 2020
 */
 //TODO: make this a extension of inventory.
-public class PlayerInventory {
+public class PlayerInventory implements IKeyState{
 	
 	private Inventory i;
 	@SuppressWarnings("unused")
@@ -45,12 +46,8 @@ public class PlayerInventory {
 		this.i.addItemToInventory(i);
 	}
 	
-	private boolean state = false;
 	public void update() {
-		state = Keyboard.next();
-		if (state && Keyboard.isKeyDown(Keyboard.KEY_E)) {
-			i.toggleEnabled();
-		}
+		
 	}
 	
 	public List<Slot> getSlots(){
@@ -59,6 +56,17 @@ public class PlayerInventory {
 	
 	public void saveInventory() {
 		i.saveInventory();
+	}
+
+	@Override
+	public void onKeyPressed() {
+		if (Keyboard.isKeyDown(Keyboard.KEY_E)) {
+			i.toggleEnabled();
+		}
+	}
+
+	@Override
+	public void onKeyReleased() {
 	}
 	
 }

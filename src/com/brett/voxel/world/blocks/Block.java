@@ -31,6 +31,8 @@ public class Block {
 	
 	public ModelTexture model;
 	private int[] breakSound = {0};
+	private Block droppedBlock = null;
+	private int amountDropped = 1;
 	
 	public Block(ModelTexture model) {
 		this.model = model;
@@ -68,6 +70,26 @@ public class Block {
 	
 	public void playBreakSound(Vector3f pos) {
 		playBreakSound(pos.x, pos.y, pos.z);
+	}
+	
+	public Block setAmountDropped(int amount) {
+		this.amountDropped = amount;
+		return this;
+	}
+	
+	public int getAmountDropped() {
+		return amountDropped;
+	}
+	
+	public Block setBlockDropped(Block b) {
+		this.droppedBlock = b;
+		return this;
+	}
+	
+	public Block getBlockDropped() {
+		if (droppedBlock == null)
+			return this;
+		return droppedBlock;
 	}
 	
 	public void playBreakSound(float x, float y, float z) {
