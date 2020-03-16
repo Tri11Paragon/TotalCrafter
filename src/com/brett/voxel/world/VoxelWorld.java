@@ -138,9 +138,10 @@ public class VoxelWorld {
 					c.remesh();
 				}
 				if (Mouse.getEventButton() == 1) {
-					if (i.heldSlot.getItemStack() != null) {
-						if (picker.placeBlock(Item.inverseItems.get(i.heldSlot.getItem()))) {
-							i.heldSlot.removeItems(1);
+					if (i.getItemInSelectedSlot() != null) {
+						if (picker.placeBlock(Item.inverseItems.get(i.getItemInSelectedSlot().getItem()))) {
+							i.getSelectedSlot().removeItems(1);
+							i.getSelectedSlot().updateText();
 						}
 					}
 				}
@@ -240,7 +241,6 @@ public class VoxelWorld {
 	
 	public void cleanup() {
 		chunk.cleanup();
-		i.saveInventory();
 		shader.cleanUp();
 	}
 	

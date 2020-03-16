@@ -39,8 +39,8 @@ public class UIMaster {
 		renderer.render(guitextures);
 		for (int i = 0; i < guimenus.size(); i++) {
 			IMenu m = guimenus.get(i);
-			m.update();
 			renderer.render(m.render(this));
+			m.update();
 			renderer.render(m.secondardRender(this));
 		}
 	}

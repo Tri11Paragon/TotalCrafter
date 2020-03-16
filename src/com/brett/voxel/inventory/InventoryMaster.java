@@ -21,6 +21,7 @@ public class InventoryMaster {
 	public static void init(Loader loader) {
 		Slot.texture = loader.loadSpecialTexture("inventory/slot");
 		Slot.hovertexture = loader.loadSpecialTexture("inventory/slothover");
+		Hotbar.hoverTexture = Slot.hovertexture;
 	}
 	
 	private static Vector2f pos = new Vector2f();

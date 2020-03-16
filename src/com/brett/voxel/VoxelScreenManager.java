@@ -261,6 +261,7 @@ public class VoxelScreenManager {
 		}
 		isOpen = false;
 		Mouse.setGrabbed(false);
+		pi.cleanup();
 		//testserver.close();
 		//client.close();
 		staticSource.delete();

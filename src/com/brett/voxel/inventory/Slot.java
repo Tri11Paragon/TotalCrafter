@@ -49,7 +49,10 @@ public class Slot extends UIButton {
 	}
 	
 	public void updateText() {
-		text.changeText(Integer.toString(stack.getAmountInStack()));
+		if (stack != null)
+			text.changeText(Integer.toString(stack.getAmountInStack()));
+		else
+			text.changeText("");
 	}
 	
 	public int getItemsAmount() {

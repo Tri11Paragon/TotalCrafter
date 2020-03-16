@@ -46,6 +46,16 @@ public class Inventory implements IMenu {
 		this.NBTID = NBTID;
 	}
 	
+	public Inventory(int seed, String NBTID) {
+		StringBuilder b = new StringBuilder();
+		b.append(NBTID);
+		Random r = new Random(seed);
+		for(int i = 0; i < 30; i++) {
+			b.append((int)Math.abs(r.nextInt(10)));
+		}
+		this.NBTID = b.toString();
+	}
+	
 	private List<Slot> slots = new ArrayList<Slot>();
 	private List<UIElement> slotAsElements = new ArrayList<UIElement>();
 	private boolean enabled = false;
@@ -57,7 +67,7 @@ public class Inventory implements IMenu {
 		slotAsElements.add(s);
 	}
 	
-	public void addItemToInventory(ItemStack i) {
+	public boolean addItemToInventory(ItemStack i) {
 		for (Slot s : slots) {
 			if (s.getItem() == i.getItem()) {
 				int amount = s.getItemStack().increaseStack(i.getAmountInStack());
@@ -65,7 +75,7 @@ public class Inventory implements IMenu {
 				s.updateText();
 				if (amount == 0) {
 					i = null;
-					return;
+					return true;
 				}
 				continue;
 			}
@@ -74,9 +84,26 @@ public class Inventory implements IMenu {
 			if (s.getItemStack() == null) {
 				s.setItemStack(i);
 				s.updateText();
-				return;
+				return true;
 			}
 		}
+		return false;
+	}
+	
+	public boolean addItemToInventorySimilar(ItemStack i) {
+		for (Slot s : slots) {
+			if (s.getItem() == i.getItem()) {
+				int amount = s.getItemStack().increaseStack(i.getAmountInStack());
+				i.setStack(amount);
+				s.updateText();
+				if (amount == 0) {
+					i = null;
+					return true;
+				}
+				continue;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -158,7 +185,7 @@ public class Inventory implements IMenu {
 	}
 	
 	public void saveInventory() {
-		System.out.println("Saving Inventory");
+		System.out.println("Saving " + NBTID + " Inventory");
 		DataOutputStream is = null;
 		try {
 			is = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(ChunkStore.worldLocation + "/" + NBTID + ".dat")));
@@ -179,7 +206,7 @@ public class Inventory implements IMenu {
 			
 			is.close();
 		} catch (IOException e) {}
-		System.out.println("Inventory Saved");
+		System.out.println("Inventory Saved.");
 	}
 	
 	public void loadInventory() {
@@ -202,6 +229,14 @@ public class Inventory implements IMenu {
 			
 			is.close();
 		} catch (IOException e) {}
+	}
+	
+	public boolean getEnabled() {
+		return enabled;
+	}
+	
+	public boolean isEnabled() {
+		return enabled;
 	}
 	
 }

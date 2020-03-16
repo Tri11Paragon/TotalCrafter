@@ -15,6 +15,7 @@ import com.brett.renderer.gui.UIButton;
 import com.brett.renderer.gui.UIControl;
 import com.brett.renderer.gui.UIElement;
 import com.brett.renderer.gui.UIMaster;
+import com.brett.tools.EventQueue;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.renderer.VoxelRenderer;
 import com.brett.voxel.world.VoxelWorld;
@@ -70,6 +71,7 @@ public class MainMenu implements DisplaySource {
 			for (GUIText t : texts)
 				TextMaster.removeText(t);
 			VoxelScreenManager.changeDisplaySource(renderer);
+			EventQueue.doEvent(0);
 		}
 		
 	}

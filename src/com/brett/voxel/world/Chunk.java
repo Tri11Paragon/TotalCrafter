@@ -334,8 +334,8 @@ public class Chunk {
 			x *= -1;
 		if (z < 0)
 			z *= -1;
-		if (y > Chunk.y)
-			y = Chunk.y;
+		if (y >= Chunk.y)
+			y = Chunk.y-1;
 		if (y < 0)
 			y = 0;
 		if (block == 0)

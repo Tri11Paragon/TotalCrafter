@@ -19,31 +19,43 @@ import com.brett.voxel.world.items.ItemStack;
 public class PlayerInventory implements IKeyState{
 	
 	private Inventory i;
+	private Hotbar h;
 	@SuppressWarnings("unused")
 	private GUIRenderer rend;
-	public Slot heldSlot;
 	
 	public PlayerInventory(UIMaster ui) {
 		float sizeX = 64*15 + 5*15;
 		float sizeY = 64*7 + 5*7;
 		float x = Display.getWidth()/2 - sizeX/2;
 		float y = Display.getHeight()/2 - sizeY/2;
-		i = new Inventory(694);
+		i = new Inventory(694, "player");
+		h = new Hotbar(i, ui);
 		for (int j = 0; j < 15; j++) {
 			for (int k = 0; k < 7; k++) {
 				i.addSlot(new Slot(x + (j*64 + 5*j),y + (k*64 + 5*k), 64, 64));
 			}
 		}
-		heldSlot = new Slot(Display.getWidth()/2 - 35, sizeY + 128, 64, 64);
-		i.addSlot(heldSlot);
 //		i.enable();
 		i.loadInventory();
 		ui.addMenu(i);
+		ui.addMenu(h);
 		this.rend = ui.getRenderer();
 	}
 	
 	public void addItemToInventory(ItemStack i) {
-		this.i.addItemToInventory(i);
+		if (!h.addItemToInventorySimilar(i))
+			if (!this.i.addItemToInventorySimilar(i))
+				if (!this.h.addItemToInventory(i))
+					this.i.addItemToInventory(i);
+				
+	}
+	
+	public ItemStack getItemInSelectedSlot() {
+		return h.getItemSelected();
+	}
+	
+	public Slot getSelectedSlot() {
+		return h.getSelectedSlot();
 	}
 	
 	public void update() {
@@ -67,6 +79,11 @@ public class PlayerInventory implements IKeyState{
 
 	@Override
 	public void onKeyReleased() {
+	}
+	
+	public void cleanup() {
+		h.saveInventory();
+		i.saveInventory();
 	}
 	
 }
