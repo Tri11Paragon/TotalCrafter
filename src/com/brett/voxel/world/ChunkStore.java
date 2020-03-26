@@ -34,6 +34,7 @@ public class ChunkStore {
 	// however will need to add a way of moving between active and non active
 	// chunks.
 	private MultiKeyMap<Integer, Region> chunks = new MultiKeyMap<Integer, Region>();
+	private MultiKeyMap<Integer, Region> chunksCopy = null;
 	private List<Tuple<Integer, Integer>> ungeneratedChunks = Collections.synchronizedList(new ArrayList<Tuple<Integer, Integer>>());
 
 	@SuppressWarnings("unused")
@@ -60,6 +61,46 @@ public class ChunkStore {
 						setChunk(generateChunk(g.getX(), g.getY()), g.getX(), g.getY());
 						ungeneratedChunks.remove(i);
 					}
+				} 
+			}
+		}).start();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while(VoxelScreenManager.isOpen) {
+					// what the region list will look like.
+					// butters = collin?
+					
+					/**
+					 * I have tried many ways of doing this.
+					 * (not pushed to git)
+					 * I thought hey instead of checking each update tick of the generation thread, make a new thread that handles this
+					 * so that is what this does
+					 * it handles the unloading of chunk regions.
+					 * this doesn't need to be run every update, so it gets ran every 20 seconds.
+					 */
+					try {
+						Thread.sleep(20*1000);
+					} catch (InterruptedException e) {}
+					
+					if (chunksCopy == null) {
+						chunksCopy = new MultiKeyMap<Integer, Region>();
+						for (int i = -renderDistance; i < renderDistance; i++) {
+							for (int k = -renderDistance; k < renderDistance; k++) {
+								int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
+								int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
+								int xoff = 0, zoff = 0;
+								if (cx < 0)
+									xoff = -1;
+								if (cz < 0)
+									zoff = -1;
+								int rx = cx / Region.x + xoff;
+								int rz = cz / Region.z + zoff;
+								chunksCopy.put(rx, rz, chunks.get(rx, rz));
+							}
+						}
+					}
+					System.gc();
 				}
 			}
 		}).start();
@@ -73,13 +114,17 @@ public class ChunkStore {
 		if (z < 0)
 			regionPosZ -= 1;
 		if (chunks.containsKey(regionPosX, regionPosZ)) {
-			Chunk c = chunks.get(regionPosX, regionPosZ).getChunk(x, z);
-			if (c == null) {
-				c = new Chunk(loader,world, nf, x, z);
-				chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
-				return c;
-			} else {
-				return c;
+			if (chunks.get(regionPosX, regionPosZ) == null)
+				return new Chunk(loader,world, nf, x, z);
+			else {
+				Chunk c = chunks.get(regionPosX, regionPosZ).getChunk(x, z);
+				if (c == null) {
+					c = new Chunk(loader,world, nf, x, z);
+					chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
+					return c;
+				} else {
+					return c;
+			}
 			}
 		} else {
 			Region r = Region.loadRegion(loader, world, regionPosX, regionPosZ, worldLocation);
@@ -102,13 +147,43 @@ public class ChunkStore {
 			regionIt.next();
 			} catch (ConcurrentModificationException e) {System.err.println("Tried saving map while loading it. \nPlease wait for map to complete loading before exiting game."); return;}
 			Region val = regionIt.getValue();
-			val.saveRegion(worldLocation);
+			if (val != null)
+				val.saveRegion(worldLocation);
 		}
 		LevelLoader.saveLevelData(worldLocation);
 		System.out.println("World Saved");
 	}
 
+	public void queSave(MultiKeyMap<Integer, Region> rgs) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				MapIterator<MultiKey<? extends Integer>, Region> rg = rgs.mapIterator();
+				while (rg.hasNext()) {
+					MultiKey<? extends Integer> r = rg.next();
+					Region rgg = rgs.get(r.getKey(0), r.getKey(1));
+					//System.out.println(rgg + " " + r.getKey(0) + " " + r.getKey(1));
+					if (rgg != null)
+						rgg.saveRegion(worldLocation);
+				}
+			}
+		}).start();
+	}
+	
 	public void renderChunks(VoxelShader shader) {
+		if (chunksCopy != null) {
+			MapIterator<MultiKey<? extends Integer>, Region> rg = chunksCopy.mapIterator();
+			while (rg.hasNext()) {
+				MultiKey<? extends Integer> r = rg.next();
+				chunks.remove(r);
+			}
+			MultiKeyMap<Integer, Region> rgs = new MultiKeyMap<Integer, Region>();
+			rgs.putAll(chunks);
+			queSave(rgs);
+			chunks.clear();
+			chunks.putAll(chunksCopy);
+			chunksCopy = null;
+		}
 		for (int i = -renderDistance; i < renderDistance; i++) {
 			for (int k = -renderDistance; k < renderDistance; k++) {
 				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
@@ -146,7 +221,9 @@ public class ChunkStore {
 		if (z < 0)
 			regionPosZ -= 1;
 		if (chunks.containsKey(regionPosX, regionPosZ)) {
-			chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
+			Region r = chunks.get(regionPosX, regionPosZ);
+			if (r != null)
+				r.setChunk(x, z, c);
 			return;
 		}
 		System.out.println(regionPosX + " " + regionPosZ);

@@ -32,6 +32,8 @@ import com.brett.renderer.Loader;
 
 public class Region {
 	
+	private static boolean loadingRegion = false;
+	
 	public static final int x = 32;
 	public static final int z = 32;
 	
@@ -53,6 +55,7 @@ public class Region {
 	 * the region size. (Defined as x and z statically in this class.)
 	 */
 	public static Region loadRegion(Loader loader, VoxelWorld s, int x, int z, String worldLocation) {
+		loadingRegion = true;
 		Region r = new Region(x, z);
 		DataInputStream is = null;
 		try {
@@ -77,6 +80,7 @@ public class Region {
 			
 			is.close();
 		} catch (IOException e) {}
+		loadingRegion = false;
 		return r;
 	}
 	
@@ -84,6 +88,10 @@ public class Region {
 	 * Saves this region inside the specified world location.
 	 */
 	public void saveRegion(String worldLocation) {
+		// we don't want to save this region if its being loading.
+		// yes i am aware of this being static.
+		if (loadingRegion)
+			return;
 		MapIterator<MultiKey<? extends Integer>, Chunk> chunkIt = chunks.mapIterator();
 		DataOutputStream os = null;
 		try {

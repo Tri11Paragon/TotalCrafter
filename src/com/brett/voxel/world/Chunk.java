@@ -89,7 +89,7 @@ public class Chunk {
 			}
 		}
 		
-		new Thread(new Runnable() {		
+		/*new Thread(new Runnable() {		
 			@Override
 			public void run() {
 				for (int i =0; i < x; i++) {
@@ -100,7 +100,7 @@ public class Chunk {
 					}
 				}
 			}
-		}).start();
+		}).start();*/
 	}
 	
 	// don't look at this please
