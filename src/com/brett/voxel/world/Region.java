@@ -131,6 +131,18 @@ public class Region {
 	}
 	
 	/**
+	 * Nulls all the times inside so that way garbage collection can remove them.
+	 */
+	public void nul() {
+		MapIterator<MultiKey<? extends Integer>, Chunk> rgr = chunks.mapIterator();
+		while (rgr.hasNext()) {
+			MultiKey<? extends Integer> r = rgr.next();
+			chunks.get(r).nul();
+		}
+		chunks.clear();
+	}
+	
+	/**
 	 * Gets the x of the region standardized coordinate for this region.
 	 */
 	public int getXpos() {

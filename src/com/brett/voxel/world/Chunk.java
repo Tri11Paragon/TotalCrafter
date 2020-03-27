@@ -266,6 +266,15 @@ public class Chunk {
 		
 	}
 	
+	public void nul() {
+		this.blocksModels = null;
+		this.blocks = null;
+	}
+	
+	public boolean getNull() {
+		return this.blocks == null ? true : false;
+	}
+	
 	public Block getBlockE(int x, int y, int z) {
 		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
 			return null;
