@@ -62,7 +62,7 @@ public class Region {
 			is = new DataInputStream(new BufferedInputStream(new FileInputStream(worldLocation + "DIM/" + x + "_" + z + ".region")));
 		} catch (FileNotFoundException e) { return r;}
 		try {
-			byte b = 0;
+			short b = 0;
 			while (b != -2) {
 				int posX = is.readInt();
 				int posZ = is.readInt();
@@ -70,17 +70,31 @@ public class Region {
 				for (int i = 0; i < blks.length; i++) {
 					for (int j = 0; j < blks[i].length; j++) {
 						for (int k = 0; k < blks[i][j].length; k++) {
-							blks[i][j][k] = is.readShort();
+							short sd = is.readShort();
+							// this prevents interchunk saving issues
+							// this doesn't prevent interregion chunk issues
+							// ie not putting chunk endings at the end
+							// but it does prevent missing information inside a chunk.
+							// though i guess you could call air missing information
+							// but i don't care
+							if (sd < 0) 
+								blks[i][j][k] = 0;
+							else
+								blks[i][j][k] = sd;
 						}
 					}
 				}
-				b = is.readByte();
+				b = is.readShort();
 				r.setChunk(posX, posZ, new Chunk(loader, s, blks, posX, posZ));
 			}
 			
 			is.close();
 		} catch (IOException e) {}
 		loadingRegion = false;
+		// please don't remove marks
+		// this causes some minor suttering
+		// might remove it.
+		System.gc();
 		return r;
 	}
 	
@@ -117,9 +131,14 @@ public class Region {
 				}
 				chunkCount++;
 				if (chunkCount == chunks.size()) {
-					os.writeByte(-2);
+					os.writeShort(-2);
 				} else
-					os.writeByte(-1);
+					os.writeShort(-1);
+				// nulls the chunk
+				c.nul();
+				// removes the reference of this chunk
+				chunkIt.remove();
+				// this should free up some memory but java is stupid.
 			} catch (IOException e) {
 				if (!new File(worldLocation).mkdirs())
 					saveRegion(worldLocation);
@@ -128,6 +147,15 @@ public class Region {
 		try {
 			os.close();
 		} catch (IOException e) {}
+		// this currently causes stuttering kedwell, but since it goes from 1gb -> 0.1gb of memory usages
+		// in somecases when this is called, i am keeping it.
+		// sorry if it causes stuttering. currently as of 2019-3-27 this is the best i got.
+		
+		// quick update:
+		// i just got it to the point where it goes from 1gb -> 0.06gb
+		// this could be fixed if this is called after each region loading
+		// might go do that now
+		System.gc();
 	}
 	
 	/**

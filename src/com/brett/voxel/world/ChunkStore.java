@@ -110,6 +110,7 @@ public class ChunkStore {
 					// and therefore not require calling gc howeever it just caused a bunch of null errors when rendering
 					// and it didn't free up memory
 					// infact when the GC did decide to run, mc3 ended up using more memory (:facepalm:)
+					
 					//System.gc();
 					
 					/**
@@ -194,11 +195,11 @@ public class ChunkStore {
 	}
 
 	public void saveChunks() {
-		System.out.println("Saving world");
+		System.out.println("Saving World");
 		MapIterator<MultiKey<? extends Integer>, Region> regionIt = chunks.mapIterator();
 		while (regionIt.hasNext()) {
 			try {
-			regionIt.next();
+				regionIt.next();
 			} catch (ConcurrentModificationException e) {System.err.println("Tried saving map while loading it. \nPlease wait for map to complete loading before exiting game."); return;}
 			Region val = regionIt.getValue();
 			if (val != null)
@@ -216,7 +217,6 @@ public class ChunkStore {
 				while (rg.hasNext()) {
 					MultiKey<? extends Integer> r = rg.next();
 					Region rgg = rgs.get(r.getKey(0), r.getKey(1));
-					//System.out.println(rgg + " " + r.getKey(0) + " " + r.getKey(1));
 					if (rgg != null) {
 						StringBuilder b = new StringBuilder();
 						b.append("Saving Region ");
@@ -248,7 +248,7 @@ public class ChunkStore {
 			queSave(rgs);
 			chunks.clear();
 			chunks.putAll(chunksCopy);
-			System.out.println(chunks.size());
+			System.out.println("Chunking size: " + chunks.size());
 			chunksCopy = null;
 		}
 		for (int i = -renderDistance; i < renderDistance; i++) {
@@ -262,7 +262,7 @@ public class ChunkStore {
 					queChunk(cx, cz);
 					continue;
 				}
-				if (!c.getNull())
+				//if (!c.getNull())
 					c.render(shader);
 			}
 		}
