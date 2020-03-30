@@ -1,14 +1,14 @@
 package com.brett.voxel.world;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
@@ -32,8 +32,6 @@ import com.brett.renderer.Loader;
 
 public class Region {
 	
-	private static boolean loadingRegion = false;
-	
 	public static final int x = 32;
 	public static final int z = 32;
 	
@@ -55,14 +53,13 @@ public class Region {
 	 * the region size. (Defined as x and z statically in this class.)
 	 */
 	public static Region loadRegion(Loader loader, VoxelWorld s, int x, int z, String worldLocation) {
-		loadingRegion = true;
 		Region r = new Region(x, z);
 		DataInputStream is = null;
 		try {
-			is = new DataInputStream(new BufferedInputStream(new FileInputStream(worldLocation + "DIM/" + x + "_" + z + ".region")));
-		} catch (FileNotFoundException e) { return r;}
+			is = new DataInputStream(new GZIPInputStream(new FileInputStream(worldLocation + "DIM/" + x + "_" + z + ".region"), 4096));
+		} catch (IOException e) { return r;}
 		try {
-			short b = 0;
+			byte b = 0;
 			while (b != -2) {
 				int posX = is.readInt();
 				int posZ = is.readInt();
@@ -70,31 +67,16 @@ public class Region {
 				for (int i = 0; i < blks.length; i++) {
 					for (int j = 0; j < blks[i].length; j++) {
 						for (int k = 0; k < blks[i][j].length; k++) {
-							short sd = is.readShort();
-							// this prevents interchunk saving issues
-							// this doesn't prevent interregion chunk issues
-							// ie not putting chunk endings at the end
-							// but it does prevent missing information inside a chunk.
-							// though i guess you could call air missing information
-							// but i don't care
-							if (sd < 0) 
-								blks[i][j][k] = 0;
-							else
-								blks[i][j][k] = sd;
+							blks[i][j][k] = is.readShort();
 						}
 					}
 				}
-				b = is.readShort();
+				b = is.readByte();
 				r.setChunk(posX, posZ, new Chunk(loader, s, blks, posX, posZ));
 			}
 			
 			is.close();
 		} catch (IOException e) {}
-		loadingRegion = false;
-		// please don't remove marks
-		// this causes some minor suttering
-		// might remove it.
-		System.gc();
 		return r;
 	}
 	
@@ -102,16 +84,17 @@ public class Region {
 	 * Saves this region inside the specified world location.
 	 */
 	public void saveRegion(String worldLocation) {
-		// we don't want to save this region if its being loading.
-		// yes i am aware of this being static.
-		if (loadingRegion)
-			return;
+		// NOTE: i am aware of:
+		//bytes[0] = (byte)(x & 0xff);
+		//bytes[1] = (byte)((x >> 8) & 0xff);
+		// for short -> byte conversion but this is more clean code.
+		// easier to read.
 		MapIterator<MultiKey<? extends Integer>, Chunk> chunkIt = chunks.mapIterator();
 		DataOutputStream os = null;
 		try {
-			os = new DataOutputStream(new BufferedOutputStream(
-					new FileOutputStream(worldLocation + "DIM/" + xpos + "_" + zpos + ".region")));
-		} catch (FileNotFoundException e1) {return;}
+			os = new DataOutputStream(new GZIPOutputStream(
+					new FileOutputStream(worldLocation + "DIM/" + xpos + "_" + zpos + ".region"), 4096));
+		} catch (IOException e1) {return;}
 		int chunkCount = 0;
 		while (chunkIt.hasNext()) {
 			MultiKey<? extends Integer> ke = chunkIt.next();
@@ -131,14 +114,9 @@ public class Region {
 				}
 				chunkCount++;
 				if (chunkCount == chunks.size()) {
-					os.writeShort(-2);
+					os.writeByte(-2);
 				} else
-					os.writeShort(-1);
-				// nulls the chunk
-				c.nul();
-				// removes the reference of this chunk
-				chunkIt.remove();
-				// this should free up some memory but java is stupid.
+					os.writeByte(-1);
 			} catch (IOException e) {
 				if (!new File(worldLocation).mkdirs())
 					saveRegion(worldLocation);
@@ -147,14 +125,6 @@ public class Region {
 		try {
 			os.close();
 		} catch (IOException e) {}
-		// this currently causes stuttering kedwell, but since it goes from 1gb -> 0.1gb of memory usages
-		// in somecases when this is called, i am keeping it.
-		// sorry if it causes stuttering. currently as of 2019-3-27 this is the best i got.
-		
-		// quick update:
-		// i just got it to the point where it goes from 1gb -> 0.06gb
-		// this could be fixed if this is called after each region loading
-		// might go do that now
 		System.gc();
 	}
 	

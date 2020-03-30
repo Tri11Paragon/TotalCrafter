@@ -37,7 +37,6 @@ public class Chunk {
 	public static RawBlockModel fullBlock;
 	public static RawBlockModel emptyBlock;
 	
-	
 	public Chunk(Loader loader, VoxelWorld s, NoiseFunction f, int xoff, int zoff) {
 		this.xoff = xoff;
 		this.zoff = zoff;
@@ -88,19 +87,6 @@ public class Chunk {
 				}
 			}
 		}
-		
-		/*new Thread(new Runnable() {		
-			@Override
-			public void run() {
-				for (int i =0; i < x; i++) {
-					for (int j = 0; j < y; j++) {
-						for (int k = 0; k < z; k++) {
-							//mesh(i,j,k);
-						}
-					}
-				}
-			}
-		}).start();*/
 	}
 	
 	// don't look at this please
@@ -180,18 +166,6 @@ public class Chunk {
 					back = false;
 			}
 		}
-		/*if (s.getBlock((xoff*x) + i + 1,j,k + (zoff*z)) == 0) {
-			right = true;
-		}
-		if (s.getBlock((xoff*x) + i - 1,j,k + (zoff*z)) == 0) {
-			left = true;
-		}
-		if (s.getBlock((xoff*x) + i, j, k + 1 + (zoff*z)) == 0) {
-			front = true;
-		}
-		if (s.getBlock((xoff*x) + i, j, k - 1 + (zoff*z)) == 0) {
-			back = true;
-		}*/
 		
 		blocksModels[i][j][k] = MeshStore.models.get(VoxelWorld.createSixBooleans(left, right, front, back, top, bottom));
 	}

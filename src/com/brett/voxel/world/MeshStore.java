@@ -40,10 +40,21 @@ public class MeshStore {
 			//7,3,2, 7,6,2
 	}; 
 	
+	public static int[] indicies = {
+			//7,3,2, 7,6,2
+			0,  1,  2,  0,  2,  3,   //front
+			4,  5,  6,  4,  6,  7,   //right
+			8,  9,  10, 8,  10, 11,  //back
+			12, 13, 14, 12, 14, 15,  //left
+			16, 17, 18, 16, 18, 19,  //upper
+			20, 21, 22, 20, 22, 23   //bottom
+	}; 
+	
 	public static int[] indiciesFRONT = {
 			//7,3,2, 7,6,2
 			0,  1,  2,  0,  2,  3,   //front
 	}; 
+	
 	public static int[] indiciesRIGHT = {
 			//7,3,2, 7,6,2
 			4,  5,  6,  4,  6,  7,   //right
@@ -63,34 +74,20 @@ public class MeshStore {
 	public static int[] indiciesBOTTOM = {
 			//7,3,2, 7,6,2
 			20, 21, 22, 20, 22, 23   //bottom
-	}; 
-	
-	public static int[] indicies = {
-			//7,3,2, 7,6,2
-			0,  1,  2,  0,  2,  3,   //front
-			4,  5,  6,  4,  6,  7,   //right
-			8,  9,  10, 8,  10, 11,  //back
-			12, 13, 14, 12, 14, 15,  //left
-			16, 17, 18, 16, 18, 19,  //upper
-			20, 21, 22, 20, 22, 23   //bottom
-	}; 
+	};
 	
 	public static float[] vertsFront = {
-			-0.5f, -0.5f,  0.5f,  
-		     0.5f, -0.5f,  0.5f,  
-		     0.5f,  0.5f,  0.5f,  
-		     0.5f,  0.5f,  0.5f,  
-		    -0.5f,  0.5f,  0.5f,  
-		    -0.5f, -0.5f,  0.5f, 
+			-0.5f, -0.5f, 0.5f,
+			0.5f, -0.5f, 0.5f,
+			0.5f, 0.5f, 0.5f,
+			-0.5f, 0.5f, 0.5f,
 	};
 	
 	public static float[] vertsBack = {
-			-0.5f, -0.5f, -0.5f,  
-		     0.5f, -0.5f, -0.5f,  
-		     0.5f,  0.5f, -0.5f,  
-		     0.5f,  0.5f, -0.5f,  
-		    -0.5f,  0.5f, -0.5f,  
-		    -0.5f, -0.5f, -0.5f,  
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, 0.5f, -0.5f,
+			0.5f, 0.5f, -0.5f,
+			0.5f, -0.5f, -0.5f,
 	};
 	
 	public static float[] vertsRight = {
@@ -108,12 +105,10 @@ public class MeshStore {
 	};
 	
 	public static float[] vertsTop = {
-			-0.5f, -0.5f, -0.5f, 
-		     0.5f, -0.5f, -0.5f,  
-		     0.5f,  0.5f, -0.5f,  
-		     0.5f,  0.5f, -0.5f,  
-		    -0.5f,  0.5f, -0.5f,  
-		    -0.5f, -0.5f, -0.5f, 
+			-0.5f, 0.5f, 0.5f,
+			0.5f, 0.5f, 0.5f,
+			0.5f, 0.5f, -0.5f,
+			-0.5f, 0.5f, -0.5f,
 	}; 
 	
 	public static float[] vertsBottom = {
@@ -121,6 +116,48 @@ public class MeshStore {
 			0.5f, -0.5f, -0.5f,
 			0.5f, -0.5f, 0.5f,
 			-0.5f, -0.5f, 0.5f,
+	};
+	
+	public static float[] uvFront = {
+			1, 1, 
+			0, 1,
+			0, 0, 
+			1, 0,
+	};
+	
+	public static float[] uvRight = {
+			0, 0,
+			1, 0,
+			1, 1,
+			0, 1,
+	};
+	
+	public static float[] uvBack = {
+			0, 0,
+			0, 1,
+			1, 1,
+			1, 0,
+	};
+
+	public static float[] uvLeft = {
+			1, 0,
+			0, 0,
+			0, 1,
+			1, 1,
+	};
+	
+	public static float[] uvTop = {
+			1, 0, 
+			0, 0,
+			0, 1,
+			1, 1,
+	};
+	
+	public static float[] uvBottom = {
+			1, 1,
+			0, 1,
+			0, 0,
+			1, 0,
 	};
 	
 	public static float[] verts = {
@@ -154,55 +191,6 @@ public class MeshStore {
 			0.5f, -0.5f, -0.5f,
 			0.5f, -0.5f, 0.5f,
 			-0.5f, -0.5f, 0.5f,
-	};
-	
-	public static float[] uvFront = {
-			0.0f, 0.0f,
-			1.0f, 0.0f,
-			1.0f, 1.0f,
-			1.0f, 1.0f,
-			0.0f, 1.0f,
-			0.0f, 0.0f,
-			
-	};
-	
-	public static float[] uvRight = {
-			0, 0,
-			1, 0,
-			1, 1,
-			0, 1,
-	};
-	
-	public static float[] uvBack = {
-			0.0f, 0.0f,
-			1.0f, 0.0f,
-			1.0f, 1.0f,
-			1.0f, 1.0f,
-			0.0f, 1.0f,
-			0.0f, 0.0f,
-	};
-
-	public static float[] uvLeft = {
-			1, 0,
-			0, 0,
-			0, 1,
-			1, 1,
-	};
-	
-	public static float[] uvTop = {
-			0.0f, 0.0f,
-			1.0f, 0.0f,
-			1.0f, 1.0f,
-			1.0f, 1.0f,
-			0.0f, 1.0f,
-			0.0f, 0.0f,
-	};
-	
-	public static float[] uvBottom = {
-			1, 1,
-			0, 1,
-			0, 0,
-			1, 0,
 	};
 	
 	public static float[] uv = {

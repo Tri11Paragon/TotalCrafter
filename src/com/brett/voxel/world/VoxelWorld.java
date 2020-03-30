@@ -28,12 +28,15 @@ import com.brett.world.cameras.Camera;
 
 public class VoxelWorld {
 	
+	public static final float GRAVITY = 9.8f;
+	
 	private VoxelShader shader;
 	private Loader loader;
 	
 	private MouseBlockPicker picker;
 	public ChunkStore chunk;
 	public Random random = new Random();
+	
 	protected PlayerInventory i;
 	
 	// replace pi with a player
@@ -57,7 +60,6 @@ public class VoxelWorld {
 			@Override
 			public void run() {
 				while (VoxelScreenManager.isOpen) {
-					//System.gc();
 					for (int i = -ChunkStore.renderDistance; i < ChunkStore.renderDistance; i++) {
 						for (int k = -ChunkStore.renderDistance; k < ChunkStore.renderDistance; k++) {
 							int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
@@ -70,27 +72,9 @@ public class VoxelWorld {
 							} catch (Exception e) {}
 						}
 					}
-					/*try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}*/
 				}
 			}
 		}).start();
-		/*new Thread(new Runnable() {		
-			@Override
-			public void run() {
-				while (Main.isOpen) {
-					System.gc();
-					try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}).start();*/
 		picker = new MouseBlockPicker(cam, renderer.getProjectionMatrix(), this);
 	}
 	
@@ -162,18 +146,16 @@ public class VoxelWorld {
 								SixBoolean boo = VoxelWorld.createSixBooleans(new SixBoolean(t == 0 ? false : true, u == 0 ? false : true, l == 0 ? false : true, r == 0 ? false : true, 
 										f == 0 ? false : true, b == 0 ? false : true));
 								int[] ind = {};
-								float[] verts = {};
-								float[] uvs = {};
 								// TODO: maybe not use index arrays?
+								// doesn't really do much btw - future me
 								// cause like its not saving much if you have to load full vertex models in.
-								if (t == 0 ? false : true) {ind = addArrays(ind, MeshStore.indiciesTOP); verts = addArrays(verts, MeshStore.vertsTop); uvs = addArrays(uvs, MeshStore.uvTop);}
-								if (l == 0 ? false : true) {ind = addArrays(ind, MeshStore.indiciesLEFT); verts = addArrays(verts, MeshStore.vertsLeft); uvs = addArrays(uvs, MeshStore.uvLeft);}
-								if (r == 0 ? false : true) {ind = addArrays(ind, MeshStore.indiciesRIGHT); verts = addArrays(verts, MeshStore.vertsRight); uvs = addArrays(uvs, MeshStore.uvRight);}
-								if (f == 0 ? false : true) {ind = addArrays(ind, MeshStore.indiciesFRONT); verts = addArrays(verts, MeshStore.vertsFront); uvs = addArrays(uvs, MeshStore.uvFront);}
-								if (b == 0 ? false : true) {ind = addArrays(ind, MeshStore.indiciesBACK); verts = addArrays(verts, MeshStore.vertsBack); uvs = addArrays(uvs, MeshStore.uvBack);}
-								if (u == 0 ? false : true) {ind = addArrays(ind, MeshStore.indiciesBOTTOM); verts = addArrays(verts, MeshStore.vertsBottom); uvs = addArrays(uvs, MeshStore.uvBottom);}
+								if (t == 0 ? false : true) {ind = addArrays(ind, MeshStore.indiciesTOP);}
+								if (l == 0 ? false : true) {ind = addArrays(ind, MeshStore.indiciesLEFT);}
+								if (r == 0 ? false : true) {ind = addArrays(ind, MeshStore.indiciesRIGHT);}
+								if (f == 0 ? false : true) {ind = addArrays(ind, MeshStore.indiciesFRONT);}
+								if (b == 0 ? false : true) {ind = addArrays(ind, MeshStore.indiciesBACK);}
+								if (u == 0 ? false : true) {ind = addArrays(ind, MeshStore.indiciesBOTTOM);}
 								RawModel m = loader.loadToVAO(MeshStore.verts, MeshStore.uv, ind);
-								//RawModel m = loader.loadToVAO(verts, 3, uvs);
 								if (t == 0 && l == 0 && r == 0 && f == 0 && b == 0 && u == 0)
 									MeshStore.boolEmpty = m.getVaoID();
 								MeshStore.models.put(boo, RawBlockModel.convertRawModel(m));
@@ -213,20 +195,6 @@ public class VoxelWorld {
 	
 	public int[] addArrays(int[] array1, int[] array2) {
 		int[] rtv = new int[array1.length + array2.length];
-		
-		for (int i = 0; i<array1.length;i++) {
-			rtv[i] = array1[i];
-		}
-		
-		for (int i = 0; i<array2.length; i++) {
-			rtv[i + array1.length] = array2[i];
-		}
-		
-		return rtv;
-	}
-	
-	public float[] addArrays(float[] array1, float[] array2) {
-		float[] rtv = new float[array1.length + array2.length];
 		
 		for (int i = 0; i<array1.length;i++) {
 			rtv[i] = array1[i];

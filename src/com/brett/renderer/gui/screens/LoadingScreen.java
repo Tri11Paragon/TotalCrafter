@@ -1,6 +1,5 @@
 package com.brett.renderer.gui.screens;
 
-import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
@@ -27,6 +26,7 @@ public class LoadingScreen {
 	private GUIRenderer renderer;
 	private int max;
 	private int current;
+	@SuppressWarnings("unused")
 	private int grey;
 	private int darkgrey;
 	private int lightgrey;

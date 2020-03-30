@@ -18,7 +18,6 @@ import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.shaders.RenderedShader;
 import com.brett.tools.Maths;
 import com.brett.world.cameras.Camera;
-import com.tester.Main;
 
 /**
 *
