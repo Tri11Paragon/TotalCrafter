@@ -196,7 +196,7 @@ public class Chunk {
 				}
 			}
 		}
-		// System.out.println("Remesher Thread Dead");
+		// System.out.println("Remesher Thread Dead");	
 	}
 	
 	public void render(VoxelShader shader) {
@@ -228,6 +228,7 @@ public class Chunk {
 					GL20.glEnableVertexAttribArray(1);
 					Matrix4f transformationMatrix = Maths.createTransformationMatrixCube(i+(x*xoff),j,k+(z*zoff));
 					shader.loadTransformationMatrix(transformationMatrix);
+					shader.loadLightData(0, 0, 0, 0, 0, 0);
 					GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getID());
 					//GL11.glDrawArrays(MasterRenderer.DRAWMODE, 0, rawModel.getVertexCount());
 					GL11.glDrawElements(MasterRenderer.DRAWMODE, (int)rawModel.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);

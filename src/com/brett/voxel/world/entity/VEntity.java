@@ -13,7 +13,7 @@ import com.brett.voxel.world.VoxelWorld;
 
 public class VEntity {
 	
-	private Vector3f pos;
+	private Vector3f posision;
 	private Vector3f velocity;
 	private Vector3f acceleration;
 	/**
@@ -28,7 +28,7 @@ public class VEntity {
 	private VoxelWorld world;
 	
 	public VEntity(Vector3f pos, float rot, RawModel model) {
-		this.pos = pos;
+		this.posision = pos;
 		this.rot = rot;
 		this.model = model;
 		initVectors();
@@ -41,6 +41,7 @@ public class VEntity {
 		this.airResistance = 1;
 	}
 	
+	// yes it is wrong but its fine.
 	public void update() {
 		// apply gravity
 		this.acceleration.y -= VoxelWorld.GRAVITY;
@@ -57,32 +58,43 @@ public class VEntity {
 		this.velocity.y += acceleration.y;
 		this.velocity.z += acceleration.z;
 		// apply position and check collision.
-		if (world.chunk.getBlock(this.pos.x + velocity.x, this.pos.y, this.pos.z) == 0)
-			this.pos.x += velocity.x;
+		if (world.chunk.getBlock(this.posision.x + velocity.x, this.posision.y, this.posision.z) == 0)
+			this.posision.x += velocity.x;
 		else {
 			this.velocity.x = 0;
 			this.acceleration.x = 0;
 		}
-		if (world.chunk.getBlock(this.pos.x, this.pos.y + velocity.y, this.pos.z) == 0)
-			this.pos.y += velocity.y;
+		if (world.chunk.getBlock(this.posision.x, this.posision.y + velocity.y, this.posision.z) == 0)
+			this.posision.y += velocity.y;
 		else {
 			this.velocity.y = 0;
 			this.acceleration.y = 0;
 		}
-		if (world.chunk.getBlock(this.pos.x, this.pos.y, this.pos.z + velocity.z) == 0)
-			this.pos.z += velocity.z;
+		if (world.chunk.getBlock(this.posision.x, this.posision.y, this.posision.z + velocity.z) == 0)
+			this.posision.z += velocity.z;
 		else {
 			this.velocity.z = 0;
 			this.acceleration.z = 0;
 		}
 	}
 	
+	/**
+	 * Entity Functions below
+	 */
+	
+	/**
+	 * Called when entity is spawned
+	 */
 	public void onEntitySpawned(VoxelWorld world, float x, float y, float z) {
 		this.world = world;
 	}
+	
+	/**
+	 * Getters and Setters below.
+	 */
 
 	public Vector3f getPos() {
-		return pos;
+		return posision;
 	}
 
 	public float getRot() {

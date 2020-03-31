@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 
 import org.lwjgl.Sys;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
@@ -227,9 +228,18 @@ public class VoxelScreenManager {
 			
 			if (Mouse.isButtonDown(2)) {
 				Vector3f pos = camera.getPosition();
-				for (int i = -4; i <= 4; i++) {
-					for (int k = -4; k <= 4; k++) {
-						world.chunk.setBlock(i+pos.x, pos.y-1, k+pos.z, 1);
+				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+					for (int i = -4; i <= 6; i++) {
+						for (int k = -4; k <= 6; k++) {
+							world.chunk.setBlock(i+pos.x, pos.y, k+pos.z, 0);
+							world.chunk.setBlock(i+pos.x, pos.y-1, k+pos.z, 0);
+						}
+					}
+				}else {
+					for (int i = -4; i <= 6; i++) {
+						for (int k = -4; k <= 6; k++) {
+							world.chunk.setBlock(i+pos.x, pos.y-1, k+pos.z, 1);
+						}
 					}
 				}
 			}

@@ -2,18 +2,19 @@
 
 in vec3 position;
 in vec2 textureCoordinates;
-out vec2 textureCoords;
+out vec2 textureCoord;
+out vec3 unnormal;
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 transformationMatrix;
 
 void main(void){
-	
+	unnormal = position;
 	vec4 worldPosition = transformationMatrix * vec4(position,1.0);
 	vec4 positionRelativeToCam = viewMatrix * worldPosition;
 	gl_Position = projectionMatrix * positionRelativeToCam;
-	textureCoords = textureCoordinates;
+	textureCoord = textureCoordinates;
 	//textureCoords = vec2(((position.x+1.0)/2.0), ((position.y+1.0)/2.0));
 	
 }

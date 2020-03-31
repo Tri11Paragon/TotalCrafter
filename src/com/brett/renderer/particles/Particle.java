@@ -4,7 +4,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.DisplayManager;
-import com.brett.world.cameras.Camera;
+import com.brett.world.cameras.ICamera;
 import com.brett.world.entities.Entity;
 
 public class Particle {
@@ -50,7 +50,7 @@ public class Particle {
 		ParticleMaster.addParticle(this);
 	}
 	
-	public boolean update(Camera camera) {
+	public boolean update(ICamera camera) {
 		velocity.y += Entity.GRAVITY * gravityEffect * DisplayManager.getFrameTimeSeconds();
 		reusableVector3.set(velocity);
 		reusableVector3.scale(DisplayManager.getFrameTimeSeconds());

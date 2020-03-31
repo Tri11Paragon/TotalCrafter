@@ -25,7 +25,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.tools.Maths;
 import com.brett.tools.SettingsLoader;
-import com.brett.world.cameras.Camera;
+import com.brett.world.cameras.ICamera;
 
 public class LineShader extends ShaderProgram {
 
@@ -182,7 +182,7 @@ public class LineShader extends ShaderProgram {
 		super.loadMatrix(location_translationMatrix, Maths.createTransformationMatrix(new Vector3f(0,0,0), 0, 0, 0, 1));
 	}
 	
-	public void loadViewMatrix(Camera camera){
+	public void loadViewMatrix(ICamera camera){
 		this.start();
 		Matrix4f viewMatrix = Maths.createViewMatrix(camera);
 		super.loadMatrix(location_viewMatrix, viewMatrix);

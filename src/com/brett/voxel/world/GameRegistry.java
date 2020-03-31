@@ -1,7 +1,11 @@
 package com.brett.voxel.world;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.ModelTexture;
+import com.brett.renderer.datatypes.SaveEvent;
 import com.brett.sound.AudioController;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.blocks.BlockAir;
@@ -18,6 +22,7 @@ import com.brett.voxel.world.items.Item;
 public class GameRegistry {
 	
 	private static short highestID = 0;
+	private static List<SaveEvent> saveEvents = new ArrayList<SaveEvent>();
 	
 	public static void init(Loader loader) {
 		registerBlocks(loader);
@@ -37,6 +42,24 @@ public class GameRegistry {
 	
 	private static void registerItems(Loader loader) {
 		
+	}
+	
+	protected static void preSaveEvent() {
+		for (int i = 0; i < saveEvents.size(); i++) 
+			saveEvents.get(i).preSaveEvent();
+	}
+	
+	protected static void postSaveEvent() {
+		for (int i = 0; i < saveEvents.size(); i++) 
+			saveEvents.get(i).postSaveEvent();
+	}
+	
+	public static void registerSaveEvent(SaveEvent e) {
+		saveEvents.add(e);
+	}
+	
+	public static void removeSaveEvent(SaveEvent e) {
+		saveEvents.remove(e);
 	}
 	
 	protected static void registerItem(short id, ModelTexture texture) {

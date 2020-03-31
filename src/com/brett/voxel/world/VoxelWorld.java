@@ -19,6 +19,7 @@ import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemStack;
 import com.brett.world.cameras.Camera;
+import com.brett.world.cameras.ICamera;
 
 /**
 *
@@ -78,7 +79,7 @@ public class VoxelWorld {
 		picker = new MouseBlockPicker(cam, renderer.getProjectionMatrix(), this);
 	}
 	
-	public void render(Camera camera) {
+	public void render(ICamera camera) {
 		shader.start();
 		shader.loadViewMatrix(camera);
 		MasterRenderer.enableCulling();
@@ -209,6 +210,7 @@ public class VoxelWorld {
 	
 	public void cleanup() {
 		chunk.cleanup();
+		LevelLoader.saveLevelData(ChunkStore.worldLocation);
 		shader.cleanUp();
 	}
 	

@@ -7,7 +7,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.brett.world.cameras.Camera;
+import com.brett.world.cameras.ICamera;
 
 public class Maths {
 	
@@ -161,7 +161,7 @@ public class Maths {
 		return l1 * p1.y + l2 * p2.y + l3 * p3.y;
 	}
 	static Matrix4f viewMatrix = new Matrix4f();
-	public static Matrix4f createViewMatrix(Camera camera) {
+	public static Matrix4f createViewMatrix(ICamera camera) {
 		viewMatrix.setIdentity();
 		Matrix4f.rotate((float) Math.toRadians(camera.getPitch()), new Vector3f(1, 0, 0), viewMatrix, viewMatrix);
 		Matrix4f.rotate((float) Math.toRadians(camera.getYaw()), new Vector3f(0, 1, 0), viewMatrix, viewMatrix);
@@ -171,7 +171,7 @@ public class Maths {
 		return viewMatrix;
 	}
 	
-	public static Matrix4f createViewMatrixOTHER(Camera camera) {
+	public static Matrix4f createViewMatrixOTHER(ICamera camera) {
 		Matrix4f viewMatrix = new Matrix4f();
 		viewMatrix.setIdentity();
 		Matrix4f.rotate((float) Math.toRadians(camera.getPitch()), new Vector3f(1, 0, 0), viewMatrix, viewMatrix);

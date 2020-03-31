@@ -70,15 +70,6 @@ public class ChunkStore {
 				while(VoxelScreenManager.isOpen) {
 					// what the region list will look like.
 					// butters = collin?
-					
-					/**
-					 * I have tried many ways of doing this.
-					 * (not pushed to git)
-					 * I thought hey instead of checking each update tick of the generation thread, make a new thread that handles this
-					 * so that is what this does
-					 * it handles the unloading of chunk regions.
-					 * this doesn't need to be run every update, so it gets ran every 20 seconds.
-					 */
 					try {
 						Thread.sleep(20*1000);
 					} catch (InterruptedException e) {}
@@ -100,62 +91,7 @@ public class ChunkStore {
 							}
 						}
 					}
-					// This is required to keep memory usage down.
-					// however it causes major stuttering.
-					// who can blame it? it has to dereference about half a gig of data
-					// This is why java sucks
-					// i can't control the memory myself and because of that
-					// the gc ends up running at 88%
-					// was hoping that manual nulling would prevent this
-					// and therefore not require calling gc howeever it just caused a bunch of null errors when rendering
-					// and it didn't free up memory
-					// infact when the GC did decide to run, mc3 ended up using more memory (:facepalm:)
-					
 					//System.gc();
-					
-					/**
-					 * This also highlights the issue with school computers in a computer science classroom:
-					 * 	There is no control.
-					 * There would have been 0 chance of me finding this or even knowing how bad the ram usage was if i was only working on this
-					 * at school
-					 * 
-					 * I think a good step would be to switch to linux. Programming on linux is much better due to access to the underlying source of the kernel
-					 * and therefore memory
-					 * on linux security is better then windows. im not a windows admin so i can't speak about the policies that can be implimented in windows
-					 * but again because windows is closed source, and linux is open source you can actually edit and change how linux runs.
-					 * ie if you don't like the way users are managed you can change it.
-					 * 
-					 * note im not suggesting that schools develop their own user control software, however i think it would be neat for a company
-					 * to make a linux software for computer science schools that give access to memory but prevent the kids from doing
-					 * bad stuff.
-					 * 
-					 * This can already be done using user privileges and stuff (i do this on the servers i host: i chroot them to their home directories
-					 * and don't allow them to use sudo or have root access.
-					 * 
-					 * if this was computer science, a linux admin could allow users to read from /proc/ but not write (this is already standard in linux)
-					 * Hint for kedwell (/proc/ is where basiclly all memory is stored as a file. this is whats neat about *nix os. they use files for memory.
-					 * its actually really neat
-					 * 
-					 * allowing students to read from proc would allow them to keep track of how much memory their programs are using along with a bunch of other neat stuff.
-					 * 
-					 * another thing that could be implemented is using being able to kill processes using a task manager like thing.
-					 * i use htop but there is a GUI task manager in my linux distro.
-					 * htop is much better though. much more information about task and what it is doing, along with its children.
-					 * 
-					 * what an admin could do is allow users to only kill userspace programs or even limit it to programs that the user has started themselves.
-					 * the second thing there would likely require some custom software however it could be done and likely has already been done
-					 * 
-					 * most system processes already run in kernel space and require privileges to kill.
-					 * thought i feel like htop can bypass this but that can be easily fixed
-					 * or everything i have killed with htop was userspace.
-					 * 
-					 * i would try and kill something in kernel space right now but i don't want my computer to crash if its not protected
-					 * however knowing *nix operating systems kernel processes are protected from htop
-					 * 
-					 * anyways my point is comp sci needs linux and windows bad
-					 * 
-					 *	/rant
-					 */
 				}
 			}
 		}).start();
@@ -205,35 +141,7 @@ public class ChunkStore {
 			if (val != null)
 				val.saveRegion(worldLocation);
 		}
-		LevelLoader.saveLevelData(worldLocation);
 		System.out.println("World Saved");
-	}
-
-	public void queSave(MultiKeyMap<Integer, Region> rgs) {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				MapIterator<MultiKey<? extends Integer>, Region> rg = rgs.mapIterator();
-				while (rg.hasNext()) {
-					MultiKey<? extends Integer> r = rg.next();
-					Region rgg = rgs.get(r.getKey(0), r.getKey(1));
-					if (rgg != null) {
-						StringBuilder b = new StringBuilder();
-						b.append("Saving Region ");
-						b.append(rgg);
-						b.append(" at pos: {");
-						b.append(r.getKey(0));
-						b.append(",");
-						b.append(r.getKey(1));
-						b.append("}");
-						System.out.println(b);
-						rgg.saveRegion(worldLocation);
-						rgg = null;
-						rg.remove();
-					}
-				}
-			}
-		}).start();
 	}
 	
 	public void renderChunks(VoxelShader shader) {
@@ -276,7 +184,9 @@ public class ChunkStore {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
+				GameRegistry.preSaveEvent();
 				saveChunks();
+				GameRegistry.postSaveEvent();
 			}
 		}).start();
 	}
@@ -408,4 +318,31 @@ public class ChunkStore {
 		return getChunk(x, z);
 	}
 
+	private void queSave(MultiKeyMap<Integer, Region> rgs) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				MapIterator<MultiKey<? extends Integer>, Region> rg = rgs.mapIterator();
+				while (rg.hasNext()) {
+					MultiKey<? extends Integer> r = rg.next();
+					Region rgg = rgs.get(r.getKey(0), r.getKey(1));
+					if (rgg != null) {
+						StringBuilder b = new StringBuilder();
+						b.append("Saving Region ");
+						b.append(rgg);
+						b.append(" at pos: {");
+						b.append(r.getKey(0));
+						b.append(",");
+						b.append(r.getKey(1));
+						b.append("}");
+						System.out.println(b);
+						rgg.saveRegion(worldLocation);
+						rgg = null;
+						rg.remove();
+					}
+				}
+			}
+		}).start();
+	}
+	
 }

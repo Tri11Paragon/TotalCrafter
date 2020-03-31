@@ -40,6 +40,13 @@ public class MeshStore {
 			//7,3,2, 7,6,2
 	}; 
 	
+	//not needed as we are currently calculating normals inside the shaders
+	public static float[] normalsNONE = {};
+	
+	public static float[] normals = {
+			
+	};
+	
 	public static int[] indicies = {
 			//7,3,2, 7,6,2
 			0,  1,  2,  0,  2,  3,   //front

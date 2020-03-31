@@ -22,6 +22,7 @@ import com.brett.renderer.world.NormalMappingRenderer;
 import com.brett.renderer.world.SkyboxRenderer;
 import com.brett.renderer.world.TerrainRenderer;
 import com.brett.world.cameras.Camera;
+import com.brett.world.cameras.ICamera;
 import com.brett.world.entities.Entity;
 import com.brett.world.terrain.Terrain;
 
@@ -99,12 +100,12 @@ public class MasterRenderer {
 		normalEntities.clear();
 	}
 	
-	public void renderSky(Camera camera) {
+	public void renderSky(ICamera camera) {
 		prepare();
 		skyboxRenderer.render(camera);
 	}
 	
-	public void renderSkyNone(Camera camera) {
+	public void renderSkyNone(ICamera camera) {
 		GL11.glClearColor(RED, GREEN, BLUE, 1);
 		skyboxRenderer.render(camera);
 	}

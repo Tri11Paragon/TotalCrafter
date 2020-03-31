@@ -8,7 +8,7 @@ import com.brett.renderer.particles.ParticleMaster;
 import com.brett.sound.AudioController;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.world.VoxelWorld;
-import com.brett.world.cameras.Camera;
+import com.brett.world.cameras.ICamera;
 
 /**
 *
@@ -19,10 +19,10 @@ import com.brett.world.cameras.Camera;
 public class VoxelRenderer implements DisplaySource {
 	
 	private MasterRenderer renderer;
-	private Camera camera;
+	private ICamera camera;
 	private VoxelWorld world;
 	
-	public VoxelRenderer(MasterRenderer renderer, Camera camera, VoxelWorld world) {
+	public VoxelRenderer(MasterRenderer renderer, ICamera camera, VoxelWorld world) {
 		this.renderer = renderer;
 		this.camera = camera;
 		this.world = world;

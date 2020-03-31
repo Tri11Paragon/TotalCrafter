@@ -4,7 +4,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.tools.Maths;
-import com.brett.world.cameras.Camera;
+import com.brett.world.cameras.ICamera;
 
 public class SkyboxShader extends ShaderProgram{
 
@@ -51,7 +51,7 @@ public class SkyboxShader extends ShaderProgram{
 		super.loadFloat(location_blendFactor, f);
 	}
 
-	public void loadViewMatrix(Camera camera, float rot){
+	public void loadViewMatrix(ICamera camera, float rot){
 		Matrix4f matrix = Maths.createViewMatrix(camera);
 		matrix.m30 = 0;
 		matrix.m31 = 0;

@@ -12,7 +12,7 @@ import com.brett.DisplayManager;
 import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.shaders.SkyboxShader;
-import com.brett.world.cameras.Camera;
+import com.brett.world.cameras.ICamera;
 
 public class SkyboxRenderer {
 
@@ -86,7 +86,7 @@ public class SkyboxRenderer {
 		shader.stop();
 	}
 	
-	public void render(Camera camera) {
+	public void render(ICamera camera) {
 		GL11.glDepthMask(false);
 		//GL11.glDepthRange(1f, 1f);
 		shader.start();

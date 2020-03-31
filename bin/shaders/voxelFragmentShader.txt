@@ -1,10 +1,11 @@
 #version 150
 
 in vec2 textureCoords;
+in float lightLevel;
 out vec4 out_Color;
 
 uniform sampler2D te;
 
 void main(void){
-    out_Color = texture(te, textureCoords);
+    out_Color = texture(te, textureCoords) * max(vec4(lightLevel/15, lightLevel/15,lightLevel/15, 1.0), vec4(0.2));
 }

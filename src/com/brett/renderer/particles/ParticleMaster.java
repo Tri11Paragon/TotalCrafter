@@ -12,6 +12,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import com.brett.renderer.Loader;
 import com.brett.tools.Sorts;
 import com.brett.world.cameras.Camera;
+import com.brett.world.cameras.ICamera;
 
 public class ParticleMaster {
 
@@ -22,7 +23,7 @@ public class ParticleMaster {
 		renderer = new ParticleRenderer(loader, projectionMatrix);
 	}
 	
-	public static void update(Camera camera) {
+	public static void update(ICamera camera) {
 		Iterator<Entry<ParticleTexture, List<Particle>>> mapIterator = particles.entrySet().iterator();
 		while(mapIterator.hasNext()) {
 			Entry<ParticleTexture, List<Particle>> entry = mapIterator.next();
