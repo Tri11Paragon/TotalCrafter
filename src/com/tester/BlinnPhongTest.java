@@ -10,7 +10,6 @@ import org.lwjgl.util.vector.Vector4f;
 import com.brett.DisplayManager;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
-import com.brett.renderer.datatypes.GUITexture;
 import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.renderer.datatypes.TexturedModel;
 import com.brett.renderer.datatypes.WaterTile;
@@ -18,7 +17,6 @@ import com.brett.renderer.font.fontRendering.TextMaster;
 import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.UIElement;
 import com.brett.renderer.lighting.Light;
-import com.brett.renderer.lighting.Sun;
 import com.brett.renderer.particles.ParticleMaster;
 import com.brett.renderer.shaders.WaterShader;
 import com.brett.renderer.world.water.WaterFrameBuffers;
@@ -37,7 +35,8 @@ import com.brett.world.entities.Entity;
 */
 
 public class BlinnPhongTest {
-
+	
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		DisplayManager.createDisplay(false);
 		SettingsLoader.loadSettings();

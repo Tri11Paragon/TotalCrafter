@@ -37,19 +37,19 @@ public class GameRegistry {
 		registerBlock((short) Block.BLOCK_GRASS, new BlockGrass(new ModelTexture(loader.loadTexture("grassy2"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
 		registerBlock((short) Block.BLOCK_SAND, new BlockSand(new ModelTexture(loader.loadTexture("sand"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
 		registerBlock((short) Block.BLOCK_CLAY, new Block(new ModelTexture(loader.loadTexture("clay"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
-		registerBlock((short) Block.BLOCK_SNOW, new Block(new ModelTexture(loader.loadTexture("snow"))).setBreakSound(AudioController.loadSound("bounce.ogg")));
+		registerBlock((short) Block.BLOCK_SNOW, new Block(new ModelTexture(loader.loadTexture("snow"))).setBreakSound(AudioController.loadSound("bounce.ogg")).setLightLevel((byte) 15));
 	}
 	
 	private static void registerItems(Loader loader) {
 		
 	}
 	
-	protected static void preSaveEvent() {
+	public static void preSaveEvent() {
 		for (int i = 0; i < saveEvents.size(); i++) 
 			saveEvents.get(i).preSaveEvent();
 	}
 	
-	protected static void postSaveEvent() {
+	public static void postSaveEvent() {
 		for (int i = 0; i < saveEvents.size(); i++) 
 			saveEvents.get(i).postSaveEvent();
 	}

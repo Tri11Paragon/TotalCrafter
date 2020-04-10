@@ -14,6 +14,9 @@ import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
 
 import com.brett.renderer.Loader;
+import com.brett.voxel.world.blocks.Block;
+import com.brett.voxel.world.chunk.Chunk;
+import com.brett.voxel.world.lighting.LightingEngine;
 
 /**
 *
@@ -68,6 +71,7 @@ public class Region {
 					for (int j = 0; j < blks[i].length; j++) {
 						for (int k = 0; k < blks[i][j].length; k++) {
 							blks[i][j][k] = is.readShort();
+							Block.blocks.get(blks[i][j][k]).onBlockPlaced(i + (posX * Chunk.x), j, k + (posZ * Chunk.z), s);
 						}
 					}
 				}
@@ -77,6 +81,7 @@ public class Region {
 			
 			is.close();
 		} catch (IOException e) {}
+		LightingEngine.recalculate();
 		return r;
 	}
 	

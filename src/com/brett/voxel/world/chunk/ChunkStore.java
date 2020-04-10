@@ -1,4 +1,4 @@
-package com.brett.voxel.world;
+package com.brett.voxel.world.chunk;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,6 +12,10 @@ import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.Tuple;
 import com.brett.renderer.shaders.VoxelShader;
 import com.brett.voxel.VoxelScreenManager;
+import com.brett.voxel.world.GameRegistry;
+import com.brett.voxel.world.LevelLoader;
+import com.brett.voxel.world.Region;
+import com.brett.voxel.world.VoxelWorld;
 import com.brett.world.cameras.Camera;
 import com.brett.world.terrain.noisefunctions.ChunkNoiseFunction;
 import com.brett.world.terrain.noisefunctions.NoiseFunction;
@@ -36,9 +40,6 @@ public class ChunkStore {
 	private MultiKeyMap<Integer, Region> chunks = new MultiKeyMap<Integer, Region>();
 	private MultiKeyMap<Integer, Region> chunksCopy = null;
 	private List<Tuple<Integer, Integer>> ungeneratedChunks = Collections.synchronizedList(new ArrayList<Tuple<Integer, Integer>>());
-
-	@SuppressWarnings("unused")
-	private List<Chunk> activeChunks = new ArrayList<Chunk>();
 
 	protected Camera cam;
 	private Loader loader;
@@ -163,8 +164,10 @@ public class ChunkStore {
 			for (int k = -renderDistance; k < renderDistance; k++) {
 				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
 				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
-				//if (!cam.isPointInFrustum(i, cam.getPosition().y, k))
-				//	continue;
+				float fx = cam.getPosition().x + (i*Chunk.x);
+				float fz = cam.getPosition().z + (k * Chunk.z);
+				if (!cam.cubeInFrustum(fx, 0, fz, fx + Chunk.x, Chunk.y, fz + Chunk.z))
+					continue;
 				Chunk c = getChunk(cx, cz);
 				if (c == null) {
 					queChunk(cx, cz);
@@ -174,6 +177,7 @@ public class ChunkStore {
 					c.render(shader);
 			}
 		}
+		
 	}
 	
 	public void queChunk(int cx, int cz) {
@@ -272,6 +276,50 @@ public class ChunkStore {
 		c.setBlock((int)x,(int)y, (int)z, block);
 	}
 	
+	public void setLightLevel(float x, float y, float z, byte level) {
+		if (y < 0)
+			return;
+		if (y > Chunk.y)
+			return;
+		int xoff = 0,zoff = 0;
+		if (x < 0)
+			xoff = -1;
+		if (z < 0)
+			zoff = -1;
+		Chunk c = getChunk((int)(x/(float)Chunk.x) + xoff, (int)(z/(float)Chunk.z) + zoff);
+		if (c == null)
+			return;
+		x %= 16;
+		z %= 16;
+		if (x < 0)
+			x = biasNegative(x, -Chunk.x);
+		if (z < 0)
+			z = biasNegative(z, -Chunk.z);
+		c.setLightLevel((int)x,(int)y, (int)z, level);
+	}
+	
+	public byte getLightLevel(float x, float y, float z) {
+		if (y < 0)
+			return 0;
+		if (y > Chunk.y)
+			return 0;
+		int xoff = 0,zoff = 0;
+		if (x < 0)
+			xoff = -1;
+		if (z < 0)
+			zoff = -1;
+		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
+		if (c == null)
+			return -1;
+		x%=16;
+		z%=16;
+		if (x < 0)
+			x = biasNegative(x, -Chunk.x);
+		if (z < 0)
+			z = biasNegative(z, -Chunk.z);
+		return c.getLightLevel((int)x, (int)y, (int)z);
+	}
+	
 	public void setBlockBIAS(float x, float y, float z, short block) {
 		if (x < 0)
 			x -= 1;
@@ -298,6 +346,22 @@ public class ChunkStore {
 		if (z < 0)
 			z -= 1;
 		return getBlock(x, y, z);
+	}
+	
+	public void setLightLevelBIAS(float x, float y, float z, byte level) {
+		if (x < 0)
+			x -= 1;
+		if (z < 0)
+			z -= 1;
+		setLightLevel(x, y, z, level);
+	}
+	
+	public byte getLightLevelBIAS(float x, float y, float z) {
+		if (x < 0)
+			x -= 1;
+		if (z < 0)
+			z -= 1;
+		return getLightLevel(x, y, z);
 	}
 	
 	public void setBlock(float x, float y, float z, int block) {
@@ -343,6 +407,14 @@ public class ChunkStore {
 				}
 			}
 		}).start();
+	}
+
+	public NoiseFunction getNf() {
+		return nf;
+	}
+
+	public void setNf(NoiseFunction nf) {
+		this.nf = nf;
 	}
 	
 }

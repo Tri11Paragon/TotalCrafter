@@ -6,8 +6,10 @@ import com.brett.renderer.DisplaySource;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.particles.ParticleMaster;
 import com.brett.sound.AudioController;
+import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.world.VoxelWorld;
+import com.brett.world.cameras.Camera;
 import com.brett.world.cameras.ICamera;
 
 /**
@@ -19,20 +21,19 @@ import com.brett.world.cameras.ICamera;
 public class VoxelRenderer implements DisplaySource {
 	
 	private MasterRenderer renderer;
-	private ICamera camera;
+	private Camera camera;
 	private VoxelWorld world;
 	
 	public VoxelRenderer(MasterRenderer renderer, ICamera camera, VoxelWorld world) {
 		this.renderer = renderer;
-		this.camera = camera;
+		this.camera = (Camera) camera;
 		this.world = world;
 	}
 	
 	@Override
 	public void render() {
 		camera.move();
-		//camera.calculateFrustum(renderer.getProjectionMatrix(), Maths.createViewMatrixOTHER(camera));
-		//System.out.println(camera.planeIntersection(new Vector3f(0,0,0), 1));
+		camera.calculateFrustum(renderer.getProjectionMatrix(), Maths.createViewMatrixOTHER(camera));
 		AudioController.setListenerPosition(camera.getPosition(), camera.getYaw(), camera.getPitch(), camera.getRoll());
 		VoxelScreenManager.ls.loadViewMatrix(camera);
 		VoxelScreenManager.pt.loadViewMatrix(camera);

@@ -55,8 +55,8 @@ public class VoxelShader extends ShaderProgram {
 		super.loadFloat(location_ldown, down);
 		super.loadFloat(location_lleft, left);
 		super.loadFloat(location_lright, right);
-		super.loadFloat(location_lfront, front);
-		super.loadFloat(location_lback, back);
+		super.loadFloat(location_lfront, back);
+		super.loadFloat(location_lback, front);
 	}
 	
 	public void loadTransformationMatrix(Matrix4f matrix){

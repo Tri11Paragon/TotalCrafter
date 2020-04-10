@@ -17,7 +17,8 @@ public class DisplayManager {
 
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
-	public static int FPS_MAX = 128;
+	// note: this value is overwritten by the settings found in settings.txt
+	public static int FPS_MAX = 150;
 	
 	private static long lastFrameTime;
 	private static float delta;

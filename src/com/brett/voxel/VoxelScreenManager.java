@@ -33,6 +33,7 @@ import com.brett.voxel.gui.MainMenu;
 import com.brett.voxel.inventory.InventoryMaster;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.world.GameRegistry;
+import com.brett.voxel.world.MeshStore;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.world.cameras.CreativeFirstPersonCamera;
 import com.brett.world.entities.Entity;
@@ -218,6 +219,8 @@ public class VoxelScreenManager {
 		scene = new MainMenu(ui, renderer, camera, world, loader);
 		//scene = new VoxelRenderer(renderer, camera, world);
 		
+		//System.out.println(MeshStore.models.get(VoxelWorld.createSixBooleans(true, true, true, true, true, true)) == MeshStore.models.get(VoxelWorld.createSixBooleans(true, true, true, true, true, true)));
+		
 		System.gc();
 		while (!Display.isCloseRequested()) {
 			double startTime = Sys.getTime() * 1000 / Sys.getTimerResolution();
@@ -263,7 +266,12 @@ public class VoxelScreenManager {
 			if(deltaTime > 1000) {
 				frameRate = (double)frames*0.5d + frameRate*0.5d;
 				averageFrameTimeMilliseconds  = 1000.0/(frameRate==0?0.001:frameRate);
-				//System.out.println("Frames per Seconds: " + (int)frameRate);
+				StringBuilder sb = new StringBuilder();
+				sb.append("Frames Per Second: ");
+				sb.append((int)frameRate);
+				sb.append(" + FrameTimeMilli: ");
+				sb.append(averageFrameTimeMilliseconds);
+				System.out.println(sb.toString());
 				frames = 0;
 				deltaTime = 0;
 			}
@@ -285,6 +293,7 @@ public class VoxelScreenManager {
 		loader.cleanUp();
 		SettingsLoader.saveSettings();
 		DisplayManager.closeDisplay();
+		System.exit(0);
 	}
 	
 	public static void changeDisplaySource(DisplaySource s) {

@@ -21,6 +21,7 @@ public class FirstPersonPlayer extends Entity {
 	private FirstPersonCamera camera;
 	private static final float DRAG_EFFECT = 0.991348f;
 	private static final float MAX_SIDE_SPEED = 0.4f;
+	@SuppressWarnings("unused")
 	private static final float MAX_FORWARD_SPEED = 0.4f;
 	
 	private Vector3f offset = new Vector3f(0,0,0);

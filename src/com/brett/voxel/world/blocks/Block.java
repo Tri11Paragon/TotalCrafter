@@ -8,6 +8,7 @@ import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.world.VoxelWorld;
+import com.brett.voxel.world.lighting.LightingEngine;
 
 /**
 *
@@ -20,19 +21,20 @@ public class Block {
 	public static final HashMap<Short, Block> blocks = new HashMap<Short, Block>();
 	public static final HashMap<Block, Short> inverseBlocks = new HashMap<Block, Short>();
 	
-	public static short BLOCK_AIR = 0;
-	public static short BLOCK_STONE = 1;
-	public static short BLOCK_DIRT = 2;
-	public static short BLOCK_WILL = 3;
-	public static short BLOCK_GRASS = 4;
-	public static short BLOCK_SAND = 5;
-	public static short BLOCK_CLAY = 6;
-	public static short BLOCK_SNOW = 7;
+	public static final short BLOCK_AIR = 0;
+	public static final short BLOCK_STONE = 1;
+	public static final short BLOCK_DIRT = 2;
+	public static final short BLOCK_WILL = 3;
+	public static final short BLOCK_GRASS = 4;
+	public static final short BLOCK_SAND = 5;
+	public static final short BLOCK_CLAY = 6;
+	public static final short BLOCK_SNOW = 7;
 	
 	public ModelTexture model;
 	private int[] breakSound = {0};
-	private Block droppedBlock = null;
+	private short droppedBlock = 0;
 	private int amountDropped = 1;
+	private byte lightLevel = 0;
 	
 	public Block(ModelTexture model) {
 		this.model = model;
@@ -43,11 +45,15 @@ public class Block {
 	}
 	
 	public void onBlockPlaced(int x, int y, int z, VoxelWorld world) {
-		
+		onBlockUpdated(x, y, z, world);
+		if (this.lightLevel > 0)
+			LightingEngine.addLightSource(x, y, z, this.lightLevel);
 	}
 	
 	public void onBlockBreaked(int x, int y, int z, VoxelWorld world) {
-		
+		onBlockUpdated(x, y, z, world);
+		if(this.lightLevel > 0)
+			LightingEngine.removeLightSource(x, y, z, this.lightLevel);
 	}
 	
 	public void onBlockUpdated(int x, int y, int z, VoxelWorld world) {
@@ -56,6 +62,15 @@ public class Block {
 	
 	public void onBlockTick(int x, int y, int z, VoxelWorld world) {
 		
+	}
+	
+	public byte getLightLevel() {
+		return lightLevel;
+	}
+
+	public Block setLightLevel(byte lightLevel) {
+		this.lightLevel = lightLevel;
+		return this;
 	}
 	
 	public Block setBreakSound(int[] sound) {
@@ -81,14 +96,14 @@ public class Block {
 		return amountDropped;
 	}
 	
-	public Block setBlockDropped(Block b) {
+	public Block setBlockDropped(short b) {
 		this.droppedBlock = b;
 		return this;
 	}
 	
-	public Block getBlockDropped() {
-		if (droppedBlock == null)
-			return this;
+	public short getBlockDropped() {
+		if (droppedBlock == 0)
+			return inverseBlocks.get(this);
 		return droppedBlock;
 	}
 	

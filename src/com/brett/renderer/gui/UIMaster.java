@@ -36,13 +36,13 @@ public class UIMaster {
 	}
 	
 	public void render() {
-		renderer.render(guitextures);
 		for (int i = 0; i < guimenus.size(); i++) {
 			IMenu m = guimenus.get(i);
 			renderer.render(m.render(this));
 			m.update();
 			renderer.render(m.secondardRender(this));
 		}
+		renderer.render(guitextures);
 	}
 	
 	/**

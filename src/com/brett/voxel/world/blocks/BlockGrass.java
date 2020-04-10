@@ -14,58 +14,59 @@ public class BlockGrass extends Block {
 	
 	public BlockGrass(ModelTexture model) {
 		super(model);
+		this.setBlockDropped(BLOCK_DIRT);
 	}
 	
 	@Override
 	public void onBlockTick(int x, int y, int z, VoxelWorld world) {
-		if (world.chunk.getBlockBIAS(x, y, z+1) == Block.BLOCK_DIRT) {
-			world.chunk.setBlockBIAS(x, y, z+1, Block.BLOCK_GRASS);
+		if (world.chunk.getBlockBIAS(x, y, z+1) == BLOCK_DIRT) {
+			world.chunk.setBlockBIAS(x, y, z+1, BLOCK_GRASS);
 			return;
 		}
-		if (world.chunk.getBlockBIAS(x+1, y, z) == Block.BLOCK_DIRT) {
-			world.chunk.setBlockBIAS(x+1, y, z, Block.BLOCK_GRASS);
+		if (world.chunk.getBlockBIAS(x+1, y, z) == BLOCK_DIRT) {
+			world.chunk.setBlockBIAS(x+1, y, z, BLOCK_GRASS);
 			return;
 		}
-		if (world.chunk.getBlockBIAS(x-1, y, z) == Block.BLOCK_DIRT) {
-			world.chunk.setBlockBIAS(x-1, y, z, Block.BLOCK_GRASS);
+		if (world.chunk.getBlockBIAS(x-1, y, z) == BLOCK_DIRT) {
+			world.chunk.setBlockBIAS(x-1, y, z, BLOCK_GRASS);
 			return;
 		}
-		if (world.chunk.getBlockBIAS(x, y, z-1) == Block.BLOCK_DIRT) {
-			world.chunk.setBlockBIAS(x, y, z-1, Block.BLOCK_GRASS);
+		if (world.chunk.getBlockBIAS(x, y, z-1) == BLOCK_DIRT) {
+			world.chunk.setBlockBIAS(x, y, z-1, BLOCK_GRASS);
 			return;
 		}
-		if (world.chunk.getBlockBIAS(x, y+1, z+1) == Block.BLOCK_DIRT) {
-			world.chunk.setBlockBIAS(x, y+1, z+1, Block.BLOCK_GRASS);
+		if (world.chunk.getBlockBIAS(x, y+1, z+1) == BLOCK_DIRT) {
+			world.chunk.setBlockBIAS(x, y+1, z+1, BLOCK_GRASS);
 			return;
 		}
-		if (world.chunk.getBlockBIAS(x, y+1, z-1) == Block.BLOCK_DIRT) {
-			world.chunk.setBlockBIAS(x, y+1, z-1, Block.BLOCK_GRASS);
+		if (world.chunk.getBlockBIAS(x, y+1, z-1) == BLOCK_DIRT) {
+			world.chunk.setBlockBIAS(x, y+1, z-1, BLOCK_GRASS);
 			return;
 		}
-		if (world.chunk.getBlockBIAS(x+1, y+1, z) == Block.BLOCK_DIRT) {
-			world.chunk.setBlockBIAS(x+1, y+1, z, Block.BLOCK_GRASS);
+		if (world.chunk.getBlockBIAS(x+1, y+1, z) == BLOCK_DIRT) {
+			world.chunk.setBlockBIAS(x+1, y+1, z, BLOCK_GRASS);
 			return;
 		}
-		if (world.chunk.getBlockBIAS(x-1, y+1, z) == Block.BLOCK_DIRT) {
-			world.chunk.setBlockBIAS(x-1, y+1, z, Block.BLOCK_GRASS);
+		if (world.chunk.getBlockBIAS(x-1, y+1, z) == BLOCK_DIRT) {
+			world.chunk.setBlockBIAS(x-1, y+1, z, BLOCK_GRASS);
 			return;
 		}
-		if (world.chunk.getBlockBIAS(x, y-1, z+1) == Block.BLOCK_DIRT) {
-			world.chunk.setBlockBIAS(x, y-1, z+1, Block.BLOCK_GRASS);
+		if (world.chunk.getBlockBIAS(x, y-1, z+1) == BLOCK_DIRT) {
+			world.chunk.setBlockBIAS(x, y-1, z+1, BLOCK_GRASS);
 			return;
 		}
-		if (world.chunk.getBlockBIAS(x, y-1, z-1) == Block.BLOCK_DIRT) {
-			world.chunk.setBlockBIAS(x, y-1, z-1, Block.BLOCK_GRASS);
+		if (world.chunk.getBlockBIAS(x, y-1, z-1) == BLOCK_DIRT) {
+			world.chunk.setBlockBIAS(x, y-1, z-1, BLOCK_GRASS);
 			return;
 		}
-		if (world.chunk.getBlockBIAS(x+1, y-1, z) == Block.BLOCK_DIRT) {
-			world.chunk.setBlockBIAS(x+1, y-1, z, Block.BLOCK_GRASS);
+		if (world.chunk.getBlockBIAS(x+1, y-1, z) == BLOCK_DIRT) {
+			world.chunk.setBlockBIAS(x+1, y-1, z, BLOCK_GRASS);
 			return;
 		}
-		if (world.chunk.getBlockBIAS(x-1, y-1, z) == Block.BLOCK_DIRT) {
-			world.chunk.setBlockBIAS(x-1, y-1, z, Block.BLOCK_GRASS);
+		if (world.chunk.getBlockBIAS(x-1, y-1, z) == BLOCK_DIRT) {
+			world.chunk.setBlockBIAS(x-1, y-1, z, BLOCK_GRASS);
 			return;
 		}
 	}
-
+	
 }

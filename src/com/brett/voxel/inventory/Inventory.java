@@ -19,7 +19,7 @@ import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.IMenu;
 import com.brett.renderer.gui.UIElement;
 import com.brett.renderer.gui.UIMaster;
-import com.brett.voxel.world.ChunkStore;
+import com.brett.voxel.world.chunk.ChunkStore;
 import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemStack;
 

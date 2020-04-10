@@ -8,9 +8,9 @@ import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 import com.brett.tools.Maths;
-import com.brett.voxel.world.Chunk;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
+import com.brett.voxel.world.chunk.Chunk;
 import com.brett.world.cameras.Camera;
 
 /**
@@ -63,7 +63,7 @@ public class MouseBlockPicker {
 			return 0;
 	}
 	
-	public int setCurrentBlockPoint(int block) {
+	private int setCurrentBlockPoint(short block) {
 		Vector3f pos = camera.getPosition();
 		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
 		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
@@ -94,6 +94,8 @@ public class MouseBlockPicker {
 			b.playBreakSound((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
 			b.onBlockBreaked((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z), world);
 			c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), block);
+			if (block != 0)
+				Block.blocks.get(block).onBlockPlaced((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z), world);
 			world.updateBlocksAround((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
 			c.remesh();
 			return blockid;
@@ -103,11 +105,11 @@ public class MouseBlockPicker {
 	
 	public int mineBlock() {
 		if (Mouse.isGrabbed())
-			return this.setCurrentBlockPoint(0);
+			return this.setCurrentBlockPoint((short)0);
 		return 0;
 	}
 	
-	public boolean placeBlock(int block) {
+	public boolean placeBlock(short block) {
 		if (!Mouse.isGrabbed())
 			return false;
 		Vector3f pos = camera.getPosition();
@@ -135,10 +137,10 @@ public class MouseBlockPicker {
 				posadj.z = biasNegative(posadj.z, -Chunk.z);
 			short blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
 			if (blockid == 0) {
-				Block b = Block.blocks.get(blockid);
-				b.playBreakSound((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
-				b.onBlockBreaked((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z), world);
+				//b.playBreakSound((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
+				//b.onBlockBreaked((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z), world);
 				c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), block);
+				Block.blocks.get(block).onBlockPlaced((int)(posadjUn.x), (int)posadjUn.y,  (int)(posadjUn.z), world);
 				world.updateBlocksAround((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
 				c.remesh();
 				return true;
