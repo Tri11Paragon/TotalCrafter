@@ -293,7 +293,7 @@ public class VoxelScreenManager {
 		loader.cleanUp();
 		SettingsLoader.saveSettings();
 		DisplayManager.closeDisplay();
-		System.exit(0);
+		//System.exit(0);
 	}
 	
 	public static void changeDisplaySource(DisplaySource s) {

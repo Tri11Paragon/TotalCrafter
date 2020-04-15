@@ -7,10 +7,14 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import com.brett.DisplayManager;
 import com.brett.tools.Maths;
+import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.chunk.Chunk;
+import com.brett.voxel.world.items.Item;
+import com.brett.voxel.world.items.ItemStack;
 import com.brett.world.cameras.Camera;
 
 /**
@@ -34,14 +38,16 @@ public class MouseBlockPicker {
 	private Matrix4f projectionMatrix;
 	private Matrix4f viewMatrix;
 	private Camera camera;
+	private PlayerInventory i;
 	
 	private VoxelWorld world;
 
-	public MouseBlockPicker(Camera cam, Matrix4f projection, VoxelWorld terrain) {
+	public MouseBlockPicker(Camera cam, Matrix4f projection, VoxelWorld terrain, PlayerInventory i) {
 		camera = cam;
 		projectionMatrix = projection;
 		viewMatrix = Maths.createViewMatrix(camera);
 		this.world = terrain;
+		this.i = i;
 	}
 	
 	public Vector3f getCurrentTerrainPoint() {
@@ -52,7 +58,7 @@ public class MouseBlockPicker {
 			return null;
 	}
 	
-	public int getCurrentBlockPoint() {
+	/*public int getCurrentBlockPoint() {
 		if (intersectionInRange(0, RAY_RANGE, currentRay)) {
 			Vector3f pos = accountForFloatErrors(binarySearch(0, 0, RAY_RANGE, currentRay));
 			Chunk c = getTerrain(pos.x, pos.z);
@@ -61,7 +67,7 @@ public class MouseBlockPicker {
 			return c.getBlock((int)(pos.x)%16, (int)pos.y, (int)(pos.z)%16);
 		}else
 			return 0;
-	}
+	}*/
 	
 	private int setCurrentBlockPoint(short block) {
 		Vector3f pos = camera.getPosition();
@@ -101,6 +107,109 @@ public class MouseBlockPicker {
 			return blockid;
 		}
 		return 0;
+	}
+	
+	public int getCurrentBlockPoint() {
+		Vector3f pos = camera.getPosition();
+		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
+		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
+		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
+		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
+		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
+		
+		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
+		for (int i = 0; i < RE_MNT; i++) {
+			walked.x += xStep;
+			walked.y += yStep;
+			walked.z += zStep;
+			Vector3f posadj = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
+			Chunk c = getTerrain(posadj.x, posadj.z);
+			if (c == null)
+				continue;
+			posadj.x %= 16;
+			posadj.z %= 16;
+			if (posadj.x < 0)
+				posadj.x = biasNegative(posadj.x, -Chunk.x);
+			if (posadj.z < 0)
+				posadj.z = biasNegative(posadj.z, -Chunk.z);
+			short blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
+			if (blockid == 0 || blockid == 3)
+				continue;
+			return blockid;
+		}
+		return 0;
+	}
+	
+	public Vector3f getCurrentBlockPos() {
+		Vector3f pos = camera.getPosition();
+		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
+		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
+		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
+		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
+		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
+		
+		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
+		for (int i = 0; i < RE_MNT; i++) {
+			walked.x += xStep;
+			walked.y += yStep;
+			walked.z += zStep;
+			Vector3f posadj = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
+			Vector3f posadjUn = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
+			Chunk c = getTerrain(posadj.x, posadj.z);
+			if (c == null)
+				continue;
+			posadj.x %= 16;
+			posadj.z %= 16;
+			if (posadj.x < 0)
+				posadj.x = biasNegative(posadj.x, -Chunk.x);
+			if (posadj.z < 0)
+				posadj.z = biasNegative(posadj.z, -Chunk.z);
+			short blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
+			if (blockid == 0 || blockid == 3)
+				continue;
+			return posadjUn;
+		}
+		return pos;
+	}
+	
+	public int[] getCurrentBlockPoF() {
+		Vector3f pos = camera.getPosition();
+		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
+		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
+		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
+		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
+		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
+		int[] posi = {(int)pos.x, (int)pos.y, (int)pos.z};
+		
+		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
+		for (int i = 0; i < RE_MNT; i++) {
+			walked.x += xStep;
+			walked.y += yStep;
+			walked.z += zStep;
+			Vector3f posadj = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
+			Vector3f posadjUn = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
+			Chunk c = getTerrain(posadj.x, posadj.z);
+			if (c == null)
+				continue;
+			posadj.x %= 16;
+			posadj.z %= 16;
+			if (posadj.x < 0)
+				posadj.x = biasNegative(posadj.x, -Chunk.x);
+			if (posadj.z < 0)
+				posadj.z = biasNegative(posadj.z, -Chunk.z);
+			short blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
+			if (blockid == 0 || blockid == 3)
+				continue;
+			posi[0] = (int)posadjUn.x;
+			posi[1] = (int)posadjUn.y;
+			posi[2] = (int)posadjUn.z;
+			if (posadjUn.x < 0)
+				posi[0]-=1;
+			if (posadjUn.z < 0)
+				posi[2]-=1;
+			return posi;
+		}
+		return posi;
 	}
 	
 	public int mineBlock() {
@@ -184,10 +293,67 @@ public class MouseBlockPicker {
 	public Vector3f getCurrentRay() {
 		return currentRay;
 	}
-
+	
+	private float q = 200;
 	public void update() {
 		viewMatrix = Maths.createViewMatrix(camera);
 		currentRay = calculateMouseRay();
+		// TODO: cleanup this code and stop using so much ray tracing calls.
+		if (Mouse.isButtonDown(0)) {
+			if (!Mouse.isGrabbed())
+				return;
+			int id = getCurrentBlockPoint();
+			Block b = Block.blocks.get((short)id);
+			float hardness = b.getHardness();
+			int mlevel = b.getMiningLevel();
+			Item it = null;
+			if (i.getItemInSelectedSlot() != null)
+				it = i.getItemInSelectedSlot().getItem();
+			float miningspeed = 0;
+			int milevel = 0;
+			if (it == null) {
+				milevel = 0;
+				miningspeed = 1.0f;
+			} else {
+				milevel = it.getMiningLevel();
+				miningspeed = it.getMiningSpeed();
+			}
+			if (mlevel > milevel) {
+				// do partile stuff
+			} else {
+				if (blockChanged()) {
+					q = hardness * 10 * DisplayManager.getFrameTimeSeconds();
+				} else {
+					q -= miningspeed * DisplayManager.getFrameTimeSeconds();
+					if (q <= 0) {
+						int bid = mineBlock();
+						if (bid != 0) {
+							i.addItemToInventory(new ItemStack(
+									Item.items.get(Block.blocks.get((short)id).getBlockDropped()), 
+											Block.blocks.get((short)id).getAmountDropped()));
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	int[] last = {0,0,0};
+	private boolean blockChanged() {
+		int[] current = getCurrentBlockPoF();
+		//System.out.println(last[0] + " " + last[1] + " " + last[2] + " \\ " + current[0] + " " + current[1] + " " + current[2]);
+		if (isYes(last, current)) {
+			return false;
+		} else {
+			last = current;
+			return true;
+		}
+	}
+	
+	private boolean isYes(int[] x, int[] y) {
+		if (x[0] == y[0] && x[1] == y[1] && x[2] == y[2])
+			return true;
+		return false;
 	}
 
 	/**
@@ -292,6 +458,7 @@ public class MouseBlockPicker {
 		return unitSize - f;
 	}
 	
+	@SuppressWarnings("unused")
 	private Vector3f accountForFloatErrors(Vector3f x) {
 		if (x == null)
 			return x;

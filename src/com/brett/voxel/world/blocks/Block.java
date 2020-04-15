@@ -35,7 +35,9 @@ public class Block {
 	private short droppedBlock = 0;
 	private int amountDropped = 1;
 	private byte lightLevel = 0;
-	
+	private float hardness = 1;
+	private int miningLevel = 0;
+
 	public Block(ModelTexture model) {
 		this.model = model;
 	}
@@ -64,6 +66,15 @@ public class Block {
 		
 	}
 	
+	public int getMiningLevel() {
+		return miningLevel;
+	}
+
+	public Block setMiningLevel(int miningLevel) {
+		this.miningLevel = miningLevel;
+		return this;
+	}
+	
 	public byte getLightLevel() {
 		return lightLevel;
 	}
@@ -76,6 +87,15 @@ public class Block {
 	public Block setBreakSound(int[] sound) {
 		this.breakSound = sound;
 		return this;
+	}
+	
+	public Block setHardness(float f) {
+		this.hardness = f;
+		return this;
+	}
+	
+	public float getHardness() {
+		return this.hardness;
 	}
 	
 	public Block setBreakSound(int sound) {

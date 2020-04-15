@@ -11,14 +11,11 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.util.vector.Vector3f;
-
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.RawBlockModel;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.SixBoolean;
-import com.brett.renderer.datatypes.TexturedModel;
 import com.brett.renderer.shaders.VoxelShader;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
@@ -28,7 +25,6 @@ import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.chunk.ChunkStore;
 import com.brett.voxel.world.items.Item;
-import com.brett.voxel.world.items.ItemStack;
 import com.brett.world.cameras.Camera;
 import com.brett.world.cameras.ICamera;
 
@@ -92,7 +88,7 @@ public class VoxelWorld {
 				}
 			}
 		}).start();
-		picker = new MouseBlockPicker(cam, renderer.getProjectionMatrix(), this);
+		picker = new MouseBlockPicker(cam, renderer.getProjectionMatrix(), this, i);
 	}
 	
 	public void render(ICamera camera) {
@@ -181,23 +177,6 @@ public class VoxelWorld {
 		picker.update();
 		while (Mouse.next()){
 			if (Mouse.getEventButtonState()) {
-				if (Mouse.getEventButton() == 0) {
-					int id = picker.mineBlock();
-					if (id != 0) {
-						i.addItemToInventory(new ItemStack(
-								Item.items.get(Block.blocks.get((short)id).getBlockDropped()), 
-										Block.blocks.get((short)id).getAmountDropped()));
-					}
-					Vector3f d = picker.getCurrentTerrainPoint();
-					if (d == null)
-						return;
-					int dx = (int)(d.x)/Chunk.x;
-					int dz = (int)(d.z)/Chunk.z;
-					Chunk c = chunk.getChunk(dx, dz);
-					if (c == null)
-						return;
-					//c.remesh();
-				}
 				if (Mouse.getEventButton() == 1) {
 					if (i.getItemInSelectedSlot() != null) {
 						if (picker.placeBlock(Item.inverseItems.get(i.getItemInSelectedSlot().getItem()))) {
@@ -208,6 +187,23 @@ public class VoxelWorld {
 				}
 			}
 		}
+		/*if (Mouse.getEventButton() == 0) {
+			int id = picker.mineBlock();
+			if (id != 0) {
+				i.addItemToInventory(new ItemStack(
+						Item.items.get(Block.blocks.get((short)id).getBlockDropped()), 
+								Block.blocks.get((short)id).getAmountDropped()));
+			}
+			Vector3f d = picker.getCurrentTerrainPoint();
+			if (d == null)
+				return;
+			int dx = (int)(d.x)/Chunk.x;
+			int dz = (int)(d.z)/Chunk.z;
+			Chunk c = chunk.getChunk(dx, dz);
+			if (c == null)
+				return;
+			c.remesh();
+		}*/
 	}
 	//TODO move this to the mesh store.
 	byte pos = 0;

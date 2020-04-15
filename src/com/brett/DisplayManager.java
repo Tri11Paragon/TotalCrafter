@@ -18,7 +18,7 @@ public class DisplayManager {
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
 	// note: this value is overwritten by the settings found in settings.txt
-	public static int FPS_MAX = 150;
+	public static int FPS_MAX = 0;
 	
 	private static long lastFrameTime;
 	private static float delta;
@@ -35,7 +35,7 @@ public class DisplayManager {
 				Display.create(new PixelFormat().withSamples(4), attribs);
 			else
 				Display.create(new PixelFormat(), attribs);
-			Display.setTitle("RMS - V0.10A // Mɪɴᴇᴄʀᴀғᴛ³ - V0.26.0A");
+			Display.setTitle("RMS - V0.10A // Mɪɴᴇᴄʀᴀғᴛ³ - V0.26.1A");
 			GL11.glEnable(GL13.GL_MULTISAMPLE);
 		} catch (LWJGLException e) {e.printStackTrace();}
 		

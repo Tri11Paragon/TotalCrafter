@@ -2,7 +2,8 @@ package com.brett.voxel.world.entity;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.DisplayManager;
+import com.brett.renderer.datatypes.TexturedModel;
 import com.brett.voxel.world.VoxelWorld;
 
 /**
@@ -24,10 +25,10 @@ public class VEntity {
 	 */
 	private Vector3f drag;
 	private float rot, airResistance, mass;
-	private RawModel model;
+	private TexturedModel model;
 	private VoxelWorld world;
 	
-	public VEntity(Vector3f pos, float rot, RawModel model) {
+	public VEntity(Vector3f pos, float rot, TexturedModel model) {
 		this.posision = pos;
 		this.rot = rot;
 		this.model = model;
@@ -54,24 +55,24 @@ public class VEntity {
 		this.acceleration.y *= drag.y;
 		this.acceleration.z *= drag.z;
 		// apply acceleration
-		this.velocity.x += acceleration.x;
-		this.velocity.y += acceleration.y;
-		this.velocity.z += acceleration.z;
+		this.velocity.x += acceleration.x * DisplayManager.getFrameTimeSeconds();
+		this.velocity.y += acceleration.y * DisplayManager.getFrameTimeSeconds();
+		this.velocity.z += acceleration.z * DisplayManager.getFrameTimeSeconds();
 		// apply position and check collision.
-		if (world.chunk.getBlock(this.posision.x + velocity.x, this.posision.y, this.posision.z) == 0)
-			this.posision.x += velocity.x;
+		if (world.chunk.getBlock(this.posision.x + (velocity.x * DisplayManager.getFrameTimeSeconds()), this.posision.y, this.posision.z) == 0)
+			this.posision.x += velocity.x * DisplayManager.getFrameTimeSeconds();
 		else {
 			this.velocity.x = 0;
 			this.acceleration.x = 0;
 		}
-		if (world.chunk.getBlock(this.posision.x, this.posision.y + velocity.y, this.posision.z) == 0)
-			this.posision.y += velocity.y;
+		if (world.chunk.getBlock(this.posision.x, this.posision.y + (velocity.y * DisplayManager.getFrameTimeSeconds()), this.posision.z) == 0)
+			this.posision.y += velocity.y * DisplayManager.getFrameTimeSeconds();
 		else {
 			this.velocity.y = 0;
 			this.acceleration.y = 0;
 		}
-		if (world.chunk.getBlock(this.posision.x, this.posision.y, this.posision.z + velocity.z) == 0)
-			this.posision.z += velocity.z;
+		if (world.chunk.getBlock(this.posision.x, this.posision.y, this.posision.z + (velocity.z * DisplayManager.getFrameTimeSeconds())) == 0)
+			this.posision.z += velocity.z * DisplayManager.getFrameTimeSeconds();
 		else {
 			this.velocity.z = 0;
 			this.acceleration.z = 0;
@@ -85,7 +86,7 @@ public class VEntity {
 	/**
 	 * Called when entity is spawned
 	 */
-	public void onEntitySpawned(VoxelWorld world, float x, float y, float z) {
+	public void onEntitySpawned(VoxelWorld world) {
 		this.world = world;
 	}
 	
@@ -101,7 +102,7 @@ public class VEntity {
 		return rot;
 	}
 
-	public RawModel getModel() {
+	public TexturedModel getModel() {
 		return model;
 	}
 	
