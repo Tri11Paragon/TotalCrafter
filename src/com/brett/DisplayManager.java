@@ -35,7 +35,7 @@ public class DisplayManager {
 				Display.create(new PixelFormat().withSamples(4), attribs);
 			else
 				Display.create(new PixelFormat(), attribs);
-			Display.setTitle("RMS - V0.10A // Mɪɴᴇᴄʀᴀғᴛ³ - V0.26.2A");
+			Display.setTitle("RMS - V0.10A // Mɪɴᴇᴄʀᴀғᴛ³ - V0.26.3A");
 			GL11.glEnable(GL13.GL_MULTISAMPLE);
 		} catch (LWJGLException e) {e.printStackTrace();}
 		
