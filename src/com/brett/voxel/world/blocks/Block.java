@@ -29,6 +29,7 @@ public class Block {
 	public static final short BLOCK_SAND = 5;
 	public static final short BLOCK_CLAY = 6;
 	public static final short BLOCK_SNOW = 7;
+	public static final short BLOCK_COBBLE = 8;
 	
 	public ModelTexture model;
 	private int[] breakSound = {0};
@@ -37,6 +38,7 @@ public class Block {
 	private byte lightLevel = 0;
 	private float hardness = 1;
 	private int miningLevel = 0;
+	private int effectiveTool = 0;
 
 	public Block(ModelTexture model) {
 		this.model = model;
@@ -141,6 +143,15 @@ public class Block {
 	
 	public int getBreakSound() {
 		return breakSound[0];
+	}
+
+	public int getEffectiveTool() {
+		return effectiveTool;
+	}
+
+	public Block setEffectiveTool(int effectiveTool) {
+		this.effectiveTool = effectiveTool;
+		return this;
 	}
 	
 }

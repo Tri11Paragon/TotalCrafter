@@ -40,7 +40,7 @@ public class Console implements IKeyState {
 	private String textBuffer = "";
 	private String inputTextBuffer = lineStart + "";
 	
-	private boolean isOpen = false;
+	private static boolean isOpen = false;
 	
 	public Console(Loader loader, FontType font,GUIRenderer renderer) {
 		this.grey = loader.loadTexture("grey");
@@ -116,12 +116,12 @@ public class Console implements IKeyState {
 		this.texts.get(1).changeText(textBuffer);
 	}
 	
-	public boolean getIsOpen() {
+	public static boolean getIsOpen() {
 		return isOpen;
 	}
 	
 	public void setIsOpen(boolean b) {
-		this.isOpen = b;
+		isOpen = b;
 	}
 	
 	public List<GUIDynamicText> getTexts(){

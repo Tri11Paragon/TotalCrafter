@@ -16,6 +16,7 @@ import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemStack;
+import com.brett.voxel.world.items.ItemTool;
 import com.brett.world.cameras.Camera;
 
 /**
@@ -312,24 +313,33 @@ public class MouseBlockPicker {
 			int id = getCurrentBlockPoint();
 			Block b = Block.blocks.get((short)id);
 			float hardness = b.getHardness();
+			int toolType = b.getEffectiveTool();
 			int mlevel = b.getMiningLevel();
 			Item it = null;
 			if (i.getItemInSelectedSlot() != null)
 				it = i.getItemInSelectedSlot().getItem();
 			float miningspeed = 0;
 			int milevel = 0;
+			int tool = 0;
 			if (it == null) {
 				milevel = 0;
-				miningspeed = 0.2f;
+				miningspeed = 0.18f;
 			} else {
 				milevel = it.getMiningLevel();
 				miningspeed = it.getMiningSpeed();
+				if (it instanceof ItemTool)
+					tool = ((ItemTool) it).getToolType();
+				else
+					tool = 0;
 			}
 			if (mlevel > milevel) {
 				// do partile stuff
 			} else {
 				if (blockChanged(current)) {
 					mq = hardness * 10 * DisplayManager.getFrameTimeSeconds();
+					// makes it harder to mine if not using proper tool.
+					if (toolType != tool)
+						mq *= 10;
 					q = mq;
 					renderer.changeOverlayProgress(q, mq);
 				} else {
@@ -343,6 +353,8 @@ public class MouseBlockPicker {
 							i.addItemToInventory(new ItemStack(
 									Item.items.get(Block.blocks.get((short)id).getBlockDropped()), 
 											Block.blocks.get((short)id).getAmountDropped()));
+							if (it instanceof ItemTool)
+								((ItemTool)it).onBlockMined(current[0], current[1], current[2], world, i);
 						}
 					}
 				}

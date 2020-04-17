@@ -6,6 +6,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
 import com.brett.IKeyState;
+import com.brett.console.Console;
 import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.voxel.world.items.ItemStack;
@@ -72,7 +73,7 @@ public class PlayerInventory implements IKeyState{
 
 	@Override
 	public void onKeyPressed() {
-		if (Keyboard.isKeyDown(Keyboard.KEY_E)) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_E) && !Console.getIsOpen()) {
 			i.toggleEnabled();
 		}
 	}

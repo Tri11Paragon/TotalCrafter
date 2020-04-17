@@ -12,6 +12,14 @@ import com.brett.voxel.world.blocks.BlockAir;
 import com.brett.voxel.world.blocks.BlockGrass;
 import com.brett.voxel.world.blocks.BlockSand;
 import com.brett.voxel.world.items.Item;
+import com.brett.voxel.world.items.ItemCopperPickaxe;
+import com.brett.voxel.world.items.ItemDiamondPickaxe;
+import com.brett.voxel.world.items.ItemIronPickaxe;
+import com.brett.voxel.world.items.ItemStonePickaxe;
+import com.brett.voxel.world.items.ItemTinPickaxe;
+import com.brett.voxel.world.items.ItemTool;
+import com.brett.voxel.world.items.ItemWillPickaxe;
+import com.brett.voxel.world.items.ItemWoodenPickaxe;
 
 /**
 *
@@ -30,18 +38,42 @@ public class GameRegistry {
 	}
 	
 	private static void registerBlocks(Loader loader) {
-		registerBlock((short) Block.BLOCK_AIR, new BlockAir());
-		registerBlock((short) Block.BLOCK_STONE, new Block(new ModelTexture(loader.loadTexture("stone"))).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(1).setMiningLevel(1));
-		registerBlock((short) Block.BLOCK_DIRT, new Block(new ModelTexture(loader.loadTexture("dirt"))).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.5f));
-		registerBlock((short) Block.BLOCK_WILL, new Block(new ModelTexture(loader.loadTexture("icon/logo"))).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(Short.MAX_VALUE*2).setMiningLevel(Short.MAX_VALUE*2));
-		registerBlock((short) Block.BLOCK_GRASS, new BlockGrass(new ModelTexture(loader.loadTexture("grassy2"))).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(2));
-		registerBlock((short) Block.BLOCK_SAND, new BlockSand(new ModelTexture(loader.loadTexture("sand"))).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.5f));
-		registerBlock((short) Block.BLOCK_CLAY, new Block(new ModelTexture(loader.loadTexture("clay"))).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(1.0f));
-		registerBlock((short) Block.BLOCK_SNOW, new Block(new ModelTexture(loader.loadTexture("snow"))).setBreakSound(AudioController.loadSound("bounce.ogg")).setLightLevel((byte) 15).setHardness(0.5f));
+		//TODO: maybe move into their own class
+		registerBlock(Block.BLOCK_AIR, new BlockAir());
+		
+		registerBlock(Block.BLOCK_STONE, new Block(new ModelTexture(loader.loadTexture("stone"))
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setBlockDropped(Block.BLOCK_COBBLE).setHardness(3).setMiningLevel(2).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+		
+		registerBlock(Block.BLOCK_DIRT, new Block(new ModelTexture(loader.loadTexture("dirt"))
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
+		
+		registerBlock(Block.BLOCK_WILL, new Block(new ModelTexture(loader.loadTexture("icon/logo"))
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(Short.MAX_VALUE*2).setMiningLevel(Short.MAX_VALUE*2).setEffectiveTool(ItemTool.TOOL_SWORD));
+		
+		registerBlock(Block.BLOCK_GRASS, new BlockGrass(new ModelTexture(loader.loadTexture("grassy2"))
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(2).setEffectiveTool(ItemTool.TOOL_SHOVEL));
+		
+		registerBlock(Block.BLOCK_SAND, new BlockSand(new ModelTexture(loader.loadTexture("sand"))
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
+		
+		registerBlock(Block.BLOCK_CLAY, new Block(new ModelTexture(loader.loadTexture("clay"))
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(1.0f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
+		
+		registerBlock(Block.BLOCK_SNOW, new Block(new ModelTexture(loader.loadTexture("snow"))
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setLightLevel((byte) 15).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SWORD));
+		
+		registerBlock(Block.BLOCK_COBBLE, new Block(new ModelTexture(loader.loadTexture("cobble"))
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(2.5f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 	}
 	
 	private static void registerItems(Loader loader) {
-		
+		registerItem(new ItemWillPickaxe(Item.ITEM_WILLPICK, new ModelTexture(loader.loadTexture("willpick"))));
+		registerItem(new ItemCopperPickaxe(Item.ITEM_COPPERPICK, new ModelTexture(loader.loadTexture("copperpick"))));
+		registerItem(new ItemDiamondPickaxe(Item.ITEM_DIAMONDPICK, new ModelTexture(loader.loadTexture("diamondpick"))));
+		registerItem(new ItemIronPickaxe(Item.ITEM_IRONPICK, new ModelTexture(loader.loadTexture("ironpick"))));
+		registerItem(new ItemStonePickaxe(Item.ITEM_STONEPICK, new ModelTexture(loader.loadTexture("stonepick"))));
+		registerItem(new ItemTinPickaxe(Item.ITEM_TINPICK, new ModelTexture(loader.loadTexture("tinpick"))));
+		registerItem(new ItemWoodenPickaxe(Item.ITEM_WOODPICK, new ModelTexture(loader.loadTexture("woodenpick"))));
 	}
 	
 	public static void preSaveEvent() {
@@ -66,6 +98,11 @@ public class GameRegistry {
 		Item i = new Item(id, texture);
 		Item.items.put(id, i);
 		Item.inverseItems.put(i, id);
+	}
+	
+	protected static void registerItem(Item i) {
+		Item.items.put(i.getId(), i);
+		Item.inverseItems.put(i, i.getId());
 	}
 	
 	private static Item registerItemBlock(short id) {

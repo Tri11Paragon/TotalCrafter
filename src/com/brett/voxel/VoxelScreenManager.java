@@ -15,6 +15,7 @@ import org.lwjgl.util.vector.Vector3f;
 import com.brett.DisplayManager;
 import com.brett.KeyMaster;
 import com.brett.console.Console;
+import com.brett.console.commands.GiveCommand;
 import com.brett.console.commands.TeleportCommand;
 import com.brett.renderer.DisplaySource;
 import com.brett.renderer.Loader;
@@ -33,7 +34,6 @@ import com.brett.voxel.gui.MainMenu;
 import com.brett.voxel.inventory.InventoryMaster;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.world.GameRegistry;
-import com.brett.voxel.world.MeshStore;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.world.cameras.CreativeFirstPersonCamera;
 import com.brett.world.entities.Entity;
@@ -209,6 +209,7 @@ public class VoxelScreenManager {
 		InventoryMaster.init(loader);
 		GameRegistry.init(loader);
 		PlayerInventory pi = new PlayerInventory(ui);
+		console.registerCommand("give", new GiveCommand(pi));
 		
 		VoxelWorld world = new VoxelWorld(renderer, loader, camera, pi);
 		KeyMaster.registerKeyRequester(pi);

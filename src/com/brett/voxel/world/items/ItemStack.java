@@ -8,8 +8,6 @@ package com.brett.voxel.world.items;
 
 public class ItemStack {
 	
-	public static final int stackSize = 128;
-	
 	private int amountInStack;
 	private Item item;
 	
@@ -39,6 +37,7 @@ public class ItemStack {
 	 */
 	public int increaseStack(int amount) {
 		int last = amountInStack;
+		int stackSize = item.getMaxStackSize();
 		if (amountInStack + amount > stackSize) {
 			amountInStack = stackSize;
 			return (amount + last) - stackSize;
