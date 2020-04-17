@@ -10,6 +10,7 @@ import org.lwjgl.util.vector.Vector4f;
 import com.brett.DisplayManager;
 import com.brett.tools.Maths;
 import com.brett.voxel.inventory.PlayerInventory;
+import com.brett.voxel.renderer.VOverlayRenderer;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.chunk.Chunk;
@@ -39,15 +40,17 @@ public class MouseBlockPicker {
 	private Matrix4f viewMatrix;
 	private Camera camera;
 	private PlayerInventory i;
+	private VOverlayRenderer renderer;
 	
 	private VoxelWorld world;
 
-	public MouseBlockPicker(Camera cam, Matrix4f projection, VoxelWorld terrain, PlayerInventory i) {
+	public MouseBlockPicker(Camera cam, Matrix4f projection, VoxelWorld terrain, PlayerInventory i, VOverlayRenderer renderer) {
 		camera = cam;
 		projectionMatrix = projection;
 		viewMatrix = Maths.createViewMatrix(camera);
 		this.world = terrain;
 		this.i = i;
+		this.renderer = renderer;
 	}
 	
 	public Vector3f getCurrentTerrainPoint() {
@@ -179,7 +182,7 @@ public class MouseBlockPicker {
 		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
 		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
 		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
-		int[] posi = {(int)pos.x, (int)pos.y, (int)pos.z};
+		int[] posi = {(int)pos.x, (int)pos.y, (int)pos.z, 1};
 		
 		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
 		for (int i = 0; i < RE_MNT; i++) {
@@ -203,6 +206,7 @@ public class MouseBlockPicker {
 			posi[0] = (int)posadjUn.x;
 			posi[1] = (int)posadjUn.y;
 			posi[2] = (int)posadjUn.z;
+			posi[3] = 0;
 			if (posadjUn.x < 0)
 				posi[0]-=1;
 			if (posadjUn.z < 0)
@@ -295,9 +299,12 @@ public class MouseBlockPicker {
 	}
 	
 	private float q = 200;
+	private float mq = 200;
 	public void update() {
 		viewMatrix = Maths.createViewMatrix(camera);
 		currentRay = calculateMouseRay();
+		int[] current = getCurrentBlockPoF();
+		renderer.renderOverlay(current);
 		// TODO: cleanup this code and stop using so much ray tracing calls.
 		if (Mouse.isButtonDown(0)) {
 			if (!Mouse.isGrabbed())
@@ -313,7 +320,7 @@ public class MouseBlockPicker {
 			int milevel = 0;
 			if (it == null) {
 				milevel = 0;
-				miningspeed = 1.0f;
+				miningspeed = 0.2f;
 			} else {
 				milevel = it.getMiningLevel();
 				miningspeed = it.getMiningSpeed();
@@ -321,12 +328,17 @@ public class MouseBlockPicker {
 			if (mlevel > milevel) {
 				// do partile stuff
 			} else {
-				if (blockChanged()) {
-					q = hardness * 10 * DisplayManager.getFrameTimeSeconds();
+				if (blockChanged(current)) {
+					mq = hardness * 10 * DisplayManager.getFrameTimeSeconds();
+					q = mq;
+					renderer.changeOverlayProgress(q, mq);
 				} else {
 					q -= miningspeed * DisplayManager.getFrameTimeSeconds();
+					renderer.changeOverlayProgress(q, mq);
 					if (q <= 0) {
 						int bid = mineBlock();
+						q = mq;
+						renderer.changeOverlayProgress(q, mq);
 						if (bid != 0) {
 							i.addItemToInventory(new ItemStack(
 									Item.items.get(Block.blocks.get((short)id).getBlockDropped()), 
@@ -335,17 +347,19 @@ public class MouseBlockPicker {
 					}
 				}
 			}
+		} else {
+			q = mq;
+			renderer.changeOverlayProgress(q, mq);
 		}
 	}
 	
 	int[] last = {0,0,0};
-	private boolean blockChanged() {
-		int[] current = getCurrentBlockPoF();
+	private boolean blockChanged(int[] c) {
 		//System.out.println(last[0] + " " + last[1] + " " + last[2] + " \\ " + current[0] + " " + current[1] + " " + current[2]);
-		if (isYes(last, current)) {
+		if (isYes(last, c)) {
 			return false;
 		} else {
-			last = current;
+			last = c;
 			return true;
 		}
 	}

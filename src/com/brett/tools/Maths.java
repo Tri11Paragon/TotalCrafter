@@ -71,6 +71,17 @@ public class Maths {
 		return matrix;
 	}
 	
+	public static Matrix4f createTransformationMatrixCube(int x, int y, int z) {
+		matrix.setIdentity();
+		// the 0.5 is added to adjust for cube scale.
+		// took way to long to figure out this.
+		matrix.m30 += matrix.m00 * (x+0.5f) + matrix.m10 * (y+0.5f) + matrix.m20 * (z+0.5f);
+		matrix.m31 += matrix.m01 * (x+0.5f) + matrix.m11 * (y+0.5f) + matrix.m21 * (z+0.5f);
+		matrix.m32 += matrix.m02 * (x+0.5f) + matrix.m12 * (y+0.5f) + matrix.m22 * (z+0.5f);
+		matrix.m33 += matrix.m03 * (x+0.5f) + matrix.m13 * (y+0.5f) + matrix.m23 * (z+0.5f);
+		return matrix;
+	}
+	
 	public static Matrix4f createTransformationMatrix(Vector2f translation, Vector2f scale) {
 		Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();

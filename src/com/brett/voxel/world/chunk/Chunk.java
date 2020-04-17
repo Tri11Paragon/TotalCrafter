@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL11;
 import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.renderer.datatypes.RawBlockModel;
-import com.brett.renderer.shaders.VoxelShader;
+import com.brett.voxel.renderer.shaders.VoxelShader;
 import com.brett.voxel.world.MeshStore;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;

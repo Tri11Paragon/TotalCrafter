@@ -16,10 +16,11 @@ import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.RawBlockModel;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.SixBoolean;
-import com.brett.renderer.shaders.VoxelShader;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.PlayerInventory;
+import com.brett.voxel.renderer.VOverlayRenderer;
+import com.brett.voxel.renderer.shaders.VoxelShader;
 import com.brett.voxel.tools.MouseBlockPicker;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.chunk.Chunk;
@@ -43,6 +44,7 @@ public class VoxelWorld {
 	
 	private MouseBlockPicker picker;
 	public ChunkStore chunk;
+	private VOverlayRenderer voverlayrenderer;
 	public Random random = new Random();
 	public HashMap<RawBlockModel, HashMap<Integer, List<float[]>>> models = new HashMap<RawBlockModel, HashMap<Integer, List<float[]>>>();
 	protected PlayerInventory i;
@@ -88,7 +90,8 @@ public class VoxelWorld {
 				}
 			}
 		}).start();
-		picker = new MouseBlockPicker(cam, renderer.getProjectionMatrix(), this, i);
+		this.voverlayrenderer = new VOverlayRenderer(renderer, cam, this);
+		picker = new MouseBlockPicker(cam, renderer.getProjectionMatrix(), this, i, this.voverlayrenderer);
 	}
 	
 	public void render(ICamera camera) {
@@ -278,6 +281,10 @@ public class VoxelWorld {
 		}
 		
 		return rtv;
+	}
+	
+	public Loader getLoader() {
+		return loader;
 	}
 	
 	public void cleanup() {
