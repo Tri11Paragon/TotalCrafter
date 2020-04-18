@@ -57,7 +57,7 @@ public class ChunkSub {
 					
 					ModelTexture model = Block.blocks.get(blocks[i][j][k]).model;
 					
-					world.addBlock(rawModel, model.getID(), i+(Chunk.x*xoff), j+(y*yoff) ,k+(Chunk.z*zoff));
+					world.addBlock(rawModel, model.getID(), new float[] {i+(Chunk.x*xoff), j+(y*yoff) ,k+(Chunk.z*zoff)});
 				}
 			}
 		}

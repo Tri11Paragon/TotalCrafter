@@ -3,6 +3,8 @@ package com.brett.voxel.world.items;
 import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.world.VoxelWorld;
+import com.brett.voxel.world.blocks.Block;
+import com.brett.world.cameras.Camera;
 
 /**
 *
@@ -24,7 +26,15 @@ public class ItemTool extends Item {
 		super(id, texture);
 	}
 
-	public void onBlockMined(int x, int y, int z, VoxelWorld world, PlayerInventory i) {
+	public void onBlockMined(int x, int y, int z, Block b, VoxelWorld world, Camera c, PlayerInventory i) {
+		
+	}
+	
+	public void onRightClick(int x, int y, int z, VoxelWorld world, Camera c, PlayerInventory i) {
+		
+	}
+	
+	public void onLeftClick(int x, int y, int z, VoxelWorld world, Camera c, PlayerInventory i) {
 		
 	}
 	

@@ -65,6 +65,8 @@ public class LightingEngine {
 	public static void removeLightSource(int x, int y, int z, byte level) {
 		lightSources.put(x,y,z, (byte) -level);
 		permalightSources.removeAll(x,y,z);
+		//recalculate();
+		//recalcalculateSun();
 	}
 	
 	public static void applyLightPatern(VoxelWorld world, int x, int y, int z, byte level) {

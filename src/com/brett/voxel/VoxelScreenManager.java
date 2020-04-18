@@ -281,7 +281,7 @@ public class VoxelScreenManager {
 		Mouse.setGrabbed(false);
 		pi.cleanup();
 		//testserver.close();
-		//client.close();
+		//client.close();and it will 
 		staticSource.delete();
 		AudioController.cleanup();
 		PostProcessing.cleanUp();

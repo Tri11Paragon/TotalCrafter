@@ -267,13 +267,15 @@ public class ChunkStore {
 		Chunk c = getChunk((int)(x/(float)Chunk.x) + xoff, (int)(z/(float)Chunk.z) + zoff);
 		if (c == null)
 			return;
+		int rx = (int)x;
+		int rz = (int)z;
 		x %= 16;
 		z %= 16;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
-		c.setBlock((int)x,(int)y, (int)z, block);
+		c.setBlock((int)x,(int)y, (int)z, rx, rz, block);
 	}
 	
 	public void setLightLevel(float x, float y, float z, byte level) {
@@ -310,7 +312,7 @@ public class ChunkStore {
 			zoff = -1;
 		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
 		if (c == null)
-			return -1;
+			return 0;
 		x%=16;
 		z%=16;
 		if (x < 0)

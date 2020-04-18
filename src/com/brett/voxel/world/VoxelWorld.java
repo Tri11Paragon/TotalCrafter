@@ -26,6 +26,10 @@ import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.chunk.ChunkStore;
 import com.brett.voxel.world.items.Item;
+import com.brett.voxel.world.items.ItemStack;
+import com.brett.voxel.world.items.ItemTool;
+import com.brett.voxel.world.lighting.LightingEngine;
+import com.brett.voxel.world.tileentity.TileEntity;
 import com.brett.world.cameras.Camera;
 import com.brett.world.cameras.ICamera;
 
@@ -42,11 +46,13 @@ public class VoxelWorld {
 	private VoxelShader shader;
 	private Loader loader;
 	
+	private Camera cam;
 	private MouseBlockPicker picker;
 	public ChunkStore chunk;
 	private VOverlayRenderer voverlayrenderer;
 	public Random random = new Random();
 	public HashMap<RawBlockModel, HashMap<Integer, List<float[]>>> models = new HashMap<RawBlockModel, HashMap<Integer, List<float[]>>>();
+	private List<TileEntity> tents = new ArrayList<TileEntity>();
 	protected PlayerInventory i;
 	
 	// replace pi with a player
@@ -61,8 +67,9 @@ public class VoxelWorld {
 		Chunk.emptyBlock = RawBlockModel.convertRawModel(loader.loadToVAO(MeshStore.vertsNONE, MeshStore.uvNONE, MeshStore.indiciesNONE));
 		chunk = new ChunkStore(cam, loader, this);
 		random.setSeed(LevelLoader.seed);
-		//LightingEngine.init(this);
+		LightingEngine.init(this);
 		this.i = i;
+		this.cam = cam;
 		
 		// reduces ram at cost of CPU
 		// not much anymore but at a time
@@ -126,6 +133,8 @@ public class VoxelWorld {
 						float[] pos = s.get(i);
 						// create the transformation matrix using the best matrix for cubes the cube matrix
 						shader.loadTransformationMatrix(Maths.createTransformationMatrixCube(pos[0],pos[1],pos[2]));
+						// load lighting data
+						shader.loadLightData(pos[3], pos[4], pos[5], pos[6], pos[7], pos[8]);
 						// draw the bound model. NOTE: 0x4 means GL_Triangles in opengl speak and is required if you are using lighting
 						GL11.glDrawElements(0x4, (int)model.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 					}
@@ -142,9 +151,8 @@ public class VoxelWorld {
 		shader.stop();
 	}
 	
-	public void addBlock(RawBlockModel model, int texture, float x, float y, float z) {
+	public void addBlock(RawBlockModel model, int texture, float[] pos) {
 		HashMap<Integer, List<float[]>> map = models.get(model);
-		float[] pos = {x,y,z};
 		if (map == null) {
 			HashMap<Integer, List<float[]>> newmap = new HashMap<Integer, List<float[]>>();
 			List<float[]> newarr = new ArrayList<float[]>();
@@ -178,13 +186,31 @@ public class VoxelWorld {
 	
 	public void update() {
 		picker.update();
+		for (int i = 0; i < tents.size(); i++) {
+			tents.get(i).tick();
+		}
 		while (Mouse.next()){
 			if (Mouse.getEventButtonState()) {
 				if (Mouse.getEventButton() == 1) {
-					if (i.getItemInSelectedSlot() != null) {
-						if (picker.placeBlock(Item.inverseItems.get(i.getItemInSelectedSlot().getItem()))) {
+					ItemStack st = i.getItemInSelectedSlot();
+					if (st != null) {
+						if (picker.placeBlock(Item.inverseItems.get(st.getItem()))) {
 							i.getSelectedSlot().removeItems(1);
 							i.getSelectedSlot().updateText();
+						}
+						if (st.getItem() instanceof ItemTool) {
+							int[] c = picker.getCurrentBlockPoF();
+							((ItemTool) st.getItem()).onRightClick(c[0], c[1], c[2], this, cam, i);
+						}
+							
+					}
+				}
+				if (Mouse.getEventButton() == 0) {
+					ItemStack st = i.getItemInSelectedSlot();
+					if (st != null) {
+						if (st.getItem() instanceof ItemTool) {
+							int[] c = picker.getCurrentBlockPoF();
+							((ItemTool) st.getItem()).onLeftClick(c[0], c[1], c[2], this, cam, i);
 						}
 					}
 				}
@@ -244,6 +270,17 @@ public class VoxelWorld {
 		}
 	}
 	
+	public void spawnTileEntity(TileEntity e, int x, int y, int z) {
+		tents.add(e);
+		e.spawnTileEntity(x, y, z, this);
+	}
+	
+	public void destoryTileEntity(TileEntity e) {
+		e.destroy();
+		if (tents.contains(e))
+			tents.remove(e);
+	}
+	
 	public static synchronized SixBoolean createSixBooleans(SixBoolean boo) {
 		SixBoolean b = boo;
 		for (int i = 0; i < MeshStore.booleans.size(); i++) {
@@ -289,6 +326,9 @@ public class VoxelWorld {
 	
 	public void cleanup() {
 		chunk.cleanup();
+		for (int i = 0; i < tents.size(); i++) {
+			tents.get(i).save();
+		}
 		LevelLoader.saveLevelData(ChunkStore.worldLocation);
 		shader.cleanUp();
 	}

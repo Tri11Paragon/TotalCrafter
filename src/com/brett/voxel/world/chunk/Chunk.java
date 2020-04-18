@@ -208,6 +208,8 @@ public class Chunk {
 			Block.blocks.get(blocks[xz][yz][zz]).onBlockTick(xz, yz, zz, s);
 		
 		int un = MeshStore.boolEmpty;
+		byte left,right,front,back;
+		int l,r,f,b;
 		
 		for (int i =0; i < x; i++) {
 			for (int j = 0; j < y; j++) {
@@ -226,7 +228,39 @@ public class Chunk {
 					
 					ModelTexture model = Block.blocks.get(blocks[i][j][k]).model;
 					
-					s.addBlock(rawModel, model.getID(), i+(x*xoff),j,k+(z*zoff));
+					int xof = i + (x*xoff);
+					int zof = k + (z*zoff);
+					
+					// TODO: byte array support
+					// TODO: make this not slow
+					l = x-1;
+					if (l < 0)
+						left = s.chunk.getLightLevel(xof-1, j, zof);
+					else
+						left = lightLevel[l][j][k];
+					r = x+1;
+					if (r >= Chunk.x)
+						right = s.chunk.getLightLevel(xof+1, j, zof);
+					else
+						right = lightLevel[r][j][k];
+					f = z+1;
+					if (f >= Chunk.z)
+						front = s.chunk.getLightLevel(xof, j, zof+1);
+					else
+						front = lightLevel[i][j][f];
+					b = z-1;
+					if (b < 0)
+						back = s.chunk.getLightLevel(xof, j, zof-1);
+					else
+						back = lightLevel[i][j][b];
+					
+					s.addBlock(rawModel, model.getID(), new float[] {xof,j,zof, 
+							lightLevel[i][j+1 < y ? j+1 : (y-1)][k], 
+							lightLevel[i][j-1 > -1 ? j-1 : 0][k],
+							left,
+							right,
+							front,
+							back});
 					
 					//GL30.glBindVertexArray((int)rawModel.getVaoID());
 					//GL20.glEnableVertexAttribArray(0);
@@ -345,7 +379,7 @@ public class Chunk {
 		lightLevel[x][y][z] = level;
 	}
 	
-	public void setBlock(int x, int y, int z, int block) {
+	public void setBlock(int x, int y, int z, int rx, int rz, int block) {
 		if (x >= Chunk.x || z >= Chunk.z)
 			return;
 		if (x < 0)
@@ -358,6 +392,10 @@ public class Chunk {
 			y = 0;
 		if (block == 0)
 			blocksModels[x][y][z] = emptyBlock;
+		else
+			Block.blocks.get((short) block).onBlockPlaced(rx, y, rz, s);
+		
+		Block.blocks.get(blocks[x][y][z]).onBlockBreaked(rx, y, rz, s);
 		blocks[x][y][z] = (short)block;
 	}
 	

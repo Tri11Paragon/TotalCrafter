@@ -1,5 +1,7 @@
 package com.brett.voxel.inventory.container;
 
+import com.brett.voxel.inventory.Inventory;
+
 /**
 *
 * @author brett
@@ -7,5 +9,7 @@ package com.brett.voxel.inventory.container;
 */
 
 public class Container {
-
+	
+	private Inventory i;
+	
 }

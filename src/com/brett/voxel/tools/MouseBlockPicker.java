@@ -102,10 +102,7 @@ public class MouseBlockPicker {
 				continue;
 			Block b = Block.blocks.get(blockid);
 			b.playBreakSound((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
-			b.onBlockBreaked((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z), world);
-			c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), block);
-			if (block != 0)
-				Block.blocks.get(block).onBlockPlaced((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z), world);
+			c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), (int)posadjUn.x, (int)posadjUn.z, block);
 			world.updateBlocksAround((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
 			c.remesh();
 			return blockid;
@@ -183,7 +180,7 @@ public class MouseBlockPicker {
 		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
 		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
 		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
-		int[] posi = {(int)pos.x, (int)pos.y, (int)pos.z, 1};
+		int[] posi = {(int)currentRay.x, (int)currentRay.y, (int)currentRay.z, 1};
 		
 		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
 		for (int i = 0; i < RE_MNT; i++) {
@@ -226,6 +223,8 @@ public class MouseBlockPicker {
 	public boolean placeBlock(short block) {
 		if (!Mouse.isGrabbed())
 			return false;
+		if (!Item.itemBlocks.containsKey(Item.items.get(block)))
+			return false;
 		Vector3f pos = camera.getPosition();
 		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
 		Vector3f currentRay = findRange();
@@ -253,8 +252,7 @@ public class MouseBlockPicker {
 			if (blockid == 0) {
 				//b.playBreakSound((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
 				//b.onBlockBreaked((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z), world);
-				c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), block);
-				Block.blocks.get(block).onBlockPlaced((int)(posadjUn.x), (int)posadjUn.y,  (int)(posadjUn.z), world);
+				c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), (int)posadjUn.x, (int)posadjUn.z, block);
 				world.updateBlocksAround((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
 				c.remesh();
 				return true;
@@ -354,7 +352,7 @@ public class MouseBlockPicker {
 									Item.items.get(Block.blocks.get((short)id).getBlockDropped()), 
 											Block.blocks.get((short)id).getAmountDropped()));
 							if (it instanceof ItemTool)
-								((ItemTool)it).onBlockMined(current[0], current[1], current[2], world, i);
+								((ItemTool)it).onBlockMined(current[0], current[1], current[2], b, world, camera, i);
 						}
 					}
 				}
