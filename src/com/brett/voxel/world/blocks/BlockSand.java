@@ -15,7 +15,7 @@ public class BlockSand extends Block {
 	// TODO: improove this:
 	
 	public BlockSand(ModelTexture model) {
-		super(model);
+		super(model, 4);
 	}
 	
 	@Override

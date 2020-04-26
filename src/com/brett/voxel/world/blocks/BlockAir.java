@@ -11,7 +11,7 @@ public class BlockAir extends Block {
 	
 	
 	public BlockAir() {
-		super(null);
+		super(null, 0);
 	}
 	
 }

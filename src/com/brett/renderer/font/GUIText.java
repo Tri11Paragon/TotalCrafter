@@ -66,6 +66,10 @@ public class GUIText {
 		this.textString = test;
 	}
 	
+	public String getText() {
+		return this.textString;
+	}
+	
 	public void remove() {
 		TextMaster.removeText(this);
 	}

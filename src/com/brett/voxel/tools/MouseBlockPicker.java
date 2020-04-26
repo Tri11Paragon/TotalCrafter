@@ -62,17 +62,6 @@ public class MouseBlockPicker {
 			return null;
 	}
 	
-	/*public int getCurrentBlockPoint() {
-		if (intersectionInRange(0, RAY_RANGE, currentRay)) {
-			Vector3f pos = accountForFloatErrors(binarySearch(0, 0, RAY_RANGE, currentRay));
-			Chunk c = getTerrain(pos.x, pos.z);
-			if (c == null)
-				return 0;
-			return c.getBlock((int)(pos.x)%16, (int)pos.y, (int)(pos.z)%16);
-		}else
-			return 0;
-	}*/
-	
 	private int setCurrentBlockPoint(short block) {
 		Vector3f pos = camera.getPosition();
 		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
@@ -91,8 +80,8 @@ public class MouseBlockPicker {
 			Chunk c = getTerrain(posadj.x, posadj.z);
 			if (c == null)
 				continue;
-			posadj.x %= 16;
-			posadj.z %= 16;
+			posadj.x %= Chunk.x;
+			posadj.z %= Chunk.z;
 			if (posadj.x < 0)
 				posadj.x = biasNegative(posadj.x, -Chunk.x);
 			if (posadj.z < 0)
@@ -104,7 +93,25 @@ public class MouseBlockPicker {
 			b.playBreakSound((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
 			c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), (int)posadjUn.x, (int)posadjUn.z, block);
 			world.updateBlocksAround((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
-			c.remesh();
+			// update the local chunk meshes
+			// using a nice new thread as we don't want a new one per chunk.
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					Chunk c = getTerrain(posadjUn.x, posadjUn.z);
+					c.remeshNo();
+					c = getTerrain(posadjUn.x + 1, posadjUn.z);
+					c.remeshNo();
+					c = getTerrain(posadjUn.x - 1, posadjUn.z);
+					c.remeshNo();
+					c = getTerrain(posadjUn.x, posadjUn.z + 1);
+					c.remeshNo();
+					c = getTerrain(posadjUn.x, posadjUn.z + 1);
+					c.remeshNo();
+				}
+			}).start();
+			
 			return blockid;
 		}
 		return 0;
@@ -127,8 +134,8 @@ public class MouseBlockPicker {
 			Chunk c = getTerrain(posadj.x, posadj.z);
 			if (c == null)
 				continue;
-			posadj.x %= 16;
-			posadj.z %= 16;
+			posadj.x %= Chunk.x;
+			posadj.z %= Chunk.z;
 			if (posadj.x < 0)
 				posadj.x = biasNegative(posadj.x, -Chunk.x);
 			if (posadj.z < 0)
@@ -159,8 +166,8 @@ public class MouseBlockPicker {
 			Chunk c = getTerrain(posadj.x, posadj.z);
 			if (c == null)
 				continue;
-			posadj.x %= 16;
-			posadj.z %= 16;
+			posadj.x %= Chunk.x;
+			posadj.z %= Chunk.z;
 			if (posadj.x < 0)
 				posadj.x = biasNegative(posadj.x, -Chunk.x);
 			if (posadj.z < 0)
@@ -192,8 +199,8 @@ public class MouseBlockPicker {
 			Chunk c = getTerrain(posadj.x, posadj.z);
 			if (c == null)
 				continue;
-			posadj.x %= 16;
-			posadj.z %= 16;
+			posadj.x %= Chunk.x;
+			posadj.z %= Chunk.z;
 			if (posadj.x < 0)
 				posadj.x = biasNegative(posadj.x, -Chunk.x);
 			if (posadj.z < 0)
@@ -242,8 +249,8 @@ public class MouseBlockPicker {
 			Chunk c = getTerrain(posadj.x, posadj.z);
 			if (c == null)
 				continue;
-			posadj.x %= 16;
-			posadj.z %= 16;
+			posadj.x %= Chunk.x;
+			posadj.z %= Chunk.z;
 			if (posadj.x < 0)
 				posadj.x = biasNegative(posadj.x, -Chunk.x);
 			if (posadj.z < 0)
@@ -279,8 +286,8 @@ public class MouseBlockPicker {
 			Chunk c = getTerrain(posadj.x, posadj.z);
 			if (c == null)
 				continue;
-			posadj.x %= 16;
-			posadj.z %= 16;
+			posadj.x %= Chunk.x;
+			posadj.z %= Chunk.z;
 			if (posadj.x < 0)
 				posadj.x = biasNegative(posadj.x, -Chunk.x);
 			if (posadj.z < 0)
@@ -455,7 +462,7 @@ public class MouseBlockPicker {
 		Chunk terrain = getTerrain(testPoint.getX(), testPoint.getZ());
 		float height = 0;
 		if (terrain != null) {
-			height = terrain.getHeight((int)testPoint.getX() % 16, (int)testPoint.getZ() % 16) - 0.0001f;
+			height = terrain.getHeight((int)testPoint.getX() % Chunk.x, (int)testPoint.getZ() % Chunk.z) - 0.0001f;
 		}
 		if (testPoint.y < height) {
 			return true;

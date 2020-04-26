@@ -7,7 +7,7 @@ import org.lwjgl.opengl.GL30;
 
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
-import com.brett.renderer.datatypes.RawBlockModel;
+import com.brett.renderer.datatypes.RawModel;
 import com.brett.tools.Maths;
 import com.brett.voxel.renderer.shaders.VOverlayShader;
 import com.brett.voxel.world.MeshStore;
@@ -25,7 +25,7 @@ public class VOverlayRenderer {
 	
 	private Camera camera;
 	private VOverlayShader shader;
-	private RawBlockModel model;
+	private RawModel model;
 	private int[] textures = new int[11];
 	private int texture;
 	
@@ -36,7 +36,7 @@ public class VOverlayRenderer {
 		this.shader.loadProjectionMatrix(renderer.getProjectionMatrix());
 		this.shader.stop();
 		Loader loader = world.getLoader();
-		this.model = RawBlockModel.convertRawModel(loader.loadToVAO(MeshStore.vertsBig, MeshStore.uv, MeshStore.indicies));
+		this.model = loader.loadToVAO(MeshStore.vertsBig, MeshStore.uv, MeshStore.indicies);
 		textures[0] = loader.loadTexture("outline");
 		textures[1] = loader.loadTexture("break0");
 		textures[2] = loader.loadTexture("break1");

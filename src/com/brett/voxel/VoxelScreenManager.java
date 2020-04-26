@@ -4,12 +4,12 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 
 import org.lwjgl.Sys;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.DisplayManager;
@@ -21,6 +21,7 @@ import com.brett.renderer.DisplaySource;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.font.FontType;
+import com.brett.renderer.font.GUIDynamicText;
 import com.brett.renderer.font.fontRendering.TextMaster;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.renderer.particles.ParticleMaster;
@@ -35,6 +36,8 @@ import com.brett.voxel.inventory.InventoryMaster;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.world.GameRegistry;
 import com.brett.voxel.world.VoxelWorld;
+import com.brett.voxel.world.chunk.AtlasHelper;
+import com.brett.voxel.world.chunk.Chunk;
 import com.brett.world.cameras.CreativeFirstPersonCamera;
 import com.brett.world.entities.Entity;
 import com.sun.management.OperatingSystemMXBean;
@@ -62,7 +65,7 @@ public class VoxelScreenManager {
 	
 	public static void init() {
 		SettingsLoader.loadSettings();
-		DisplayManager.createDisplay(false);
+		DisplayManager.createDisplay(true);
 		KeyMaster.init();
 		// audio stuff
 		AudioController.init();
@@ -74,6 +77,7 @@ public class VoxelScreenManager {
 		os = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 		// MAIN STUFF (REQUIRED FOR GAME TO RUN)
 		Loader loader = new Loader();
+		AtlasHelper.init();
 		CreativeFirstPersonCamera camera = new CreativeFirstPersonCamera(new Vector3f(0, 90, 0));
 		ls = new LineShader();
 		pt = new PointShader();
@@ -221,6 +225,23 @@ public class VoxelScreenManager {
 		//scene = new VoxelRenderer(renderer, camera, world);
 		
 		//System.out.println(MeshStore.models.get(VoxelWorld.createSixBooleans(true, true, true, true, true, true)) == MeshStore.models.get(VoxelWorld.createSixBooleans(true, true, true, true, true, true)));
+		// WHY
+		// WHY
+		// WHY
+		// WHY DOES THIS WORK BUT USING THE OTHER RAW DYNAMIC TEXT NOT WORK????
+		// THIS IS A LOAD OF CRAP
+		// BUT THIS ONE WORKS
+		// WHY
+		// WHY
+		// WHY
+		// THERE IS NO DIFFERENCE
+		// WHY
+		// I HATE YOU SO MUCH
+		// PLEASE DIE IN A HOUSE FIRE @GUI RENDERER
+		GUIDynamicText loadOfCrap = new GUIDynamicText("", 0.9f, VoxelScreenManager.monospaced, new Vector2f(0.0f, 0.0f), 400, false);
+		loadOfCrap.enableText();
+		
+		Chunk.init();
 		
 		System.gc();
 		while (!Display.isCloseRequested()) {
@@ -231,21 +252,7 @@ public class VoxelScreenManager {
 			KeyMaster.update();
 			
 			if (Mouse.isButtonDown(2)) {
-				Vector3f pos = camera.getPosition();
-				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-					for (int i = -4; i <= 6; i++) {
-						for (int k = -4; k <= 6; k++) {
-							world.chunk.setBlock(i+pos.x, pos.y, k+pos.z, 0);
-							world.chunk.setBlock(i+pos.x, pos.y-1, k+pos.z, 0);
-						}
-					}
-				}else {
-					for (int i = -4; i <= 6; i++) {
-						for (int k = -4; k <= 6; k++) {
-							world.chunk.setBlock(i+pos.x, pos.y-1, k+pos.z, 1);
-						}
-					}
-				}
+				
 			}
 			
 			//System.out.println(camera.getPosition());
@@ -272,7 +279,8 @@ public class VoxelScreenManager {
 				sb.append((int)frameRate);
 				sb.append(" + FrameTimeMilli: ");
 				sb.append(averageFrameTimeMilliseconds);
-				System.out.println(sb.toString());
+				loadOfCrap.changeText(sb.toString());
+				//System.out.println(sb.toString());
 				frames = 0;
 				deltaTime = 0;
 			}
@@ -292,6 +300,7 @@ public class VoxelScreenManager {
 		ls.cleanUp();
 		world.cleanup();
 		loader.cleanUp();
+		System.out.println("World and Loader have been cleaned up!");
 		SettingsLoader.saveSettings();
 		DisplayManager.closeDisplay();
 		//System.exit(0);

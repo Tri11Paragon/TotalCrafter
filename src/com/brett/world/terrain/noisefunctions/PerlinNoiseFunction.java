@@ -18,6 +18,7 @@ public class PerlinNoiseFunction extends NoiseFunction {
 		return perlin(x, z);
 	}
 	
+	@SuppressWarnings("unused")
 	private float dotGridGradient(int ix, int iz, float x, float z) {
 
 	    // Compute the distance vector
@@ -28,6 +29,7 @@ public class PerlinNoiseFunction extends NoiseFunction {
 	    return (dx*getNoise(iz, ix) + dy*getNoise(iz, ix));
 	}
 	
+	@SuppressWarnings("unused")
 	private float lerp(float a0, float a1, float w) {
 	    return (1.0f - w)*a0 + w*a1;
 	}

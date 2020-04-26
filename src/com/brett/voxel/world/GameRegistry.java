@@ -41,13 +41,13 @@ public class GameRegistry {
 		//TODO: maybe move into their own class
 		registerBlock(Block.BLOCK_AIR, new BlockAir());
 		
-		registerBlock(Block.BLOCK_STONE, new Block(new ModelTexture(loader.loadTexture("stone"))
+		registerBlock(Block.BLOCK_STONE, new Block(new ModelTexture(loader.loadTexture("stone")), 2
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setBlockDropped(Block.BLOCK_COBBLE).setHardness(3).setMiningLevel(2).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
-		registerBlock(Block.BLOCK_DIRT, new Block(new ModelTexture(loader.loadTexture("dirt"))
+		registerBlock(Block.BLOCK_DIRT, new Block(new ModelTexture(loader.loadTexture("dirt")), 1
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
 		
-		registerBlock(Block.BLOCK_WILL, new Block(new ModelTexture(loader.loadTexture("icon/logo"))
+		registerBlock(Block.BLOCK_WILL, new Block(new ModelTexture(loader.loadTexture("icon/logo")), 7
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(Short.MAX_VALUE*2).setMiningLevel(Short.MAX_VALUE*2).setEffectiveTool(ItemTool.TOOL_SWORD));
 		
 		registerBlock(Block.BLOCK_GRASS, new BlockGrass(new ModelTexture(loader.loadTexture("grassy2"))
@@ -56,14 +56,20 @@ public class GameRegistry {
 		registerBlock(Block.BLOCK_SAND, new BlockSand(new ModelTexture(loader.loadTexture("sand"))
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
 		
-		registerBlock(Block.BLOCK_CLAY, new Block(new ModelTexture(loader.loadTexture("clay"))
+		registerBlock(Block.BLOCK_CLAY, new Block(new ModelTexture(loader.loadTexture("clay")), 8
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(1.0f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
 		
-		registerBlock(Block.BLOCK_SNOW, new Block(new ModelTexture(loader.loadTexture("snow"))
-				).setBreakSound(AudioController.loadSound("bounce.ogg")).setLightLevel((byte) 15).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SWORD));
+		registerBlock(Block.BLOCK_SNOW, new Block(new ModelTexture(loader.loadTexture("snow")), 5
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SWORD));
 		
-		registerBlock(Block.BLOCK_COBBLE, new Block(new ModelTexture(loader.loadTexture("cobble"))
+		registerBlock(Block.BLOCK_COBBLE, new Block(new ModelTexture(loader.loadTexture("cobble")), 3
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(2.5f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+		
+		registerBlock(Block.BLOCK_GLASS, new Block(new ModelTexture(loader.loadTexture("glass")), 9
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(2.5f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE).setTransparent(true));
+		
+		registerBlock(Block.BLOCK_GLOWSTONE, new Block(new ModelTexture(loader.loadTexture("glowstone")), 10
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.78f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE).setLightLevel((byte) 15));
 	}
 	
 	private static void registerItems(Loader loader) {

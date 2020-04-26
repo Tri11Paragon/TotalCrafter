@@ -7,7 +7,9 @@ import org.lwjgl.Sys;
 
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.world.VoxelWorld;
+import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.chunk.ChunkStore;
+import com.brett.world.cameras.Camera;
 
 /**
 *
@@ -22,10 +24,12 @@ public class LightingEngine {
 	//private static VoxelWorld world;
 	
 	private static byte sunLevel = 0;
+	private static Camera cam;
 	private static VoxelWorld world;
 	
-	public static void init(VoxelWorld world) {
+	public static void init(VoxelWorld world, Camera cam) {
 		LightingEngine.world = world;
+		LightingEngine.cam = cam;
 		new Thread(new Runnable() {
 			public void run() {
 				lightSources.putAll(permalightSources);
@@ -36,7 +40,6 @@ public class LightingEngine {
 					// this is required for the lighting engine to work.
 					// im not joking.
 					try {Thread.sleep(1);} catch (InterruptedException e1) {}
-					// ^thats a race condition without a reason
 					if (lightSources.size() == 0)
 						continue;
 					try {
@@ -44,9 +47,12 @@ public class LightingEngine {
 						MapIterator<MultiKey<? extends Integer>, Byte> it = lightSources.mapIterator();
 						while (it.hasNext()) {
 							MultiKey<? extends Integer> key = it.next();
+							if (it.getValue() < 0)
+								recalculate();
 							applyLightPatern(world, key.getKey(0), key.getKey(1), key.getKey(2), it.getValue());
+							recalcualteChunks(key.getKey(0), key.getKey(2));
 						}
-	
+
 						lightSources.clear();
 	
 						lastTime = Sys.getTime();
@@ -65,8 +71,7 @@ public class LightingEngine {
 	public static void removeLightSource(int x, int y, int z, byte level) {
 		lightSources.put(x,y,z, (byte) -level);
 		permalightSources.removeAll(x,y,z);
-		//recalculate();
-		//recalcalculateSun();
+		recalculate();
 	}
 	
 	public static void applyLightPatern(VoxelWorld world, int x, int y, int z, byte level) {
@@ -75,47 +80,31 @@ public class LightingEngine {
 			neg = true;
 			level = (byte) -level;
 		}
-		byte[][][] levels = lightup(level);
-		byte length = (byte) (level + 1);
-		byte center = (byte) (length/2);
-		for (int i = 0; i < length; i++) {
-			for (int j = 0; j < length; j++) {
-				for (int k = 0; k < length; k++) {
-					int xpos = (i - center);
-					int ypos = (j - center);
-					int zpos = (k - center);
-					if (neg)
-						world.chunk.setLightLevel(x + xpos, y + ypos, z + zpos, (byte)0);
-					else
-						world.chunk.setLightLevel(x + xpos, y + ypos, z + zpos, levels[i][j][k]);
-				}
-			}
-		}
-	}
-	
-	public static byte[][][] lightup(byte level){
-		byte[][][] ba = new byte[level+1][level+1][level+1];
-		byte center = (byte) ((level+1)/2);
-		for (byte i = 0; i < level+1; i++) {
-			for (byte j = 0; j < level+1; j++) {
-				for (byte k = 0; k < level+1; k++) {
-					ba[i][j][k] = 0;
-					if (i == center && j == center && j == center) {
-						ba[i][j][k] = (byte) level;
-						continue;
+		
+		for (int i = -level; i < (level-1); i++) {
+			for (int j = -level; j < (level-1); j++) {
+				for (int k = -level; k < (level-1); k++) {
+					int xp = x+i;
+					int yp = y+j;
+					int zp = z+k;
+					byte l = level;
+					l = (byte) (level - Math.abs(i) - Math.abs(j) - Math.abs(k));
+					if (l < 0)
+						l = 0;
+					if (neg) {
+						l = (byte) (world.chunk.getLightLevel(xp, yp, zp) - l);
+						if (l < 0)
+							l = 0;
+						world.chunk.setLightLevel(xp, yp, zp, l);
+					} else {
+						l += world.chunk.getLightLevel(xp, yp, zp);
+						if (l > 15)
+							l = 15;
+						world.chunk.setLightLevel(xp, yp, zp, l);
 					}
-					byte distancex = distance(center, i);
-					byte distancey = distance(center, j);
-					byte distancez = distance(center, k);
-					ba[i][j][k] = (byte) ((center*3) - distancex - distancey - distancez);
 				}
 			}
 		}
-		return ba;
-	}
-	
-	private static byte distance(byte f, byte d) {
-		return (byte) (f - d);
 	}
 	
 	public static void recalculate() {
@@ -126,7 +115,18 @@ public class LightingEngine {
 		int renderDistance = ChunkStore.renderDistance;
 		for (int i = -renderDistance; i < renderDistance; i++) {
 			for (int k = -renderDistance; k < renderDistance; k++) {
-				
+				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
+				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
+				Chunk c = world.chunk.getChunk(cx, cz);
+				for (int x = 0; x < Chunk.x; x++) {
+					for (int z = 0; z < Chunk.z; z++) {
+						int y = c.getHeightA(x, z);
+						byte lel = (byte) (c.getLightLevel(x, y, z) + sunLevel);
+						if (lel > 15)
+							lel = 15;
+						c.setLightLevel(x, y, z, lel);
+					}
+				}
 			}
 		}
 	}
@@ -134,6 +134,44 @@ public class LightingEngine {
 	public static void changeSunLevel(byte level) {
 		sunLevel = level;
 		recalculate();
+	}
+	
+	private static void recalcualteChunks(int x, int z) {
+		ChunkStore cs = world.chunk;
+		int xoff = 0,zoff = 0;
+		if (x < 0)
+			xoff = -1;
+		if (z < 0)
+			zoff = -1;
+		int cx = (int)(x/(float)Chunk.x) + xoff;
+		int cz = (int)(z/(float)Chunk.z) + zoff;
+		Chunk main = cs.getChunk(cx, cz);
+		if (main != null)
+			main.remeshNo();
+		main = cs.getChunk(cx+1, cz+1);
+		if (main != null)
+			main.remeshNo();
+		main = cs.getChunk(cx+1, cz);
+		if (main != null)
+			main.remeshNo();
+		main = cs.getChunk(cx, cz+1);
+		if (main != null)
+			main.remeshNo();
+		main = cs.getChunk(cx-1, cz);
+		if (main != null)
+			main.remeshNo();
+		main = cs.getChunk(cx, cz-1);
+		if (main != null)
+			main.remeshNo();
+		main = cs.getChunk(cx+1, cz-1);
+		if (main != null)
+			main.remeshNo();
+		main = cs.getChunk(cx-1, cz+1);
+		if (main != null)
+			main.remeshNo();
+		main = cs.getChunk(cx-1, cz-1);
+		if (main != null)
+			main.remeshNo();
 	}
 	
 }

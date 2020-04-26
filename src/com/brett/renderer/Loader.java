@@ -23,6 +23,7 @@ import org.lwjgl.opengl.GLContext;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
+import com.brett.renderer.datatypes.RawBlockModel;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.TextureData;
 import com.brett.tools.obj.ModelData;
@@ -100,6 +101,16 @@ public class Loader {
 		unbindVAO();
 		return new RawModel(vaoID, positions.length/dimensions);
 		
+	}
+	
+	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] lightLevels) {
+		int vaoID = createVAO();
+		int[] vbos = new int[3];
+		vbos[0] = this.storeDataInAttributeList(0, 3, positions);
+		vbos[1] = this.storeDataInAttributeList(1, 2, textureCoords);
+		vbos[2] = this.storeDataInAttributeList(2, 1, lightLevels);
+		unbindVAO();
+		return new RawBlockModel(vaoID, vbos, positions.length/3);
 	}
 	
 	public int createEmptyVBO(int floatCount) {
@@ -186,6 +197,21 @@ public class Loader {
 		return texture.getTextureID();
 	}
 	
+	public RawModel deleteVAO(RawModel model) {
+		try {
+			vaos.remove((Integer) model.getVaoID());
+			GL30.glDeleteVertexArrays(model.getVaoID());
+			if (model instanceof RawBlockModel) {
+				int[] vbos = ((RawBlockModel) model).getVbos();
+				for (int i = 0; i < vbos.length; i++) {
+					GL15.glDeleteBuffers(vbos[i]);
+					this.vbos.remove((Integer) vbos[i]);
+				}
+			}
+		} catch (Exception e) {}
+		return null;
+	}
+	
 	public void cleanUp(){
 		for(int vao:vaos){
 			GL30.glDeleteVertexArrays(vao);
@@ -215,7 +241,7 @@ public class Loader {
 		return vaoID;
 	}
 	
-	private void storeDataInAttributeList(int attributeNumber, int coordinateSize,float[] data){
+	private int storeDataInAttributeList(int attributeNumber, int coordinateSize,float[] data){
 		int vboID = GL15.glGenBuffers();
 		vbos.add(vboID);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
@@ -223,6 +249,7 @@ public class Loader {
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 		GL20.glVertexAttribPointer(attributeNumber,coordinateSize,GL11.GL_FLOAT,false,0,0);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		return vboID;
 	}
 	
 	private void unbindVAO(){
@@ -291,6 +318,26 @@ public class Loader {
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -0.2f);
 		float amount = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
+		
+		textures.add(id);
+		return id;
+	}
+	
+	public int loadSpecialTextureATLAS(String texture) {
+		TextureData d = decodeTextureFile("resources/textures/" + texture + ".png");
+		int id = GL11.glGenTextures();
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+		
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST); 
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST); 
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, d.getWidth(), d.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, d.getBuffer());
+		//GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
+		//GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -0.5f);
+		//float amount = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+		//GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
 		
 		textures.add(id);
 		return id;

@@ -6,26 +6,16 @@ package com.brett.renderer.datatypes;
 * @date Mar. 3, 2020
 */
 
-public class RawBlockModel {
+public class RawBlockModel extends RawModel {
 	
-	private byte vaoID;
-	private byte vertexCount;
+	private int[] vbos;
 	
-	public RawBlockModel(byte vaoID, byte vertexCount) {
-		this.vaoID = vaoID;
-		this.vertexCount = vertexCount;
+	public RawBlockModel(int vaoID, int[] vbos, int vertexCount) {
+		super(vaoID, vertexCount);
+		this.vbos = vbos;
 	}
 
-	public byte getVaoID() {
-		return vaoID;
+	public int[] getVbos() {
+		return vbos;
 	}
-
-	public byte getVertexCount() {
-		return vertexCount;
-	}
-	
-	public static RawBlockModel convertRawModel(RawModel m) {
-		return new RawBlockModel((byte)m.getVaoID(), (byte)m.getVertexCount());
-	}
-	
 }

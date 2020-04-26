@@ -3,9 +3,14 @@ package com.brett.voxel.world.chunk;
 import java.util.ArrayList;
 import java.util.List;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
+
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.ModelTexture;
-import com.brett.renderer.datatypes.RawBlockModel;
+import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.SixBoolean;
+import com.brett.tools.Maths;
+import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.renderer.shaders.VoxelShader;
 import com.brett.voxel.world.MeshStore;
 import com.brett.voxel.world.VoxelWorld;
@@ -21,57 +26,79 @@ import com.brett.world.terrain.noisefunctions.NoiseFunction;
 
 public class Chunk {
 	
-	public static int x = 16;
-	public static int y = 128;
-	public static int z = 16;
+	public static final int x = 16;
+	public static final int y = 128;
+	public static final int z = 16;
 	
 	private short[][][] blocks = new short[x][y][z];
 	private byte[][][] lightLevel = new byte[x][y][z];
-	private RawBlockModel[][][] blocksModels = new RawBlockModel[x][y][z];
-	List<Block> bls = new ArrayList<Block>();
+	//private RawBlockModel[][][] blocksModels = new RawBlockModel[x][y][z];
+	private RawModel rawID;
+	private float[] verts;
+	private float[] uvs;
+	private float[] lil;
 	private int xoff,zoff;
 	private VoxelWorld s;
 	private NoiseFunction nf;
+	private Loader loader;
+	private boolean waitingForMesh = false;
 	
-	public static RawBlockModel fullBlock;
-	public static RawBlockModel emptyBlock;
+	private static List<Chunk> meshables = new ArrayList<Chunk>();
+	
+	public static void init() {
+		new Thread(new Runnable() {		
+			@Override
+			public void run() {
+				while (VoxelScreenManager.isOpen) {
+					for (int i = 0; i < meshables.size(); i++) {
+						Chunk c = meshables.get(i);
+						c.remeshNo(1);
+						meshables.remove(i);
+					}
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {}
+				}
+			}
+		}).start();
+	}
 	
 	public Chunk(Loader loader, VoxelWorld s, NoiseFunction f, int xoff, int zoff) {
 		this.nf = f;
 		this.xoff = xoff;
 		this.zoff = zoff;
+		this.loader = loader;
+		verts = new float[0];
+		uvs = new float[0];
+		lil = new float[0];
 		this.s = s;
 		for (int i = 0; i < x; i++) {
 			for (int k = 0; k < z; k++) {
-				int ref = (int) (f.getInterpolatedNoise(((xoff * x) + (i)) / 128.0f, ((zoff * z) + (k)) / 128.0f));
+				int ref = (int) (f.getInterpolatedNoise(((xoff * x) + (i)), ((zoff * z) + (k))));
 				for (int j = 0; j < y; j++) {
 					if (j == ref) {
 						if (ref < 32)
 							blocks[i][j][k] = 5;
 						else 
 							blocks[i][j][k] = 4;
-						blocksModels[i][j][k] = fullBlock;
 					} else if (j <= ref - 1 && j >= ref - 5) {
 						if (ref < 32)
 							blocks[i][j][k] = 5;
 						else 
 							blocks[i][j][k] = 2;
-						blocksModels[i][j][k] = fullBlock;
+
 					} else if (j < 1) {
 						blocks[i][j][k] = 3;
-						blocksModels[i][j][k] = fullBlock;
 					} else if (j < ref - 5) {
 						blocks[i][j][k] = 1;
-						blocksModels[i][j][k] = fullBlock;
 					} else {
 						blocks[i][j][k] = 0;
-						blocksModels[i][j][k] = emptyBlock;
 					}
 					Block.blocks.get(blocks[i][j][k]).onBlockCreated(i, j, k, s);
 				}
 			}
 		}
-		//remesh();
+		remesh(-1);
 	}
 
 	public Chunk(Loader loader, VoxelWorld s, short[][][] blocks, int xoff, int zoff) {
@@ -79,24 +106,21 @@ public class Chunk {
 		this.zoff = zoff;
 		this.s = s;
 		this.blocks = blocks;
-		
-		for (int i =0; i < x; i++) {
-			for (int j = 0; j < y; j++) {
-				for (int k = 0; k < z; k++) {
-					blocksModels[i][j][k] = fullBlock;
-				}
-			}
-		}
+		this.loader = loader;
+		verts = new float[0];
+		uvs = new float[0];
+		lil = new float[0];
+		remesh(-1);
 	}
 	
 	// don't look at this please
 	// it is not good.
 	// TODO: improve this
 	// this is rough code
-	public void mesh(int i, int j, int k) {
+	public byte mesh(int i, int j, int k) {
 		if(blocks[i][j][k] == 0) {
-			blocksModels[i][j][k] = emptyBlock;
-			return;
+			//blocksModels[i][j][k] = emptyBlock;
+			return 0;
 		}
 		boolean top = true;
 		boolean bottom = true;
@@ -104,102 +128,169 @@ public class Chunk {
 		boolean right = true;
 		boolean front = true;
 		boolean back = true;
+		byte data = 0;
 		try {
-			if (blocks[i][j + 1][k] != 0) {
+			if (blocks[i][j + 1][k] != 0 && !Block.blocks.get(blocks[i][j + 1][k]).isTransparent()) {
 				top = false;
 			}
 		} catch (IndexOutOfBoundsException e) {}
 		try {
-			if (blocks[i][j - 1][k] != 0) {
+			if (blocks[i][j - 1][k] != 0 && !Block.blocks.get(blocks[i][j - 1][k]).isTransparent()) {
 				bottom = false;
 			}
 		} catch (IndexOutOfBoundsException e) {bottom = false;}
 		try {
-			if (blocks[i + 1][j][k] != 0) {
-				right = false;
-			}
-		} catch (IndexOutOfBoundsException e) {
-			Chunk c = s.chunk.getChunk(xoff + 1, zoff);
-			if (c == null)
-				right = false;
-			else {
-				if (c.blocks[0][j][k] != 0)
-					right = false;
-			}
-		}
-		try {
-			if (blocks[i - 1][j][k] != 0) {
+			if (blocks[i - 1][j][k] != 0 && !Block.blocks.get(blocks[i - 1][j][k]).isTransparent()) {
 				left = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
 			Chunk c = s.chunk.getChunk(xoff - 1, zoff);
-			if (c == null)
+			if (c == null) {
 				left = false;
-			else {
-				if (c.blocks[x-1][j][k] != 0)
+				// top brain kind of stuff here
+				// binary literal plus bitwise opperater
+				// top brain indeed
+				data |= 0b0001;
+			} else {
+				if (c.blocks[x-1][j][k] != 0 && !Block.blocks.get(blocks[x-1][j][k]).isTransparent())
 					left = false;
 			}
 		}
 		try {
-			if (blocks[i][j][k + 1] != 0) {
+			if (blocks[i + 1][j][k] != 0 && !Block.blocks.get(blocks[i+1][j][k]).isTransparent()) {
+				right = false;
+			}
+		} catch (IndexOutOfBoundsException e) {
+			Chunk c = s.chunk.getChunk(xoff + 1, zoff);
+			if (c == null) {
+				right = false;
+				data |= 0b0010;
+			} else {
+				if (c.blocks[0][j][k] != 0 && !Block.blocks.get(c.blocks[0][j][k]).isTransparent())
+					right = false;
+			}
+		}
+		try {
+			if (blocks[i][j][k + 1] != 0 && !Block.blocks.get(blocks[i][j][k + 1]).isTransparent()) {
 				front = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
 			Chunk c = s.chunk.getChunk(xoff, zoff + 1);
-			if (c == null)
+			if (c == null) {
 				front = false;
-			else {
-				if (c.blocks[i][j][0] != 0)
+				data |= 0b0100;
+			} else {
+				if (c.blocks[i][j][0] != 0 && !Block.blocks.get(blocks[i][j][0]).isTransparent())
 					front = false;
 			}
 		}
 		try {
-			if (blocks[i][j][k - 1] != 0) {
+			if (blocks[i][j][k - 1] != 0 && !Block.blocks.get(blocks[i][j][k-1]).isTransparent()) {
 				back = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
 			Chunk c = s.chunk.getChunk(xoff, zoff - 1);
-			if (c == null)
+			if (c == null) {
 				back = false;
-			else {
-				if (c.blocks[i][j][z-1] != 0)
+				data |= 0b1000;
+			} else {
+				if (c.blocks[i][j][z-1] != 0 && !Block.blocks.get(blocks[i][j][z-1]).isTransparent())
 					back = false;
 			}
 		}
 		
-		blocksModels[i][j][k] = MeshStore.models.get(VoxelWorld.createSixBooleans(left, right, front, back, top, bottom));
+		Block b = Block.blocks.get(blocks[i][j][k]);
+		
+		float xOff = (xoff * Chunk.x) + i;
+		float zOff = (zoff * Chunk.z) + k;
+		if (left) {
+			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
+			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvLeftComplete, b.textureLeft));
+			byte w = s.chunk.getLightLevel(xOff-1, j, zOff);
+			lil = addArrays(lil, new float[] {w, w, w, w,w,w});
+		}
+		if (right) {
+			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsRightComplete, i, j, k));
+			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvRightComplete, b.textureRight));
+			byte w = s.chunk.getLightLevel(xOff+1, j, zOff);
+			lil = addArrays(lil, new float[] {w, w, w, w,w,w});
+		}
+		if (front) {
+			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
+			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvFrontComplete, b.textureFront));
+			byte w = s.chunk.getLightLevel(xOff, j, zOff+1);
+			lil = addArrays(lil, new float[] {w, w, w, w,w,w});
+		}
+		if (back) {
+			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
+			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvBackComplete, b.textureBack));
+			byte w = s.chunk.getLightLevel(xOff, j, zOff-1);
+			lil = addArrays(lil, new float[] {w, w, w, w,w,w});
+		}
+		if (top) {
+			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsTopComplete, i, j, k));
+			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvTopComplete, b.textureTop));
+			byte w = lightLevel[i][j+1 < Chunk.y ? j+1 : Chunk.y-1][k];
+			lil = addArrays(lil, new float[] {w, w, w, w,w,w});
+		}
+		if (bottom) {
+			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBottomComplete, i, j, k));
+			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvBottomComplete, b.textureBottom));
+			byte w = lightLevel[i][j-1 > 0 ? j-1 : 0][k];
+			lil = addArrays(lil, new float[] {w, w, w, w,w,w});
+		}
+		return data;
+		//blocksModels[i][j][k] = MeshStore.models.get(VoxelWorld.createSixBooleans(left, right, front, back, top, bottom));
 	}
 	
 	public void remesh() {
-		new Thread(new Runnable() {		
-			@Override
-			public void run() {
-				//System.out.println("Remesher Thread Start");
-				for (int i =0; i < blocks.length; i++) {
-					for (int j = 0; j < blocks[i].length; j++) {
-						for (int k = 0; k < blocks[i][j].length; k++) {
-							mesh(i,j,k);
-						}
-					}
-				}
-				//System.out.println("Remesher Thread Dead");
-			}
-		}).start();
+		remesh(1);
 	}
 	
 	public void remeshNo() {
+		remeshNo(1);
+	}
+	
+	public void remesh(int sideQ) {
+		Chunk.meshables.add(this);
+	}
+	
+	public void remeshNo(int sideQ) {
 		// System.out.println("Remesher Thread Start");
+		verts = new float[0];
+		uvs = new float[0];
+		lil = new float[0];
+		byte out = 0;
 		for (int i = 0; i < blocks.length; i++) {
 			for (int j = 0; j < blocks[i].length; j++) {
 				for (int k = 0; k < blocks[i][j].length; k++) {
-					mesh(i, j, k);
+					out |= mesh(i, j, k);
 				}
 			}
 		}
+		if (out > 0 && sideQ == -1) {
+			System.out.println(out);
+			// the idea here is that after meshing this chunk, the missing chunks will be there
+			
+			//Chunk c = s.chunk.getChunk(xoff - 1, zoff);
+			//if (c != null)
+				//c.remeshNo();
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {}
+			remeshNo(1);
+		}
+		waitingForMesh = true;
 		// System.out.println("Remesher Thread Dead");	
 	}
 	
 	public void render(VoxelShader shader) {
+		if (waitingForMesh) {
+			if(rawID != null)
+				loader.deleteVAO(rawID);
+			rawID = loader.loadToVAO(verts, uvs, lil);
+			waitingForMesh = false;
+		}
 		// TODO: add update that runs on seperate thread to handle this.
 		int xz = s.random.nextInt(Chunk.x);
 		int yz = s.random.nextInt(Chunk.y);
@@ -207,82 +298,26 @@ public class Chunk {
 		if (blocks[xz][yz][zz] != 0)
 			Block.blocks.get(blocks[xz][yz][zz]).onBlockTick(xz, yz, zz, s);
 		
-		int un = MeshStore.boolEmpty;
-		byte left,right,front,back;
-		int l,r,f,b;
 		
-		for (int i =0; i < x; i++) {
-			for (int j = 0; j < y; j++) {
-				for (int k = 0; k < z; k++) {
-					if (blocks[i][j][k] == 0)
-						continue;
-					
-					// make this based on texture id?
-					RawBlockModel rawModel = blocksModels[i][j][k];
-					
-					if (rawModel == null)
-						continue;
-					
-					if (rawModel.getVaoID() == un)
-						continue;
-					
-					ModelTexture model = Block.blocks.get(blocks[i][j][k]).model;
-					
-					int xof = i + (x*xoff);
-					int zof = k + (z*zoff);
-					
-					// TODO: byte array support
-					// TODO: make this not slow
-					l = x-1;
-					if (l < 0)
-						left = s.chunk.getLightLevel(xof-1, j, zof);
-					else
-						left = lightLevel[l][j][k];
-					r = x+1;
-					if (r >= Chunk.x)
-						right = s.chunk.getLightLevel(xof+1, j, zof);
-					else
-						right = lightLevel[r][j][k];
-					f = z+1;
-					if (f >= Chunk.z)
-						front = s.chunk.getLightLevel(xof, j, zof+1);
-					else
-						front = lightLevel[i][j][f];
-					b = z-1;
-					if (b < 0)
-						back = s.chunk.getLightLevel(xof, j, zof-1);
-					else
-						back = lightLevel[i][j][b];
-					
-					s.addBlock(rawModel, model.getID(), new float[] {xof,j,zof, 
-							lightLevel[i][j+1 < y ? j+1 : (y-1)][k], 
-							lightLevel[i][j-1 > -1 ? j-1 : 0][k],
-							left,
-							right,
-							front,
-							back});
-					
-					//GL30.glBindVertexArray((int)rawModel.getVaoID());
-					//GL20.glEnableVertexAttribArray(0);
-					//GL20.glEnableVertexAttribArray(1);
-					//shader.loadTransformationMatrix(Maths.createTransformationMatrixCube(i+(x*xoff),j,k+(z*zoff)));
-					/*shader.loadLightData(
-							lightLevel[i][j+1 < Chunk.y ? j + 1 : y-1][k], 
-							lightLevel[i][j-1 > -1 ? j-1 : 0][k], 
-							0, 0, 0, 15);*/
-					//GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getID());
-					//GL11.glDrawElements(0x4, (int)rawModel.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
-					//GL20.glDisableVertexAttribArray(0);
-					//GL20.glDisableVertexAttribArray(1);
-					//GL30.glBindVertexArray(0);
-				}
-			}
-		}
+		if (rawID == null)
+			return;
+		GL30.glBindVertexArray(rawID.getVaoID());
+		GL20.glEnableVertexAttribArray(0);
+		GL20.glEnableVertexAttribArray(1);
+		GL20.glEnableVertexAttribArray(2);
+		
+		shader.loadTransformationMatrix(Maths.createTransformationMatrixCube(x*xoff,0,z*zoff));
+		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, rawID.getVertexCount());
+		
+		GL20.glDisableVertexAttribArray(0);
+		GL20.glDisableVertexAttribArray(1);
+		GL20.glDisableVertexAttribArray(2);
+		GL30.glBindVertexArray(0);
 		
 	}
 	
 	public void nul() {
-		this.blocksModels = null;
+		//this.blocksModels = null;
 		this.blocks = null;
 	}
 	
@@ -343,11 +378,24 @@ public class Chunk {
 			x *= -1;
 		if (z < 0)
 			z *= -1;
-		if (y > Chunk.y)
-			return Chunk.y;
 		for (int i = 0; i < 128; i++) {
 			if (blocks[x][i][z] == 0) {
 				return i-1;
+			}
+		}
+		return 0;
+	}
+	
+	public int getHeightA(int x, int z) {
+		if (x >= Chunk.x || y <= 0 || z >= Chunk.z)
+			return 0;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
+		for (int i = 0; i < 128; i++) {
+			if (blocks[x][i][z] == 0) {
+				return i;
 			}
 		}
 		return 0;
@@ -390,13 +438,11 @@ public class Chunk {
 			y = Chunk.y-1;
 		if (y < 0)
 			y = 0;
-		if (block == 0)
-			blocksModels[x][y][z] = emptyBlock;
-		else
+		if (block != 0)
 			Block.blocks.get((short) block).onBlockPlaced(rx, y, rz, s);
-		
 		Block.blocks.get(blocks[x][y][z]).onBlockBreaked(rx, y, rz, s);
-		blocks[x][y][z] = (short)block;
+		if (blocks[x][y][z] != Block.BLOCK_WILL)
+			blocks[x][y][z] = (short)block;
 	}
 	
 	public void enableCulling() {
@@ -430,8 +476,8 @@ public class Chunk {
 	 * Note: this returns the last block before air. it will not return the first air.
 	 */
 	public int getChunkHeight(float x, float z) {
-		int px = (int)x%16;
-		int pz = (int)z%16;
+		int px = (int)x%Chunk.x;
+		int pz = (int)z%Chunk.z;
 		for (int i = 0; i < y; i++) {
 			if (blocks[px][i][pz] == 0)
 				return i-1;
@@ -444,8 +490,8 @@ public class Chunk {
 	 * Note: this returns the last block. it will not return the first air. (Except for if the air is 0)
 	 */
 	public int[] getChunkHeightPBlock(float x, float z) {
-		int px = (int)x%16;
-		int pz = (int)z%16;
+		int px = (int)x%Chunk.x;
+		int pz = (int)z%Chunk.z;
 		int[] ys = new int[y];
 		for (int i = 0; i < y; i++) {
 			if (blocks[px][i][pz] == 0) 
@@ -458,8 +504,8 @@ public class Chunk {
 	 * Returns the same as @getChunkHeightPBlock in list form
 	 */
 	public List<Integer> getChunkHeightPBlockL(float x, float z) {
-		int px = (int)x%16;
-		int pz = (int)z%16;
+		int px = (int)x%Chunk.x;
+		int pz = (int)z%Chunk.z;
 		List<Integer> ys = new ArrayList<Integer>();
 		for (int i = 0; i < y; i++) {
 			if (blocks[px][i][pz] == 0) 
@@ -477,6 +523,20 @@ public class Chunk {
 		sb.append(zoff);
 		sb.append("]");
 		return sb.toString();
+	}
+	
+	public float[] addArrays(float[] array1, float[] array2) {
+		float[] rtv = new float[array1.length + array2.length];
+		
+		for (int i = 0; i<array1.length;i++) {
+			rtv[i] = array1[i];
+		}
+		
+		for (int i = 0; i<array2.length; i++) {
+			rtv[i + array1.length] = array2[i];
+		}
+		
+		return rtv;
 	}
 	
 }

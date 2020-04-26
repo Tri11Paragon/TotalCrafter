@@ -17,8 +17,8 @@ import com.brett.voxel.world.LevelLoader;
 import com.brett.voxel.world.Region;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.world.cameras.Camera;
-import com.brett.world.terrain.noisefunctions.ChunkNoiseFunction;
 import com.brett.world.terrain.noisefunctions.NoiseFunction;
+import com.brett.world.terrain.noisefunctions.SuperNoise;
 
 /**
  *
@@ -28,7 +28,7 @@ import com.brett.world.terrain.noisefunctions.NoiseFunction;
 
 public class ChunkStore {
 
-	public static int renderDistance = 3;
+	public static int renderDistance = 12;
 	public static final String worldLocation = "worlds/w1/";
 	public static final String dimLocation = "worlds/w1/DIM";
 	public static File wfolder = new File(worldLocation);
@@ -51,7 +51,8 @@ public class ChunkStore {
 		LevelLoader.loadLevelData(worldLocation);
 		this.cam = cam;
 		this.loader = loader;
-		this.nf = new ChunkNoiseFunction(LevelLoader.seed);
+		//this.nf = new ChunkNoiseFunction(LevelLoader.seed);
+		this.nf = new SuperNoise(LevelLoader.seed);
 		this.world = world;
 		new Thread(new Runnable() {
 			@Override
@@ -76,21 +77,28 @@ public class ChunkStore {
 					} catch (InterruptedException e) {}
 					
 					if (chunksCopy == null) {
-						chunksCopy = new MultiKeyMap<Integer, Region>();
-						for (int i = -renderDistance; i < renderDistance; i++) {
-							for (int k = -renderDistance; k < renderDistance; k++) {
-								int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
-								int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
-								int xoff = 0, zoff = 0;
-								if (cx < 0)
-									xoff = -1;
-								if (cz < 0)
-									zoff = -1;
-								int rx = cx / Region.x + xoff;
-								int rz = cz / Region.z + zoff;
-								chunksCopy.put(rx, rz, chunks.get(rx, rz));
+						try {
+							chunksCopy = new MultiKeyMap<Integer, Region>();
+							for (int i = -renderDistance; i < renderDistance; i++) {
+								for (int k = -renderDistance; k < renderDistance; k++) {
+									int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
+									int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
+									int xoff = 0, zoff = 0;
+									if (cx < 0)
+										xoff = -1;
+									if (cz < 0)
+										zoff = -1;
+									int rx = cx / Region.x + xoff;
+									int rz = cz / Region.z + zoff;
+									if (chunksCopy == null)
+										chunksCopy = new MultiKeyMap<Integer, Region>();
+									Region c = chunks.get(rx, rz);
+									if (c != null) {
+										chunksCopy.put(rx, rz, c);
+									}
+								}
 							}
-						}
+						} catch (NullPointerException e) {System.err.println("Somehow something that isn't null is null. Possible race condition detected!");}
 					}
 					//System.gc();
 				}
@@ -109,14 +117,19 @@ public class ChunkStore {
 			if (chunks.get(regionPosX, regionPosZ) == null)
 				return new Chunk(loader,world, nf, x, z);
 			else {
-				Chunk c = chunks.get(regionPosX, regionPosZ).getChunk(x, z);
-				if (c == null) {
-					c = new Chunk(loader,world, nf, x, z);
-					chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
-					return c;
-				} else {
-					return c;
-			}
+				try {
+					Chunk c = chunks.get(regionPosX, regionPosZ).getChunk(x, z);
+					if (c == null) {
+						c = new Chunk(loader,world, nf, x, z);
+						chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
+						return c;
+					} else {
+						return c;
+					}
+				} catch (NullPointerException e) {
+					System.out.println("Hey we got a broken pipe here!");
+					return new Chunk(loader,world, nf, x, z);
+				}
 			}
 		} else {
 			Region r = Region.loadRegion(loader, world, regionPosX, regionPosZ, worldLocation);
@@ -140,7 +153,7 @@ public class ChunkStore {
 			} catch (ConcurrentModificationException e) {System.err.println("Tried saving map while loading it. \nPlease wait for map to complete loading before exiting game.");}
 			Region val = regionIt.getValue();
 			if (val != null)
-				val.saveRegion(worldLocation);
+				val.saveRegion(worldLocation, false);
 		}
 		System.out.println("World Saved");
 	}
@@ -174,10 +187,28 @@ public class ChunkStore {
 					continue;
 				}
 				//if (!c.getNull())
-					c.render(shader);
+				c.render(shader);
 			}
 		}
 		
+	}
+	
+	public void recalculateActiveLighting() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				for (int i = -renderDistance; i < renderDistance; i++) {
+					for (int k = -renderDistance; k < renderDistance; k++) {
+						int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
+						int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
+						Chunk c = getChunk(cx, cz);
+						if(c == null)
+							continue;
+						c.remeshNo(-1);
+					}
+				}
+			}
+		}).start();
 	}
 	
 	public void queChunk(int cx, int cz) {
@@ -208,7 +239,6 @@ public class ChunkStore {
 				r.setChunk(x, z, c);
 			return;
 		}
-		System.out.println(regionPosX + " " + regionPosZ);
 		chunks.put(regionPosX, regionPosZ, new Region(regionPosX, regionPosZ));
 		chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
 	}
@@ -244,9 +274,9 @@ public class ChunkStore {
 			zoff = -1;
 		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
 		if (c == null)
-			return -1;
-		x%=16;
-		z%=16;
+			return 0;
+		x%=Chunk.x;
+		z%=Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
@@ -269,8 +299,8 @@ public class ChunkStore {
 			return;
 		int rx = (int)x;
 		int rz = (int)z;
-		x %= 16;
-		z %= 16;
+		x%=Chunk.x;
+		z%=Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
@@ -291,8 +321,8 @@ public class ChunkStore {
 		Chunk c = getChunk((int)(x/(float)Chunk.x) + xoff, (int)(z/(float)Chunk.z) + zoff);
 		if (c == null)
 			return;
-		x %= 16;
-		z %= 16;
+		x%=Chunk.x;
+		z%=Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
@@ -313,8 +343,8 @@ public class ChunkStore {
 		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
 		if (c == null)
 			return 0;
-		x%=16;
-		z%=16;
+		x%=Chunk.x;
+		z%=Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
@@ -402,7 +432,7 @@ public class ChunkStore {
 						b.append(r.getKey(1));
 						b.append("}");
 						System.out.println(b);
-						rgg.saveRegion(worldLocation);
+						rgg.saveRegion(worldLocation, true);
 						rgg = null;
 						rg.remove();
 					}

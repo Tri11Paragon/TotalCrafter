@@ -13,7 +13,9 @@ public class BlockGrass extends Block {
 
 	
 	public BlockGrass(ModelTexture model) {
-		super(model);
+		super(model, 20);
+		super.textureTop = 0;
+		super.textureBottom = 1;
 		this.setBlockDropped(BLOCK_DIRT);
 	}
 	

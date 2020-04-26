@@ -30,8 +30,11 @@ public class Block {
 	public static final short BLOCK_CLAY = 6;
 	public static final short BLOCK_SNOW = 7;
 	public static final short BLOCK_COBBLE = 8;
+	public static final short BLOCK_GLASS = 9;
+	public static final short BLOCK_GLOWSTONE = 10;
 	
 	public ModelTexture model;
+	public int textureTop, textureBottom, textureLeft, textureRight, textureFront, textureBack;
 	private int[] breakSound = {0};
 	private short droppedBlock = 0;
 	private int amountDropped = 1;
@@ -39,9 +42,21 @@ public class Block {
 	private float hardness = 1;
 	private int miningLevel = 0;
 	private int effectiveTool = 0;
+	private boolean isTransparent = false;
 
+	public Block(ModelTexture model, int textureIndex) {
+		this.model = model;
+		this.textureTop = textureIndex;
+		this.textureBottom = textureIndex;
+		this.textureLeft = textureIndex;
+		this.textureRight = textureIndex;
+		this.textureFront = textureIndex;
+		this.textureBack = textureIndex;
+	}
+	
 	public Block(ModelTexture model) {
 		this.model = model;
+		this.textureTop = 0;
 	}
 	
 	public void onBlockCreated(int x, int y, int z, VoxelWorld world) {
@@ -49,13 +64,13 @@ public class Block {
 	}
 	
 	public void onBlockPlaced(int x, int y, int z, VoxelWorld world) {
-		onBlockUpdated(x, y, z, world);
+		//onBlockUpdated(x, y, z, world);
 		if (this.lightLevel > 0)
 			LightingEngine.addLightSource(x, y, z, this.lightLevel);
 	}
 	
 	public void onBlockBreaked(int x, int y, int z, VoxelWorld world) {
-		onBlockUpdated(x, y, z, world);
+		//onBlockUpdated(x, y, z, world);
 		if(this.lightLevel > 0)
 			LightingEngine.removeLightSource(x, y, z, this.lightLevel);
 	}
@@ -129,6 +144,16 @@ public class Block {
 		return droppedBlock;
 	}
 	
+	public Block setTextureIndex(int i) {
+		this.textureTop = i;
+		this.textureBottom = i;
+		this.textureLeft = i;
+		this.textureRight = i;
+		this.textureFront = i;
+		this.textureBack = i;
+		return this;
+	}
+	
 	public void playBreakSound(float x, float y, float z) {
 		VoxelScreenManager.staticSource.setPosition(x, y, z);
 		VoxelScreenManager.staticSource.play(breakSound[Maths.randInt(0, breakSound.length-1)]);
@@ -151,6 +176,15 @@ public class Block {
 
 	public Block setEffectiveTool(int effectiveTool) {
 		this.effectiveTool = effectiveTool;
+		return this;
+	}
+
+	public boolean isTransparent() {
+		return isTransparent;
+	}
+
+	public Block setTransparent(boolean isTransparent) {
+		this.isTransparent = isTransparent;
 		return this;
 	}
 	

@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
-
 import com.brett.IKeyState;
 import com.brett.console.Console;
 import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.UIMaster;
+import com.brett.voxel.world.LevelLoader;
 import com.brett.voxel.world.items.ItemStack;
 
 /**
@@ -29,7 +29,7 @@ public class PlayerInventory implements IKeyState{
 		float sizeY = 64*7 + 5*7;
 		float x = Display.getWidth()/2 - sizeX/2;
 		float y = Display.getHeight()/2 - sizeY/2;
-		i = new Inventory(694, "player");
+		i = new Inventory((int)LevelLoader.seed, "player");
 		h = new Hotbar(i, ui);
 		for (int j = 0; j < 15; j++) {
 			for (int k = 0; k < 7; k++) {

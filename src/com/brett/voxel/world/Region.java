@@ -6,9 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
@@ -17,6 +14,10 @@ import com.brett.renderer.Loader;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.lighting.LightingEngine;
+
+import net.jpountz.lz4.LZ4BlockInputStream;
+import net.jpountz.lz4.LZ4BlockOutputStream;
+import net.jpountz.lz4.LZ4Factory;
 
 /**
 *
@@ -57,80 +58,105 @@ public class Region {
 	 */
 	public static Region loadRegion(Loader loader, VoxelWorld s, int x, int z, String worldLocation) {
 		Region r = new Region(x, z);
-		DataInputStream is = null;
-		try {
-			is = new DataInputStream(new GZIPInputStream(new FileInputStream(worldLocation + "DIM/" + x + "_" + z + ".region"), 4096));
-		} catch (IOException e) { return r;}
-		try {
-			byte b = 0;
-			while (b != -2) {
-				int posX = is.readInt();
-				int posZ = is.readInt();
-				short[][][] blks = new short[Chunk.x][Chunk.y][Chunk.z];
-				for (int i = 0; i < blks.length; i++) {
-					for (int j = 0; j < blks[i].length; j++) {
-						for (int k = 0; k < blks[i][j].length; k++) {
-							blks[i][j][k] = is.readShort();
-							Block.blocks.get(blks[i][j][k]).onBlockPlaced(i + (posX * Chunk.x), j, k + (posZ * Chunk.z), s);
-						}
-					}
-				}
-				b = is.readByte();
-				r.setChunk(posX, posZ, new Chunk(loader, s, blks, posX, posZ));
-			}
+		LZ4Factory factory = LZ4Factory.fastestInstance();
+		// Threading increases load / save speed by A LOT
+		/*new Thread(new Runnable() {
 			
-			is.close();
-		} catch (IOException e) {}
-		LightingEngine.recalculate();
+			@Override
+			public void run() {*/
+				DataInputStream is = null;
+				try {
+					// data in stream for the region
+					is = new DataInputStream(new LZ4BlockInputStream(new FileInputStream(worldLocation + "DIM/" + x + "_" + z + ".region"), factory.fastDecompressor()));
+				} catch (IOException e) {return r;}
+				try {
+					// byte flag
+					byte b = 0;
+					while (b != -2) {
+						int posX = is.readInt();
+						int posZ = is.readInt();
+						// add in all the blocks in this chunk
+						short[][][] blks = new short[Chunk.x][Chunk.y][Chunk.z];
+						for (int i = 0; i < blks.length; i++) {
+							for (int j = 0; j < blks[i].length; j++) {
+								for (int k = 0; k < blks[i][j].length; k++) {
+									blks[i][j][k] = is.readShort();
+									Block.blocks.get(blks[i][j][k]).onBlockPlaced(i + (posX * Chunk.x), j, k + (posZ * Chunk.z), s);
+								}
+							}
+						}
+						// add the chunk to the region
+						b = is.readByte();
+						r.setChunk(posX, posZ, new Chunk(loader, s, blks, posX, posZ));
+					}
+					
+					is.close();
+				} catch (IOException e) {}
+				LightingEngine.recalculate();
+			//}
+		//}).start();
+		// return the loaded region
 		return r;
 	}
 	
 	/**
-	 * Saves this region inside the specified world location.
+	 * Saves this region inside the specified world location. if game is true then it will treat it as if the game is running (slower but less stuttering)
 	 */
-	public void saveRegion(String worldLocation) {
-		// NOTE: i am aware of:
-		//bytes[0] = (byte)(x & 0xff);
-		//bytes[1] = (byte)((x >> 8) & 0xff);
-		// for short -> byte conversion but this is more clean code.
-		// easier to read.
-		MapIterator<MultiKey<? extends Integer>, Chunk> chunkIt = chunks.mapIterator();
-		DataOutputStream os = null;
-		try {
-			os = new DataOutputStream(new GZIPOutputStream(
-					new FileOutputStream(worldLocation + "DIM/" + xpos + "_" + zpos + ".region"), 4096));
-		} catch (IOException e1) {return;}
-		int chunkCount = 0;
-		while (chunkIt.hasNext()) {
-			MultiKey<? extends Integer> ke = chunkIt.next();
-			try {
-				Chunk c = chunks.get(ke);
-				if (c == null)
-					continue;
-				os.writeInt(ke.getKey(0));
-				os.writeInt(ke.getKey(1));
-				short[][][] ch = c.getBlocks();
-				for (int i = 0; i < ch.length; i++) {
-					for (int j = 0; j < ch[i].length; j++) {
-						for (int k = 0; k < ch[i][j].length; k++) {
-							os.writeShort(ch[i][j][k]);
+	public void saveRegion(String worldLocation, boolean game) {
+		// Threading increases save speed by A LOT
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				LZ4Factory factory = LZ4Factory.fastestInstance();
+				// NOTE: i am aware of:
+				//bytes[0] = (byte)(x & 0xff);
+				//bytes[1] = (byte)((x >> 8) & 0xff);
+				// for short -> byte conversion but this is more clean code.
+				// easier to read.
+				MapIterator<MultiKey<? extends Integer>, Chunk> chunkIt = chunks.mapIterator();
+				DataOutputStream os = null;
+				try {
+					os = new DataOutputStream(new LZ4BlockOutputStream(
+							new FileOutputStream(worldLocation + "DIM/" + xpos + "_" + zpos + ".region"), 1 << 16, factory.fastCompressor()));
+				} catch (IOException e1) {return;}
+				int chunkCount = 0;
+				while (chunkIt.hasNext()) {
+					MultiKey<? extends Integer> ke = chunkIt.next();
+					try {
+						Chunk c = chunks.get(ke);
+						if (c == null)
+							continue;
+						os.writeInt(ke.getKey(0));
+						os.writeInt(ke.getKey(1));
+						short[][][] ch = c.getBlocks();
+						for (int i = 0; i < ch.length; i++) {
+							for (int j = 0; j < ch[i].length; j++) {
+								for (int k = 0; k < ch[i][j].length; k++) {
+									os.writeShort(ch[i][j][k]);
+								}
+							}
 						}
+						chunkCount++;
+						if (chunkCount == chunks.size()) {
+							os.writeByte(-2);
+						} else
+							os.writeByte(-1);
+					} catch (IOException e) {
+						if (!new File(worldLocation).mkdirs())
+							saveRegion(worldLocation, game);
+					}
+					if (game) {
+						try {
+							Thread.sleep(16);
+						} catch (InterruptedException e) {}
 					}
 				}
-				chunkCount++;
-				if (chunkCount == chunks.size()) {
-					os.writeByte(-2);
-				} else
-					os.writeByte(-1);
-			} catch (IOException e) {
-				if (!new File(worldLocation).mkdirs())
-					saveRegion(worldLocation);
+				try {
+					os.close();
+				} catch (IOException e) {}
+				System.gc();
 			}
-		}
-		try {
-			os.close();
-		} catch (IOException e) {}
-		System.gc();
+		}).start(); 
 	}
 	
 	/**

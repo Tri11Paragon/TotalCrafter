@@ -1,7 +1,7 @@
 package com.brett.voxel.world;
 
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.RawBlockModel;
+import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.SixBoolean;
 
 /**
@@ -15,11 +15,15 @@ import com.brett.renderer.datatypes.SixBoolean;
 * ignore this class
 * 
 * it is big brain tho
+* 
+* 2020-04-23: even more useless with the new chunk builder
+* so double ignore this class
+* TODO: delete this
 */
 
 public class IndexBuilder {
 	
-	public static RawBlockModel buildMesh(SixBoolean b, Loader loader) {
+	public static RawModel buildMesh(SixBoolean b, Loader loader) {
 		int[] ind = {};
 		float[] verts = {};
 		float[] uvs = {};
@@ -60,7 +64,7 @@ public class IndexBuilder {
 			ind = addIndicies(ind, indicies, indexPos);
 			indexPos += 4;
 		}
-		return RawBlockModel.convertRawModel(loader.loadToVAO(verts, uvs, ind));
+		return loader.loadToVAO(verts, uvs, ind);
 	}
 	
 	private static int[] addIndicies(int[] array1, int[] array2, int indexOffset) {

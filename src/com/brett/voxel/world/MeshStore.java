@@ -83,121 +83,126 @@ public class MeshStore {
 			20, 21, 22, 20, 22, 23   //bottom
 	};
 	
-	public static float[] vertsFront = {
-			-0.5f, -0.5f, 0.5f,
-			0.5f, -0.5f, 0.5f,
-			0.5f, 0.5f, 0.5f,
-			-0.5f, 0.5f, 0.5f,
-	};
-	
-	public static float[] vertsBack = {
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, 0.5f, -0.5f,
-			0.5f, 0.5f, -0.5f,
-			0.5f, -0.5f, -0.5f,
-	};
-	
-	public static float[] vertsRight = {
-			0.5f, 0.5f, -0.5f,
-			0.5f, 0.5f, 0.5f,
-			0.5f, -0.5f, 0.5f,
-			0.5f, -0.5f, -0.5f,
-	};
-	
-	public static float[] vertsLeft = {
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f, 0.5f,
-			-0.5f, 0.5f, 0.5f,
-			-0.5f, 0.5f, -0.5f,
-	};
-	
-	public static float[] vertsTop = {
-			-0.5f, 0.5f, 0.5f,
-			0.5f, 0.5f, 0.5f,
-			0.5f, 0.5f, -0.5f,
-			-0.5f, 0.5f, -0.5f,
-	}; 
-	
-	public static float[] vertsBottom = {
-			-0.5f, -0.5f, -0.5f,
-			0.5f, -0.5f, -0.5f,
-			0.5f, -0.5f, 0.5f,
-			-0.5f, -0.5f, 0.5f,
-	};
-	
-	public static float[] uvFront = {
-			1, 1, 
-			0, 1,
+	public static float[] uvFrontComplete = {
+			0, 1, 
+			1, 1,
 			0, 0, 
-			1, 0,
+			
+			0, 0,
+			1, 1,
+			1, 0
 	};
 	
-	public static float[] uvRight = {
-			0, 0,
+	public static float[] uvBackComplete = {
+			1, 1, 
 			1, 0,
-			1, 1,
-			0, 1,
-	};
-	
-	public static float[] uvBack = {
+			0, 0, 
+		
 			0, 0,
 			0, 1,
 			1, 1,
-			1, 0,
 	};
 
-	public static float[] uvLeft = {
+	public static float[] uvRightComplete = {
+			1, 1,
+			1, 0, 
+			0, 1,
+			
+			0, 1,
+			1, 0,
+			0, 0,
+	};
+	
+	public static float[] uvLeftComplete = {
+			0, 1, 
+			1, 1,
+			1, 0, 
+			
 			1, 0,
 			0, 0,
 			0, 1,
-			1, 1,
 	};
 	
-	public static float[] uvTop = {
+	public static float[] uvTopComplete = {
+			1, 0,
+			0, 1, 
+			0, 0,
+			
+			1, 0,
+			1, 1,
+			0, 1,
+	};
+	
+	public static float[] uvBottomComplete = {
 			1, 0, 
 			0, 0,
-			0, 1,
-			1, 1,
-	};
-	
-	public static float[] uvBottom = {
-			1, 1,
-			0, 1,
-			0, 0,
+			0, 1, 
+			
 			1, 0,
+			0, 1,
+			1, 1
 	};
 	
-	public static float[] verts = {
-			// front?
-			-0.5f, -0.5f, 0.5f,
-			0.5f, -0.5f, 0.5f,
-			0.5f, 0.5f, 0.5f,
-			-0.5f, 0.5f, 0.5f,
-			//right?
-			0.5f, 0.5f, -0.5f,
-			0.5f, 0.5f, 0.5f,
-			0.5f, -0.5f, 0.5f,
-			0.5f, -0.5f, -0.5f,
-			// back?
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, 0.5f, -0.5f,
-			0.5f, 0.5f, -0.5f,
-			0.5f, -0.5f, -0.5f,
-			// left?
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f, 0.5f,
-			-0.5f, 0.5f, 0.5f,
-			-0.5f, 0.5f, -0.5f,
-			// top?
-			-0.5f, 0.5f, 0.5f,
-			0.5f, 0.5f, 0.5f,
-			0.5f, 0.5f, -0.5f,
-			-0.5f, 0.5f, -0.5f,
-			// bottom
-			-0.5f, -0.5f, -0.5f,
-			0.5f, -0.5f, -0.5f,
-			0.5f, -0.5f, 0.5f,
-			-0.5f, -0.5f, 0.5f,
+	private static float size = 0.5f;
+	
+	public static float[] vertsFrontComplete = {
+			-size, -size, size,
+			size, -size, size,
+			-size, size, size,
+			
+			-size, size, size,
+			size, -size, size,
+			size, size, size,
+	};
+	
+	public static float[] vertsBackComplete = {
+			-size, -size, -size,
+			-size, size, -size,
+			size, size, -size,
+			
+			size, size, -size,
+			size, -size, -size,
+			-size, -size, -size,
+	};
+	
+	public static float[] vertsRightComplete = {
+			size, -size, -size,
+			size, size, -size,
+			size, -size, size,
+			
+			size, -size, size,
+			size, size, -size,
+			size, size, size,
+	};
+	
+	public static float[] vertsLeftComplete = {
+			-size, -size, -size,
+			-size, -size, size,
+			-size, size, size,
+			
+			-size, size, size,
+			-size, size, -size,
+			-size, -size, -size,
+	};
+	
+	public static float[] vertsTopComplete = {
+			size, size, size,
+			-size, size, -size,
+			-size, size, size,
+			
+			size, size, size,
+			size, size, -size,
+			-size, size, -size,
+	}; 
+	
+	public static float[] vertsBottomComplete = {
+			size, -size, size,
+			-size, -size, size,
+			-size, -size, -size,
+			
+			size, -size, size,
+			-size, -size, -size,
+			size, -size, -size,
 	};
 	
 	public static float[] vertsBig = {
@@ -233,6 +238,39 @@ public class MeshStore {
 			-0.505f, -0.505f, 0.505f,
 	};
 	
+	public static float[] verts = {
+			// front?
+			-0.5f, -0.5f, 0.5f,
+			0.5f, -0.5f, 0.5f,
+			0.5f, 0.5f, 0.5f,
+			-0.5f, 0.5f, 0.5f,
+			//right?
+			0.5f, 0.5f, -0.5f,
+			0.5f, 0.5f, 0.5f,
+			0.5f, -0.5f, 0.5f,
+			0.5f, -0.5f, -0.5f,
+			// back?
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, 0.5f, -0.5f,
+			0.5f, 0.5f, -0.5f,
+			0.5f, -0.5f, -0.5f,
+			// left?
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, 0.5f,
+			-0.5f, 0.5f, 0.5f,
+			-0.5f, 0.5f, -0.5f,
+			// top?
+			-0.5f, 0.5f, 0.5f,
+			0.5f, 0.5f, 0.5f,
+			0.5f, 0.5f, -0.5f,
+			-0.5f, 0.5f, -0.5f,
+			// bottom
+			-0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f, 0.5f,
+			-0.5f, -0.5f, 0.5f,
+	};
+	
 	public static float[] uv = {
 			// front
 			1, 1, 
@@ -264,40 +302,6 @@ public class MeshStore {
 			0, 1,
 			0, 0,
 			1, 0,
-	};
-	
-	public static float[] test = {
-			
-
-		    
-
-		    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-		     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-		    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-		    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 	
 }
