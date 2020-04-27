@@ -8,13 +8,13 @@ import org.lwjgl.opengl.GL30;
 
 import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.RawModel;
-import com.brett.renderer.datatypes.SixBoolean;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.renderer.shaders.VoxelShader;
 import com.brett.voxel.world.MeshStore;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
+import com.brett.voxel.world.lighting.LightingEngine;
 import com.brett.world.terrain.noisefunctions.NoiseFunction;
 
 /**
@@ -44,19 +44,51 @@ public class Chunk {
 	private boolean waitingForMesh = false;
 	
 	private static List<Chunk> meshables = new ArrayList<Chunk>();
+	private static List<Chunk> meshables2 = new ArrayList<Chunk>();
+	private static List<Chunk> meshables3 = new ArrayList<Chunk>();
 	
 	public static void init() {
-		new Thread(new Runnable() {		
+		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				while (VoxelScreenManager.isOpen) {
 					for (int i = 0; i < meshables.size(); i++) {
 						Chunk c = meshables.get(i);
-						c.remeshNo(1);
+						c.remeshNo(-1);
 						meshables.remove(i);
 					}
 					try {
-						Thread.sleep(1);
+						Thread.sleep(2);
+					} catch (InterruptedException e) {}
+				}
+			}
+		}).start();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (VoxelScreenManager.isOpen) {
+					for (int i = 0; i < meshables2.size(); i++) {
+						Chunk c = meshables2.get(i);
+						c.remeshNo(-1);
+						meshables2.remove(i);
+					}
+					try {
+						Thread.sleep(2);
+					} catch (InterruptedException e) {}
+				}
+			}
+		}).start();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (VoxelScreenManager.isOpen) {
+					for (int i = 0; i < meshables3.size(); i++) {
+						Chunk c = meshables3.get(i);
+						c.remeshNo(-1);
+						meshables3.remove(i);
+					}
+					try {
+						Thread.sleep(2);
 					} catch (InterruptedException e) {}
 				}
 			}
@@ -207,36 +239,54 @@ public class Chunk {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
 			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvLeftComplete, b.textureLeft));
 			byte w = s.chunk.getLightLevel(xOff-1, j, zOff);
+			w += LightingEngine.sunLevel;
+			if (w > 15)
+				w = 15;
 			lil = addArrays(lil, new float[] {w, w, w, w,w,w});
 		}
 		if (right) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsRightComplete, i, j, k));
 			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvRightComplete, b.textureRight));
 			byte w = s.chunk.getLightLevel(xOff+1, j, zOff);
+			w += LightingEngine.sunLevel;
+			if (w > 15)
+				w = 15;
 			lil = addArrays(lil, new float[] {w, w, w, w,w,w});
 		}
 		if (front) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
 			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvFrontComplete, b.textureFront));
 			byte w = s.chunk.getLightLevel(xOff, j, zOff+1);
+			w += LightingEngine.sunLevel;
+			if (w > 15)
+				w = 15;
 			lil = addArrays(lil, new float[] {w, w, w, w,w,w});
 		}
 		if (back) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
 			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvBackComplete, b.textureBack));
 			byte w = s.chunk.getLightLevel(xOff, j, zOff-1);
+			w += LightingEngine.sunLevel;
+			if (w > 15)
+				w = 15;
 			lil = addArrays(lil, new float[] {w, w, w, w,w,w});
 		}
 		if (top) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsTopComplete, i, j, k));
 			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvTopComplete, b.textureTop));
 			byte w = lightLevel[i][j+1 < Chunk.y ? j+1 : Chunk.y-1][k];
+			w += LightingEngine.sunLevel;
+			if (w > 15)
+				w = 15;
 			lil = addArrays(lil, new float[] {w, w, w, w,w,w});
 		}
 		if (bottom) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBottomComplete, i, j, k));
 			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvBottomComplete, b.textureBottom));
 			byte w = lightLevel[i][j-1 > 0 ? j-1 : 0][k];
+			w += LightingEngine.sunLevel;
+			if (w > 15)
+				w = 15;
 			lil = addArrays(lil, new float[] {w, w, w, w,w,w});
 		}
 		return data;
@@ -252,7 +302,22 @@ public class Chunk {
 	}
 	
 	public void remesh(int sideQ) {
-		Chunk.meshables.add(this);
+		if (Chunk.meshables.size() < Chunk.meshables2.size())
+			Chunk.meshables.add(this);
+		else if (Chunk.meshables2.size() < Chunk.meshables3.size())
+			Chunk.meshables2.add(this);
+		else
+			Chunk.meshables3.add(this);
+	}
+	
+	public void remeshSecond() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				remeshNo();
+			}
+		}).start();
+		//Chunk.meshablesSecond.add(this);
 	}
 	
 	public void remeshNo(int sideQ) {
@@ -260,6 +325,7 @@ public class Chunk {
 		verts = new float[0];
 		uvs = new float[0];
 		lil = new float[0];
+		@SuppressWarnings("unused")
 		byte out = 0;
 		for (int i = 0; i < blocks.length; i++) {
 			for (int j = 0; j < blocks[i].length; j++) {
@@ -268,19 +334,40 @@ public class Chunk {
 				}
 			}
 		}
-		if (out > 0 && sideQ == -1) {
+		waitingForMesh = true;
+		/*if (out > 0 && sideQ == -1) {
 			System.out.println(out);
 			// the idea here is that after meshing this chunk, the missing chunks will be there
 			
+			try {
+				Thread.sleep(250);
+			} catch (InterruptedException e) {}
+			
+			if ((out & 0b0001) != 0b0001) {
+				Chunk c = s.chunk.getChunk(xoff - 1, zoff);
+				if (c != null)
+					c.remeshSecond();
+			}
+			if ((out & 0b0010) != 0b0010) {
+				Chunk c = s.chunk.getChunk(xoff + 1, zoff);
+				if (c != null)
+					c.remeshSecond();
+			}
+			if ((out & 0b0100) != 0b0100) {
+				Chunk c = s.chunk.getChunk(xoff, zoff + 1);
+				if (c != null)
+					c.remeshSecond();
+			}
+			if ((out & 0b1000) != 0b1000) {
+				Chunk c = s.chunk.getChunk(xoff, zoff - 1);
+				if (c != null)
+					c.remeshSecond();
+			}
 			//Chunk c = s.chunk.getChunk(xoff - 1, zoff);
 			//if (c != null)
 				//c.remeshNo();
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {}
 			remeshNo(1);
-		}
-		waitingForMesh = true;
+		}*/
 		// System.out.println("Remesher Thread Dead");	
 	}
 	

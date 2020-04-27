@@ -25,7 +25,6 @@ import com.brett.renderer.font.GUIDynamicText;
 import com.brett.renderer.font.fontRendering.TextMaster;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.renderer.particles.ParticleMaster;
-import com.brett.renderer.postprocessing.PostProcessing;
 import com.brett.renderer.shaders.LineShader;
 import com.brett.renderer.shaders.PointShader;
 import com.brett.sound.AudioController;
@@ -202,7 +201,7 @@ public class VoxelScreenManager {
 		double deltaTime = 0;
 		int frames = 0;
 		
-		PostProcessing.init(loader);
+		//PostProcessing.init(loader);
 		
 		//Server testserver = new Server();
 		//testserver.start();
@@ -292,7 +291,7 @@ public class VoxelScreenManager {
 		//client.close();and it will 
 		staticSource.delete();
 		AudioController.cleanup();
-		PostProcessing.cleanUp();
+		//PostProcessing.cleanUp();
 		//vworld.cleanup();
 		ui.cleanup();
 		TextMaster.cleanUp();

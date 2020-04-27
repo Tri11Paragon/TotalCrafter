@@ -4,8 +4,8 @@ import com.brett.renderer.shaders.ShaderProgram;
 
 public class VerticalBlurShader extends ShaderProgram{
 
-	private static final String VERTEX_FILE = "verticalBlurVertex.txt";
-	private static final String FRAGMENT_FILE = "blurFragment.txt";
+	private static final String VERTEX_FILE = "yes/verticalBlurVertex.txt";
+	private static final String FRAGMENT_FILE = "yes/blurFragment.txt";
 	
 	private int location_targetHeight;
 	

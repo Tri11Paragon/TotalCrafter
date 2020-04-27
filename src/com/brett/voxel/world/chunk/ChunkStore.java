@@ -253,13 +253,15 @@ public class ChunkStore {
 			regionPosX -= 1;
 		if (z < 0)
 			regionPosZ -= 1;
-		if (chunks.containsKey(regionPosX, regionPosZ)) {
-			Region r = chunks.get(regionPosX, regionPosZ);
-			if (r == null)
+		try {
+			if (chunks.containsKey(regionPosX, regionPosZ)) {
+				Region r = chunks.get(regionPosX, regionPosZ);
+				if (r == null)
+					return null;
+				return r.getChunk(x, z);
+			}else
 				return null;
-			return r.getChunk(x, z);
-		}else
-			return null;
+		} catch (NullPointerException e) {return null;}
 	}
 	
 	public short getBlock(float x, float y, float z) {

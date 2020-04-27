@@ -95,22 +95,15 @@ public class MouseBlockPicker {
 			world.updateBlocksAround((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
 			// update the local chunk meshes
 			// using a nice new thread as we don't want a new one per chunk.
-			new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					Chunk c = getTerrain(posadjUn.x, posadjUn.z);
-					c.remeshNo();
-					c = getTerrain(posadjUn.x + 1, posadjUn.z);
-					c.remeshNo();
-					c = getTerrain(posadjUn.x - 1, posadjUn.z);
-					c.remeshNo();
-					c = getTerrain(posadjUn.x, posadjUn.z + 1);
-					c.remeshNo();
-					c = getTerrain(posadjUn.x, posadjUn.z + 1);
-					c.remeshNo();
-				}
-			}).start();
+			c.remesh();
+			//c = getTerrain(posadjUn.x + 1, posadjUn.z);
+			//c.remesh();
+			//c = getTerrain(posadjUn.x - 1, posadjUn.z);
+			//c.remesh();
+			//c = getTerrain(posadjUn.x, posadjUn.z + 1);
+			//c.remesh();
+			//c = getTerrain(posadjUn.x, posadjUn.z + 1);
+			//c.remesh();
 			
 			return blockid;
 		}

@@ -4,8 +4,8 @@ import com.brett.renderer.shaders.ShaderProgram;
 
 public class HorizontalBlurShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "horizontalBlurVertex.txt";
-	private static final String FRAGMENT_FILE = "blurFragment.txt";
+	private static final String VERTEX_FILE = "yes/horizontalBlurVertex.txt";
+	private static final String FRAGMENT_FILE = "yes/blurFragment.txt";
 	
 	private int location_targetWidth;
 	

@@ -19,24 +19,52 @@ import com.brett.world.cameras.Camera;
 
 public class LightingEngine {
 	
+	public static final int secondsPerDay = 600 * 1000;
+	public static final int secondsPerHalf = secondsPerDay/2;
+	public static final int secondsPerEight = secondsPerDay/8;
+	
 	private static MultiKeyMap<Integer, Byte> lightSources = new MultiKeyMap<Integer, Byte>();
 	private static MultiKeyMap<Integer, Byte> permalightSources = new MultiKeyMap<Integer, Byte>();
 	//private static VoxelWorld world;
 	
-	private static byte sunLevel = 0;
+	public static byte sunLevel = 0;
 	private static Camera cam;
 	private static VoxelWorld world;
 	
+	private static long startSTime = 0;
 	public static void init(VoxelWorld world, Camera cam) {
 		LightingEngine.world = world;
 		LightingEngine.cam = cam;
 		new Thread(new Runnable() {
 			public void run() {
+				startSTime = System.currentTimeMillis();
 				lightSources.putAll(permalightSources);
 				long lastTime = 0;
 				long startTime = 0;
 				//NoiseFunction nf = world.chunk.getNf();
 				while (VoxelScreenManager.isOpen) {
+					// TODO: do this when the world is loaded!
+					long timeOff = System.currentTimeMillis() - startSTime;
+					timeOff %= secondsPerDay;
+					if (timeOff < secondsPerEight) {
+						byte w = (byte) (15 * ((float)timeOff / (float)secondsPerEight));
+						if (w != sunLevel)
+							changeSunLevel(w);
+					} else {
+						if (timeOff >= secondsPerEight && timeOff <= (secondsPerHalf)) {
+							if (sunLevel != 15)
+								changeSunLevel((byte)15);
+						} else {
+							if (timeOff > secondsPerHalf && timeOff <= (secondsPerHalf+secondsPerEight)) {
+								byte w = (byte) (15 - (15 * ((float)timeOff / (float)(secondsPerHalf+secondsPerEight))));
+								if (w != sunLevel)
+									changeSunLevel(w);
+							} else {
+								if (sunLevel  != 0)
+									changeSunLevel((byte)0);
+							}
+						}
+					}
 					// this is required for the lighting engine to work.
 					// im not joking.
 					try {Thread.sleep(1);} catch (InterruptedException e1) {}
@@ -118,22 +146,24 @@ public class LightingEngine {
 				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
 				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
 				Chunk c = world.chunk.getChunk(cx, cz);
-				for (int x = 0; x < Chunk.x; x++) {
+				if (c == null)
+					continue;
+				/*for (int x = 0; x < Chunk.x; x++) {
 					for (int z = 0; z < Chunk.z; z++) {
 						int y = c.getHeightA(x, z);
-						byte lel = (byte) (c.getLightLevel(x, y, z) + sunLevel);
+						byte lel = (byte) ( sunLevel);
 						if (lel > 15)
 							lel = 15;
-						c.setLightLevel(x, y, z, lel);
 					}
-				}
+				}*/
+				c.remesh();
 			}
 		}
 	}
 	
 	public static void changeSunLevel(byte level) {
 		sunLevel = level;
-		recalculate();
+		recalcalculateSun();
 	}
 	
 	private static void recalcualteChunks(int x, int z) {

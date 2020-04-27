@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL30;
 
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.TexturedModel;
+import com.brett.voxel.renderer.shaders.VEntityShader;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.entity.VEntity;
 
@@ -24,15 +25,18 @@ public class VEntityRenderer {
 	private VoxelWorld world;
 	private List<VEntity> ents = new ArrayList<VEntity>();
 	private HashMap<TexturedModel, List<VEntity>> entMap = new HashMap<TexturedModel, List<VEntity>>();
+	private VEntityShader shader;
 	
 	public VEntityRenderer(VoxelWorld world) {
 		this.world = world;
+		this.shader = new VEntityShader();
 	}
 	
 	public void render() {
 		for (int i = 0; i < ents.size(); i++) {
 			processEntity(ents.get(i));
 		}
+		shader.start();
 		for (TexturedModel texture : entMap.keySet()) {
 			RawModel mod = texture.getRawModel();
 			GL30.glBindVertexArray((int)mod.getVaoID());
@@ -48,6 +52,7 @@ public class VEntityRenderer {
 			GL20.glDisableVertexAttribArray(2);
 			GL30.glBindVertexArray(0);
 		}
+		shader.stop();
 	}
 	
 	public void processEntity(VEntity ent) {

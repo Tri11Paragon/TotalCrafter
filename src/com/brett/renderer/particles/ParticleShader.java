@@ -5,8 +5,8 @@ import com.brett.renderer.shaders.ShaderProgram;
 
 public class ParticleShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "particleVShader.txt";
-	private static final String FRAGMENT_FILE = "particleFShader.txt";
+	private static final String VERTEX_FILE = "yes/particleVShader.txt";
+	private static final String FRAGMENT_FILE = "yes/particleFShader.txt";
 
 	private int location_numberOfRows;
 	private int location_projectionMatrix;
