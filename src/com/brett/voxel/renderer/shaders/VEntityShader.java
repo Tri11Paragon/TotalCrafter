@@ -16,8 +16,9 @@ public class VEntityShader extends ShaderProgram {
 
 	private static final String VERTEX_FILE = "vEntityVertexShader.txt";
 	private static final String FRAGMENT_FILE = "vEntityFragmentShader.txt";
+	private static final int MAX_JOINTS = 50;
 	
-	private int location_transformationMatrix;
+	private int location_jointTransforms;
 	private int location_projectionMatrix;
 	private int location_viewMatrix;
 	
@@ -27,7 +28,7 @@ public class VEntityShader extends ShaderProgram {
 
 	@Override
 	protected void getAllUniformLocations() {
-		location_transformationMatrix = super.getUniformLocation("transformationMatrix");
+		location_jointTransforms = super.getUniformLocation("jointTransforms");
 		location_projectionMatrix = super.getUniformLocation("projectionMatrix");
 		location_viewMatrix = super.getUniformLocation("viewMatrix");
 	}
@@ -37,10 +38,8 @@ public class VEntityShader extends ShaderProgram {
 		super.bindAttribute(0, "position");
 		super.bindAttribute(1, "textureCoords");
 		super.bindAttribute(2, "normal");
-	}
-	
-	public void loadTransformationMatrix(Matrix4f matrix){
-		super.loadMatrix(location_transformationMatrix, matrix);
+		super.bindAttribute(3, "jointIndices");
+		super.bindAttribute(4, "weights");
 	}
 	
 	public void loadProjectionMatrix(Matrix4f projection){

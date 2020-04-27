@@ -27,6 +27,7 @@ import com.brett.renderer.datatypes.RawBlockModel;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.TextureData;
 import com.brett.tools.obj.ModelData;
+import com.brett.voxel.world.entity.animation.dataStructures.MeshData;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
@@ -86,6 +87,20 @@ public class Loader {
 		unbindVAO();
 		return new RawModel(vaoID,indices.length);
 	}
+	
+	public RawModel loadToVAO(MeshData data) {
+		int vaoID = createVAO();
+		int[] indices = data.getIndices();
+		bindIndicesBuffer(indices);
+		storeDataInAttributeList(0,3,data.getVertices());
+		storeDataInAttributeList(1,2,data.getTextureCoords());
+		storeDataInAttributeList(2,3,data.getNormals());
+		storeDataInAttributeList(3,3,data.getJointIds());
+		storeDataInAttributeList(4,3,data.getVertexWeights());
+		unbindVAO();
+		return new RawModel(vaoID,indices.length);
+	}
+	
 	public RawModel loadToVAO(float[] positions, int dimensions) {
 		int vaoID = createVAO();
 		this.storeDataInAttributeList(0, dimensions, positions);
@@ -248,6 +263,17 @@ public class Loader {
 		FloatBuffer buffer = storeDataInFloatBuffer(data);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 		GL20.glVertexAttribPointer(attributeNumber,coordinateSize,GL11.GL_FLOAT,false,0,0);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		return vboID;
+	}
+	
+	private int storeDataInAttributeList(int attributeNumber, int coordinateSize, int[] data){
+		int vboID = GL15.glGenBuffers();
+		vbos.add(vboID);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
+		IntBuffer buffer = storeDataInIntBuffer(data);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+		GL30.glVertexAttribIPointer(attributeNumber,coordinateSize,GL11.GL_INT,0,0);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		return vboID;
 	}
