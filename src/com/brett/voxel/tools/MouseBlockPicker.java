@@ -95,15 +95,15 @@ public class MouseBlockPicker {
 			world.updateBlocksAround((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
 			// update the local chunk meshes
 			// using a nice new thread as we don't want a new one per chunk.
-			c.remesh();
-			//c = getTerrain(posadjUn.x + 1, posadjUn.z);
-			//c.remesh();
-			//c = getTerrain(posadjUn.x - 1, posadjUn.z);
-			//c.remesh();
-			//c = getTerrain(posadjUn.x, posadjUn.z + 1);
-			//c.remesh();
-			//c = getTerrain(posadjUn.x, posadjUn.z + 1);
-			//c.remesh();
+			c.remeshPRI();
+			Chunk cn = getTerrain(posadjUn.x, posadjUn.z, 1, 0);
+			cn.remeshPRI();
+			Chunk cp = getTerrain(posadjUn.x, posadjUn.z, -1, 0);
+			cp.remeshPRI();
+			Chunk cg = getTerrain(posadjUn.x, posadjUn.z, 0, -1);
+			cg.remeshPRI();
+			Chunk ce = getTerrain(posadjUn.x, posadjUn.z, 0, 1);
+			ce.remeshPRI();
 			
 			return blockid;
 		}
@@ -472,6 +472,16 @@ public class MouseBlockPicker {
 			zoff = -1;
 		//System.out.println(worldX+" // " + ((int)(worldX/(float)Chunk.x) + xoff) + " - " + worldZ + " // " + ((int)(worldZ/(float)Chunk.z) + zoff));
 		return world.chunk.getChunk((int)(worldX/(float)Chunk.x) + xoff, (int)(worldZ/(float)Chunk.z) + zoff);
+	}
+	
+	private Chunk getTerrain(float worldX, float worldZ, int xof, int zof) {
+		int xoff = 0,zoff = 0;
+		if (worldX < 0)
+			xoff = -1;
+		if (worldZ < 0)
+			zoff = -1;
+		//System.out.println(worldX+" // " + ((int)(worldX/(float)Chunk.x) + xoff) + " - " + worldZ + " // " + ((int)(worldZ/(float)Chunk.z) + zoff));
+		return world.chunk.getChunk((int)((worldX/(float)Chunk.x) + xof) + xoff, (int)((worldZ/(float)Chunk.z) + zof) + zoff);
 	}
 	
 	private Vector3f biasVector(Vector3f v, float x) {

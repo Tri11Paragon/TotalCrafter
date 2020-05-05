@@ -1,6 +1,7 @@
 package com.brett.voxel.world.entity.animation.utils;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -19,7 +20,7 @@ public class MyFile {
 	private String name;
 
 	public MyFile(String path) {
-		this.path = FILE_SEPARATOR + path;
+		this.path = path;
 		String[] dirs = path.split(FILE_SEPARATOR);
 		this.name = dirs[dirs.length - 1];
 	}
@@ -27,7 +28,7 @@ public class MyFile {
 	public MyFile(String... paths) {
 		this.path = "";
 		for (String part : paths) {
-			this.path += (FILE_SEPARATOR + part);
+			this.path += (part + FILE_SEPARATOR);
 		}
 		String[] dirs = path.split(FILE_SEPARATOR);
 		this.name = dirs[dirs.length - 1];
@@ -62,7 +63,7 @@ public class MyFile {
 
 	public BufferedReader getReader() throws Exception {
 		try {
-			InputStreamReader isr = new InputStreamReader(getInputStream());
+			InputStreamReader isr = new InputStreamReader(new FileInputStream(path));
 			BufferedReader reader = new BufferedReader(isr);
 			return reader;
 		} catch (Exception e) {

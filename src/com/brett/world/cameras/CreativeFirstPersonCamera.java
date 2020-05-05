@@ -27,6 +27,8 @@ public class CreativeFirstPersonCamera extends Camera {
 	private float moveAtY = 0;
 	private float moveatZ = 0;
 	
+	private static int RECUR_AMT = 100;
+	
 	@Override
 	public void move() {
 		if (!Mouse.isGrabbed())
@@ -82,13 +84,44 @@ public class CreativeFirstPersonCamera extends Camera {
 		float dy = (float) (moveAtX * Math.sin(Math.toRadians(roll))) + moveAtY;
 		float dz = (float) ((moveAtX) * Math.cos(Math.toRadians(yaw))) + (float) -((moveatZ) * Math.sin(Math.toRadians(yaw)));
 		
-		float cons = 5.25f;
-		if (world.chunk.getBlock(position.x + (dx*cons), position.y, position.z) == 0)
-			position.x += dx;
-		if (world.chunk.getBlock(position.x, position.y + (dy*cons), position.z) == 0)
-			position.y += dy;
-		if (world.chunk.getBlock(position.x , position.y, position.z + (dz*cons)) == 0)
-			position.z += dz;
+		
+		float xStep = (dx)/RECUR_AMT;
+		float yStep = (dy)/RECUR_AMT;
+		float zStep = (dz)/RECUR_AMT;
+		
+		float wx = 0, wy = 0, wz = 0;
+		float xb = 0, yb = 0, zb = 0;
+
+		for (int i = 0; i < RECUR_AMT; i++) {
+			wx += xStep;
+			if (world.chunk.getBlock(position.x + (wx), position.y, position.z) == 0) {
+				xb = wx;
+			} else
+				break;
+		}
+		for (int i = 0; i < RECUR_AMT; i++) {
+			wy += yStep;
+			if (world.chunk.getBlock(position.x, position.y + (wy), position.z) == 0) {
+				yb = wy;
+			} else
+				break;
+		}
+		for (int i = 0; i < RECUR_AMT; i++) {
+			wz += zStep;
+			if (world.chunk.getBlock(position.x, position.y, position.z + (wz)) == 0) {
+				zb = wz;
+			} else 
+				break;
+		}
+		
+		if (world.chunk.getBlock(position.x + (xb), position.y, position.z) == 0)
+			position.x += xb;
+		
+		if (world.chunk.getBlock(position.x, position.y + (yb), position.z) == 0)
+			position.y += yb;
+		
+		if (world.chunk.getBlock(position.x , position.y, position.z + (zb)) == 0)
+			position.z += zb;
 	}
 	
 	public void checkCollision(TerrainArray terrains) {

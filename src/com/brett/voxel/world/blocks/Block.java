@@ -32,6 +32,12 @@ public class Block {
 	public static final short BLOCK_COBBLE = 8;
 	public static final short BLOCK_GLASS = 9;
 	public static final short BLOCK_GLOWSTONE = 10;
+	public static final short BLOCK_IRON = 11;
+	public static final short BLOCK_GOLD = 12;
+	public static final short BLOCK_DIAMOND = 13;
+	public static final short BLOCK_COAL = 14;
+	public static final short BLOCK_REDSTONE = 15;
+	public static final short BLOCK_EMERALD = 16;
 	
 	public ModelTexture model;
 	public int textureTop, textureBottom, textureLeft, textureRight, textureFront, textureBack;

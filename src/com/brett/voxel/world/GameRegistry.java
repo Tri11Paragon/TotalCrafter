@@ -42,7 +42,7 @@ public class GameRegistry {
 		registerBlock(Block.BLOCK_AIR, new BlockAir());
 		
 		registerBlock(Block.BLOCK_STONE, new Block(new ModelTexture(loader.loadTexture("stone")), 2
-				).setBreakSound(AudioController.loadSound("bounce.ogg")).setBlockDropped(Block.BLOCK_COBBLE).setHardness(3).setMiningLevel(2).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setBlockDropped(Block.BLOCK_COBBLE).setHardness(3).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
 		registerBlock(Block.BLOCK_DIRT, new Block(new ModelTexture(loader.loadTexture("dirt")), 1
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
@@ -70,6 +70,24 @@ public class GameRegistry {
 		
 		registerBlock(Block.BLOCK_GLOWSTONE, new Block(new ModelTexture(loader.loadTexture("glowstone")), 10
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.78f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE).setLightLevel((byte) 15));
+		
+		registerBlock(Block.BLOCK_IRON, new Block(new ModelTexture(loader.loadTexture("iron_ore")), 19
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(1.38f).setMiningLevel(2).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+		
+		registerBlock(Block.BLOCK_GOLD, new Block(new ModelTexture(loader.loadTexture("gold_ore")), 11
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(1.68f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+		
+		registerBlock(Block.BLOCK_REDSTONE, new Block(new ModelTexture(loader.loadTexture("redstone_ore")), 12
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(2.48f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+		
+		registerBlock(Block.BLOCK_EMERALD, new Block(new ModelTexture(loader.loadTexture("emerald_ore")), 13
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(4.79f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+		
+		registerBlock(Block.BLOCK_DIAMOND, new Block(new ModelTexture(loader.loadTexture("diamond_ore")), 14
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(3.72f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+		
+		registerBlock(Block.BLOCK_COAL, new Block(new ModelTexture(loader.loadTexture("coal_ore")), 15
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(1.78f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 	}
 	
 	private static void registerItems(Loader loader) {

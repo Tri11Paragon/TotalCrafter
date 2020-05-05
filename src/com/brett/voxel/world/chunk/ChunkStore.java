@@ -16,9 +16,8 @@ import com.brett.voxel.world.GameRegistry;
 import com.brett.voxel.world.LevelLoader;
 import com.brett.voxel.world.Region;
 import com.brett.voxel.world.VoxelWorld;
+import com.brett.voxel.world.generators.WorldGenerator;
 import com.brett.world.cameras.Camera;
-import com.brett.world.terrain.noisefunctions.NoiseFunction;
-import com.brett.world.terrain.noisefunctions.SuperNoise;
 
 /**
  *
@@ -43,7 +42,7 @@ public class ChunkStore {
 
 	protected Camera cam;
 	private Loader loader;
-	private NoiseFunction nf;
+	private WorldGenerator gen;
 	private VoxelWorld world;
 
 	public ChunkStore(Camera cam, Loader loader, VoxelWorld world) {
@@ -52,17 +51,35 @@ public class ChunkStore {
 		this.cam = cam;
 		this.loader = loader;
 		//this.nf = new ChunkNoiseFunction(LevelLoader.seed);
-		this.nf = new SuperNoise(LevelLoader.seed);
+		this.gen = new WorldGenerator();
 		this.world = world;
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
+				boolean generating = false;
+				boolean first = false;
+				boolean ungen = false;
 				while(VoxelScreenManager.isOpen) {
 					for (int i = 0; i < ungeneratedChunks.size(); i++) {
 						Tuple<Integer, Integer> g = ungeneratedChunks.get(i);
-						setChunk(generateChunk(g.getX(), g.getY()), g.getX(), g.getY());
+						Chunk c = generateChunk(g.getX(), g.getY());
+						setChunk(c, g.getX(), g.getY());
+						//c.remesh();
 						ungeneratedChunks.remove(i);
 					}
+					if (ungeneratedChunks.size() > 0) {
+						if (!first)
+							first = true;
+						ungen = true;
+						generating = true;
+					}else
+						generating = false;
+					
+					if (!generating && first && ungen) {
+						remeshGlobal();
+					}
+					
+					ungen = false;
 				} 
 			}
 		}).start();
@@ -105,6 +122,16 @@ public class ChunkStore {
 			}
 		}).start();
 	}
+	
+	public void remeshGlobal() {
+		for (int i = -renderDistance; i < renderDistance; i++) {
+			for (int k = -renderDistance; k < renderDistance; k++) {
+				Chunk c = getChunk(i, k);
+				if (c != null)
+					c.remesh();
+			}
+		}
+	}
 
 	public Chunk generateChunk(int x, int z) {
 		int regionPosX = x / Region.x;
@@ -115,12 +142,12 @@ public class ChunkStore {
 			regionPosZ -= 1;
 		if (chunks.containsKey(regionPosX, regionPosZ)) {
 			if (chunks.get(regionPosX, regionPosZ) == null)
-				return new Chunk(loader,world, nf, x, z);
+				return new Chunk(loader,world, gen.getChunkBlocks(x, z), x, z);
 			else {
 				try {
 					Chunk c = chunks.get(regionPosX, regionPosZ).getChunk(x, z);
 					if (c == null) {
-						c = new Chunk(loader,world, nf, x, z);
+						c = new Chunk(loader,world, gen.getChunkBlocks(x, z), x, z);
 						chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
 						return c;
 					} else {
@@ -128,7 +155,7 @@ public class ChunkStore {
 					}
 				} catch (NullPointerException e) {
 					System.out.println("Hey we got a broken pipe here!");
-					return new Chunk(loader,world, nf, x, z);
+					return new Chunk(loader,world, gen.getChunkBlocks(x, z), x, z);
 				}
 			}
 		} else {
@@ -136,7 +163,7 @@ public class ChunkStore {
 			chunks.put(regionPosX, regionPosZ, r);
 			Chunk c = r.getChunk(x, z);
 			if (c == null) {
-				c = new Chunk(loader,world, nf, x, z);
+				c = new Chunk(loader,world, gen.getChunkBlocks(x, z), x, z);
 				chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
 				return c;
 			}else
@@ -441,14 +468,6 @@ public class ChunkStore {
 				}
 			}
 		}).start();
-	}
-
-	public NoiseFunction getNf() {
-		return nf;
-	}
-
-	public void setNf(NoiseFunction nf) {
-		this.nf = nf;
 	}
 	
 }

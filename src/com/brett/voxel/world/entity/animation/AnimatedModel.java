@@ -147,5 +147,9 @@ public class AnimatedModel {
 			addJointsToArray(childJoint, jointMatrices);
 		}
 	}
+	
+	public int getJointCount() {
+		return jointCount;
+	}
 
 }

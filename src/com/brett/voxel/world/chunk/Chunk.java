@@ -15,7 +15,6 @@ import com.brett.voxel.world.MeshStore;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.lighting.LightingEngine;
-import com.brett.world.terrain.noisefunctions.NoiseFunction;
 
 /**
 *
@@ -39,13 +38,14 @@ public class Chunk {
 	private float[] lil;
 	private int xoff,zoff;
 	private VoxelWorld s;
-	private NoiseFunction nf;
 	private Loader loader;
 	private boolean waitingForMesh = false;
+	private boolean isMeshing = false;
 	
 	private static List<Chunk> meshables = new ArrayList<Chunk>();
 	private static List<Chunk> meshables2 = new ArrayList<Chunk>();
 	private static List<Chunk> meshables3 = new ArrayList<Chunk>();
+	private static List<Chunk> meshables4 = new ArrayList<Chunk>();
 	
 	public static void init() {
 		new Thread(new Runnable() {
@@ -54,11 +54,12 @@ public class Chunk {
 				while (VoxelScreenManager.isOpen) {
 					for (int i = 0; i < meshables.size(); i++) {
 						Chunk c = meshables.get(i);
-						c.remeshNo(-1);
+						if (c != null)
+							c.remeshNo(-1);
 						meshables.remove(i);
 					}
 					try {
-						Thread.sleep(2);
+						Thread.sleep(1);
 					} catch (InterruptedException e) {}
 				}
 			}
@@ -69,11 +70,12 @@ public class Chunk {
 				while (VoxelScreenManager.isOpen) {
 					for (int i = 0; i < meshables2.size(); i++) {
 						Chunk c = meshables2.get(i);
-						c.remeshNo(-1);
+						if (c != null)
+							c.remeshNo(-1);
 						meshables2.remove(i);
 					}
 					try {
-						Thread.sleep(2);
+						Thread.sleep(1);
 					} catch (InterruptedException e) {}
 				}
 			}
@@ -84,19 +86,35 @@ public class Chunk {
 				while (VoxelScreenManager.isOpen) {
 					for (int i = 0; i < meshables3.size(); i++) {
 						Chunk c = meshables3.get(i);
-						c.remeshNo(-1);
+						if (c != null)
+							c.remeshNo(-1);
 						meshables3.remove(i);
 					}
 					try {
-						Thread.sleep(2);
+						Thread.sleep(1);
+					} catch (InterruptedException e) {}
+				}
+			}
+		}).start();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (VoxelScreenManager.isOpen) {
+					for (int i = 0; i < meshables4.size(); i++) {
+						Chunk c = meshables4.get(i);
+						if (c != null)
+							c.remeshNo(-1);
+						meshables4.remove(i);
+					}
+					try {
+						Thread.sleep(1);
 					} catch (InterruptedException e) {}
 				}
 			}
 		}).start();
 	}
 	
-	public Chunk(Loader loader, VoxelWorld s, NoiseFunction f, int xoff, int zoff) {
-		this.nf = f;
+	/*public Chunk(Loader loader, VoxelWorld s, int xoff, int zoff) {
 		this.xoff = xoff;
 		this.zoff = zoff;
 		this.loader = loader;
@@ -106,7 +124,8 @@ public class Chunk {
 		this.s = s;
 		for (int i = 0; i < x; i++) {
 			for (int k = 0; k < z; k++) {
-				int ref = (int) (f.getInterpolatedNoise(((xoff * x) + (i)), ((zoff * z) + (k))));
+				//int ref = (int) (f.getBlockHeight(((xoff * x) + (i)), ((zoff * z) + (k))));
+				int ref = 30;
 				for (int j = 0; j < y; j++) {
 					if (j == ref) {
 						if (ref < 32)
@@ -130,8 +149,8 @@ public class Chunk {
 				}
 			}
 		}
-		remesh(-1);
-	}
+		//remesh(-1);
+	}*/
 
 	public Chunk(Loader loader, VoxelWorld s, short[][][] blocks, int xoff, int zoff) {
 		this.xoff = xoff;
@@ -142,7 +161,7 @@ public class Chunk {
 		verts = new float[0];
 		uvs = new float[0];
 		lil = new float[0];
-		remesh(-1);
+		//remesh(-1);
 	}
 	
 	// don't look at this please
@@ -150,10 +169,8 @@ public class Chunk {
 	// TODO: improve this
 	// this is rough code
 	public byte mesh(int i, int j, int k) {
-		if(blocks[i][j][k] == 0) {
-			//blocksModels[i][j][k] = emptyBlock;
+		if(blocks[i][j][k] == 0)
 			return 0;
-		}
 		boolean top = true;
 		boolean bottom = true;
 		boolean left = true;
@@ -180,7 +197,7 @@ public class Chunk {
 			if (c == null) {
 				left = false;
 				// top brain kind of stuff here
-				// binary literal plus bitwise opperater
+				// binary literal plus bitwise operator
 				// top brain indeed
 				data |= 0b0001;
 			} else {
@@ -294,7 +311,16 @@ public class Chunk {
 	}
 	
 	public void remesh() {
+		//System.out.println("Too much");
 		remesh(1);
+	}
+	
+	/**
+	 * 
+	 */
+	public void remeshPRI() {
+		//System.out.println("Too much");
+		Chunk.meshables4.add(this);
 	}
 	
 	public void remeshNo() {
@@ -322,14 +348,19 @@ public class Chunk {
 	
 	public void remeshNo(int sideQ) {
 		// System.out.println("Remesher Thread Start");
+		while (isMeshing) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {}
+		}
 		verts = new float[0];
 		uvs = new float[0];
 		lil = new float[0];
 		@SuppressWarnings("unused")
 		byte out = 0;
-		for (int i = 0; i < blocks.length; i++) {
-			for (int j = 0; j < blocks[i].length; j++) {
-				for (int k = 0; k < blocks[i][j].length; k++) {
+		for (int i = 0; i < x; i++) {
+			for (int k = 0; k < z; k++) {
+				for (int j = 0; j < y; j++) {
 					out |= mesh(i, j, k);
 				}
 			}
@@ -373,10 +404,12 @@ public class Chunk {
 	
 	public void render(VoxelShader shader) {
 		if (waitingForMesh) {
+			isMeshing = true;
 			if(rawID != null)
 				loader.deleteVAO(rawID);
 			rawID = loader.loadToVAO(verts, uvs, lil);
 			waitingForMesh = false;
+			isMeshing = false;
 		}
 		// TODO: add update that runs on seperate thread to handle this.
 		int xz = s.random.nextInt(Chunk.x);
@@ -545,18 +578,18 @@ public class Chunk {
 	 * Returns the height that the block should be at a point
 	 * This returns the first block.
 	 */
-	public int getNaturalHeight(float x, float z) {
-		return (int) (nf.getInterpolatedNoise((x) / 128.0f, (z) / 128.0f));
-	}
+	/*public int getNaturalHeight(float x, float z) {
+		return (int) (nf.getBlockHeight((x) / 128.0f, (z) / 128.0f));
+	}*/
 	
 	/**
 	 * Returns the height that the block should be at a point
 	 * This returns the first block.
 	 * (This is in block pos relative to this chunk)
 	 */
-	public int getNaturalHeight(int x, int z) {
-		return (int) (nf.getInterpolatedNoise(((xoff * x) + (x)) / 128.0f, ((zoff * z) + (z)) / 128.0f));
-	}
+	/*public int getNaturalHeight(int x, int z) {
+		return (int) (nf.getBlockHeight(((xoff * x) + (x)) / 128.0f, ((zoff * z) + (z)) / 128.0f));
+	}*/
 	
 	/**
 	 * Returns the height of the chunk at the specified world pos.
