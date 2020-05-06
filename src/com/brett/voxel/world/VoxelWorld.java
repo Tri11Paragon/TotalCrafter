@@ -96,7 +96,7 @@ public class VoxelWorld {
 	}
 	
 	public void createExplosion(float x, float y, float z, float size) {
-		new Explosion(x, y, z, size, this).explode();;
+		new Explosion(x, y, z, size, this).explode();
 	}
 	
 	public void updateBlocksAround(int x, int y, int z) {
