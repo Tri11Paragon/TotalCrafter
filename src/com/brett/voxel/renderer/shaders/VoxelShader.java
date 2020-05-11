@@ -16,12 +16,6 @@ public class VoxelShader extends ShaderProgram {
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
 	private int location_viewMatrix;
-	private int location_lup;
-	private int location_ldown;
-	private int location_lleft;
-	private int location_lright;
-	private int location_lfront;
-	private int location_lback;
 
 	public VoxelShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -32,6 +26,7 @@ public class VoxelShader extends ShaderProgram {
 		super.bindAttribute(0, "position");
 		super.bindAttribute(1, "textureCoords");
 		super.bindAttribute(2, "lightL");
+		super.bindAttribute(3, "layerD");
 	}
 
 	@Override
@@ -39,25 +34,6 @@ public class VoxelShader extends ShaderProgram {
 		location_transformationMatrix = super.getUniformLocation("transformationMatrix");
 		location_projectionMatrix = super.getUniformLocation("projectionMatrix");
 		location_viewMatrix = super.getUniformLocation("viewMatrix");
-		location_lup = super.getUniformLocation("lup");
-		location_ldown = super.getUniformLocation("ldown");
-		location_lleft = super.getUniformLocation("lleft");
-		location_lright = super.getUniformLocation("lright");
-		location_lfront = super.getUniformLocation("lback");
-		location_lback = super.getUniformLocation("lfront");
-	}
-	
-	public void loadLightData(float up, float down, float left, float right, float back, float front) {
-		// bad way of loading light data
-		// as GPUs like large amounts of data at a time
-		// might be better to load a matrix with this, and the position.
-		// then do translation matrix on the GPU.
-		super.loadFloat(location_lup, up);
-		super.loadFloat(location_ldown, down);
-		super.loadFloat(location_lleft, left);
-		super.loadFloat(location_lright, right);
-		super.loadFloat(location_lfront, back);
-		super.loadFloat(location_lback, front);
 	}
 	
 	public void loadTransformationMatrix(Matrix4f matrix){

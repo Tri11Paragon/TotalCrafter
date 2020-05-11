@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
@@ -19,6 +20,7 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL33;
+import org.lwjgl.opengl.GL42;
 import org.lwjgl.opengl.GLContext;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
@@ -27,6 +29,7 @@ import com.brett.renderer.datatypes.RawBlockModel;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.renderer.datatypes.TextureData;
 import com.brett.tools.obj.ModelData;
+import com.brett.voxel.world.GameRegistry;
 import com.brett.voxel.world.entity.animation.dataStructures.MeshData;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
@@ -124,6 +127,17 @@ public class Loader {
 		vbos[0] = this.storeDataInAttributeList(0, 3, positions);
 		vbos[1] = this.storeDataInAttributeList(1, 2, textureCoords);
 		vbos[2] = this.storeDataInAttributeList(2, 1, lightLevels);
+		unbindVAO();
+		return new RawBlockModel(vaoID, vbos, positions.length/3);
+	}
+	
+	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] layer, float[] lightLevels) {
+		int vaoID = createVAO();
+		int[] vbos = new int[4];
+		vbos[0] = this.storeDataInAttributeList(0, 3, positions);
+		vbos[1] = this.storeDataInAttributeList(1, 2, textureCoords);
+		vbos[2] = this.storeDataInAttributeList(2, 1, lightLevels);
+		vbos[3] = this.storeDataInAttributeList(3, 1, layer);
 		unbindVAO();
 		return new RawBlockModel(vaoID, vbos, positions.length/3);
 	}
@@ -349,22 +363,45 @@ public class Loader {
 		return id;
 	}
 	
-	public int loadSpecialTextureATLAS(String texture) {
-		TextureData d = decodeTextureFile("resources/textures/" + texture + ".png");
+	public int loadSpecialTextureATLAS(int width, int height) {
+		//for more detail on array textures
+		//https://www.khronos.org/opengl/wiki/Array_Texture
+		float anisf = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+		//TextureData d = decodeTextureFile("resources/textures/" + texture + ".png");
+		HashMap<Integer, String> texs = GameRegistry.registerTextures();
 		int id = GL11.glGenTextures();
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, id); 
 		
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST); 
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST); 
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, d.getWidth(), d.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, d.getBuffer());
-		//GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
-		//GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -0.5f);
-		//float amount = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-		//GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
-		
+        // i really don't like this
+        // openGL4.2. i was trying to use < 3.2
+        // if you are having issues its likely because of this.
+        // "OpenGL 4.2 (2011)"
+        // i feel like this should be in gl30
+        GL42.glTexStorage3D(GL30.GL_TEXTURE_2D_ARRAY, 4, GL11.GL_RGBA8, width, height, texs.size());
+        
+        for (Entry<Integer, String> s : texs.entrySet()) {
+        	// i don't understand why this is in gl12 but to allocate this is in gl42
+        	GL12.glTexSubImage3D(GL30.GL_TEXTURE_2D_ARRAY,
+        			0, 
+        			0, 0, s.getKey(), 
+        			width, height, 1, 
+        			GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, 
+        			decodeTextureFile("resources/textures/" + s.getValue() + ".png").getBuffer());
+        	GL11.glTexParameterf(GL30.GL_TEXTURE_2D_ARRAY, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, anisf);
+        }
+        
+        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST); 
+        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+        
+        GL30.glGenerateMipmap(GL30.GL_TEXTURE_2D_ARRAY);
+		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
+		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
+		GL11.glTexParameterf(GL30.GL_TEXTURE_2D_ARRAY, GL14.GL_TEXTURE_LOD_BIAS, -0.2f);
+        
 		textures.add(id);
 		return id;
 	}

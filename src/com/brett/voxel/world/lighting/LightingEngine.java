@@ -27,7 +27,7 @@ public class LightingEngine {
 	private static MultiKeyMap<Integer, Byte> permalightSources = new MultiKeyMap<Integer, Byte>();
 	//private static VoxelWorld world;
 	
-	public static byte sunLevel = 0;
+	public static byte sunLevel = 15;
 	private static Camera cam;
 	private static VoxelWorld world;
 	
@@ -44,7 +44,7 @@ public class LightingEngine {
 				//NoiseFunction nf = world.chunk.getNf();
 				while (VoxelScreenManager.isOpen) {
 					// TODO: do this when the world is loaded!
-					long timeOff = System.currentTimeMillis() - startSTime;
+					/*long timeOff = System.currentTimeMillis() - startSTime;
 					timeOff %= secondsPerDay;
 					if (timeOff < secondsPerEight) {
 						byte w = (byte) (15 * ((float)timeOff / (float)secondsPerEight));
@@ -64,7 +64,7 @@ public class LightingEngine {
 									changeSunLevel((byte)0);
 							}
 						}
-					}
+					}*/
 					// this is required for the lighting engine to work.
 					// im not joking.
 					try {Thread.sleep(1);} catch (InterruptedException e1) {}

@@ -25,7 +25,7 @@ public class DisplayManager {
 	
 	public static void createDisplay(boolean isUsingFBOs) {
 		
-		ContextAttribs attribs = new ContextAttribs(3, 3).withForwardCompatible(true).withProfileCore(true);
+		ContextAttribs attribs = new ContextAttribs(4, 2).withForwardCompatible(true).withProfileCore(true);
 		
 		try {
 			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
@@ -35,7 +35,7 @@ public class DisplayManager {
 				Display.create(new PixelFormat().withSamples(4), attribs);
 			else
 				Display.create(new PixelFormat(), attribs);
-			Display.setTitle("RMS - V0.11A // Майнкрафт³ - V0.30.0A");
+			Display.setTitle("RMS - V0.11A // Майнкрафт³ - V0.31.1A");
 			GL11.glEnable(GL13.GL_MULTISAMPLE);
 		} catch (LWJGLException e) {e.printStackTrace();}
 		

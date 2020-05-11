@@ -7,6 +7,7 @@ import java.util.Random;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.renderer.Loader;
@@ -71,7 +72,7 @@ public class VoxelWorld {
 		LightingEngine.init(this, cam);
 		this.i = i;
 		this.cam = cam;
-		this.textureAtlas = loader.loadSpecialTextureATLAS("atlast");
+		this.textureAtlas = loader.loadSpecialTextureATLAS(16,16);
 		this.voverlayrenderer = new VOverlayRenderer(renderer, cam, this);
 		picker = new MouseBlockPicker(cam, renderer.getProjectionMatrix(), this, i, this.voverlayrenderer);
 		entityRenderer = new VEntityRenderer(this, renderer, cam);
@@ -88,7 +89,7 @@ public class VoxelWorld {
 			entityRenderer.render();
 		shader.start();
 		shader.loadViewMatrix(camera);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureAtlas);
+			GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureAtlas);
 			chunk.renderChunks(shader);
 		MasterRenderer.disableCulling();
 		MasterRenderer.disableTransparentcy();

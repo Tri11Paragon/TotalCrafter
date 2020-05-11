@@ -1,10 +1,13 @@
-#version 330
+#version 420
 
 in vec3 position;
 in vec2 textureCoordinates;
 in float lightL;
+in float layerD;
+
 out vec2 textureCoords;
 out float lightLevel;
+out float layerF;
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
@@ -16,4 +19,5 @@ void main(void){
 	gl_Position = projectionMatrix * positionRelativeToCam;
 	textureCoords = (textureCoordinates);
 	lightLevel = lightL;
+	layerF = layerD;
 }

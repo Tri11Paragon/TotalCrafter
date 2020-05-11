@@ -36,6 +36,7 @@ public class Chunk {
 	private float[] verts;
 	private float[] uvs;
 	private float[] lil;
+	private float[] layers;
 	private int xoff,zoff;
 	private VoxelWorld s;
 	private Loader loader;
@@ -161,6 +162,7 @@ public class Chunk {
 		verts = new float[0];
 		uvs = new float[0];
 		lil = new float[0];
+		layers = new float[0];
 		//remesh(-1);
 	}
 	
@@ -254,7 +256,9 @@ public class Chunk {
 		float zOff = (zoff * Chunk.z) + k;
 		if (left) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
-			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvLeftComplete, b.textureLeft));
+			//uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvLeftComplete, b.textureLeft));
+			uvs = addArrays(uvs, MeshStore.uvLeftComplete);
+			layers = addArrays(layers, new float[] {b.textureLeft,b.textureLeft,b.textureLeft,   b.textureLeft,b.textureLeft,b.textureLeft});
 			byte w = s.chunk.getLightLevel(xOff-1, j, zOff);
 			w += LightingEngine.sunLevel;
 			if (w > 15)
@@ -263,7 +267,9 @@ public class Chunk {
 		}
 		if (right) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsRightComplete, i, j, k));
-			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvRightComplete, b.textureRight));
+			//uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvRightComplete, b.textureRight));
+			uvs = addArrays(uvs, MeshStore.uvRightComplete);
+			layers = addArrays(layers, new float[] {b.textureRight,b.textureRight,b.textureRight,   b.textureRight,b.textureRight,b.textureRight});
 			byte w = s.chunk.getLightLevel(xOff+1, j, zOff);
 			w += LightingEngine.sunLevel;
 			if (w > 15)
@@ -272,7 +278,9 @@ public class Chunk {
 		}
 		if (front) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
-			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvFrontComplete, b.textureFront));
+			//uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvFrontComplete, b.textureFront));
+			uvs = addArrays(uvs, MeshStore.uvFrontComplete);
+			layers = addArrays(layers, new float[] {b.textureFront,b.textureFront,b.textureFront,   b.textureFront,b.textureFront,b.textureFront});
 			byte w = s.chunk.getLightLevel(xOff, j, zOff+1);
 			w += LightingEngine.sunLevel;
 			if (w > 15)
@@ -281,7 +289,9 @@ public class Chunk {
 		}
 		if (back) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
-			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvBackComplete, b.textureBack));
+			//uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvBackComplete, b.textureBack));
+			uvs = addArrays(uvs, MeshStore.uvBackComplete);
+			layers = addArrays(layers, new float[] {b.textureBack,b.textureBack,b.textureBack,   b.textureBack,b.textureBack,b.textureBack});
 			byte w = s.chunk.getLightLevel(xOff, j, zOff-1);
 			w += LightingEngine.sunLevel;
 			if (w > 15)
@@ -290,7 +300,9 @@ public class Chunk {
 		}
 		if (top) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsTopComplete, i, j, k));
-			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvTopComplete, b.textureTop));
+			//uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvTopComplete, b.textureTop));
+			uvs = addArrays(uvs, MeshStore.uvTopComplete);
+			layers = addArrays(layers, new float[] {b.textureTop,b.textureTop,b.textureTop,   b.textureTop,b.textureTop,b.textureTop});
 			byte w = lightLevel[i][j+1 < Chunk.y ? j+1 : Chunk.y-1][k];
 			w += LightingEngine.sunLevel;
 			if (w > 15)
@@ -299,7 +311,9 @@ public class Chunk {
 		}
 		if (bottom) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBottomComplete, i, j, k));
-			uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvBottomComplete, b.textureBottom));
+			//uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvBottomComplete, b.textureBottom));
+			uvs = addArrays(uvs, MeshStore.uvBottomComplete);
+			layers = addArrays(layers, new float[] {b.textureBottom,b.textureBottom,b.textureBottom,   b.textureBottom,b.textureBottom,b.textureBottom});
 			byte w = lightLevel[i][j-1 > 0 ? j-1 : 0][k];
 			w += LightingEngine.sunLevel;
 			if (w > 15)
@@ -356,6 +370,7 @@ public class Chunk {
 		verts = new float[0];
 		uvs = new float[0];
 		lil = new float[0];
+		layers = new float[0];
 		@SuppressWarnings("unused")
 		byte out = 0;
 		for (int i = 0; i < x; i++) {
@@ -407,7 +422,7 @@ public class Chunk {
 			isMeshing = true;
 			if(rawID != null)
 				loader.deleteVAO(rawID);
-			rawID = loader.loadToVAO(verts, uvs, lil);
+			rawID = loader.loadToVAO(verts, uvs, layers, lil);
 			waitingForMesh = false;
 			isMeshing = false;
 		}
@@ -425,6 +440,7 @@ public class Chunk {
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
 		GL20.glEnableVertexAttribArray(2);
+		GL20.glEnableVertexAttribArray(3);
 		
 		shader.loadTransformationMatrix(Maths.createTransformationMatrixCube(x*xoff,0,z*zoff));
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, rawID.getVertexCount());
@@ -432,6 +448,7 @@ public class Chunk {
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
 		GL20.glDisableVertexAttribArray(2);
+		GL20.glDisableVertexAttribArray(3);
 		GL30.glBindVertexArray(0);
 		
 	}
@@ -647,6 +664,20 @@ public class Chunk {
 	
 	public float[] addArrays(float[] array1, float[] array2) {
 		float[] rtv = new float[array1.length + array2.length];
+		
+		for (int i = 0; i<array1.length;i++) {
+			rtv[i] = array1[i];
+		}
+		
+		for (int i = 0; i<array2.length; i++) {
+			rtv[i + array1.length] = array2[i];
+		}
+		
+		return rtv;
+	}
+	
+	public int[] addArrays(int[] array1, int[] array2) {
+		int[] rtv = new int[array1.length + array2.length];
 		
 		for (int i = 0; i<array1.length;i++) {
 			rtv[i] = array1[i];

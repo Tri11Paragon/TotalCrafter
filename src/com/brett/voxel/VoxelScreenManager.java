@@ -64,7 +64,7 @@ public class VoxelScreenManager {
 	
 	public static void init() {
 		SettingsLoader.loadSettings();
-		DisplayManager.createDisplay(true);
+		DisplayManager.createDisplay(false);
 		KeyMaster.init();
 		// audio stuff
 		AudioController.init();

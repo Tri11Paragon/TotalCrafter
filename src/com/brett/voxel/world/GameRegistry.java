@@ -1,6 +1,7 @@
 package com.brett.voxel.world;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.brett.renderer.Loader;
@@ -31,6 +32,7 @@ public class GameRegistry {
 	
 	private static short highestID = 0;
 	private static List<SaveEvent> saveEvents = new ArrayList<SaveEvent>();
+	private static HashMap<Integer, String> textures = new HashMap<Integer, String>();
 	
 	public static void init(Loader loader) {
 		registerBlocks(loader);
@@ -98,6 +100,31 @@ public class GameRegistry {
 		registerItem(new ItemStonePickaxe(Item.ITEM_STONEPICK, new ModelTexture(loader.loadTexture("stonepick"))));
 		registerItem(new ItemTinPickaxe(Item.ITEM_TINPICK, new ModelTexture(loader.loadTexture("tinpick"))));
 		registerItem(new ItemWoodenPickaxe(Item.ITEM_WOODPICK, new ModelTexture(loader.loadTexture("woodenpick"))));
+	}
+	
+	public static HashMap<Integer, String> registerTextures() {
+		textures.put(0, "grass");
+		textures.put(1, "dirt");
+		textures.put(2, "stone");
+		textures.put(3, "cobble");
+		textures.put(4, "sand");
+		textures.put(5, "snow");
+		textures.put(6, "planks");
+		textures.put(7, "will");
+		textures.put(8, "clay");
+		textures.put(9, "glass");
+		textures.put(10, "glowstone");
+		textures.put(11, "gold_ore");
+		textures.put(12, "redstone_ore");
+		textures.put(13, "emerald_ore");
+		textures.put(14, "diamond_ore");
+		textures.put(15, "coal_ore");
+		textures.put(16, "coal_block");
+		textures.put(17, "brick");
+		textures.put(18, "bookshelf");
+		textures.put(19, "iron_ore");
+		textures.put(20, "grass_side");
+		return textures;
 	}
 	
 	public static void preSaveEvent() {
