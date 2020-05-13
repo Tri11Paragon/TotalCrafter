@@ -26,14 +26,13 @@ public class ChunkStore {
 
 	public static int renderDistance = 12;
 	public static final String worldLocation = "worlds/w1/";
-	public static final String dimLocation = "worlds/w1/DIM";
-	public static File wfolder = new File(worldLocation);
-	public static File[] wfiles = wfolder.listFiles();
+	public static final String dimLocation = worldLocation + "DIM";
 
 	// actually the best way of storing chunk data.
 	// however will need to add a way of moving between active and non active
 	// chunks.
 	private MultiKeyMap<Integer, Region> chunks = new MultiKeyMap<Integer, Region>();
+	private MultiKeyMap<Integer, NulChunk> ungenChunkData = new MultiKeyMap<Integer, NulChunk>();
 	private MultiKeyMap<Integer, Region> chunksCopy = null;
 	private MultiKeyMap<Integer, Integer> ungeneratedChunks = new MultiKeyMap<Integer, Integer>();
 	
@@ -131,12 +130,12 @@ public class ChunkStore {
 			regionPosZ -= 1;
 		if (chunks.containsKey(regionPosX, regionPosZ)) {
 			if (chunks.get(regionPosX, regionPosZ) == null)
-				return new Chunk(loader,world, gen.getChunkBlocks(x, z), x, z);
+				return genChunkUngen(x,z);
 			else {
 				try {
 					Chunk c = chunks.get(regionPosX, regionPosZ).getChunk(x, z);
 					if (c == null) {
-						c = new Chunk(loader,world, gen.getChunkBlocks(x, z), x, z);
+						c = genChunkUngen(x,z);
 						chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
 						return c;
 					} else {
@@ -144,7 +143,7 @@ public class ChunkStore {
 					}
 				} catch (NullPointerException e) {
 					System.out.println("Hey we got a broken pipe here!");
-					return new Chunk(loader,world, gen.getChunkBlocks(x, z), x, z);
+					return genChunkUngen(x,z);
 				}
 			}
 		} else {
@@ -152,12 +151,25 @@ public class ChunkStore {
 			chunks.put(regionPosX, regionPosZ, r);
 			Chunk c = r.getChunk(x, z);
 			if (c == null) {
-				c = new Chunk(loader,world, gen.getChunkBlocks(x, z), x, z);
+				c = genChunkUngen(x,z);
 				chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
 				return c;
 			}else
 				return c;
 		}
+	}
+	
+	/**
+	 * Generates a chunk while including all the blocks that have been placed while it was null.
+	 */
+	private Chunk genChunkUngen(int x, int z) {
+		Chunk c = new Chunk(loader,world, gen.getChunkBlocks(x, z), x, z);
+		NulChunk nc = ungenChunkData.get(x, z);
+		if (nc != null) {
+			c.setBlocks(nc.integrate(c.getBlocks()));
+			ungenChunkData.removeMultiKey(x, z);
+		}
+		return c;
 	}
 
 	public void saveChunks() {
@@ -178,8 +190,10 @@ public class ChunkStore {
 		if (chunksCopy != null) {
 			MapIterator<MultiKey<? extends Integer>, Region> rg = chunksCopy.mapIterator();
 			while (rg.hasNext()) {
-				MultiKey<? extends Integer> r = rg.next();
-				chunks.remove(r);
+				try {
+					MultiKey<? extends Integer> r = rg.next();
+					chunks.remove(r);
+				} catch (Exception e) {}
 			}
 			MultiKeyMap<Integer, Region> rgs = new MultiKeyMap<Integer, Region>();
 			rgs.putAll(chunks);
@@ -318,9 +332,23 @@ public class ChunkStore {
 			xoff = -1;
 		if (z < 0)
 			zoff = -1;
-		Chunk c = getChunk((int)(x/(float)Chunk.x) + xoff, (int)(z/(float)Chunk.z) + zoff);
-		if (c == null)
+		int cxpos = ((int)(x/(float)Chunk.x) + xoff), czpos = ((int)(z/(float)Chunk.z) + zoff);
+		Chunk c = getChunk(cxpos, czpos);
+		if (c == null) {
+			NulChunk nc = ungenChunkData.get(cxpos, czpos);
+			if (nc == null)
+				nc = new NulChunk(world);
+			int rx = (int)x;
+			int rz = (int)z;
+			x%=Chunk.x;
+			z%=Chunk.z;
+			if (x < 0)
+				x = biasNegative(x, -Chunk.x);
+			if (z < 0)
+				z = biasNegative(z, -Chunk.z);
+			nc.setBlock((int)x,(int)y, (int)z, rx, rz, block);
 			return;
+		}
 		int rx = (int)x;
 		int rz = (int)z;
 		x%=Chunk.x;

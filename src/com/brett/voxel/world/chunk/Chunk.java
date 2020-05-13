@@ -31,7 +31,6 @@ public class Chunk {
 	
 	private short[][][] blocks = new short[x][y][z];
 	private byte[][][] lightLevel = new byte[x][y][z];
-	//private RawBlockModel[][][] blocksModels = new RawBlockModel[x][y][z];
 	private RawModel rawID;
 	private float[] verts;
 	private float[] uvs;
@@ -48,6 +47,7 @@ public class Chunk {
 	private static List<Chunk> meshables2 = new ArrayList<Chunk>();
 	private static List<Chunk> meshables3 = new ArrayList<Chunk>();
 	private static List<Chunk> meshables4 = new ArrayList<Chunk>();
+	public static List<RawModel> deleteables = new ArrayList<RawModel>();
 	
 	public static void init() {
 		new Thread(new Runnable() {
@@ -282,15 +282,10 @@ public class Chunk {
 	}
 	
 	public void remesh() {
-		//System.out.println("Too much");
 		remesh(1);
 	}
 	
-	/**
-	 * 
-	 */
 	public void remeshPRI() {
-		//System.out.println("Too much");
 		Chunk.meshables4.add(this);
 	}
 	
@@ -347,34 +342,56 @@ public class Chunk {
 		// left
 		if ((chunkErrors & left) != left) {
 			Chunk c = s.chunk.getChunk(xoff-1, zoff);
-			if ((c.chunkErrors & right) == right) {
-				c.remesh();
+			if (c == null) {
+				System.err.println("CHUNK MESHER ISSUE");
+				System.out.flush();
+			} else {
+				if ((c.chunkErrors & right) == right) {
+					c.remesh();
+				}
 			}
 		}
 		// right
 		if ((chunkErrors & right) != right) {
 			Chunk c = s.chunk.getChunk(xoff+1, zoff);
-			if ((c.chunkErrors & left) == left) {
-				c.remesh();
+			// chunks can't be null but this has happened
+			if (c == null) {
+				System.err.println("CHUNK MESHER ISSUE");
+				System.out.flush();
+			} else {
+				if ((c.chunkErrors & left) == left) {
+					c.remesh();
+				}
 			}
 		}
 		// front
 		if ((chunkErrors & front) != front) {
 			Chunk c = s.chunk.getChunk(xoff, zoff+1);
-			if ((c.chunkErrors & back) == back) {
-				c.remesh();
+			if (c == null) {
+				System.err.println("CHUNK MESHER ISSUE");
+				System.out.flush();
+			}else {
+				if ((c.chunkErrors & back) == back) {
+					c.remesh();
+				}
 			}
 		}
 		// back
 		if ((chunkErrors & back) != back) {
 			Chunk c = s.chunk.getChunk(xoff, zoff-1);
-			if ((c.chunkErrors & front) == front) {
-				c.remesh();
+			if (c == null) {
+				System.err.println("CHUNK MESHER ISSUE");
+				System.out.flush();
+			} else {
+				if ((c.chunkErrors & front) == front) {
+					c.remesh();
+				}
 			}
 		}
 		waitingForMesh = true;
 	}
 	
+	private static long lastGC = 0;
 	public void render(VoxelShader shader) {
 		if (waitingForMesh) {
 			isMeshing = true;
@@ -383,6 +400,10 @@ public class Chunk {
 			rawID = loader.loadToVAO(verts, uvs, layers, lil);
 			waitingForMesh = false;
 			isMeshing = false;
+			if (System.currentTimeMillis() - lastGC > 10000) {
+				System.gc();
+				lastGC = System.currentTimeMillis();
+			}
 		}
 		// TODO: add update that runs on seperate thread to handle this.
 		int xz = s.random.nextInt(Chunk.x);
@@ -412,7 +433,9 @@ public class Chunk {
 	
 	public void nul() {
 		//this.blocksModels = null;
-		this.rawID = loader.deleteVAO(rawID);
+		//this.rawID = loader.deleteVAO(rawID);
+		Chunk.deleteables.add(this.rawID);
+		this.rawID = null;
 		this.blocks = null;
 	}
 	
@@ -615,6 +638,10 @@ public class Chunk {
 		}
 		
 		return rtv;
+	}
+	
+	public void setBlocks(short[][][] blocks) {
+		this.blocks = blocks;
 	}
 	
 }

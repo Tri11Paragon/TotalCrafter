@@ -266,6 +266,10 @@ public class VoxelScreenManager {
 			console.update();
 			TextMaster.render();
 			
+			//for (int i = 0; i < Chunk.deleteables.size(); i++) {
+			//	loader.deleteVAO(Chunk.deleteables.get(i));
+			//}
+			
 			DisplayManager.updateDisplay();
 			double lastFrame = Sys.getTime() * 1000 / Sys.getTimerResolution();
 			deltaTime += lastFrame - startTime;
