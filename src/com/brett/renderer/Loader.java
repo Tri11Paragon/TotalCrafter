@@ -384,23 +384,36 @@ public class Loader {
         for (Entry<Integer, String> s : texs.entrySet()) {
         	// i don't understand why this is in gl12 but to allocate this is in gl42
         	GL12.glTexSubImage3D(GL30.GL_TEXTURE_2D_ARRAY,
+        			// level
         			0, 
-        			0, 0, s.getKey(), 
+        			// x,y,z offsets
+        			0, 0, s.getKey(),
+        			// width, height depth
         			width, height, 1, 
+        			// format, format
         			GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, 
+        			// image data
         			decodeTextureFile("resources/textures/" + s.getValue() + ".png").getBuffer());
+        	// AF
         	GL11.glTexParameterf(GL30.GL_TEXTURE_2D_ARRAY, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, anisf);
         }
         
+        /**
+         * Texture filters
+         */
         GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST); 
         GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
         
+        /**
+         * mipmap and mipmap filters
+         */
         GL30.glGenerateMipmap(GL30.GL_TEXTURE_2D_ARRAY);
 		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
 		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
-		GL11.glTexParameterf(GL30.GL_TEXTURE_2D_ARRAY, GL14.GL_TEXTURE_LOD_BIAS, -0.2f);
+		// > 0 = less detail
+		GL11.glTexParameterf(GL30.GL_TEXTURE_2D_ARRAY, GL14.GL_TEXTURE_LOD_BIAS, 0.2f);
         
 		textures.add(id);
 		return id;

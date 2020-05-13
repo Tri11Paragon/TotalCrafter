@@ -75,10 +75,10 @@ public class LightingEngine {
 						MapIterator<MultiKey<? extends Integer>, Byte> it = lightSources.mapIterator();
 						while (it.hasNext()) {
 							MultiKey<? extends Integer> key = it.next();
-							if (it.getValue() < 0)
-								recalculate();
-							applyLightPatern(world, key.getKey(0), key.getKey(1), key.getKey(2), it.getValue());
-							recalcualteChunks(key.getKey(0), key.getKey(2));
+							//if (it.getValue() < 0)
+								//recalculate();
+							//applyLightPatern(world, key.getKey(0), key.getKey(1), key.getKey(2), it.getValue());
+							//recalcualteChunks(key.getKey(0), key.getKey(2));
 						}
 
 						lightSources.clear();

@@ -290,6 +290,12 @@ public class Maths {
 		
 		return t;
 	}
+	
+	public static long preventNegs(Long num) {
+		if (num < 0)
+			num = 0l;
+		return num;
+	}
 
 	/*// Or this. Slightly slower, but faster than creating objects. ;)
 	public static double roundDown5(double d) {

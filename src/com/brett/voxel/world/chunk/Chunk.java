@@ -42,6 +42,7 @@ public class Chunk {
 	private Loader loader;
 	private boolean waitingForMesh = false;
 	private boolean isMeshing = false;
+	private byte chunkErrors;
 	
 	private static List<Chunk> meshables = new ArrayList<Chunk>();
 	private static List<Chunk> meshables2 = new ArrayList<Chunk>();
@@ -114,44 +115,6 @@ public class Chunk {
 			}
 		}).start();
 	}
-	
-	/*public Chunk(Loader loader, VoxelWorld s, int xoff, int zoff) {
-		this.xoff = xoff;
-		this.zoff = zoff;
-		this.loader = loader;
-		verts = new float[0];
-		uvs = new float[0];
-		lil = new float[0];
-		this.s = s;
-		for (int i = 0; i < x; i++) {
-			for (int k = 0; k < z; k++) {
-				//int ref = (int) (f.getBlockHeight(((xoff * x) + (i)), ((zoff * z) + (k))));
-				int ref = 30;
-				for (int j = 0; j < y; j++) {
-					if (j == ref) {
-						if (ref < 32)
-							blocks[i][j][k] = 5;
-						else 
-							blocks[i][j][k] = 4;
-					} else if (j <= ref - 1 && j >= ref - 5) {
-						if (ref < 32)
-							blocks[i][j][k] = 5;
-						else 
-							blocks[i][j][k] = 2;
-
-					} else if (j < 1) {
-						blocks[i][j][k] = 3;
-					} else if (j < ref - 5) {
-						blocks[i][j][k] = 1;
-					} else {
-						blocks[i][j][k] = 0;
-					}
-					Block.blocks.get(blocks[i][j][k]).onBlockCreated(i, j, k, s);
-				}
-			}
-		}
-		//remesh(-1);
-	}*/
 
 	public Chunk(Loader loader, VoxelWorld s, short[][][] blocks, int xoff, int zoff) {
 		this.xoff = xoff;
@@ -163,7 +126,7 @@ public class Chunk {
 		uvs = new float[0];
 		lil = new float[0];
 		layers = new float[0];
-		//remesh(-1);
+		remesh();
 	}
 	
 	// don't look at this please
@@ -256,7 +219,6 @@ public class Chunk {
 		float zOff = (zoff * Chunk.z) + k;
 		if (left) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
-			//uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvLeftComplete, b.textureLeft));
 			uvs = addArrays(uvs, MeshStore.uvLeftComplete);
 			layers = addArrays(layers, new float[] {b.textureLeft,b.textureLeft,b.textureLeft,   b.textureLeft,b.textureLeft,b.textureLeft});
 			byte w = s.chunk.getLightLevel(xOff-1, j, zOff);
@@ -267,7 +229,6 @@ public class Chunk {
 		}
 		if (right) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsRightComplete, i, j, k));
-			//uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvRightComplete, b.textureRight));
 			uvs = addArrays(uvs, MeshStore.uvRightComplete);
 			layers = addArrays(layers, new float[] {b.textureRight,b.textureRight,b.textureRight,   b.textureRight,b.textureRight,b.textureRight});
 			byte w = s.chunk.getLightLevel(xOff+1, j, zOff);
@@ -278,7 +239,6 @@ public class Chunk {
 		}
 		if (front) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
-			//uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvFrontComplete, b.textureFront));
 			uvs = addArrays(uvs, MeshStore.uvFrontComplete);
 			layers = addArrays(layers, new float[] {b.textureFront,b.textureFront,b.textureFront,   b.textureFront,b.textureFront,b.textureFront});
 			byte w = s.chunk.getLightLevel(xOff, j, zOff+1);
@@ -289,7 +249,6 @@ public class Chunk {
 		}
 		if (back) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
-			//uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvBackComplete, b.textureBack));
 			uvs = addArrays(uvs, MeshStore.uvBackComplete);
 			layers = addArrays(layers, new float[] {b.textureBack,b.textureBack,b.textureBack,   b.textureBack,b.textureBack,b.textureBack});
 			byte w = s.chunk.getLightLevel(xOff, j, zOff-1);
@@ -300,7 +259,6 @@ public class Chunk {
 		}
 		if (top) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsTopComplete, i, j, k));
-			//uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvTopComplete, b.textureTop));
 			uvs = addArrays(uvs, MeshStore.uvTopComplete);
 			layers = addArrays(layers, new float[] {b.textureTop,b.textureTop,b.textureTop,   b.textureTop,b.textureTop,b.textureTop});
 			byte w = lightLevel[i][j+1 < Chunk.y ? j+1 : Chunk.y-1][k];
@@ -311,7 +269,6 @@ public class Chunk {
 		}
 		if (bottom) {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBottomComplete, i, j, k));
-			//uvs = addArrays(uvs, AtlasHelper.convertToIndex(MeshStore.uvBottomComplete, b.textureBottom));
 			uvs = addArrays(uvs, MeshStore.uvBottomComplete);
 			layers = addArrays(layers, new float[] {b.textureBottom,b.textureBottom,b.textureBottom,   b.textureBottom,b.textureBottom,b.textureBottom});
 			byte w = lightLevel[i][j-1 > 0 ? j-1 : 0][k];
@@ -361,7 +318,6 @@ public class Chunk {
 	}
 	
 	public void remeshNo(int sideQ) {
-		// System.out.println("Remesher Thread Start");
 		while (isMeshing) {
 			try {
 				Thread.sleep(1);
@@ -371,50 +327,52 @@ public class Chunk {
 		uvs = new float[0];
 		lil = new float[0];
 		layers = new float[0];
-		@SuppressWarnings("unused")
-		byte out = 0;
+		chunkErrors = 0;
 		for (int i = 0; i < x; i++) {
 			for (int k = 0; k < z; k++) {
 				for (int j = 0; j < y; j++) {
-					out |= mesh(i, j, k);
+					chunkErrors |= mesh(i, j, k);
 				}
 			}
 		}
+		byte left = 0b0001;
+		byte right = 0b0010;
+		byte front = 0b0100;
+		byte back = 0b1000;
+		// this is how you encode a boolean (9 bytes???!?!?!?) 
+		// with only half a byte!
+		// SixBoolean!
+		// ^ thats a callback to the dark ages
+		
+		// left
+		if ((chunkErrors & left) != left) {
+			Chunk c = s.chunk.getChunk(xoff-1, zoff);
+			if ((c.chunkErrors & right) == right) {
+				c.remesh();
+			}
+		}
+		// right
+		if ((chunkErrors & right) != right) {
+			Chunk c = s.chunk.getChunk(xoff+1, zoff);
+			if ((c.chunkErrors & left) == left) {
+				c.remesh();
+			}
+		}
+		// front
+		if ((chunkErrors & front) != front) {
+			Chunk c = s.chunk.getChunk(xoff, zoff+1);
+			if ((c.chunkErrors & back) == back) {
+				c.remesh();
+			}
+		}
+		// back
+		if ((chunkErrors & back) != back) {
+			Chunk c = s.chunk.getChunk(xoff, zoff-1);
+			if ((c.chunkErrors & front) == front) {
+				c.remesh();
+			}
+		}
 		waitingForMesh = true;
-		/*if (out > 0 && sideQ == -1) {
-			System.out.println(out);
-			// the idea here is that after meshing this chunk, the missing chunks will be there
-			
-			try {
-				Thread.sleep(250);
-			} catch (InterruptedException e) {}
-			
-			if ((out & 0b0001) != 0b0001) {
-				Chunk c = s.chunk.getChunk(xoff - 1, zoff);
-				if (c != null)
-					c.remeshSecond();
-			}
-			if ((out & 0b0010) != 0b0010) {
-				Chunk c = s.chunk.getChunk(xoff + 1, zoff);
-				if (c != null)
-					c.remeshSecond();
-			}
-			if ((out & 0b0100) != 0b0100) {
-				Chunk c = s.chunk.getChunk(xoff, zoff + 1);
-				if (c != null)
-					c.remeshSecond();
-			}
-			if ((out & 0b1000) != 0b1000) {
-				Chunk c = s.chunk.getChunk(xoff, zoff - 1);
-				if (c != null)
-					c.remeshSecond();
-			}
-			//Chunk c = s.chunk.getChunk(xoff - 1, zoff);
-			//if (c != null)
-				//c.remeshNo();
-			remeshNo(1);
-		}*/
-		// System.out.println("Remesher Thread Dead");	
 	}
 	
 	public void render(VoxelShader shader) {
@@ -432,7 +390,6 @@ public class Chunk {
 		int zz = s.random.nextInt(Chunk.z);
 		if (blocks[xz][yz][zz] != 0)
 			Block.blocks.get(blocks[xz][yz][zz]).onBlockTick(xz, yz, zz, s);
-		
 		
 		if (rawID == null)
 			return;
@@ -455,6 +412,7 @@ public class Chunk {
 	
 	public void nul() {
 		//this.blocksModels = null;
+		this.rawID = loader.deleteVAO(rawID);
 		this.blocks = null;
 	}
 	
@@ -462,27 +420,13 @@ public class Chunk {
 		return this.blocks == null ? true : false;
 	}
 	
-	public Block getBlockE(int x, int y, int z) {
-		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
-			return null;	
-		// locking prevents race conditions!
-		// right?
-		// i did this right
-		// if its not it works so i don't care.
+	public short getBlock(int x, int y, int z) {
 		if (x < 0)
 			x *= -1;
 		if (z < 0)
 			z *= -1;
-		return Block.blocks.get(getBlock(x, y, z));
-	}
-	
-	public short getBlock(int x, int y, int z) {
 		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
 			return 0;
-		if (x < 0)
-			x *= -1;
-		if (z < 0)
-			z *= -1;
 		return blocks[x][y][z];
 	}
 	
@@ -590,23 +534,6 @@ public class Chunk {
 	public void disableCulling() {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 	}
-	
-	/**
-	 * Returns the height that the block should be at a point
-	 * This returns the first block.
-	 */
-	/*public int getNaturalHeight(float x, float z) {
-		return (int) (nf.getBlockHeight((x) / 128.0f, (z) / 128.0f));
-	}*/
-	
-	/**
-	 * Returns the height that the block should be at a point
-	 * This returns the first block.
-	 * (This is in block pos relative to this chunk)
-	 */
-	/*public int getNaturalHeight(int x, int z) {
-		return (int) (nf.getBlockHeight(((xoff * x) + (x)) / 128.0f, ((zoff * z) + (z)) / 128.0f));
-	}*/
 	
 	/**
 	 * Returns the height of the chunk at the specified world pos.

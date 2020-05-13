@@ -96,6 +96,7 @@ public class Region {
 			//}
 		//}).start();
 		// return the loaded region
+		//System.gc();
 		return r;
 	}
 	
@@ -141,6 +142,7 @@ public class Region {
 							os.writeByte(-2);
 						} else
 							os.writeByte(-1);
+						c.nul();
 					} catch (IOException e) {
 						if (!new File(worldLocation).mkdirs())
 							saveRegion(worldLocation, game);

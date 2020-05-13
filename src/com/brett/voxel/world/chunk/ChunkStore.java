@@ -1,15 +1,12 @@
 package com.brett.voxel.world.chunk;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.ConcurrentModificationException;
-import java.util.List;
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.Tuple;
+import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.renderer.shaders.VoxelShader;
 import com.brett.voxel.world.GameRegistry;
@@ -38,8 +35,8 @@ public class ChunkStore {
 	// chunks.
 	private MultiKeyMap<Integer, Region> chunks = new MultiKeyMap<Integer, Region>();
 	private MultiKeyMap<Integer, Region> chunksCopy = null;
-	private List<Tuple<Integer, Integer>> ungeneratedChunks = Collections.synchronizedList(new ArrayList<Tuple<Integer, Integer>>());
-
+	private MultiKeyMap<Integer, Integer> ungeneratedChunks = new MultiKeyMap<Integer, Integer>();
+	
 	protected Camera cam;
 	private Loader loader;
 	private WorldGenerator gen;
@@ -50,36 +47,28 @@ public class ChunkStore {
 		LevelLoader.loadLevelData(worldLocation);
 		this.cam = cam;
 		this.loader = loader;
-		//this.nf = new ChunkNoiseFunction(LevelLoader.seed);
 		this.gen = new WorldGenerator();
 		this.world = world;
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				boolean generating = false;
-				boolean first = false;
-				boolean ungen = false;
 				while(VoxelScreenManager.isOpen) {
-					for (int i = 0; i < ungeneratedChunks.size(); i++) {
-						Tuple<Integer, Integer> g = ungeneratedChunks.get(i);
-						Chunk c = generateChunk(g.getX(), g.getY());
-						setChunk(c, g.getX(), g.getY());
-						//c.remesh();
-						ungeneratedChunks.remove(i);
-					}
-					if (ungeneratedChunks.size() > 0) {
-						if (!first)
-							first = true;
-						ungen = true;
-						generating = true;
-					}else
-						generating = false;
-					
-					if (!generating && first && ungen) {
-						remeshGlobal();
-					}
-					
-					ungen = false;
+					long start = System.currentTimeMillis();
+					MapIterator<MultiKey<? extends Integer>, Integer> it = ungeneratedChunks.mapIterator();
+					try {
+						while (it.hasNext()) {
+							MultiKey<? extends Integer> mk = it.next();
+							Chunk c = generateChunk(mk.getKey(0), mk.getKey(1));
+							if (c != null) {
+								ungeneratedChunks.removeMultiKey(mk.getKey(0), mk.getKey(1));
+							}
+						}
+					} catch (ConcurrentModificationException e) {}
+					long end = System.currentTimeMillis();
+					long delta = Maths.preventNegs(32 - (end - start));
+					try {
+						Thread.sleep(delta);
+					} catch (InterruptedException e) {}
 				} 
 			}
 		}).start();
@@ -239,7 +228,13 @@ public class ChunkStore {
 	}
 	
 	public void queChunk(int cx, int cz) {
-		ungeneratedChunks.add(new Tuple<Integer, Integer>(cx, cz));
+		//ungeneratedChunks.add(new Tuple<Integer, Integer>(cx, cz));
+		try {
+			if (!ungeneratedChunks.containsKey(cx, cz))
+				ungeneratedChunks.put(cx, cz, 0);
+		} catch (ConcurrentModificationException e) {
+			queChunk(cx, cz);
+		}
 	}
 
 	public void cleanup() {
