@@ -1,6 +1,9 @@
 package com.brett.voxel.world.generators;
 
+import java.util.Random;
+
 import com.brett.voxel.world.LevelLoader;
+import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.generators.noise.BiomeNoise;
@@ -25,8 +28,11 @@ public class WorldGenerator {
 	private ForestNoise ff;
 	private BiomeNoise bf;
 	private WorldGenMineable ores;
+	private Random rnd;
+	private VoxelWorld world;
 		
-	public WorldGenerator() {
+	public WorldGenerator(VoxelWorld world) {
+		rnd = new Random(LevelLoader.seed);
 		hf = new HillsNoise(LevelLoader.seed);
 		ff = new ForestNoise(LevelLoader.seed);
 		bf = new BiomeNoise(((LevelLoader.seed/2)*128)/255);
@@ -40,6 +46,7 @@ public class WorldGenerator {
 				new MineData(Block.BLOCK_DIAMOND, 5, 20, 0.0, 24, 1)
 				);
 		BIOMESFUNCTIONS = new BlockNoise[] {hf, ff, ff};
+		this.world = world;
 	}
 	
 	public short[][][] getChunkBlocks(int x, int z){
@@ -49,6 +56,36 @@ public class WorldGenerator {
 				int ref = (int) BlockNoise.interpolate(hf.getBlockHeight(i + x*Chunk.x, k + z*Chunk.z), 
 						ff.getBlockHeight(i + x*Chunk.x, k + z*Chunk.z), 
 						getBiomeNoise(i + x*Chunk.x, k + z*Chunk.z));
+				int tree = rnd.nextInt(250);
+				if (tree == 5 && ref < 90) {
+					int height = rnd.nextInt(3)+4;
+					for (int lx = -2; lx < 3; lx++) {
+						for (int lz = -2; lz < 3; lz++) {
+							int lxp = i+lx;
+							int lzp = k+lz;
+							for (int hh = 0; hh <= 2; hh++) {							
+								if (lxp < 0 || lxp > (Chunk.x-1) || lzp < 0 || lzp > (Chunk.z-1)) {
+									world.chunk.setBlock(lxp + x*Chunk.x, ref+height+hh-2, lzp + z*Chunk.z, Block.BLOCK_LEAVES);
+								} else
+									blks[lxp][ref+height+hh-2][lzp] = Block.BLOCK_LEAVES;
+							}
+						}
+					}
+					for (int lx = -1; lx < 2; lx++) {
+						for (int lz = -1; lz < 2; lz++) {
+							int lxp = i+lx;
+							int lzp = k+lz;					
+							if (lxp < 0 || lxp > (Chunk.x - 1) || lzp < 0 || lzp > (Chunk.z - 1)) {
+								world.chunk.setBlock(lxp + x * Chunk.x, ref + height + 1, lzp + z * Chunk.z, Block.BLOCK_LEAVES);
+							} else
+								blks[lxp][ref + height+1][lzp] = Block.BLOCK_LEAVES;
+						}
+					}
+					blks[i][ref + height+2][k] = Block.BLOCK_LEAVES;
+					for (int t = ref; t <= ref+height; t++) {
+						blks[i][t][k] = Block.BLOCK_LOG;
+					}
+				}
 				for (int j=0; j < Chunk.y; j++) {
 					if (j == ref)
 						blks[i][j][k] = 4;
@@ -86,6 +123,13 @@ public class WorldGenerator {
 	
 	public float getBiomeNoise(int x, int z) {
 		return bf.simplexNoise(x/128f, z/128f);
+	}
+	
+	public int getNaturalBlockHeight(int x, int z) {
+		int ref = (int) BlockNoise.interpolate(hf.getBlockHeight(x, z), 
+				ff.getBlockHeight(x, z), 
+				getBiomeNoise(x, z));
+		return ref;
 	}
 	
 }

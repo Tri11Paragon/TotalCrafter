@@ -63,6 +63,7 @@ public class Inventory implements IMenu {
 	public void addSlot(Slot s) {
 		slots.add(s);
 		// this is VERY annoying that i have to do this
+		// yes i am aware of typeof / instanceof
 		// TODO: maybe use a better system so that we don't have to do this
 		slotAsElements.add(s);
 	}

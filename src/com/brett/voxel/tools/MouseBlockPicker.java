@@ -141,6 +141,41 @@ public class MouseBlockPicker {
 		return 0;
 	}
 	
+	public int[] getCurrentBlockPointPos() {
+		Vector3f pos = camera.getPosition();
+		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
+		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
+		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
+		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
+		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
+		int[] blockPos = {(int) pos.x, (int) pos.y, (int) pos.z, 0};
+		
+		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
+		for (int i = 0; i < RE_MNT; i++) {
+			walked.x += xStep;
+			walked.y += yStep;
+			walked.z += zStep;
+			Vector3f posadj = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
+			Chunk c = getTerrain(posadj.x, posadj.z);
+			if (c == null)
+				continue;
+			posadj.x %= Chunk.x;
+			posadj.z %= Chunk.z;
+			if (posadj.x < 0)
+				posadj.x = biasNegative(posadj.x, -Chunk.x);
+			if (posadj.z < 0)
+				posadj.z = biasNegative(posadj.z, -Chunk.z);
+			short blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
+			if (blockid == 0 || blockid == 3)
+				continue;
+			blockPos[0] = (int)(posadj.x);
+			blockPos[1] = (int)posadj.y;
+			blockPos[2] = (int)(posadj.z);
+			blockPos[3] = blockid;
+		}
+		return blockPos;
+	}
+	
 	public Vector3f getCurrentBlockPos() {
 		Vector3f pos = camera.getPosition();
 		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
@@ -232,30 +267,33 @@ public class MouseBlockPicker {
 		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
 		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
 		
-		Vector3f walked = new Vector3f(currentRay.x, currentRay.y, currentRay.z);
-		for (int i = 0; i < RE_MNT; i++) {
-			walked.x -= xStep;
-			walked.y -= yStep;
-			walked.z -= zStep;
-			Vector3f posadj = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
-			Vector3f posadjUn = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
-			Chunk c = getTerrain(posadj.x, posadj.z);
-			if (c == null)
-				continue;
-			posadj.x %= Chunk.x;
-			posadj.z %= Chunk.z;
-			if (posadj.x < 0)
-				posadj.x = biasNegative(posadj.x, -Chunk.x);
-			if (posadj.z < 0)
-				posadj.z = biasNegative(posadj.z, -Chunk.z);
-			short blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
-			if (blockid == 0) {
-				//b.playBreakSound((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
-				//b.onBlockBreaked((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z), world);
-				c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), (int)posadjUn.x, (int)posadjUn.z, block);
-				world.updateBlocksAround((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
-				c.remesh();
-				return true;
+		int[] pointf = getCurrentBlockPointPos();
+		if (!Block.blocks.get((short)pointf[3]).onBlockInteract(pointf[0], pointf[1], pointf[2], world, i)) {
+			Vector3f walked = new Vector3f(currentRay.x, currentRay.y, currentRay.z);
+			for (int i = 0; i < RE_MNT; i++) {
+				walked.x -= xStep;
+				walked.y -= yStep;
+				walked.z -= zStep;
+				Vector3f posadj = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
+				Vector3f posadjUn = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
+				Chunk c = getTerrain(posadj.x, posadj.z);
+				if (c == null)
+					continue;
+				posadj.x %= Chunk.x;
+				posadj.z %= Chunk.z;
+				if (posadj.x < 0)
+					posadj.x = biasNegative(posadj.x, -Chunk.x);
+				if (posadj.z < 0)
+					posadj.z = biasNegative(posadj.z, -Chunk.z);
+				short blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
+				if (blockid == 0) {
+					//b.playBreakSound((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
+					//b.onBlockBreaked((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z), world);
+					c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), (int)posadjUn.x, (int)posadjUn.z, block);
+					world.updateBlocksAround((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
+					c.remesh();
+					return true;
+				}
 			}
 		}
 		return false;

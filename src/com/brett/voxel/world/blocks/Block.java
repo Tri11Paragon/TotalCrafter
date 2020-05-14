@@ -7,6 +7,7 @@ import org.lwjgl.util.vector.Vector3f;
 import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
+import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.lighting.LightingEngine;
 
@@ -38,6 +39,8 @@ public class Block {
 	public static final short BLOCK_COAL = 14;
 	public static final short BLOCK_REDSTONE = 15;
 	public static final short BLOCK_EMERALD = 16;
+	public static final short BLOCK_LOG = 17;
+	public static final short BLOCK_LEAVES = 18;
 	
 	public ModelTexture model;
 	public int textureTop, textureBottom, textureLeft, textureRight, textureFront, textureBack;
@@ -87,6 +90,14 @@ public class Block {
 	
 	public void onBlockTick(int x, int y, int z, VoxelWorld world) {
 		
+	}
+	
+	/**
+	 * Called when the player right clicks on this block
+	 * return true if you don't want blocks to be placed.
+	 */
+	public boolean onBlockInteract(int x, int y, int z, VoxelWorld world, PlayerInventory i) {
+		return false;
 	}
 	
 	public int getMiningLevel() {

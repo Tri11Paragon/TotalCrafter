@@ -90,6 +90,12 @@ public class GameRegistry {
 		
 		registerBlock(Block.BLOCK_COAL, new Block(new ModelTexture(loader.loadTexture("coal_ore")), 15
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(1.78f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+		
+		registerBlock(Block.BLOCK_LOG, new Block(new ModelTexture(loader.loadTexture("pine")), 22
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.78f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
+		
+		registerBlock(Block.BLOCK_LEAVES, new Block(new ModelTexture(loader.loadTexture("leaves_oak")), 23
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.60f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_SWORD).setTransparent(true));
 	}
 	
 	private static void registerItems(Loader loader) {
@@ -124,6 +130,13 @@ public class GameRegistry {
 		textures.put(18, "bookshelf");
 		textures.put(19, "iron_ore");
 		textures.put(20, "grass_side");
+		textures.put(21, "oak");
+		textures.put(22, "pine");
+		textures.put(23, "leaves_oak");
+		textures.put(24, "crafting_table_top");
+		textures.put(25, "crafting_table_side");
+		textures.put(26, "crafting_table_front");
+		textures.put(27, "planks_oak");
 		return textures;
 	}
 	

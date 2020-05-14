@@ -3,6 +3,7 @@
 in vec2 textureCoords;
 in float lightLevel;
 in float layerF;
+
 out vec4 out_Color;
 
 uniform sampler2DArray te;

@@ -46,7 +46,7 @@ public class ChunkStore {
 		LevelLoader.loadLevelData(worldLocation);
 		this.cam = cam;
 		this.loader = loader;
-		this.gen = new WorldGenerator();
+		this.gen = new WorldGenerator(world);
 		this.world = world;
 		new Thread(new Runnable() {
 			@Override

@@ -25,18 +25,17 @@ public class PlayerInventory implements IKeyState{
 	private GUIRenderer rend;
 	
 	public PlayerInventory(UIMaster ui) {
-		float sizeX = 64*15 + 5*15;
-		float sizeY = 64*7 + 5*7;
+		float sizeX = 48*15 + 5*15;
+		float sizeY = 48*7 + 5*7;
 		float x = Display.getWidth()/2 - sizeX/2;
-		float y = Display.getHeight()/2 - sizeY/2;
+		float y = Display.getHeight()/2 - sizeY/2 + 120;
 		i = new Inventory((int)LevelLoader.seed, "player");
 		h = new Hotbar(i, ui);
 		for (int j = 0; j < 15; j++) {
 			for (int k = 0; k < 7; k++) {
-				i.addSlot(new Slot(x + (j*64 + 5*j),y + (k*64 + 5*k), 64, 64));
+				i.addSlot(new Slot(x + (j*48),y + (k*48), 48, 48));
 			}
 		}
-//		i.enable();
 		i.loadInventory();
 		ui.addMenu(i);
 		ui.addMenu(h);
