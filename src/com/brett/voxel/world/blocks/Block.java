@@ -41,6 +41,7 @@ public class Block {
 	public static final short BLOCK_EMERALD = 16;
 	public static final short BLOCK_LOG = 17;
 	public static final short BLOCK_LEAVES = 18;
+	public static final short BLOCK_PLANKS = 19;
 	
 	public ModelTexture model;
 	public int textureTop, textureBottom, textureLeft, textureRight, textureFront, textureBack;

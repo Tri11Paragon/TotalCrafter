@@ -18,12 +18,20 @@ public class Slot extends UIButton {
 	
 	public static int texture,hovertexture;
 	protected GUIDynamicText text;
+	private String name = "";
+	private SlotChange sc;
 	
 	private ItemStack stack;
 	
 	public Slot(float x, float y, float width, float height) {
 		super(texture, hovertexture, null, x, y, width, height);
 		text = new GUIDynamicText("", 0.8f, VoxelScreenManager.monospaced, calcVec(x+width-21, y+height-19), width/Display.getWidth(), false);
+	}
+	
+	public Slot(String name, float x, float y, float width, float height) {
+		super(texture, hovertexture, null, x, y, width, height);
+		text = new GUIDynamicText("", 0.8f, VoxelScreenManager.monospaced, calcVec(x+width-21, y+height-19), width/Display.getWidth(), false);
+		this.name = name;
 	}
 	
 	public ItemStack changeItem(ItemStack stack) {
@@ -40,10 +48,10 @@ public class Slot extends UIButton {
 	
 	public int removeItems(int i) {
 		int amt = stack.decreaseStack(i);
-		text.changeTextNoUpdate(Integer.toString(stack.getAmountInStack()));
+		text.changeText(Integer.toString(stack.getAmountInStack()));
 		if (stack.getAmountInStack() <= 0) {
 			stack = null;
-			text.changeTextNoUpdate("");
+			text.changeText("");
 		}
 		return amt;
 	}
@@ -56,7 +64,10 @@ public class Slot extends UIButton {
 	}
 	
 	public int getItemsAmount() {
-		return stack.getAmountInStack();
+		if (stack != null)
+			return stack.getAmountInStack();
+		else
+			return 0;
 	}
 	
 	public void setItemStack(ItemStack stack) {
@@ -88,25 +99,51 @@ public class Slot extends UIButton {
 							stack = PlayerSlot.getStack();
 							PlayerSlot.changeStack(null);
 							text.changeText(Integer.toString(stack.getAmountInStack()));
+							if (sc != null)
+								sc.onChange(this);
 						}
 					} else {
 						if (PlayerSlot.getStack() == null) {
 							PlayerSlot.changeStack(stack);
 							stack = null;
 							text.changeText("");
+							if (sc != null)
+								sc.onChange(this);
 						} else {
-							if (PlayerSlot.getStack().getItem() == stack.getItem()) {
-								int amt = stack.increaseStack(PlayerSlot.getStack().getAmountInStack());
-								PlayerSlot.getStack().setStack(amt);
-								PlayerSlot.change();
-								if (amt == 0)
-									PlayerSlot.changeStack(null);
-								text.changeText(Integer.toString(stack.getAmountInStack()));
+							if (name.contains("o")) {
+								if (PlayerSlot.getStack().getItem() == stack.getItem()) {
+									int amt = PlayerSlot.getStack().increaseStack(stack.getAmountInStack());
+									PlayerSlot.change();
+									if (amt == 0) {
+										this.stack = null;
+										text.changeText("");
+										if (sc != null)
+											sc.onChange(this);
+									} else {
+										stack.setStack(amt);
+										text.changeText(Integer.toString(stack.getAmountInStack()));
+										if (sc != null)
+											sc.onChange(this);
+									}
+								}
 							} else {
-								ItemStack s = PlayerSlot.getStack();
-								PlayerSlot.changeStack(stack);
-								stack = s;
-								text.changeText(Integer.toString(stack.getAmountInStack()));
+								if (PlayerSlot.getStack().getItem() == stack.getItem()) {
+									int amt = stack.increaseStack(PlayerSlot.getStack().getAmountInStack());
+									PlayerSlot.getStack().setStack(amt);
+									PlayerSlot.change();
+									if (amt == 0)
+										PlayerSlot.changeStack(null);
+									text.changeText(Integer.toString(stack.getAmountInStack()));
+									if (sc != null)
+										sc.onChange(this);
+								} else {
+									ItemStack s = PlayerSlot.getStack();
+									PlayerSlot.changeStack(stack);
+									stack = s;
+									text.changeText(Integer.toString(stack.getAmountInStack()));
+									if (sc != null)
+										sc.onChange(this);
+								}
 							}
 						}
 					}
@@ -133,6 +170,19 @@ public class Slot extends UIButton {
 		} else {
 			super.texture2 = -1;
 		}
+	}
+
+	public Slot setSc(SlotChange sc) {
+		this.sc = sc;
+		return this;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

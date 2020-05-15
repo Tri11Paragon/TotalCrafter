@@ -8,6 +8,7 @@ import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.renderer.datatypes.SaveEvent;
 import com.brett.sound.AudioController;
+import com.brett.voxel.inventory.recipe.CraftingManager;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.blocks.BlockAir;
 import com.brett.voxel.world.blocks.BlockGrass;
@@ -37,6 +38,8 @@ public class GameRegistry {
 	public static void init(Loader loader) {
 		registerBlocks(loader);
 		registerItems(loader);
+		CraftingManager.registerCrafting(Block.BLOCK_LOG + "", Block.BLOCK_PLANKS, 4);
+		CraftingManager.registerCrafting(Block.BLOCK_PLANKS + ";" + Block.BLOCK_PLANKS, Item.ITEM_STICK, 4);
 	}
 	
 	private static void registerBlocks(Loader loader) {
@@ -96,6 +99,9 @@ public class GameRegistry {
 		
 		registerBlock(Block.BLOCK_LEAVES, new Block(new ModelTexture(loader.loadTexture("leaves_oak")), 23
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.60f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_SWORD).setTransparent(true));
+		
+		registerBlock(Block.BLOCK_PLANKS, new Block(new ModelTexture(loader.loadTexture("planks")), 6
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.59f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
 	}
 	
 	private static void registerItems(Loader loader) {
@@ -106,6 +112,7 @@ public class GameRegistry {
 		registerItem(new ItemStonePickaxe(Item.ITEM_STONEPICK, new ModelTexture(loader.loadTexture("stonepick"))));
 		registerItem(new ItemTinPickaxe(Item.ITEM_TINPICK, new ModelTexture(loader.loadTexture("tinpick"))));
 		registerItem(new ItemWoodenPickaxe(Item.ITEM_WOODPICK, new ModelTexture(loader.loadTexture("woodenpick"))));
+		registerItem(new Item(Item.ITEM_STICK, new ModelTexture(loader.loadTexture("sticks"))));
 	}
 	
 	public static HashMap<Integer, String> registerTextures() {

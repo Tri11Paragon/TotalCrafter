@@ -8,6 +8,6 @@ package com.brett.voxel.inventory;
 
 public interface SlotChange {
 	
-	public void onChange();
+	public void onChange(Slot s);
 	
 }

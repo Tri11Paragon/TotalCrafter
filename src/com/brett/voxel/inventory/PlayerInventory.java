@@ -8,6 +8,7 @@ import com.brett.IKeyState;
 import com.brett.console.Console;
 import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.UIMaster;
+import com.brett.voxel.inventory.recipe.PlayerCrafting;
 import com.brett.voxel.world.LevelLoader;
 import com.brett.voxel.world.items.ItemStack;
 
@@ -23,12 +24,13 @@ public class PlayerInventory implements IKeyState{
 	private Hotbar h;
 	@SuppressWarnings("unused")
 	private GUIRenderer rend;
+	private PlayerCrafting craft;
 	
 	public PlayerInventory(UIMaster ui) {
-		float sizeX = 48*15 + 5*15;
-		float sizeY = 48*7 + 5*7;
+		float sizeX = 48*15;
+		float sizeY = 48*7;
 		float x = Display.getWidth()/2 - sizeX/2;
-		float y = Display.getHeight()/2 - sizeY/2 + 120;
+		float y = Display.getHeight()/2 - sizeY/2 + 80;
 		i = new Inventory((int)LevelLoader.seed, "player");
 		h = new Hotbar(i, ui);
 		for (int j = 0; j < 15; j++) {
@@ -40,6 +42,9 @@ public class PlayerInventory implements IKeyState{
 		ui.addMenu(i);
 		ui.addMenu(h);
 		this.rend = ui.getRenderer();
+		this.craft = new PlayerCrafting();
+		craft.loadInventory();
+		ui.addMenu(craft);
 	}
 	
 	public void addItemToInventory(ItemStack i) {
@@ -59,7 +64,7 @@ public class PlayerInventory implements IKeyState{
 	}
 	
 	public void update() {
-		
+		craft.update();
 	}
 	
 	public List<Slot> getSlots(){
@@ -73,7 +78,8 @@ public class PlayerInventory implements IKeyState{
 	@Override
 	public void onKeyPressed() {
 		if (Keyboard.isKeyDown(Keyboard.KEY_E) && !Console.getIsOpen()) {
-			i.toggleEnabled();
+			this.i.toggleEnabled();
+			this.craft.toggleEnabled();
 		}
 	}
 
@@ -84,6 +90,7 @@ public class PlayerInventory implements IKeyState{
 	public void cleanup() {
 		h.saveInventory();
 		i.saveInventory();
+		craft.saveInventory();
 	}
 	
 }

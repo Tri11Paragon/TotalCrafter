@@ -21,6 +21,7 @@ public class Item {
 	public static final short ITEM_COPPERPICK = 1028;
 	public static final short ITEM_TINPICK = 1029;
 	public static final short ITEM_DIAMONDPICK = 1030;
+	public static final short ITEM_STICK = 1031;
 	
 	public static Map<Short, Item> items = new HashMap<Short, Item>();
 	public static Map<Item, Short> inverseItems = new HashMap<Item, Short>();
