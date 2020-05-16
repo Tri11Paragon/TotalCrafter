@@ -13,7 +13,7 @@ public class ItemIronPickaxe extends ItemTool {
 	public ItemIronPickaxe(short id, ModelTexture texture) {
 		super(id, texture);
 		super.setMiningLevel(3);
-		super.setMiningSpeed(0.5f);
+		super.setMiningSpeed(0.53f);
 		super.setMaxStackSize(1);
 		super.setToolType(ItemTool.TOOL_PICKAXE);
 	}

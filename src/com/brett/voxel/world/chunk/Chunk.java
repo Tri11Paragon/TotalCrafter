@@ -10,6 +10,7 @@ import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.RawModel;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
+import com.brett.voxel.renderer.RENDERMODE;
 import com.brett.voxel.renderer.shaders.VoxelShader;
 import com.brett.voxel.world.MeshStore;
 import com.brett.voxel.world.VoxelWorld;
@@ -144,19 +145,22 @@ public class Chunk {
 		boolean back = true;
 		byte data = 0;
 		try {
-			if (blocks[i][j + 1][k] != 0 && !Block.blocks.get(blocks[i][j + 1][k]).isTransparent()) {
+			if (Block.blocks.get(blocks[i][j + 1][k]).getRendermode() == RENDERMODE.SOLID) {
 				top = false;
-			}
+			} else
+				top = true;
 		} catch (IndexOutOfBoundsException e) {}
 		try {
-			if (blocks[i][j - 1][k] != 0 && !Block.blocks.get(blocks[i][j - 1][k]).isTransparent()) {
+			if (Block.blocks.get(blocks[i][j - 1][k]).getRendermode() == RENDERMODE.SOLID) {
 				bottom = false;
-			}
+			} else 
+				bottom = true;
 		} catch (IndexOutOfBoundsException e) {bottom = false;}
 		try {
-			if (blocks[i - 1][j][k] != 0 && !Block.blocks.get(blocks[i - 1][j][k]).isTransparent()) {
+			if (Block.blocks.get(blocks[i - 1][j][k]).getRendermode() == RENDERMODE.SOLID) {
 				left = false;
-			}
+			} else
+				left = true;
 		} catch (IndexOutOfBoundsException e) {
 			Chunk c = s.chunk.getChunk(xoff - 1, zoff);
 			if (c == null) {
@@ -166,40 +170,48 @@ public class Chunk {
 				// top brain indeed
 				data |= 0b0001;
 			} else {
-				if (c.blocks[x-1][j][k] != 0 && !Block.blocks.get(blocks[x-1][j][k]).isTransparent())
+				if (Block.blocks.get(c.blocks[x-1][j][k]).getRendermode() == RENDERMODE.SOLID)
 					left = false;
+				else
+					left = true;
 			}
 		}
 		try {
-			if (blocks[i + 1][j][k] != 0 && !Block.blocks.get(blocks[i+1][j][k]).isTransparent()) {
+			if (Block.blocks.get(blocks[i+1][j][k]).getRendermode() == RENDERMODE.SOLID) {
 				right = false;
-			}
+			} else
+				right = true;
 		} catch (IndexOutOfBoundsException e) {
 			Chunk c = s.chunk.getChunk(xoff + 1, zoff);
 			if (c == null) {
 				right = false;
 				data |= 0b0010;
 			} else {
-				if (c.blocks[0][j][k] != 0 && !Block.blocks.get(c.blocks[0][j][k]).isTransparent())
+				if (Block.blocks.get(c.blocks[0][j][k]).getRendermode() == RENDERMODE.SOLID)
 					right = false;
+				else
+					right = true;
 			}
 		}
 		try {
-			if (blocks[i][j][k + 1] != 0 && !Block.blocks.get(blocks[i][j][k + 1]).isTransparent()) {
+			if (Block.blocks.get(blocks[i][j][k + 1]).getRendermode() == RENDERMODE.SOLID) {
 				front = false;
-			}
+			} else
+				front = true;
 		} catch (IndexOutOfBoundsException e) {
 			Chunk c = s.chunk.getChunk(xoff, zoff + 1);
 			if (c == null) {
 				front = false;
 				data |= 0b0100;
 			} else {
-				if (c.blocks[i][j][0] != 0 && !Block.blocks.get(blocks[i][j][0]).isTransparent())
+				if (Block.blocks.get(c.blocks[i][j][0]).getRendermode() == RENDERMODE.SOLID)
 					front = false;
+				else
+					front = true;
 			}
 		}
 		try {
-			if (blocks[i][j][k - 1] != 0 && !Block.blocks.get(blocks[i][j][k-1]).isTransparent()) {
+			if (Block.blocks.get(blocks[i][j][k-1]).getRendermode() == RENDERMODE.SOLID) {
 				back = false;
 			}
 		} catch (IndexOutOfBoundsException e) {
@@ -208,7 +220,7 @@ public class Chunk {
 				back = false;
 				data |= 0b1000;
 			} else {
-				if (c.blocks[i][j][z-1] != 0 && !Block.blocks.get(blocks[i][j][z-1]).isTransparent())
+				if (Block.blocks.get(c.blocks[i][j][z-1]).getRendermode() == RENDERMODE.SOLID)
 					back = false;
 			}
 		}

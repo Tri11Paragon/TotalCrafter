@@ -9,8 +9,10 @@ import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.renderer.datatypes.SaveEvent;
 import com.brett.sound.AudioController;
 import com.brett.voxel.inventory.recipe.CraftingManager;
+import com.brett.voxel.renderer.RENDERMODE;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.blocks.BlockAir;
+import com.brett.voxel.world.blocks.BlockCrafting;
 import com.brett.voxel.world.blocks.BlockGrass;
 import com.brett.voxel.world.blocks.BlockSand;
 import com.brett.voxel.world.items.Item;
@@ -40,6 +42,11 @@ public class GameRegistry {
 		registerItems(loader);
 		CraftingManager.registerCrafting(Block.BLOCK_LOG + "", Block.BLOCK_PLANKS, 4);
 		CraftingManager.registerCrafting(Block.BLOCK_PLANKS + ";" + Block.BLOCK_PLANKS, Item.ITEM_STICK, 4);
+		CraftingManager.registerCrafting(Block.BLOCK_PLANKS + "," + Block.BLOCK_PLANKS + ";" + Block.BLOCK_PLANKS + "," + Block.BLOCK_PLANKS, Block.BLOCK_CRAFT, 1);
+		CraftingManager.registerCrafting(Block.BLOCK_PLANKS + "," + Block.BLOCK_PLANKS + "," + Block.BLOCK_PLANKS + 
+				";0,"+Item.ITEM_STICK + ",0;0," + Item.ITEM_STICK +",0", Item.ITEM_WOODPICK, 1);
+		CraftingManager.registerCrafting(Block.BLOCK_COBBLE + "," + Block.BLOCK_COBBLE + "," + Block.BLOCK_COBBLE + 
+				";0,"+Item.ITEM_STICK + ",0;0," + Item.ITEM_STICK +",0", Item.ITEM_STONEPICK, 1);
 	}
 	
 	private static void registerBlocks(Loader loader) {
@@ -71,7 +78,7 @@ public class GameRegistry {
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(2.5f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
 		registerBlock(Block.BLOCK_GLASS, new Block(new ModelTexture(loader.loadTexture("glass")), 9
-				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(2.5f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE).setTransparent(true));
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(2.5f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE).setRendermode(RENDERMODE.TRANSPARENT));
 		
 		registerBlock(Block.BLOCK_GLOWSTONE, new Block(new ModelTexture(loader.loadTexture("glowstone")), 10
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.78f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE).setLightLevel((byte) 15));
@@ -98,10 +105,16 @@ public class GameRegistry {
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.78f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
 		
 		registerBlock(Block.BLOCK_LEAVES, new Block(new ModelTexture(loader.loadTexture("leaves_oak")), 23
-				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.60f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_SWORD).setTransparent(true));
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.60f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_SWORD).setRendermode(RENDERMODE.TRANSPARENT));
 		
 		registerBlock(Block.BLOCK_PLANKS, new Block(new ModelTexture(loader.loadTexture("planks")), 6
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.59f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
+		
+		registerBlock(Block.BLOCK_CRAFT, new BlockCrafting(new ModelTexture(loader.loadTexture("crafting_table_front"))
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.39f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
+		
+		registerBlock(Block.BLOCK_COPPER, new Block(new ModelTexture(loader.loadTexture("copper_ore")), 28
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.99f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 	}
 	
 	private static void registerItems(Loader loader) {
@@ -144,6 +157,7 @@ public class GameRegistry {
 		textures.put(25, "crafting_table_side");
 		textures.put(26, "crafting_table_front");
 		textures.put(27, "planks_oak");
+		textures.put(28, "copper_ore");
 		return textures;
 	}
 	

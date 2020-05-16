@@ -13,7 +13,7 @@ public class ItemStonePickaxe extends ItemTool {
 	public ItemStonePickaxe(short id, ModelTexture texture) {
 		super(id, texture);
 		super.setMiningLevel(2);
-		super.setMiningSpeed(0.4f);
+		super.setMiningSpeed(0.43f);
 		super.setMaxStackSize(1);
 		super.setToolType(ItemTool.TOOL_PICKAXE);
 	}

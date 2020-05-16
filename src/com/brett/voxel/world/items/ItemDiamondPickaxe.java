@@ -13,7 +13,7 @@ public class ItemDiamondPickaxe extends ItemTool {
 	public ItemDiamondPickaxe(short id, ModelTexture texture) {
 		super(id, texture);
 		super.setMiningLevel(4);
-		super.setMiningSpeed(0.75f);
+		super.setMiningSpeed(0.8f);
 		super.setMaxStackSize(1);
 		super.setToolType(ItemTool.TOOL_PICKAXE);
 	}

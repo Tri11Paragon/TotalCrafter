@@ -35,6 +35,7 @@ import com.brett.voxel.inventory.InventoryMaster;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.world.GameRegistry;
 import com.brett.voxel.world.VoxelWorld;
+import com.brett.voxel.world.blocks.BlockCrafting;
 import com.brett.voxel.world.chunk.AtlasHelper;
 import com.brett.voxel.world.chunk.Chunk;
 import com.brett.world.cameras.CreativeFirstPersonCamera;
@@ -291,6 +292,7 @@ public class VoxelScreenManager {
 		isOpen = false;
 		Mouse.setGrabbed(false);
 		pi.cleanup();
+		BlockCrafting.craft.saveInventory();
 		//testserver.close();
 		//client.close();and it will 
 		staticSource.delete();

@@ -30,7 +30,7 @@ public class Hotbar extends Inventory implements IEventListener, IKeyState {
 		super(694, "hotbar");
 		this.pl = pl;
 		this.rend = ui.getRenderer();
-		float sizeX = 64*9 + 9*2;
+		float sizeX = 64*9;
 		this.x = Display.getWidth()/2 - sizeX/2;
 		for (int i = 0; i < 9; i++) {
 			super.addSlot(new Slot(x + (i*64), Display.getHeight()-70, 64, 64));
@@ -52,7 +52,7 @@ public class Hotbar extends Inventory implements IEventListener, IKeyState {
 	public void update() {
 		if (this.isEnabled()) {
 			rend.startrender();
-			rend.render(hoverTexture, x + (selectedSlot*64 + selectedSlot*2), Display.getHeight()-70, 64, 64);
+			rend.render(hoverTexture, x + (selectedSlot*64), Display.getHeight()-70, 64, 64);
 			rend.stoprender();
 		}
 		if (pl.getEnabled())

@@ -3,6 +3,7 @@ package com.brett.voxel.inventory;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import com.brett.IKeyState;
 import com.brett.console.Console;
@@ -10,6 +11,7 @@ import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.voxel.inventory.recipe.PlayerCrafting;
 import com.brett.voxel.world.LevelLoader;
+import com.brett.voxel.world.blocks.BlockCrafting;
 import com.brett.voxel.world.items.ItemStack;
 
 /**
@@ -18,7 +20,7 @@ import com.brett.voxel.world.items.ItemStack;
 * @date Mar. 12, 2020
 */
 //TODO: make this a extension of inventory.
-public class PlayerInventory implements IKeyState{
+public class PlayerInventory implements IKeyState {
 	
 	private Inventory i;
 	private Hotbar h;
@@ -74,12 +76,51 @@ public class PlayerInventory implements IKeyState{
 	public void saveInventory() {
 		i.saveInventory();
 	}
+	
+	public void enable() {
+		i.enable();
+		craft.enable();
+	}
+	
+	public void enableIOnly() {
+		i.enable();
+	}
+	
+	public void disable() {
+		i.disable();
+		craft.disable();
+	}
+	
+	public void disableIOnly() {
+		i.disable();
+	}
+	
+	public void toggleEnabled() {
+		i.toggleEnabled();
+		craft.toggleEnabled();
+	}
+	
+	public void toggleEnabledIOnly() {
+		i.toggleEnabled();
+	}
 
 	@Override
 	public void onKeyPressed() {
 		if (Keyboard.isKeyDown(Keyboard.KEY_E) && !Console.getIsOpen()) {
-			this.i.toggleEnabled();
-			this.craft.toggleEnabled();
+			if (BlockCrafting.craft != null) {
+				if (BlockCrafting.craft.isEnabled()) {
+					BlockCrafting.craft.disable();
+					this.i.disable();
+					this.craft.disable();
+					Mouse.setGrabbed(true);
+				} else {
+					this.i.toggleEnabled();
+					this.craft.toggleEnabled();
+				}
+			} else {
+				this.i.toggleEnabled();
+				this.craft.toggleEnabled();
+			}
 		}
 	}
 

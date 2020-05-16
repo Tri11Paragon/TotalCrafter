@@ -47,6 +47,8 @@ public class Slot extends UIButton {
 	}
 	
 	public int removeItems(int i) {
+		if (stack == null)
+			return 0;
 		int amt = stack.decreaseStack(i);
 		text.changeText(Integer.toString(stack.getAmountInStack()));
 		if (stack.getAmountInStack() <= 0) {
@@ -82,6 +84,12 @@ public class Slot extends UIButton {
 		if (stack == null)
 			return null;
 		return stack.getItem();
+	}
+	
+	public int getItemID() {
+		if (stack == null)
+			return 0;
+		return stack.getItem().getId();
 	}
 	
 	private boolean prevState;
@@ -122,8 +130,8 @@ public class Slot extends UIButton {
 									} else {
 										stack.setStack(amt);
 										text.changeText(Integer.toString(stack.getAmountInStack()));
-										if (sc != null)
-											sc.onChange(this);
+										//if (sc != null)
+											//sc.onChange(this);
 									}
 								}
 							} else {
@@ -152,13 +160,38 @@ public class Slot extends UIButton {
 					if (stack != null) {
 						if(PlayerSlot.getStack() != null) {
 							if (PlayerSlot.getStack().getItem() == stack.getItem()) {
-								int amt = stack.increaseStack(PlayerSlot.getStack().getAmountInStack()/2);
-								PlayerSlot.getStack().setStack(PlayerSlot.getStack().getAmountInStack()/2 + amt);
-								PlayerSlot.change();
-								if ((PlayerSlot.getStack().getAmountInStack()/2 + amt) == 0)
+								stack.increaseStack(1);
+								PlayerSlot.getStack().decreaseStack(1);
+								if (PlayerSlot.getStack().getAmountInStack() < 1)
 									PlayerSlot.changeStack(null);
+								PlayerSlot.change();
 								text.changeText(Integer.toString(stack.getAmountInStack()));
+								if (sc != null)
+									sc.onChange(this);
 							}
+						} else {
+							PlayerSlot.changeStack(new ItemStack(stack.getItem(), stack.getAmountInStack()/2));
+							stack.decreaseStack(stack.getAmountInStack()/2);
+							if ((PlayerSlot.getStack().getAmountInStack()) <= 0)
+								PlayerSlot.changeStack(null);
+							PlayerSlot.change();
+							if (stack.getAmountInStack() <= 0)
+								stack = null;
+							if (stack != null)
+								text.changeText(Integer.toString(stack.getAmountInStack()));
+							if (sc != null)
+								sc.onChange(this);
+						}
+					} else {
+						if(PlayerSlot.getStack() != null) {
+							stack = new ItemStack(PlayerSlot.getStack().getItem(), 1);
+							PlayerSlot.getStack().decreaseStack(1);
+							if (PlayerSlot.getStack().getAmountInStack() < 1)
+								PlayerSlot.changeStack(null);
+							PlayerSlot.change();
+							text.changeText(Integer.toString(stack.getAmountInStack()));
+							if (sc != null)
+								sc.onChange(this);
 						}
 					}
 				}

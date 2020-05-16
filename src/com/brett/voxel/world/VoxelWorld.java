@@ -128,6 +128,8 @@ public class VoxelWorld {
 							((ItemTool) st.getItem()).onRightClick(c[0], c[1], c[2], this, cam, i);
 						}
 							
+					} else {
+						picker.placeBlock((short) 0);
 					}
 				}
 				if (Mouse.getEventButton() == 0) {
@@ -138,6 +140,9 @@ public class VoxelWorld {
 							((ItemTool) st.getItem()).onLeftClick(c[0], c[1], c[2], this, cam, i);
 						}
 					}
+				}
+				if (Mouse.getEventButton() == 2) {
+					picker.test();
 				}
 			}
 		}

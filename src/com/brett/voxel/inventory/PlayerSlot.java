@@ -24,7 +24,8 @@ public class PlayerSlot {
 	}
 	
 	public static void change() {
-		text.changeText(Integer.toString(itemInHand.getAmountInStack()));
+		if (itemInHand != null)
+			text.changeText(Integer.toString(itemInHand.getAmountInStack()));
 	}
 	
 	public static void changeStack(ItemStack s) {

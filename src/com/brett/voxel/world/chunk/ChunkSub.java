@@ -19,6 +19,7 @@ public class ChunkSub {
 	private short[][][] blocks = new short[Chunk.x][y][Chunk.z];
 	private byte[][][] lightLevel = new byte[Chunk.x][y][Chunk.z];
 	private RawBlockModel[][][] blocksModels = new RawBlockModel[Chunk.x][y][Chunk.z];
+	@SuppressWarnings("unused")
 	private float xoff, yoff, zoff;
 	
 	public ChunkSub(VoxelWorld world, float xoff, float yoff, float zoff) {

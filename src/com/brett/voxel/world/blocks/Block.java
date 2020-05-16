@@ -8,6 +8,7 @@ import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.PlayerInventory;
+import com.brett.voxel.renderer.RENDERMODE;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.lighting.LightingEngine;
 
@@ -42,6 +43,8 @@ public class Block {
 	public static final short BLOCK_LOG = 17;
 	public static final short BLOCK_LEAVES = 18;
 	public static final short BLOCK_PLANKS = 19;
+	public static final short BLOCK_CRAFT = 20;
+	public static final short BLOCK_COPPER = 21;
 	
 	public ModelTexture model;
 	public int textureTop, textureBottom, textureLeft, textureRight, textureFront, textureBack;
@@ -52,7 +55,7 @@ public class Block {
 	private float hardness = 1;
 	private int miningLevel = 0;
 	private int effectiveTool = 0;
-	private boolean isTransparent = false;
+	private RENDERMODE rendermode = RENDERMODE.SOLID;
 
 	public Block(ModelTexture model, int textureIndex) {
 		this.model = model;
@@ -62,15 +65,13 @@ public class Block {
 		this.textureRight = textureIndex;
 		this.textureFront = textureIndex;
 		this.textureBack = textureIndex;
+		rendermode = RENDERMODE.SOLID;
 	}
 	
 	public Block(ModelTexture model) {
 		this.model = model;
 		this.textureTop = 0;
-	}
-	
-	public void onBlockCreated(int x, int y, int z, VoxelWorld world) {
-		
+		rendermode = RENDERMODE.SOLID;
 	}
 	
 	public void onBlockPlaced(int x, int y, int z, VoxelWorld world) {
@@ -197,12 +198,12 @@ public class Block {
 		return this;
 	}
 
-	public boolean isTransparent() {
-		return isTransparent;
+	public RENDERMODE getRendermode() {
+		return rendermode;
 	}
 
-	public Block setTransparent(boolean isTransparent) {
-		this.isTransparent = isTransparent;
+	public Block setRendermode(RENDERMODE rendermode) {
+		this.rendermode = rendermode;
 		return this;
 	}
 	
