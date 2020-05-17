@@ -11,6 +11,8 @@ import java.util.List;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import com.brett.renderer.datatypes.SmallModelData;
+
 public class OBJLoader {
 	private static final String RES_LOC = "resources/models/";
 
@@ -79,7 +81,86 @@ public class OBJLoader {
 				furthest, objFileName);
 		return data;
 	}
-
+	
+	public static SmallModelData loadAsArrays(String file) {
+		float[] verts = {};
+		float[] uvs = {};
+		List<float[]> v = new ArrayList<float[]>();
+		List<float[]> u = new ArrayList<float[]>();
+		FileReader fr = null;
+		try {
+			fr = new FileReader(RES_LOC + file + ".obj");
+		} catch (FileNotFoundException e) {System.err.println("File not found in res; don't use any extention");}
+		BufferedReader r = new BufferedReader(fr);
+		String line;
+		
+		try {
+			while (true) {
+				line = r.readLine();
+				String[] currentLine = line.split(" ");
+				if (line.startsWith("v ")) {
+					v.add(new float[] {Float.parseFloat(currentLine[1]), Float.parseFloat(currentLine[2]), Float.parseFloat(currentLine[3])});
+				} else if (line.startsWith("vt ")) {
+					u.add(new float[] {Float.parseFloat(currentLine[1]), Float.parseFloat(currentLine[2])});
+				} else if (line.startsWith("f ")) {
+					break;
+				}
+			}
+			while (line != null && line.startsWith("f ")) {
+				String[] currentLine = line.split(" ");
+				String[] vertex1 = currentLine[1].split("/");
+				String[] vertex2 = currentLine[2].split("/");
+				String[] vertex3 = currentLine[3].split("/");
+				verts = addArrays(verts, v.get((int) (Float.parseFloat(vertex1[0])-1)));
+				uvs = addArrays(uvs, u.get((int)(Float.parseFloat(vertex1[1])-1)));
+				
+				verts = addArrays(verts, v.get((int) (Float.parseFloat(vertex2[0])-1)));
+				uvs = addArrays(uvs, u.get((int)(Float.parseFloat(vertex2[1])-1)));
+				
+				verts = addArrays(verts, v.get((int) (Float.parseFloat(vertex3[0])-1)));
+				uvs = addArrays(uvs, u.get((int)(Float.parseFloat(vertex3[1])-1)));
+				line = r.readLine();
+			}
+		} catch (Exception e) {}
+		return new SmallModelData(verts, uvs);
+	}
+	
+	public static void printArrays(String file) {
+		SmallModelData model = OBJLoader.loadAsArrays(file);
+		
+		float[] verts = model.getVerts();
+		float[] uvs = model.getUvs();
+		String v = "VERTS: \n";
+		String u = "UVS: \n";
+		
+		for (int i = 0; i < verts.length; i+=3) {
+			v += verts[i] + "f,";
+			v += verts[i+1] + "f,";
+			v += verts[i+2] + "f, \n";
+		}
+		for (int i = 0; i < uvs.length; i+=2) {
+			u += uvs[i] + "f,";
+			u += uvs[i+1] + "f, \n";
+		}
+		
+		System.out.println(v);
+		System.out.println(u);
+	}
+	
+	public static float[] addArrays(float[] array1, float[] array2) {
+		float[] rtv = new float[array1.length + array2.length];
+		
+		for (int i = 0; i<array1.length;i++) {
+			rtv[i] = array1[i];
+		}
+		
+		for (int i = 0; i<array2.length; i++) {
+			rtv[i + array1.length] = array2[i];
+		}
+		
+		return rtv;
+	}
+	
 	private static void processVertex(String[] vertex, List<Vertex> vertices, List<Integer> indices) {
 		int index = Integer.parseInt(vertex[0]) - 1;
 		Vertex currentVertex = vertices.get(index);

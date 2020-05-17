@@ -13,6 +13,7 @@ import com.brett.voxel.renderer.RENDERMODE;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.blocks.BlockAir;
 import com.brett.voxel.world.blocks.BlockCrafting;
+import com.brett.voxel.world.blocks.BlockFlower;
 import com.brett.voxel.world.blocks.BlockGrass;
 import com.brett.voxel.world.blocks.BlockSand;
 import com.brett.voxel.world.items.Item;
@@ -115,6 +116,12 @@ public class GameRegistry {
 		
 		registerBlock(Block.BLOCK_COPPER, new Block(new ModelTexture(loader.loadTexture("copper_ore")), 28
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.99f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+		
+		registerBlock(Block.BLOCK_YELLOWFLOWER, new BlockFlower(new ModelTexture(loader.loadTexture("flower_yellow")), 29
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.1f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_HAND));
+		
+		registerBlock(Block.BLOCK_REDFLOWER, new BlockFlower(new ModelTexture(loader.loadTexture("flower_red")), 30
+				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.1f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_HAND));
 	}
 	
 	private static void registerItems(Loader loader) {
@@ -158,6 +165,8 @@ public class GameRegistry {
 		textures.put(26, "crafting_table_front");
 		textures.put(27, "planks_oak");
 		textures.put(28, "copper_ore");
+		textures.put(29, "flower_yellow");
+		textures.put(30, "flower_red");
 		return textures;
 	}
 	

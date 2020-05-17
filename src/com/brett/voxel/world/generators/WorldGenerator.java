@@ -87,6 +87,12 @@ public class WorldGenerator {
 						blks[i][t][k] = Block.BLOCK_LOG;
 					}
 				}
+				if (rnd.nextInt(200) == 5) {
+					blks[i][ref+1][k] = Block.BLOCK_REDFLOWER;
+				}
+				if (rnd.nextInt(150) == 5) {
+					blks[i][ref+1][k] = Block.BLOCK_YELLOWFLOWER;
+				}
 				for (int j=0; j < Chunk.y; j++) {
 					if (j == ref)
 						blks[i][j][k] = 4;

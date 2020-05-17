@@ -22,7 +22,7 @@ public class BlockAir extends Block {
 		// EVERY LIKE 32 BLOCKS OR SOMETHING
 		// THIS IS STUPID
 		/**
-		 * turns out the retard that coded the chunk mesher forgot to change the blocks[][][] in the exception :/
+		 * turns out the retard that coded the chunk mesher forgot to change the blocks[][][] in the exception :/							
 		 */
 		this.setRendermode(RENDERMODE.TRANSPARENT);
 	}

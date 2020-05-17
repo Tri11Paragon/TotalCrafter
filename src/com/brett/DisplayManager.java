@@ -25,7 +25,7 @@ public class DisplayManager {
 	
 	public static void createDisplay(boolean isUsingFBOs) {
 		
-		ContextAttribs attribs = new ContextAttribs(4, 2).withForwardCompatible(true).withProfileCore(true);
+		ContextAttribs attribs = new ContextAttribs(3, 3).withForwardCompatible(true).withProfileCore(true);
 		
 		try {
 			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));

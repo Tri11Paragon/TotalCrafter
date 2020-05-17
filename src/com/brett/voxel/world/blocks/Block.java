@@ -45,6 +45,8 @@ public class Block {
 	public static final short BLOCK_PLANKS = 19;
 	public static final short BLOCK_CRAFT = 20;
 	public static final short BLOCK_COPPER = 21;
+	public static final short BLOCK_YELLOWFLOWER = 22;
+	public static final short BLOCK_REDFLOWER = 23;
 	
 	public ModelTexture model;
 	public int textureTop, textureBottom, textureLeft, textureRight, textureFront, textureBack;
@@ -56,7 +58,18 @@ public class Block {
 	private int miningLevel = 0;
 	private int effectiveTool = 0;
 	private RENDERMODE rendermode = RENDERMODE.SOLID;
-
+	private float[] specialVerts;
+	private float[] specialTextures;
+	private float[] layers;
+	
+	public Block(ModelTexture model, float[] verts, float[] texs, float[] layers) {
+		this.model = model;
+		this.specialVerts = verts;
+		this.specialTextures = texs;
+		this.layers = layers;
+		rendermode = RENDERMODE.SPECIAL;
+	}
+	
 	public Block(ModelTexture model, int textureIndex) {
 		this.model = model;
 		this.textureTop = textureIndex;
@@ -204,6 +217,33 @@ public class Block {
 
 	public Block setRendermode(RENDERMODE rendermode) {
 		this.rendermode = rendermode;
+		return this;
+	}
+
+	public float[] getSpecialVerts() {
+		return specialVerts;
+	}
+
+	public Block setSpecialVerts(float[] specialVerts) {
+		this.specialVerts = specialVerts;
+		return this.setRendermode(RENDERMODE.SPECIAL);
+	}
+
+	public float[] getSpecialTextures() {
+		return specialTextures;
+	}
+
+	public Block setSpecialTextures(float[] specialTextures) {
+		this.specialTextures = specialTextures;
+		return this;
+	}
+
+	public float[] getLayers() {
+		return layers;
+	}
+
+	public Block setLayers(float[] layers) {
+		this.layers = layers;
 		return this;
 	}
 	

@@ -64,6 +64,7 @@ public class VoxelScreenManager {
 	private static DisplaySource scene;
 	
 	public static void init() {
+		
 		SettingsLoader.loadSettings();
 		DisplayManager.createDisplay(false);
 		KeyMaster.init();
