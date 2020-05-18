@@ -21,13 +21,23 @@ public class CraftingManager {
 	// eh well turns out im not using regex so i guess this smaller map will do.
 	// i kept ^ because i thought it was very neat
 	
-	/*
+	/**
 	 * Stores all the crafting recipes. first int is the # of rows
 	 * second int is the output id
 	 * the tuple stores the actual recipe along with the output and # of output
 	 * first 32 bits is the amount, second 32 bits is the output id
 	 */
 	private static HashMap<Integer, HashMap<Integer, Tuple<String, Long>>> craftingRecipes = new HashMap<Integer, HashMap<Integer, Tuple<String, Long>>>();
+	
+	/**
+	 * Stores all the furnace recipes. 
+	 * Integer is the input
+	 * (left to right)
+	 * first 32 bits in the long is craft time (in ticks)
+	 * last 32 bits is output id
+	 */
+	private static HashMap<Integer, Long> furnaceRecipes = new HashMap<Integer, Long>();
+	
 	
 	/**
 	 * Takes in a recipe in standard format <b>(ex id,id,id;id,id,id;id,id,id)</b>, which would be a crafting TABLE recipe as it has 3 rows. <br>
@@ -77,6 +87,27 @@ public class CraftingManager {
 			}
 		}
 		return 0;
+	}
+	
+	/**
+	 * Registers a recipe with the furnace.
+	 */
+	public static void registerSmeltingRecipe(int input, int output, int craftTime) {
+		long cr = ((long)craftTime) << 32;
+		cr |= output;
+		furnaceRecipes.put(input, cr);
+	}
+	
+	/**
+	 * Returns the crafting time and output in long format
+	 * first 32 bits is craft time
+	 * last 32 bits is output
+	 */
+	public static long getFurnaceRecipe(int input) {
+		if (furnaceRecipes.containsKey(input))
+			return furnaceRecipes.get(input);
+		else
+			return 0;
 	}
 	
 	private static StringBuilder buildCharacters(String[] lines, HashMap<Integer, Character> chars, StringBuilder bild) {

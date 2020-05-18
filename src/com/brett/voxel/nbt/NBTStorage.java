@@ -80,15 +80,15 @@ public class NBTStorage {
 			int[] data = convertNBT(s.getValue());
 			// save the nbt to disk.
 			for (int i = 0 ; i < tag.length; i++) {
-				try {os.write(tag[i]);} catch (IOException e) {}
+				try {os.write(tag[i]);} catch (Exception e) {}
 			}
 			for (int i = 0 ; i < tag.length; i++) {
-				try {os.write(data[i]);} catch (IOException e) {}
+				try {os.write(data[i]);} catch (Exception e) {}
 			}
 		}
 		try {
 			os.close();
-		} catch (IOException e) {}
+		} catch (Exception e) {}
 	}
 	
 	/*

@@ -133,11 +133,11 @@ public class Inventory implements IMenu {
 	}
 	
 	private Vector2f adjustPos(Vector2f pos, Vector2f scale) {
-		return new Vector2f(pos.x + scale.x * 2, pos.y + scale.y * 2);
+		return new Vector2f(pos.x + scale.x * 3/2, pos.y + scale.y * 3/2);
 	}
 	
 	private Vector2f adjustScale(Vector2f v) {
-		return new Vector2f(v.x/4, v.y/4);
+		return new Vector2f(v.x/3, v.y/3);
 	}
 	
 	@Override

@@ -81,7 +81,13 @@ public class Region {
 							for (int j = 0; j < blks[i].length; j++) {
 								for (int k = 0; k < blks[i][j].length; k++) {
 									blks[i][j][k] = is.readShort();
-									Block.blocks.get(blks[i][j][k]).onBlockPlaced(i + (posX * Chunk.x), j, k + (posZ * Chunk.z), s);
+									int xk = 0;
+									int zk = 0;
+									if (posX < 0)
+										xk = 1;
+									if (posZ < 0)
+										zk = 1;
+									Block.blocks.get(blks[i][j][k]).onBlockPlaced(i + (posX * Chunk.x) + xk, j, k + (posZ * Chunk.z) + zk, s);
 								}
 							}
 						}

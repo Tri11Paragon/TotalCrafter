@@ -430,9 +430,11 @@ public class MouseBlockPicker {
 						q = mq;
 						renderer.changeOverlayProgress(q, mq);
 						if (bid != 0) {
-							i.addItemToInventory(new ItemStack(
-									Item.items.get(Block.blocks.get((short)id).getBlockDropped()), 
-											Block.blocks.get((short)id).getAmountDropped()));
+							if (Block.blocks.get((short)id).getBlockDropped() > 0) {
+								i.addItemToInventory(new ItemStack(
+										Item.items.get(Block.blocks.get((short)id).getBlockDropped()), 
+												Block.blocks.get((short)id).getAmountDropped()));
+							}
 							if (it instanceof ItemTool)
 								((ItemTool)it).onBlockMined(current[0], current[1], current[2], b, world, camera, i);
 						}

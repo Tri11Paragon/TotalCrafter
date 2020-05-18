@@ -87,11 +87,14 @@ public class WorldGenerator {
 						blks[i][t][k] = Block.BLOCK_LOG;
 					}
 				}
-				if (rnd.nextInt(200) == 5) {
+				if (rnd.nextInt(150) == 5) {
 					blks[i][ref+1][k] = Block.BLOCK_REDFLOWER;
 				}
-				if (rnd.nextInt(150) == 5) {
+				if (rnd.nextInt(100) == 5) {
 					blks[i][ref+1][k] = Block.BLOCK_YELLOWFLOWER;
+				}
+				if (rnd.nextInt(60) == 5) {
+					blks[i][ref+1][k] = Block.BLOCK_TALLGRASS;
 				}
 				for (int j=0; j < Chunk.y; j++) {
 					if (j == ref)

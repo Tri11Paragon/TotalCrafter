@@ -33,10 +33,10 @@ public class Chunk {
 	private short[][][] blocks = new short[x][y][z];
 	private byte[][][] lightLevel = new byte[x][y][z];
 	private RawModel rawID;
-	private float[] verts;
-	private float[] uvs;
-	private float[] lil;
-	private float[] layers;
+	private volatile float[] verts;
+	private volatile float[] uvs;
+	private volatile float[] lil;
+	private volatile float[] layers;
 	private int xoff,zoff;
 	private VoxelWorld s;
 	private Loader loader;
@@ -44,11 +44,11 @@ public class Chunk {
 	private boolean isMeshing = false;
 	private byte chunkErrors;
 	
-	private static List<Chunk> meshables = new ArrayList<Chunk>();
-	private static List<Chunk> meshables2 = new ArrayList<Chunk>();
-	private static List<Chunk> meshables3 = new ArrayList<Chunk>();
-	private static List<Chunk> meshables4 = new ArrayList<Chunk>();
-	public static List<RawModel> deleteables = new ArrayList<RawModel>();
+	private static volatile List<Chunk> meshables = new ArrayList<Chunk>();
+	private static volatile List<Chunk> meshables2 = new ArrayList<Chunk>();
+	private static volatile List<Chunk> meshables3 = new ArrayList<Chunk>();
+	private static volatile List<Chunk> meshables4 = new ArrayList<Chunk>();
+	public static volatile List<RawModel> deleteables = new ArrayList<RawModel>();
 	
 	public static void init() {
 		new Thread(new Runnable() {

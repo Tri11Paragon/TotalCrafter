@@ -31,10 +31,10 @@ public class ChunkStore {
 	// actually the best way of storing chunk data.
 	// however will need to add a way of moving between active and non active
 	// chunks.
-	private MultiKeyMap<Integer, Region> chunks = new MultiKeyMap<Integer, Region>();
-	private MultiKeyMap<Integer, NulChunk> ungenChunkData = new MultiKeyMap<Integer, NulChunk>();
-	private MultiKeyMap<Integer, Region> chunksCopy = null;
-	private MultiKeyMap<Integer, Integer> ungeneratedChunks = new MultiKeyMap<Integer, Integer>();
+	private volatile MultiKeyMap<Integer, Region> chunks = new MultiKeyMap<Integer, Region>();
+	private volatile MultiKeyMap<Integer, NulChunk> ungenChunkData = new MultiKeyMap<Integer, NulChunk>();
+	private volatile MultiKeyMap<Integer, Region> chunksCopy = null;
+	private volatile MultiKeyMap<Integer, Integer> ungeneratedChunks = new MultiKeyMap<Integer, Integer>();
 	
 	protected Camera cam;
 	private Loader loader;
@@ -80,6 +80,17 @@ public class ChunkStore {
 					try {
 						Thread.sleep(20*1000);
 					} catch (InterruptedException e) {}
+					
+					/*if (ungenChunkData.size() > 0) {
+						MapIterator<MultiKey<? extends Integer>, NulChunk> itr = ungenChunkData.mapIterator();
+						while (itr.hasNext()) {
+							MultiKey<? extends Integer> keys = itr.next();
+							NulChunk chnk = ungenChunkData.get(keys.getKey(0), keys.getKey(1));
+							Chunk c = getChunk(keys.getKey(0), keys.getKey(1));
+							chnk.integrate(c.getBlocks());
+							c.setBlocks(chnk.getBlocks());
+						}
+					}*/
 					
 					if (chunksCopy == null) {
 						try {

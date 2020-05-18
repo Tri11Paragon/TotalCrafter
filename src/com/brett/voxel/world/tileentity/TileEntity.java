@@ -1,6 +1,8 @@
 package com.brett.voxel.world.tileentity;
 
 import java.io.File;
+
+import com.brett.IKeyState;
 import com.brett.voxel.nbt.NBTStorage;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.chunk.ChunkStore;
@@ -11,7 +13,7 @@ import com.brett.voxel.world.chunk.ChunkStore;
 * @date Apr. 17, 2020
 */
 
-public class TileEntity {
+public class TileEntity implements IKeyState {
 	
 	private int x,y,z;
 	private VoxelWorld world;
@@ -45,9 +47,16 @@ public class TileEntity {
 	}
 	
 	/**
-	 * ran once per frame.
+	 * ran in main thread. not timer safe.
 	 */
-	public void tick() {
+	public void renderUpdate() {
+		
+	}
+	
+	/**
+	 * ran 20 times per second. # here is > 0, and is the number of (updates) ticks skiped since last called
+	 */
+	public void tick(long skiped) {
 		
 	}
 	
@@ -78,6 +87,16 @@ public class TileEntity {
 
 	public VoxelWorld getWorld() {
 		return world;
+	}
+
+	@Override
+	public void onKeyPressed() {
+		
+	}
+
+	@Override
+	public void onKeyReleased() {
+		
 	}
 	
 }

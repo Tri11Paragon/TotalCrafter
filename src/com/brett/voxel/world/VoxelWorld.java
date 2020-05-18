@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.collections4.MapIterator;
+import org.apache.commons.collections4.keyvalue.MultiKey;
+import org.apache.commons.collections4.map.MultiKeyMap;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -13,6 +16,7 @@ import org.lwjgl.util.vector.Vector3f;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.ModelTexture;
+import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.renderer.VEntityRenderer;
 import com.brett.voxel.renderer.VOverlayRenderer;
@@ -49,13 +53,14 @@ public class VoxelWorld {
 	
 	private Camera cam;
 	private MouseBlockPicker picker;
-	public ChunkStore chunk;
+	public volatile ChunkStore chunk;
 	
 	private VOverlayRenderer voverlayrenderer;
 	private VEntityRenderer entityRenderer;
 	
 	public Random random = new Random();
 	private List<TileEntity> tents = new ArrayList<TileEntity>();
+	private MultiKeyMap<Integer, TileEntity> tileEntities = new MultiKeyMap<Integer, TileEntity>();
 	protected PlayerInventory i;
 	private int textureAtlas;
 	
@@ -80,6 +85,7 @@ public class VoxelWorld {
 		AnimatedModel mod = AnimatedModelLoader.loadEntity(new MyFile(fi, "model.dae"), loader, new ModelTexture(loader.loadTexture("clay")));
 		Animation animation = AnimationLoader.loadAnimation(new MyFile(fi, "model.dae"));
 		entityRenderer.spawnEntity(new VEntity(new Vector3f(0, 90, 0), 0, mod, animation));
+		tickTileEnts();
 	}
 	
 	public void render(ICamera camera) {
@@ -109,10 +115,40 @@ public class VoxelWorld {
 		Block.blocks.get(this.chunk.getBlockBIAS(x, y, z-1)).onBlockUpdated(x, y, z-1, this);
 	}
 	
+	public void tickTileEnts() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				long start = 0;
+				long end = 0;
+				long ticksSkiped = 1;
+				while (VoxelScreenManager.isOpen) {
+					start = System.currentTimeMillis();
+					long time = start - end;
+					if (time > 50) {
+						ticksSkiped = time / 50;
+						if (ticksSkiped < 1)
+							ticksSkiped = 1;
+					}
+					for (int i = 0; i < tents.size(); i++) {
+						tents.get(i).tick(ticksSkiped);
+					}
+					end = System.currentTimeMillis();
+					if (start - end < 50) {
+						try {
+							Thread.sleep(50 - (start-end));
+						} catch (InterruptedException e) {}
+					}
+				}
+			}
+		}).start();
+		
+	}
+	
 	public void update() {
-		picker.update();
+		picker.update();		
 		for (int i = 0; i < tents.size(); i++) {
-			tents.get(i).tick();
+			tents.get(i).renderUpdate();
 		}
 		while (Mouse.next()){
 			if (Mouse.getEventButtonState()) {
@@ -141,22 +177,38 @@ public class VoxelWorld {
 						}
 					}
 				}
-				if (Mouse.getEventButton() == 2) {
-					picker.test();
-				}
+				//if (Mouse.getEventButton() == 2) {
+				//	picker.test();
+				//}
 			}
 		}
 	}
 	
 	public void spawnTileEntity(TileEntity e, int x, int y, int z) {
 		tents.add(e);
+		tileEntities.put(x, y, z, e);
 		e.spawnTileEntity(x, y, z, this);
 	}
 	
+	public TileEntity getTileEntity(int x, int y, int z) {
+		return tileEntities.get(x, y, z);
+	}
+	
 	public void destoryTileEntity(TileEntity e) {
+		if (e == null)
+			return;
 		e.destroy();
 		if (tents.contains(e))
 			tents.remove(e);
+		MapIterator<MultiKey<? extends Integer>,TileEntity> ents = tileEntities.mapIterator();
+		try {
+			while (ents.hasNext()) {
+				MultiKey<? extends Integer> kes = ents.next();
+				if (tileEntities.containsKey(kes.getKey(0), kes.getKey(1), kes.getKey(2))) {
+					tileEntities.removeMultiKey(kes.getKey(0), kes.getKey(1), kes.getKey(2));
+				}
+			}
+		} catch (Exception edd) {}
 	}
 	
 	public Loader getLoader() {

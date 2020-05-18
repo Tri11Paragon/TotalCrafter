@@ -132,6 +132,10 @@ public class UIMaster {
 		this.guimenus.add(menu);
 	}
 	
+	public void removeMenu(IMenu menu) {
+		this.guimenus.remove(menu);
+	}
+	
 	public GUIRenderer getRenderer() {
 		return renderer;
 	}

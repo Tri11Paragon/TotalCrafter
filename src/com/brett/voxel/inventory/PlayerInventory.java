@@ -1,10 +1,13 @@
 package com.brett.voxel.inventory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+
+import com.brett.IInventoryDisable;
 import com.brett.IKeyState;
 import com.brett.console.Console;
 import com.brett.renderer.gui.GUIRenderer;
@@ -27,6 +30,7 @@ public class PlayerInventory implements IKeyState {
 	@SuppressWarnings("unused")
 	private GUIRenderer rend;
 	private PlayerCrafting craft;
+	private static List<IInventoryDisable> disableKeyState = new ArrayList<IInventoryDisable>();
 	
 	public PlayerInventory(UIMaster ui) {
 		float sizeX = 48*15;
@@ -107,6 +111,18 @@ public class PlayerInventory implements IKeyState {
 	@Override
 	public void onKeyPressed() {
 		if (Keyboard.isKeyDown(Keyboard.KEY_E) && !Console.getIsOpen()) {
+			boolean inved = false;
+			for (int i = 0; i < disableKeyState.size(); i++) {
+				if (disableKeyState.get(i).disableInventory()) {
+					this.i.disable();
+					this.craft.disable();
+					inved = true;
+					Mouse.setGrabbed(true);
+					continue;
+				}
+			}
+			if (inved)
+				return;
 			if (BlockCrafting.craft != null) {
 				if (BlockCrafting.craft.isEnabled()) {
 					BlockCrafting.craft.disable();
@@ -126,6 +142,14 @@ public class PlayerInventory implements IKeyState {
 
 	@Override
 	public void onKeyReleased() {
+	}
+	
+	public static void registerDisableState(IInventoryDisable state) {
+		disableKeyState.add(state);
+	}
+	
+	public static void removeDisableState(IInventoryDisable state) {
+		disableKeyState.remove(state);
 	}
 	
 	public void cleanup() {
