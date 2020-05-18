@@ -22,6 +22,7 @@ public class TileFurnace extends Container {
 	
 	private int fuel;
 	private int progress;
+	private boolean spawned = false;
 	
 	@Override
 	public void spawnTileEntity(int x, int y, int z, VoxelWorld world) {
@@ -33,6 +34,8 @@ public class TileFurnace extends Container {
 		super.i.addSlot(new Slot(xz - 100,yz - 375, 48, 48));
 		super.i.addSlot(new Slot(xz - 100,yz - 250, 48, 48));
 		super.i.addSlot(new Slot(xz + 100,yz - 300, 48, 48));
+		super.i.loadInventory();
+		spawned = true;
 	}
 	
 	@Override
@@ -54,18 +57,35 @@ public class TileFurnace extends Container {
 		super.save();
 	}
 	
+	private int la1 = 0,la2 = 0,la3 = 0;
+	
 	@Override
 	public void renderUpdate() {
 		super.renderUpdate();
-		List<Slot> slots = i.getSlots();
-		slots.get(0).updateText();
-		slots.get(1).updateText();
-		slots.get(2).updateText();
+		if (!spawned)
+			return;
+		if (i != null) {
+			List<Slot> slots = i.getSlots();
+			if (slots.get(0).getItemsAmount() != la1) {
+				la1 = slots.get(0).getItemsAmount();
+				slots.get(0).updateText();
+			}
+			if (slots.get(1).getItemsAmount() != la2) {
+				la2 = slots.get(1).getItemsAmount();
+				slots.get(1).updateText();
+			}
+			if (slots.get(2).getItemsAmount() != la3) {
+				la3 = slots.get(2).getItemsAmount();
+				slots.get(2).updateText();
+			}
+		}
 	}
 	
 	@Override
 	public void tick(long skip) {
 		super.tick(skip);
+		if (!spawned)
+			return;
 		if (i != null) {
 			List<Slot> slots = i.getSlots();
 			if (slots.get(1).getItem() != null) {

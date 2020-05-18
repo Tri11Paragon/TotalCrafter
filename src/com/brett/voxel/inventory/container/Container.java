@@ -21,8 +21,7 @@ public class Container extends TileEntity implements IInventoryDisable {
 	@Override
 	public void spawnTileEntity(int x, int y, int z, VoxelWorld world) {
 		super.spawnTileEntity(x, y, z, world);
-		i = new Inventory((int)LevelLoader.seed, super.getLocation() + "inv_" + x + "_" + y + "_" + z + "_");
-		i.loadInventory();
+		i = new Inventory((int)LevelLoader.seed, "tile/inv_" + x + "_" + y + "_" + z + "_");
 		PlayerInventory.registerDisableState(this);
 		VoxelScreenManager.ui.addMenu(i);
 	}

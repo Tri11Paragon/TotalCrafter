@@ -36,7 +36,7 @@ public class Inventory implements IMenu {
 	public Inventory(int seed) {
 		StringBuilder b = new StringBuilder();
 		Random r = new Random(seed);
-		for(int i = 0; i < 30; i++) {
+		for(int i = 0; i < 10; i++) {
 			b.append((int)Math.abs(r.nextInt(10)));
 		}
 		NBTID = b.toString();
@@ -50,7 +50,7 @@ public class Inventory implements IMenu {
 		StringBuilder b = new StringBuilder();
 		b.append(NBTID);
 		Random r = new Random(seed);
-		for(int i = 0; i < 30; i++) {
+		for(int i = 0; i < 5; i++) {
 			b.append((int)Math.abs(r.nextInt(10)));
 		}
 		this.NBTID = b.toString();
@@ -213,7 +213,7 @@ public class Inventory implements IMenu {
 	public void loadInventory() {
 		DataInputStream is = null;
 		try {
-			is = new DataInputStream(new BufferedInputStream(new FileInputStream(ChunkStore.worldLocation + "/" + NBTID + ".dat")));
+			is = new DataInputStream(new BufferedInputStream(new FileInputStream(ChunkStore.worldLocation + NBTID + ".dat")));
 		} catch (FileNotFoundException e) {return;}
 		try {
 			
