@@ -62,13 +62,12 @@ public class Block {
 	private RENDERMODE rendermode = RENDERMODE.SOLID;
 	private float[] specialVerts;
 	private float[] specialTextures;
-	private float[] layers;
 	
-	public Block(ModelTexture model, float[] verts, float[] texs, float[] layers) {
+	public Block(ModelTexture model, float[] verts, float[] texs, int textureIndex) {
 		this.model = model;
 		this.specialVerts = verts;
 		this.specialTextures = texs;
-		this.layers = layers;
+		this.textureFront = textureIndex;
 		rendermode = RENDERMODE.SPECIAL;
 	}
 	
@@ -237,15 +236,6 @@ public class Block {
 
 	public Block setSpecialTextures(float[] specialTextures) {
 		this.specialTextures = specialTextures;
-		return this;
-	}
-
-	public float[] getLayers() {
-		return layers;
-	}
-
-	public Block setLayers(float[] layers) {
-		this.layers = layers;
 		return this;
 	}
 	

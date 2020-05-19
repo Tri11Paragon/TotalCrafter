@@ -80,10 +80,19 @@ public class CreativeFirstPersonCamera extends Camera {
 		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
 			pitch += speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
 		
-		float dx = (float) (-((moveAtX) * Math.sin(Math.toRadians(yaw)))) + (float)-((moveatZ) * Math.cos(Math.toRadians(yaw)));
-		float dy = (float) (moveAtX * Math.sin(Math.toRadians(roll))) + moveAtY;
-		float dz = (float) ((moveAtX) * Math.cos(Math.toRadians(yaw))) + (float) -((moveatZ) * Math.sin(Math.toRadians(yaw)));
+		if (this.pitch > 90)
+			this.pitch = 90;
+		if (this.pitch < -90)
+			this.pitch = -90;
+		if (this.yaw < -360)
+			this.yaw = 0;
+		if (this.yaw > 360)
+			this.yaw = 0;
 		
+		double prez = 1000000d;
+		float dx = (float) (Math.round((((-((moveAtX) * Math.round(Math.sin(Math.toRadians(yaw)) * prez) / prez)) + -((moveatZ) * Math.round(Math.cos(Math.toRadians(yaw))*prez)/prez)))*prez)/prez);
+		float dy = (float) ((((moveAtX * (Math.sin(Math.toRadians(roll)))) + moveAtY)));
+		float dz = (float) (Math.round((((moveAtX) * Math.round(Math.cos(Math.toRadians(yaw)) * prez)/prez) + -((moveatZ) * Math.round(Math.sin(Math.toRadians(yaw))*prez)/prez))*prez)/prez);
 		
 		float xStep = (dx)/RECUR_AMT;
 		float yStep = (dy)/RECUR_AMT;

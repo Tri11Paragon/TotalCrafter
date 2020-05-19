@@ -30,10 +30,12 @@ import com.brett.renderer.shaders.PointShader;
 import com.brett.sound.AudioController;
 import com.brett.sound.AudioSource;
 import com.brett.tools.SettingsLoader;
+import com.brett.tools.obj.OBJLoader;
 import com.brett.voxel.gui.MainMenu;
 import com.brett.voxel.inventory.InventoryMaster;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.world.GameRegistry;
+import com.brett.voxel.world.MeshStore;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.BlockCrafting;
 import com.brett.voxel.world.chunk.AtlasHelper;
@@ -64,7 +66,13 @@ public class VoxelScreenManager {
 	private static DisplaySource scene;
 	
 	public static void init() {
-		
+		MeshStore.init();
+		//OBJLoader.printArrays("top");
+		//OBJLoader.printArrays("bottom");
+		//OBJLoader.printArrays("left");
+		//OBJLoader.printArrays("right");
+		//OBJLoader.printArrays("front");
+		//OBJLoader.printArrays("back");
 		SettingsLoader.loadSettings();
 		DisplayManager.createDisplay(false);
 		KeyMaster.init();
@@ -284,6 +292,8 @@ public class VoxelScreenManager {
 				sb.append((int)frameRate);
 				sb.append(" + FrameTimeMilli: ");
 				sb.append(averageFrameTimeMilliseconds);
+				sb.append(" + YAW: ");
+				sb.append(camera.getYaw());
 				loadOfCrap.changeText(sb.toString());
 				//System.out.println(sb.toString());
 				frames = 0;

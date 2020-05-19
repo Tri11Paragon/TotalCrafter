@@ -121,23 +121,11 @@ public class Loader {
 		
 	}
 	
-	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] lightLevels) {
+	public RawModel loadToVAO(float[] positions, float[] textureCoords, boolean b) {
 		int vaoID = createVAO();
-		int[] vbos = new int[3];
+		int[] vbos = new int[2];
 		vbos[0] = this.storeDataInAttributeList(0, 3, positions);
-		vbos[1] = this.storeDataInAttributeList(1, 2, textureCoords);
-		vbos[2] = this.storeDataInAttributeList(2, 1, lightLevels);
-		unbindVAO();
-		return new RawBlockModel(vaoID, vbos, positions.length/3);
-	}
-	
-	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] layer, float[] lightLevels) {
-		int vaoID = createVAO();
-		int[] vbos = new int[4];
-		vbos[0] = this.storeDataInAttributeList(0, 3, positions);
-		vbos[1] = this.storeDataInAttributeList(1, 2, textureCoords);
-		vbos[2] = this.storeDataInAttributeList(2, 1, lightLevels);
-		vbos[3] = this.storeDataInAttributeList(3, 1, layer);
+		vbos[1] = this.storeDataInAttributeList(1, 1, textureCoords);
 		unbindVAO();
 		return new RawBlockModel(vaoID, vbos, positions.length/3);
 	}

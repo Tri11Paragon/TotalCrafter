@@ -165,6 +165,7 @@ public class Region {
 				System.gc();
 			}
 		}).start(); 
+		System.gc();
 	}
 	
 	/**

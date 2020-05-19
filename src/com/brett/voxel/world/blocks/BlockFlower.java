@@ -12,8 +12,7 @@ import com.brett.voxel.world.MeshStore;
 public class BlockFlower extends Block {
 	
 	public BlockFlower(ModelTexture model, int texture) {
-		super(model, MeshStore.flowerVerts, MeshStore.flowerUVs, new float[] {texture,texture,texture, texture,texture,texture, texture,texture,texture, texture,texture,texture,
-				texture,texture,texture, texture,texture,texture, texture,texture,texture, texture,texture,texture});
+		super(model, MeshStore.flowerVerts, MeshStore.uvFlowerCompleteCompress, texture);
 	}
 
 }

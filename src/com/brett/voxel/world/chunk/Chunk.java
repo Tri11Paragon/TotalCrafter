@@ -35,8 +35,6 @@ public class Chunk {
 	private RawModel rawID;
 	private volatile float[] verts;
 	private volatile float[] uvs;
-	private volatile float[] lil;
-	private volatile float[] layers;
 	private int xoff,zoff;
 	private VoxelWorld s;
 	private Loader loader;
@@ -57,8 +55,10 @@ public class Chunk {
 				while (VoxelScreenManager.isOpen) {
 					for (int i = 0; i < meshables.size(); i++) {
 						Chunk c = meshables.get(i);
-						if (c != null)
-							c.remeshNo(-1);
+						if (c != null) {
+							if (c.remeshNo(-1))
+								continue;
+						}
 						meshables.remove(i);
 					}
 					try {
@@ -73,8 +73,10 @@ public class Chunk {
 				while (VoxelScreenManager.isOpen) {
 					for (int i = 0; i < meshables2.size(); i++) {
 						Chunk c = meshables2.get(i);
-						if (c != null)
-							c.remeshNo(-1);
+						if (c != null) {
+							if (c.remeshNo(-1))
+								continue;
+						}
 						meshables2.remove(i);
 					}
 					try {
@@ -89,8 +91,10 @@ public class Chunk {
 				while (VoxelScreenManager.isOpen) {
 					for (int i = 0; i < meshables3.size(); i++) {
 						Chunk c = meshables3.get(i);
-						if (c != null)
-							c.remeshNo(-1);
+						if (c != null) {
+							if (c.remeshNo(-1))
+								continue;
+						}
 						meshables3.remove(i);
 					}
 					try {
@@ -105,8 +109,10 @@ public class Chunk {
 				while (VoxelScreenManager.isOpen) {
 					for (int i = 0; i < meshables4.size(); i++) {
 						Chunk c = meshables4.get(i);
-						if (c != null)
-							c.remeshNo(-1);
+						if (c != null) {
+							if (c.remeshNo(-1))
+								continue;
+						}
 						meshables4.remove(i);
 					}
 					try {
@@ -125,8 +131,6 @@ public class Chunk {
 		this.loader = loader;
 		verts = new float[0];
 		uvs = new float[0];
-		lil = new float[0];
-		layers = new float[0];
 		remesh();
 	}
 	
@@ -229,78 +233,68 @@ public class Chunk {
 				}
 			}
 			
-			float xOff = (xoff * Chunk.x) + i;
-			float zOff = (zoff * Chunk.z) + k;
+			//float xOff = (xoff * Chunk.x) + i;
+			//float zOff = (zoff * Chunk.z) + k;
 			if (left) {
 				verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
-				uvs = addArrays(uvs, MeshStore.uvLeftComplete);
-				layers = addArrays(layers, new float[] {b.textureLeft,b.textureLeft,b.textureLeft,   b.textureLeft,b.textureLeft,b.textureLeft});
-				byte w = s.chunk.getLightLevel(xOff-1, j, zOff);
-				w += LightingEngine.sunLevel;
-				if (w > 15)
-					w = 15;
-				lil = addArrays(lil, new float[] {w, w, w, w,w,w});
+				//byte w = s.chunk.getLightLevel(xOff-1, j, zOff);
+				//w += LightingEngine.sunLevel;
+				//if (w > 15)
+				//	w = 15;
+				uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureLeft));
 			}
 			if (right) {
 				verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsRightComplete, i, j, k));
-				uvs = addArrays(uvs, MeshStore.uvRightComplete);
-				layers = addArrays(layers, new float[] {b.textureRight,b.textureRight,b.textureRight,   b.textureRight,b.textureRight,b.textureRight});
-				byte w = s.chunk.getLightLevel(xOff+1, j, zOff);
-				w += LightingEngine.sunLevel;
-				if (w > 15)
-					w = 15;
-				lil = addArrays(lil, new float[] {w, w, w, w,w,w});
+				//byte w = s.chunk.getLightLevel(xOff+1, j, zOff);
+				//w += LightingEngine.sunLevel;
+				//if (w > 15)
+				//	w = 15;
+				uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, (byte)13, LightingEngine.sunLevel, b.textureRight));
 			}
 			if (front) {
 				verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
-				uvs = addArrays(uvs, MeshStore.uvFrontComplete);
-				layers = addArrays(layers, new float[] {b.textureFront,b.textureFront,b.textureFront,   b.textureFront,b.textureFront,b.textureFront});
-				byte w = s.chunk.getLightLevel(xOff, j, zOff+1);
-				w += LightingEngine.sunLevel;
-				if (w > 15)
-					w = 15;
-				lil = addArrays(lil, new float[] {w, w, w, w,w,w});
+				//byte w = s.chunk.getLightLevel(xOff, j, zOff+1);
+				//w += LightingEngine.sunLevel;
+				//if (w > 15)
+				//	w = 15;
+				uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureFront));
 			}
 			if (back) {
 				verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
-				uvs = addArrays(uvs, MeshStore.uvBackComplete);
-				layers = addArrays(layers, new float[] {b.textureBack,b.textureBack,b.textureBack,   b.textureBack,b.textureBack,b.textureBack});
-				byte w = s.chunk.getLightLevel(xOff, j, zOff-1);
-				w += LightingEngine.sunLevel;
-				if (w > 15)
-					w = 15;
-				lil = addArrays(lil, new float[] {w, w, w, w,w,w});
+				//byte w = s.chunk.getLightLevel(xOff, j, zOff-1);
+				//w += LightingEngine.sunLevel;
+				//if (w > 15)
+				//	w = 15;
+				uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, (byte)11, LightingEngine.sunLevel, b.textureBack));
 			}
 			if (top) {
 				verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsTopComplete, i, j, k));
-				uvs = addArrays(uvs, MeshStore.uvTopComplete);
-				layers = addArrays(layers, new float[] {b.textureTop,b.textureTop,b.textureTop,   b.textureTop,b.textureTop,b.textureTop});
-				byte w = lightLevel[i][j+1 < Chunk.y ? j+1 : Chunk.y-1][k];
-				w += LightingEngine.sunLevel;
-				if (w > 15)
-					w = 15;
-				lil = addArrays(lil, new float[] {w, w, w, w,w,w});
+				int j1 = j+1;
+				if (j1 >= Chunk.y)
+					j1 = Chunk.y-1;
+				//byte w = lightLevel[i][j1][k];
+				//w += LightingEngine.sunLevel;
+				//if (w > 15)
+				//	w = 15;
+				uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureTop));
 			}
 			if (bottom) {
 				verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBottomComplete, i, j, k));
-				uvs = addArrays(uvs, MeshStore.uvBottomComplete);
-				layers = addArrays(layers, new float[] {b.textureBottom,b.textureBottom,b.textureBottom,   b.textureBottom,b.textureBottom,b.textureBottom});
-				byte w = lightLevel[i][j-1 > 0 ? j-1 : 0][k];
-				w += LightingEngine.sunLevel;
-				if (w > 15)
-					w = 15;
-				lil = addArrays(lil, new float[] {w, w, w, w,w,w});
+				int j1 = j-1;
+				if (j1 < 0)
+					j1 = 0;
+				//byte w = lightLevel[i][j1][k];
+				//w += LightingEngine.sunLevel;
+				//if (w > 15)
+				//	w = 15;
+				uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, (byte)11, LightingEngine.sunLevel, b.textureBottom));
 			}
 		} else {
 			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(b.getSpecialVerts(), i, j, k));
-			uvs = addArrays(uvs, b.getSpecialTextures());
-			layers = addArrays(layers, b.getLayers());
-			byte w = lightLevel[i][j][k];
-			w += LightingEngine.sunLevel;
-			if (w > 15)
-				w = 15;
-			lil = addArrays(lil, new float[] {w,w,w, w,w,w, w,w,w, w,w,w,
-					w,w,w, w,w,w, w,w,w, w,w,w,});
+			//byte w = lightLevel[i][j][k];
+			//if (w > 15)
+			//	w = 15;
+			uvs = addArrays(uvs, MeshStore.updateCompression(b.getSpecialTextures(), (byte) 15, LightingEngine.sunLevel,b.textureFront));
 		}
 		return data;
 		//blocksModels[i][j][k] = MeshStore.models.get(VoxelWorld.createSixBooleans(left, right, front, back, top, bottom));
@@ -334,19 +328,14 @@ public class Chunk {
 				remeshNo();
 			}
 		}).start();
-		//Chunk.meshablesSecond.add(this);
 	}
 	
-	public void remeshNo(int sideQ) {
-		while (isMeshing) {
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {}
-		}
+	public boolean remeshNo(int sideQ) {
+		if (isMeshing)
+			return true;
+		isMeshing = true;
 		verts = new float[0];
 		uvs = new float[0];
-		lil = new float[0];
-		layers = new float[0];
 		chunkErrors = 0;
 		for (int i = 0; i < x; i++) {
 			for (int k = 0; k < z; k++) {
@@ -414,22 +403,26 @@ public class Chunk {
 			}
 		}
 		waitingForMesh = true;
+		return false;
 	}
 	
-	private static long lastGC = 0;
+	//private static long lastGC = 0;
 	public void render(VoxelShader shader) {
 		if (waitingForMesh) {
 			isMeshing = true;
 			if(rawID != null)
 				loader.deleteVAO(rawID);
-			rawID = loader.loadToVAO(verts, uvs, layers, lil);
+			rawID = loader.loadToVAO(verts, uvs, true);
 			waitingForMesh = false;
 			isMeshing = false;
-			if (System.currentTimeMillis() - lastGC > 10000) {
+			/*if (System.currentTimeMillis() - lastGC > 10000) {
 				System.gc();
 				lastGC = System.currentTimeMillis();
-			}
+				System.out.println("cleared!"); 
+			}*/
 		}
+		if (blocks == null)
+			return;
 		// TODO: add update that runs on seperate thread to handle this.
 		int xz = s.random.nextInt(Chunk.x);
 		int yz = s.random.nextInt(Chunk.y);
@@ -442,16 +435,12 @@ public class Chunk {
 		GL30.glBindVertexArray(rawID.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
-		GL20.glEnableVertexAttribArray(2);
-		GL20.glEnableVertexAttribArray(3);
 		
 		shader.loadTransformationMatrix(Maths.createTransformationMatrixCube(x*xoff,0,z*zoff));
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, rawID.getVertexCount());
 		
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
-		GL20.glDisableVertexAttribArray(2);
-		GL20.glDisableVertexAttribArray(3);
 		GL30.glBindVertexArray(0);
 		
 	}

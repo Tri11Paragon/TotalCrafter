@@ -143,6 +143,9 @@ public class OBJLoader {
 			u += uvs[i+1] + "f, \n";
 		}
 		
+		System.out.println("---------");
+		System.out.println(file);
+		System.out.println("---------");
 		System.out.println(v);
 		System.out.println(u);
 	}

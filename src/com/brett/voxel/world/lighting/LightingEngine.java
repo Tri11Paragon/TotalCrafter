@@ -27,7 +27,7 @@ public class LightingEngine {
 	private static MultiKeyMap<Integer, Byte> permalightSources = new MultiKeyMap<Integer, Byte>();
 	//private static VoxelWorld world;
 	
-	public static byte sunLevel = 15;
+	public static byte sunLevel = 0;
 	private static Camera cam;
 	private static VoxelWorld world;
 	

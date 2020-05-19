@@ -1,9 +1,7 @@
 #version 330
 
 in vec3 position;
-in vec2 textureCoordinates;
-in float lightL;
-in float layerD;
+in float textureCoordinates;
 
 out vec2 textureCoords;
 out float lightLevel;
@@ -15,9 +13,17 @@ uniform mat4 transformationMatrix;
 
 void main(void){
 	vec4 worldPosition = transformationMatrix * vec4(position,1.0);
-	vec4 positionRelativeToCam = viewMatrix * worldPosition;
-	gl_Position = projectionMatrix * positionRelativeToCam;
-	textureCoords = (textureCoordinates);
-	lightLevel = lightL;
-	layerF = layerD;
+	gl_Position = projectionMatrix * viewMatrix * worldPosition;
+	
+	float x = ((int(textureCoordinates) >> 1) & 0x1);
+	float y = ((int(textureCoordinates) & 0x1));
+	
+	textureCoords = vec2(x,y);
+	
+	lightLevel = ((int(textureCoordinates) >> 2) & 0xF) + ((int(textureCoordinates) >> 6) & 0xF);
+	
+	if (lightLevel > 15){
+		lightLevel = 15;
+	}
+	layerF = (int(textureCoordinates) >> 10) & 0x2FF;
 }

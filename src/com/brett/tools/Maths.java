@@ -60,25 +60,16 @@ public class Maths {
 	/**
 	 * Creates a transformation matrix for a cube based on its X, Y, Z pos in the world.
 	 */
-	public static Matrix4f createTransformationMatrixCube(float x, float y, float z) {
-		matrix.setIdentity();
-		// the 0.5 is added to adjust for cube scale.
-		// took way to long to figure out this.
-		matrix.m30 += matrix.m00 * (x+0.5f) + matrix.m10 * (y+0.5f) + matrix.m20 * (z+0.5f);
-		matrix.m31 += matrix.m01 * (x+0.5f) + matrix.m11 * (y+0.5f) + matrix.m21 * (z+0.5f);
-		matrix.m32 += matrix.m02 * (x+0.5f) + matrix.m12 * (y+0.5f) + matrix.m22 * (z+0.5f);
-		matrix.m33 += matrix.m03 * (x+0.5f) + matrix.m13 * (y+0.5f) + matrix.m23 * (z+0.5f);
-		return matrix;
-	}
-	
 	public static Matrix4f createTransformationMatrixCube(int x, int y, int z) {
 		matrix.setIdentity();
 		// the 0.5 is added to adjust for cube scale.
 		// took way to long to figure out this.
-		matrix.m30 += matrix.m00 * (x+0.5f) + matrix.m10 * (y+0.5f) + matrix.m20 * (z+0.5f);
-		matrix.m31 += matrix.m01 * (x+0.5f) + matrix.m11 * (y+0.5f) + matrix.m21 * (z+0.5f);
-		matrix.m32 += matrix.m02 * (x+0.5f) + matrix.m12 * (y+0.5f) + matrix.m22 * (z+0.5f);
-		matrix.m33 += matrix.m03 * (x+0.5f) + matrix.m13 * (y+0.5f) + matrix.m23 * (z+0.5f);
+		float fr = 0.5f;
+		matrix.m30 += matrix.m00 * (x+fr) + matrix.m10 * (y+fr) + matrix.m20 * (z+fr);
+		matrix.m31 += matrix.m01 * (x+fr) + matrix.m11 * (y+fr) + matrix.m21 * (z+fr);
+		matrix.m32 += matrix.m02 * (x+fr) + matrix.m12 * (y+fr) + matrix.m22 * (z+fr);
+		matrix.m33 += matrix.m03 * (x+fr) + matrix.m13 * (y+fr) + matrix.m23 * (z+fr);
+		
 		return matrix;
 	}
 	
@@ -177,20 +168,14 @@ public class Maths {
 		Matrix4f.rotate((float) Math.toRadians(camera.getPitch()), new Vector3f(1, 0, 0), viewMatrix, viewMatrix);
 		Matrix4f.rotate((float) Math.toRadians(camera.getYaw()), new Vector3f(0, 1, 0), viewMatrix, viewMatrix);
 		Vector3f cameraPos = camera.getPosition();
-		Vector3f negativeCameraPos = new Vector3f(-cameraPos.x,-cameraPos.y,-cameraPos.z);
-		Matrix4f.translate(negativeCameraPos, viewMatrix, viewMatrix);
+		cameraPos.negate();
+		Matrix4f.translate(cameraPos, viewMatrix, viewMatrix);
+		cameraPos.negate();
 		return viewMatrix;
 	}
 	
 	public static Matrix4f createViewMatrixOTHER(ICamera camera) {
-		Matrix4f viewMatrix = new Matrix4f();
-		viewMatrix.setIdentity();
-		Matrix4f.rotate((float) Math.toRadians(camera.getPitch()), new Vector3f(1, 0, 0), viewMatrix, viewMatrix);
-		Matrix4f.rotate((float) Math.toRadians(camera.getYaw()), new Vector3f(0, 1, 0), viewMatrix, viewMatrix);
-		Vector3f cameraPos = camera.getPosition();
-		Vector3f negativeCameraPos = new Vector3f(-cameraPos.x,-cameraPos.y,-cameraPos.z);
-		Matrix4f.translate(negativeCameraPos, viewMatrix, viewMatrix);
-		return viewMatrix;
+		return createViewMatrix(camera);
 	}
 	
 	public static float lerp(float point1, float point2, float alpha){

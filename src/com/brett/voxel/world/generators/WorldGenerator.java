@@ -51,6 +51,12 @@ public class WorldGenerator {
 	}
 	
 	public short[][][] getChunkBlocks(int x, int z){
+		int xp = x, zp = z;
+		if (x < 0)
+			xp = -x;
+		if (z < 0)
+			zp = -z;
+		rnd.setSeed(((xp * LevelLoader.seed * 4923492) + (zp * LevelLoader.seed * 59234)) + LevelLoader.seed);
 		short[][][] blks = new short[Chunk.x][Chunk.y][Chunk.z];
 		for (int i = 0; i < Chunk.x; i++) {
 			for (int k=0; k < Chunk.z; k++) {

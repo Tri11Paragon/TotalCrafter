@@ -10,7 +10,6 @@ import com.brett.world.cameras.ICamera;
 public class VoxelShader extends ShaderProgram {
 
 	private static final String VERTEX_FILE = "voxelVertexShader.txt";
-	//private static final String GEOMETRY_FILE = "voxelGeometryShader.txt";
 	private static final String FRAGMENT_FILE = "voxelFragmentShader.txt";
 	
 	private int location_transformationMatrix;
@@ -24,9 +23,7 @@ public class VoxelShader extends ShaderProgram {
 	@Override
 	protected void bindAttributes() {
 		super.bindAttribute(0, "position");
-		super.bindAttribute(1, "textureCoords");
-		super.bindAttribute(2, "lightL");
-		super.bindAttribute(3, "layerD");
+		super.bindAttribute(0, "textureCoords");
 	}
 
 	@Override
