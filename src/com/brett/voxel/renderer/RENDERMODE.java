@@ -8,6 +8,6 @@ package com.brett.voxel.renderer;
 
 public enum RENDERMODE {
 	
-	SOLID, TRANSPARENT, SPECIAL;
+	SOLID, TRANSPARENT, TRANSLUCENT, SPECIAL;
 	
 }

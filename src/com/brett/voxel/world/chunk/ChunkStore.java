@@ -5,6 +5,7 @@ import java.util.ConcurrentModificationException;
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
+import org.lwjgl.util.vector.Matrix4f;
 import com.brett.renderer.Loader;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
@@ -31,6 +32,8 @@ public class ChunkStore {
 	// actually the best way of storing chunk data.
 	// however will need to add a way of moving between active and non active
 	// chunks.
+	// this actually might not be the best, espcially with integers truncating towards 0
+	// however this is likely the best way without doing a bunch of crazy transformations or data structures.
 	private volatile MultiKeyMap<Integer, Region> chunks = new MultiKeyMap<Integer, Region>();
 	private volatile MultiKeyMap<Integer, NulChunk> ungenChunkData = new MultiKeyMap<Integer, NulChunk>();
 	private volatile MultiKeyMap<Integer, Region> chunksCopy = null;
@@ -81,16 +84,19 @@ public class ChunkStore {
 						Thread.sleep(20*1000);
 					} catch (InterruptedException e) {}
 					
-					/*if (ungenChunkData.size() > 0) {
+					if (ungenChunkData.size() > 0) {
 						MapIterator<MultiKey<? extends Integer>, NulChunk> itr = ungenChunkData.mapIterator();
 						while (itr.hasNext()) {
 							MultiKey<? extends Integer> keys = itr.next();
 							NulChunk chnk = ungenChunkData.get(keys.getKey(0), keys.getKey(1));
 							Chunk c = getChunk(keys.getKey(0), keys.getKey(1));
+							if (c == null || chnk == null)
+								return;
 							chnk.integrate(c.getBlocks());
 							c.setBlocks(chnk.getBlocks());
+							ungenChunkData.removeMultiKey(keys.getKey(0), keys.getKey(1));
 						}
-					}*/
+					}
 					
 					if (chunksCopy == null) {
 						try {
@@ -163,7 +169,7 @@ public class ChunkStore {
 			Chunk c = r.getChunk(x, z);
 			if (c == null) {
 				c = genChunkUngen(x,z);
-				chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
+				r.setChunk(x, z, c);
 				return c;
 			}else
 				return c;
@@ -197,7 +203,7 @@ public class ChunkStore {
 		System.out.println("World Saved");
 	}
 	
-	public void renderChunks(VoxelShader shader) {
+	public void renderChunks(VoxelShader shader, Matrix4f project) {
 		if (chunksCopy != null) {
 			MapIterator<MultiKey<? extends Integer>, Region> rg = chunksCopy.mapIterator();
 			while (rg.hasNext()) {
@@ -214,8 +220,10 @@ public class ChunkStore {
 			System.out.println("Chunking size: " + chunks.size());
 			chunksCopy = null;
 		}
-		for (int i = -renderDistance; i < renderDistance; i++) {
-			for (int k = -renderDistance; k < renderDistance; k++) {
+		Matrix4f view = new Matrix4f();
+		Matrix4f.mul(project, Maths.createViewMatrix(cam), view);
+		for (int i = -renderDistance; i <= renderDistance; i++) {
+			for (int k = -renderDistance; k <= renderDistance; k++) {
 				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
 				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
 				float fx = cam.getPosition().x + (i*Chunk.x);
@@ -227,11 +235,79 @@ public class ChunkStore {
 					queChunk(cx, cz);
 					continue;
 				}
-				//if (!c.getNull())
-				c.render(shader);
+				c.render(shader, view);
 			}
 		}
-		
+		for (int i = -renderDistance; i <= 0; i++) {
+			for (int k = -renderDistance; k <= 0; k++) {
+				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
+				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
+				float fx = cam.getPosition().x + (i*Chunk.x);
+				float fz = cam.getPosition().z + (k * Chunk.z);
+				if (!cam.cubeInFrustum(fx, 0, fz, fx + Chunk.x, Chunk.y, fz + Chunk.z))
+					continue;
+				Chunk c = getChunk(cx, cz);
+				if (c == null)
+					continue;
+				c.renderSpecial(shader, view);
+			}
+		}
+		for (int i = renderDistance; i >= 0; i--) {
+			for (int k = renderDistance; k >= 0; k--) {
+				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
+				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
+				float fx = cam.getPosition().x + (i*Chunk.x);
+				float fz = cam.getPosition().z + (k * Chunk.z);
+				if (!cam.cubeInFrustum(fx, 0, fz, fx + Chunk.x, Chunk.y, fz + Chunk.z))
+					continue;
+				Chunk c = getChunk(cx, cz);
+				if (c == null)
+					continue;
+				c.renderSpecial(shader, view);
+			}
+		}
+		for (int i = renderDistance; i > 0; i--) {
+			for (int k = -renderDistance; k < 0; k++) {
+				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
+				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
+				float fx = cam.getPosition().x + (i*Chunk.x);
+				float fz = cam.getPosition().z + (k * Chunk.z);
+				if (!cam.cubeInFrustum(fx, 0, fz, fx + Chunk.x, Chunk.y, fz + Chunk.z))
+					continue;
+				Chunk c = getChunk(cx, cz);
+				if (c == null)
+					continue;
+				c.renderSpecial(shader, view);
+			}
+		}
+		for (int i = -renderDistance; i < 0; i++) {
+			for (int k = renderDistance; k > 0; k--) {
+				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
+				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
+				float fx = cam.getPosition().x + (i*Chunk.x);
+				float fz = cam.getPosition().z + (k * Chunk.z);
+				if (!cam.cubeInFrustum(fx, 0, fz, fx + Chunk.x, Chunk.y, fz + Chunk.z))
+					continue;
+				Chunk c = getChunk(cx, cz);
+				if (c == null)
+					continue;
+				c.renderSpecial(shader, view);
+			}
+		}
+	}
+	
+	public void updateChunks() {
+		for (int i = -renderDistance; i <= renderDistance; i++) {
+			for (int k = -renderDistance; k <= renderDistance; k++) {
+				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
+				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
+				Chunk c = getChunk(cx, cz);
+				if (c == null) {
+					continue;
+				}
+				c.fixedUpdate();
+			}
+		}
 	}
 	
 	public void recalculateActiveLighting() {
@@ -253,7 +329,6 @@ public class ChunkStore {
 	}
 	
 	public void queChunk(int cx, int cz) {
-		//ungeneratedChunks.add(new Tuple<Integer, Integer>(cx, cz));
 		try {
 			if (!ungeneratedChunks.containsKey(cx, cz))
 				ungeneratedChunks.put(cx, cz, 0);

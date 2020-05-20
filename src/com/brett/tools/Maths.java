@@ -57,6 +57,7 @@ public class Maths {
 	}
 	
 	static Matrix4f matrix = new Matrix4f();
+	static float fr = 0.5f;
 	/**
 	 * Creates a transformation matrix for a cube based on its X, Y, Z pos in the world.
 	 */
@@ -64,7 +65,6 @@ public class Maths {
 		matrix.setIdentity();
 		// the 0.5 is added to adjust for cube scale.
 		// took way to long to figure out this.
-		float fr = 0.5f;
 		matrix.m30 += matrix.m00 * (x+fr) + matrix.m10 * (y+fr) + matrix.m20 * (z+fr);
 		matrix.m31 += matrix.m01 * (x+fr) + matrix.m11 * (y+fr) + matrix.m21 * (z+fr);
 		matrix.m32 += matrix.m02 * (x+fr) + matrix.m12 * (y+fr) + matrix.m22 * (z+fr);

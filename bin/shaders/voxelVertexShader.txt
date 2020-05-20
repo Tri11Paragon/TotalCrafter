@@ -7,13 +7,13 @@ out vec2 textureCoords;
 out float lightLevel;
 out float layerF;
 
-uniform mat4 projectionMatrix;
-uniform mat4 viewMatrix;
 uniform mat4 transformationMatrix;
 
 void main(void){
-	vec4 worldPosition = transformationMatrix * vec4(position,1.0);
-	gl_Position = projectionMatrix * viewMatrix * worldPosition;
+	//vec4 worldPosition = transformationMatrix * vec4(position,1.0);
+	//gl_Position = projectionMatrix * viewMatrix * worldPosition;
+	vec3 posadj = position - 0.5f;
+	gl_Position = transformationMatrix * vec4(posadj,1.0);
 	
 	float x = ((int(textureCoordinates) >> 1) & 0x1);
 	float y = ((int(textureCoordinates) & 0x1));

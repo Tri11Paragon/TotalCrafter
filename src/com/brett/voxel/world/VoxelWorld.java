@@ -13,11 +13,13 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector3f;
 
+import com.brett.KeyMaster;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.PlayerInventory;
+import com.brett.voxel.renderer.ScreenShot;
 import com.brett.voxel.renderer.VEntityRenderer;
 import com.brett.voxel.renderer.VOverlayRenderer;
 import com.brett.voxel.renderer.shaders.VoxelShader;
@@ -54,6 +56,7 @@ public class VoxelWorld {
 	private Camera cam;
 	private MouseBlockPicker picker;
 	public volatile ChunkStore chunk;
+	private MasterRenderer renderer;
 	
 	private VOverlayRenderer voverlayrenderer;
 	private VEntityRenderer entityRenderer;
@@ -67,11 +70,9 @@ public class VoxelWorld {
 	// replace pi with a player
 	public VoxelWorld(MasterRenderer renderer, Loader loader, Camera cam, PlayerInventory i) {
 		this.loader = loader;
+		this.renderer = renderer;
 		shader = new VoxelShader();
 		//resolveMeshes();
-		shader.start();
-		shader.loadProjectionMatrix(renderer.getProjectionMatrix());
-		shader.stop();
 		chunk = new ChunkStore(cam, loader, this);
 		random.setSeed(LevelLoader.seed);
 		LightingEngine.init(this, cam);
@@ -86,6 +87,7 @@ public class VoxelWorld {
 		Animation animation = AnimationLoader.loadAnimation(new MyFile(fi, "model.dae"));
 		entityRenderer.spawnEntity(new VEntity(new Vector3f(0, 90, 0), 0, mod, animation));
 		tickTileEnts();
+		KeyMaster.registerKeyRequester(new ScreenShot());
 	}
 	
 	public void render(ICamera camera) {
@@ -94,9 +96,8 @@ public class VoxelWorld {
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
 			entityRenderer.render();
 		shader.start();
-		shader.loadViewMatrix(camera);
 			GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureAtlas);
-			chunk.renderChunks(shader);
+			chunk.renderChunks(shader, renderer.getProjectionMatrix());
 		MasterRenderer.disableCulling();
 		MasterRenderer.disableTransparentcy();
 		shader.stop();
@@ -133,6 +134,7 @@ public class VoxelWorld {
 					for (int i = 0; i < tents.size(); i++) {
 						tents.get(i).tick(ticksSkiped);
 					}
+					chunk.updateChunks();
 					end = System.currentTimeMillis();
 					if (start - end < 50) {
 						try {

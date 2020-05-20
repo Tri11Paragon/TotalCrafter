@@ -18,4 +18,20 @@ public class ChunkBuilder {
 		return newVerts;
 	}
 	
+	/**
+	 * Creates Z value errors and I don't know why. It is unused but is a neat idea
+	 * for reducing 2 floats it doesn't really show on the profiler.
+	 */
+	public static float[] updateVertexTranslationCompress(float[] verts, int xTrans, int yTrans, int zTrans) {
+		float[] newVerts = new float[verts.length/3];
+		for (int i = 0; i < verts.length; i+=3) {
+			int x = (int) verts[i] + xTrans;
+			int y = (int) verts[i+1] + yTrans;
+			int z = (int) verts[i+2] + zTrans;
+			
+			newVerts[i/3] = ((x & 0xFF) | ((y & 0xFF) << 16) | ((z & 0xFF) << 8));
+		}
+		return newVerts;
+	}
+	
 }

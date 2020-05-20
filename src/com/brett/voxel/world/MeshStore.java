@@ -151,66 +151,66 @@ public class MeshStore {
 		return tr;
 	}
 	
-	private static float size = 0.5f;
+	private static float size = 1.0f;
 	
 	public static float[] vertsFrontComplete = {
-			-size, -size, size,
-			size, -size, size,
-			-size, size, size,
+			0, 0, size,
+			size, 0, size,
+			0, size, size,
 			
-			-size, size, size,
-			size, -size, size,
+			0, size, size,
+			size, 0, size,
 			size, size, size,
 	};
 	
 	public static float[] vertsBackComplete = {
-			-size, -size, -size,
-			-size, size, -size,
-			size, size, -size,
+			0, 0, 0,
+			0, size, 0,
+			size, size, 0,
 			
-			size, size, -size,
-			size, -size, -size,
-			-size, -size, -size,
+			size, size, 0,
+			size, 0, 0,
+			0, 0, 0,
 	};
 	
 	public static float[] vertsRightComplete = {
-			size, -size, -size,
-			size, size, -size,
-			size, -size, size,
+			size, 0, 0,
+			size, size, 0,
+			size, 0, size,
 			
-			size, -size, size,
-			size, size, -size,
+			size, 0, size,
+			size, size, 0,
 			size, size, size,
 	};
 	
 	public static float[] vertsLeftComplete = {
-			-size, -size, -size,
-			-size, -size, size,
-			-size, size, size,
+			0, 0, 0,
+			0, 0, size,
+			0, size, size,
 			
-			-size, size, size,
-			-size, size, -size,
-			-size, -size, -size,
+			0, size, size,
+			0, size, 0,
+			0, 0, 0,
 	};
 	
 	public static float[] vertsTopComplete = {
 			size, size, size,
-			-size, size, -size,
-			-size, size, size,
+			0, size, 0,
+			0, size, size,
 			
 			size, size, size,
-			size, size, -size,
-			-size, size, -size,
+			size, size, 0,
+			0, size, 0,
 	}; 
 	
 	public static float[] vertsBottomComplete = {
-			size, -size, size,
-			-size, -size, size,
-			-size, -size, -size,
+			size, 0, size,
+			0, 0, size,
+			0, 0, 0,
 			
-			size, -size, size,
-			-size, -size, -size,
-			size, -size, -size,
+			size, 0, size,
+			0, 0, 0,
+			size, 0, 0,
 	};
 	
 	public static float[] vertsBig = {

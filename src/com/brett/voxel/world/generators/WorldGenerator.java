@@ -99,7 +99,7 @@ public class WorldGenerator {
 				if (rnd.nextInt(100) == 5) {
 					blks[i][ref+1][k] = Block.BLOCK_YELLOWFLOWER;
 				}
-				if (rnd.nextInt(60) == 5) {
+				if (rnd.nextInt(20) == 5 && ref<80) {
 					blks[i][ref+1][k] = Block.BLOCK_TALLGRASS;
 				}
 				for (int j=0; j < Chunk.y; j++) {

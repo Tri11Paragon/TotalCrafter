@@ -5,6 +5,7 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.util.vector.Matrix4f;
 
 import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.RawModel;
@@ -33,8 +34,11 @@ public class Chunk {
 	private short[][][] blocks = new short[x][y][z];
 	private byte[][][] lightLevel = new byte[x][y][z];
 	private RawModel rawID;
-	private volatile float[] verts;
-	private volatile float[] uvs;
+	private float[] verts;
+	private float[] uvs;
+	private RawModel rawIDTrans;
+	private float[] vertsTrans;
+	private float[] uvsTrans;
 	private int xoff,zoff;
 	private VoxelWorld s;
 	private Loader loader;
@@ -131,6 +135,8 @@ public class Chunk {
 		this.loader = loader;
 		verts = new float[0];
 		uvs = new float[0];
+		vertsTrans = new float[0];
+		uvsTrans = new float[0];
 		remesh();
 	}
 	
@@ -147,6 +153,7 @@ public class Chunk {
 		boolean right = true;
 		boolean front = true;
 		boolean back = true;
+		int count = 0;
 		byte data = 0;
 		
 		Block b = Block.blocks.get(blocks[i][j][k]);
@@ -158,12 +165,16 @@ public class Chunk {
 				} else
 					top = true;
 			} catch (IndexOutOfBoundsException e) {}
+			if(top)
+				count++;
 			try {
 				if (Block.blocks.get(blocks[i][j - 1][k]).getRendermode() == RENDERMODE.SOLID) {
 					bottom = false;
 				} else 
 					bottom = true;
 			} catch (IndexOutOfBoundsException e) {bottom = false;}
+			if(bottom)
+				count++;
 			try {
 				if (Block.blocks.get(blocks[i - 1][j][k]).getRendermode() == RENDERMODE.SOLID) {
 					left = false;
@@ -184,6 +195,8 @@ public class Chunk {
 						left = true;
 				}
 			}
+			if (left)
+				count++;
 			try {
 				if (Block.blocks.get(blocks[i+1][j][k]).getRendermode() == RENDERMODE.SOLID) {
 					right = false;
@@ -201,6 +214,8 @@ public class Chunk {
 						right = true;
 				}
 			}
+			if(right)
+				count++;
 			try {
 				if (Block.blocks.get(blocks[i][j][k + 1]).getRendermode() == RENDERMODE.SOLID) {
 					front = false;
@@ -218,6 +233,8 @@ public class Chunk {
 						front = true;
 				}
 			}
+			if (front)
+				count++;
 			try {
 				if (Block.blocks.get(blocks[i][j][k-1]).getRendermode() == RENDERMODE.SOLID) {
 					back = false;
@@ -232,43 +249,81 @@ public class Chunk {
 						back = false;
 				}
 			}
+			if(back)
+				count++;
+			
+			if (count == 0)
+				count = 1;
+			//int vstart = verts.length-1;
+			//int ustart = verts.length-1;
+			
+			//verts = expandArrays(verts, count * MeshStore.vertsLeftComplete.length);
+			//uvs = expandArrays(uvs, count * MeshStore.uvLeftCompleteCompress.length);
 			
 			//float xOff = (xoff * Chunk.x) + i;
 			//float zOff = (zoff * Chunk.z) + k;
 			if (left) {
-				verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
 				//byte w = s.chunk.getLightLevel(xOff-1, j, zOff);
 				//w += LightingEngine.sunLevel;
 				//if (w > 15)
 				//	w = 15;
-				uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureLeft));
+				if (b.getRendermode() == RENDERMODE.SOLID) {
+					verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
+					/*float[] test = ChunkBuilder.updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k);
+					float max = 0, min = 23459934;
+					for (int d = 0; d < test.length; d++) {
+						if (test[d] > max)
+							max = test[d];
+						if (test[d] < min)
+							min = test[d];
+					}
+					System.out.println("Max: " + max + " Min: " + min);*/
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureLeft));
+				} else {
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureLeft));
+				}
 			}
 			if (right) {
-				verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsRightComplete, i, j, k));
 				//byte w = s.chunk.getLightLevel(xOff+1, j, zOff);
 				//w += LightingEngine.sunLevel;
 				//if (w > 15)
 				//	w = 15;
-				uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, (byte)13, LightingEngine.sunLevel, b.textureRight));
+				if (b.getRendermode() == RENDERMODE.SOLID) {
+					verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsRightComplete, i, j, k));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, (byte)13, LightingEngine.sunLevel, b.textureRight));
+				} else {
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(MeshStore.vertsRightComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, (byte)13, LightingEngine.sunLevel, b.textureRight));
+				}
 			}
 			if (front) {
-				verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
 				//byte w = s.chunk.getLightLevel(xOff, j, zOff+1);
 				//w += LightingEngine.sunLevel;
 				//if (w > 15)
 				//	w = 15;
-				uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureFront));
+				if (b.getRendermode() == RENDERMODE.SOLID) {
+					verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureFront));
+				} else {
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureFront));
+				}
 			}
 			if (back) {
-				verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
 				//byte w = s.chunk.getLightLevel(xOff, j, zOff-1);
 				//w += LightingEngine.sunLevel;
 				//if (w > 15)
 				//	w = 15;
-				uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, (byte)11, LightingEngine.sunLevel, b.textureBack));
+				if (b.getRendermode() == RENDERMODE.SOLID) {
+					verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, (byte)11, LightingEngine.sunLevel, b.textureBack));
+				} else {
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, (byte)11, LightingEngine.sunLevel, b.textureBack));
+				}
 			}
 			if (top) {
-				verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsTopComplete, i, j, k));
 				int j1 = j+1;
 				if (j1 >= Chunk.y)
 					j1 = Chunk.y-1;
@@ -276,10 +331,15 @@ public class Chunk {
 				//w += LightingEngine.sunLevel;
 				//if (w > 15)
 				//	w = 15;
-				uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureTop));
+				if (b.getRendermode() == RENDERMODE.SOLID) {
+					verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsTopComplete, i, j, k));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureTop));
+				} else {
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(MeshStore.vertsTopComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureTop));
+				}
 			}
 			if (bottom) {
-				verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBottomComplete, i, j, k));
 				int j1 = j-1;
 				if (j1 < 0)
 					j1 = 0;
@@ -287,14 +347,20 @@ public class Chunk {
 				//w += LightingEngine.sunLevel;
 				//if (w > 15)
 				//	w = 15;
-				uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, (byte)11, LightingEngine.sunLevel, b.textureBottom));
+				if (b.getRendermode() == RENDERMODE.SOLID) {
+					verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBottomComplete, i, j, k));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, (byte)11, LightingEngine.sunLevel, b.textureBottom));
+				} else {
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBottomComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, (byte)11, LightingEngine.sunLevel, b.textureBottom));
+				}
 			}
 		} else {
-			verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(b.getSpecialVerts(), i, j, k));
 			//byte w = lightLevel[i][j][k];
 			//if (w > 15)
 			//	w = 15;
-			uvs = addArrays(uvs, MeshStore.updateCompression(b.getSpecialTextures(), (byte) 15, LightingEngine.sunLevel,b.textureFront));
+			vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(b.getSpecialVerts(), i, j, k));
+			uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(b.getSpecialTextures(), (byte) 15, LightingEngine.sunLevel,b.textureFront));
 		}
 		return data;
 		//blocksModels[i][j][k] = MeshStore.models.get(VoxelWorld.createSixBooleans(left, right, front, back, top, bottom));
@@ -321,24 +387,17 @@ public class Chunk {
 			Chunk.meshables3.add(this);
 	}
 	
-	public void remeshSecond() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				remeshNo();
-			}
-		}).start();
-	}
-	
 	public boolean remeshNo(int sideQ) {
 		if (isMeshing)
 			return true;
 		isMeshing = true;
 		verts = new float[0];
 		uvs = new float[0];
+		vertsTrans = new float[0];
+		uvsTrans = new float[0];
 		chunkErrors = 0;
-		for (int i = 0; i < x; i++) {
-			for (int k = 0; k < z; k++) {
+		for (int k = 0; k < z; k++) {
+			for (int i = 0; i < x; i++) {
 				for (int j = 0; j < y; j++) {
 					chunkErrors |= mesh(i, j, k);
 				}
@@ -406,15 +465,26 @@ public class Chunk {
 		return false;
 	}
 	
-	//private static long lastGC = 0;
-	public void render(VoxelShader shader) {
+	public void render(VoxelShader shader, Matrix4f view) {
 		if (waitingForMesh) {
 			isMeshing = true;
 			if(rawID != null)
 				loader.deleteVAO(rawID);
+			if(rawIDTrans != null)
+				loader.deleteVAO(rawIDTrans);
 			rawID = loader.loadToVAO(verts, uvs, true);
+			if (vertsTrans.length > 0 && uvsTrans.length > 0)
+				rawIDTrans = loader.loadToVAO(vertsTrans, uvsTrans, true);
 			waitingForMesh = false;
+			verts = null;
+			uvs = null;
+			vertsTrans = null;
+			uvsTrans = null;
 			isMeshing = false;
+			// im keeping this here as a point
+			// enabling this increases memory usage
+			// figure that one out
+			// especially when calling gc from my JVM monitor clears most of the memory.
 			/*if (System.currentTimeMillis() - lastGC > 10000) {
 				System.gc();
 				lastGC = System.currentTimeMillis();
@@ -423,12 +493,6 @@ public class Chunk {
 		}
 		if (blocks == null)
 			return;
-		// TODO: add update that runs on seperate thread to handle this.
-		int xz = s.random.nextInt(Chunk.x);
-		int yz = s.random.nextInt(Chunk.y);
-		int zz = s.random.nextInt(Chunk.z);
-		if (blocks[xz][yz][zz] != 0)
-			Block.blocks.get(blocks[xz][yz][zz]).onBlockTick(xz, yz, zz, s);
 		
 		if (rawID == null)
 			return;
@@ -436,7 +500,9 @@ public class Chunk {
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
 		
-		shader.loadTransformationMatrix(Maths.createTransformationMatrixCube(x*xoff,0,z*zoff));
+		Matrix4f trans = Maths.createTransformationMatrixCube(x*xoff,0,z*zoff);
+		Matrix4f.mul(view, trans, trans);
+		shader.loadTransformationMatrix(trans);
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, rawID.getVertexCount());
 		
 		GL20.glDisableVertexAttribArray(0);
@@ -445,16 +511,44 @@ public class Chunk {
 		
 	}
 	
+	/**
+	 * slowdown at the cost of it looking good.
+	 */
+	public void renderSpecial(VoxelShader shader, Matrix4f view) {
+		if (blocks == null)
+			return;
+		if (rawIDTrans == null)
+			return;
+		
+		GL30.glBindVertexArray(rawIDTrans.getVaoID());
+		GL20.glEnableVertexAttribArray(0);
+		GL20.glEnableVertexAttribArray(1);
+		
+		Matrix4f trans = Maths.createTransformationMatrixCube(x*xoff,0,z*zoff);
+		Matrix4f.mul(view, trans, trans);
+		shader.loadTransformationMatrix(trans);
+		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, rawIDTrans.getVertexCount());
+		
+		GL20.glDisableVertexAttribArray(0);
+		GL20.glDisableVertexAttribArray(1);
+		GL30.glBindVertexArray(0);
+	}
+	
+	// same thing as a tick() function.
+	public void fixedUpdate() {
+		int xz = s.random.nextInt(Chunk.x);
+		int yz = s.random.nextInt(Chunk.y);
+		int zz = s.random.nextInt(Chunk.z);
+		if (blocks[xz][yz][zz] != 0)
+			Block.blocks.get(blocks[xz][yz][zz]).onBlockTick(xz + xoff*Chunk.x, yz, zz + zoff*Chunk.z, s);
+	}
+	
 	public void nul() {
 		//this.blocksModels = null;
 		//this.rawID = loader.deleteVAO(rawID);
 		Chunk.deleteables.add(this.rawID);
 		this.rawID = null;
 		this.blocks = null;
-	}
-	
-	public boolean getNull() {
-		return this.blocks == null ? true : false;
 	}
 	
 	public short getBlock(int x, int y, int z) {
@@ -652,6 +746,21 @@ public class Chunk {
 		}
 		
 		return rtv;
+	}
+	
+	public float[] expandArrays(float[] array, int count) {
+		float[] rtv = new float[array.length + count];
+		
+		for (int i = 0; i < array.length; i++) {
+			rtv[i]=array[i];
+		}
+		return rtv;
+	}
+	
+	public float[] editArrays(float[] array, float[] add, int start) {
+		for (int i = 0; i < add.length; i++)
+			array[start + i] = add[i];
+		return array;
 	}
 	
 	public void setBlocks(short[][][] blocks) {
