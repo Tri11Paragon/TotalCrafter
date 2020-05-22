@@ -8,6 +8,8 @@ package com.brett.voxel.world;
 
 public class Explosion {
 	
+	private static int RE_MNT = 12;
+	
 	private float x,y,z,size;
 	private VoxelWorld world;
 	
@@ -16,6 +18,7 @@ public class Explosion {
 		this.y = y;
 		this.z = z;
 		this.size = size;
+		RE_MNT = (int) (size * 2);
 		this.world = world;
 	}
 	

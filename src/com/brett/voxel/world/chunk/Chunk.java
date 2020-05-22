@@ -153,7 +153,6 @@ public class Chunk {
 		boolean right = true;
 		boolean front = true;
 		boolean back = true;
-		int count = 0;
 		byte data = 0;
 		
 		Block b = Block.blocks.get(blocks[i][j][k]);
@@ -165,16 +164,12 @@ public class Chunk {
 				} else
 					top = true;
 			} catch (IndexOutOfBoundsException e) {}
-			if(top)
-				count++;
 			try {
 				if (Block.blocks.get(blocks[i][j - 1][k]).getRendermode() == RENDERMODE.SOLID) {
 					bottom = false;
 				} else 
 					bottom = true;
 			} catch (IndexOutOfBoundsException e) {bottom = false;}
-			if(bottom)
-				count++;
 			try {
 				if (Block.blocks.get(blocks[i - 1][j][k]).getRendermode() == RENDERMODE.SOLID) {
 					left = false;
@@ -195,8 +190,6 @@ public class Chunk {
 						left = true;
 				}
 			}
-			if (left)
-				count++;
 			try {
 				if (Block.blocks.get(blocks[i+1][j][k]).getRendermode() == RENDERMODE.SOLID) {
 					right = false;
@@ -214,8 +207,6 @@ public class Chunk {
 						right = true;
 				}
 			}
-			if(right)
-				count++;
 			try {
 				if (Block.blocks.get(blocks[i][j][k + 1]).getRendermode() == RENDERMODE.SOLID) {
 					front = false;
@@ -233,8 +224,6 @@ public class Chunk {
 						front = true;
 				}
 			}
-			if (front)
-				count++;
 			try {
 				if (Block.blocks.get(blocks[i][j][k-1]).getRendermode() == RENDERMODE.SOLID) {
 					back = false;
@@ -249,11 +238,7 @@ public class Chunk {
 						back = false;
 				}
 			}
-			if(back)
-				count++;
 			
-			if (count == 0)
-				count = 1;
 			//int vstart = verts.length-1;
 			//int ustart = verts.length-1;
 			
@@ -269,15 +254,6 @@ public class Chunk {
 				//	w = 15;
 				if (b.getRendermode() == RENDERMODE.SOLID) {
 					verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
-					/*float[] test = ChunkBuilder.updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k);
-					float max = 0, min = 23459934;
-					for (int d = 0; d < test.length; d++) {
-						if (test[d] > max)
-							max = test[d];
-						if (test[d] < min)
-							min = test[d];
-					}
-					System.out.println("Max: " + max + " Min: " + min);*/
 					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureLeft));
 				} else {
 					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));

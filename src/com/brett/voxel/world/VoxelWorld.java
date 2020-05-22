@@ -36,8 +36,8 @@ import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemStack;
 import com.brett.voxel.world.items.ItemTool;
 import com.brett.voxel.world.lighting.LightingEngine;
+import com.brett.voxel.world.player.Player;
 import com.brett.voxel.world.tileentity.TileEntity;
-import com.brett.world.cameras.Camera;
 import com.brett.world.cameras.ICamera;
 
 /**
@@ -52,8 +52,6 @@ public class VoxelWorld {
 	
 	private VoxelShader shader;
 	private Loader loader;
-	
-	private Camera cam;
 	private MouseBlockPicker picker;
 	public volatile ChunkStore chunk;
 	private MasterRenderer renderer;
@@ -64,24 +62,23 @@ public class VoxelWorld {
 	public Random random = new Random();
 	private List<TileEntity> tents = new ArrayList<TileEntity>();
 	private MultiKeyMap<Integer, TileEntity> tileEntities = new MultiKeyMap<Integer, TileEntity>();
-	protected PlayerInventory i;
+	protected Player ply;
 	private int textureAtlas;
 	
-	// replace pi with a player
-	public VoxelWorld(MasterRenderer renderer, Loader loader, Camera cam, PlayerInventory i) {
+	// replace pi with a player (done)
+	public VoxelWorld(MasterRenderer renderer, Loader loader, Player ply) {
 		this.loader = loader;
 		this.renderer = renderer;
 		shader = new VoxelShader();
-		//resolveMeshes();
-		chunk = new ChunkStore(cam, loader, this);
+		ply.assignWorld(this);
+		chunk = new ChunkStore(ply, loader, this);
 		random.setSeed(LevelLoader.seed);
-		LightingEngine.init(this, cam);
-		this.i = i;
-		this.cam = cam;
+		LightingEngine.init(this, ply);
+		this.ply = ply;
 		this.textureAtlas = loader.loadSpecialTextureATLAS(16,16);
-		this.voverlayrenderer = new VOverlayRenderer(renderer, cam, this);
-		picker = new MouseBlockPicker(cam, renderer.getProjectionMatrix(), this, i, this.voverlayrenderer);
-		entityRenderer = new VEntityRenderer(this, renderer, cam);
+		this.voverlayrenderer = new VOverlayRenderer(renderer, ply, this);
+		picker = new MouseBlockPicker(ply, renderer.getProjectionMatrix(), this, ply.getInventory(), this.voverlayrenderer);
+		entityRenderer = new VEntityRenderer(this, renderer, ply);
 		MyFile fi = new MyFile("resources/models");
 		AnimatedModel mod = AnimatedModelLoader.loadEntity(new MyFile(fi, "model.dae"), loader, new ModelTexture(loader.loadTexture("clay")));
 		Animation animation = AnimationLoader.loadAnimation(new MyFile(fi, "model.dae"));
@@ -155,6 +152,7 @@ public class VoxelWorld {
 		while (Mouse.next()){
 			if (Mouse.getEventButtonState()) {
 				if (Mouse.getEventButton() == 1) {
+					PlayerInventory i = ply.getInventory();
 					ItemStack st = i.getItemInSelectedSlot();
 					if (st != null) {
 						if (picker.placeBlock(Item.inverseItems.get(st.getItem()))) {
@@ -163,7 +161,7 @@ public class VoxelWorld {
 						}
 						if (st.getItem() instanceof ItemTool) {
 							int[] c = picker.getCurrentBlockPoF();
-							((ItemTool) st.getItem()).onRightClick(c[0], c[1], c[2], this, cam, i);
+							((ItemTool) st.getItem()).onRightClick(c[0], c[1], c[2], this, ply, i);
 						}
 							
 					} else {
@@ -171,11 +169,12 @@ public class VoxelWorld {
 					}
 				}
 				if (Mouse.getEventButton() == 0) {
+					PlayerInventory i = ply.getInventory();
 					ItemStack st = i.getItemInSelectedSlot();
 					if (st != null) {
 						if (st.getItem() instanceof ItemTool) {
 							int[] c = picker.getCurrentBlockPoF();
-							((ItemTool) st.getItem()).onLeftClick(c[0], c[1], c[2], this, cam, i);
+							((ItemTool) st.getItem()).onLeftClick(c[0], c[1], c[2], this, ply, i);
 						}
 					}
 				}

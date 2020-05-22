@@ -10,8 +10,6 @@ import org.lwjgl.openal.AL11;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
-
 import com.brett.DisplayManager;
 import com.brett.KeyMaster;
 import com.brett.console.Console;
@@ -30,17 +28,15 @@ import com.brett.renderer.shaders.PointShader;
 import com.brett.sound.AudioController;
 import com.brett.sound.AudioSource;
 import com.brett.tools.SettingsLoader;
-import com.brett.tools.obj.OBJLoader;
 import com.brett.voxel.gui.MainMenu;
 import com.brett.voxel.inventory.InventoryMaster;
-import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.world.GameRegistry;
 import com.brett.voxel.world.MeshStore;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.BlockCrafting;
 import com.brett.voxel.world.chunk.AtlasHelper;
 import com.brett.voxel.world.chunk.Chunk;
-import com.brett.world.cameras.CreativeFirstPersonCamera;
+import com.brett.voxel.world.player.Player;
 import com.brett.world.entities.Entity;
 import com.sun.management.OperatingSystemMXBean;
 
@@ -87,19 +83,26 @@ public class VoxelScreenManager {
 		// MAIN STUFF (REQUIRED FOR GAME TO RUN)
 		Loader loader = new Loader();
 		AtlasHelper.init();
-		CreativeFirstPersonCamera camera = new CreativeFirstPersonCamera(new Vector3f(0, 90, 0));
+		//CreativeFirstPersonCamera camera = new CreativeFirstPersonCamera(new Vector3f(0, 90, 0));
 		ls = new LineShader();
 		pt = new PointShader();
 		//TexturedModel box_model = new TexturedModel(loader.loadToVAO(OBJLoader.loadOBJ("box")), new ModelTexture(loader.loadTexture("box")));
 		//TexturedModel circleModel = new TexturedModel(loader.loadToVAO(OBJLoader.loadOBJ("hitmodel")), new ModelTexture(loader.loadTexture("error")));
 		//FirstPersonPlayer player = new FirstPersonPlayer(box_model, new Vector3f(0, 0, 0), new Vector3f(0, 2, 0), 0, 0, 0, 1);
 		//Camera camera = player.getCamera();
-		MasterRenderer renderer = new MasterRenderer(loader, camera);
+		TextMaster.init(loader);
+		ui = new UIMaster(loader);
+		monospaced = new FontType(loader.loadTexture("fonts/monospaced-72", 0), new File("resources/textures/fonts/monospaced-72.fnt"));
+		
+		InventoryMaster.init(loader);
+		GameRegistry.init(loader);
+		
+		Player player = new Player(loader, ui);
+		
+		MasterRenderer renderer = new MasterRenderer(loader, player);
 		ls.loadProjectionMatrix(renderer.getProjectionMatrix());
 		pt.loadProjectionMatrix(renderer.getProjectionMatrix());
-		ui = new UIMaster(loader);
 		//World world = new World(renderer, loader, camera, -5);
-		TextMaster.init(loader);
 		ParticleMaster.init(loader, renderer.getProjectionMatrix());
 		
 		// TERRAIN TEXTURES
@@ -123,10 +126,9 @@ public class VoxelScreenManager {
 		//guitextures.add(guid);
 		
 		// FONT
-		monospaced = new FontType(loader.loadTexture("fonts/monospaced-72", 0), new File("resources/textures/fonts/monospaced-72.fnt"));
 		Console console = new Console(loader, monospaced, ui.getRenderer());
 		KeyMaster.registerKeyRequester(console);
-		console.registerCommand(new String[] {"tp", "teleport"}, new TeleportCommand(camera));
+		console.registerCommand(new String[] {"tp", "teleport"}, new TeleportCommand(player));
 		//new GUIText("Hello" + '\n' + "There!", 3, monospaced, new Vector2f(0, 0), 0.5f, false, 0);
 		
 		// ENTITY MODELS
@@ -219,18 +221,14 @@ public class VoxelScreenManager {
 		//client.start();
 		//client.sendData("test".getBytes());
 		
-		InventoryMaster.init(loader);
-		GameRegistry.init(loader);
-		PlayerInventory pi = new PlayerInventory(ui);
-		console.registerCommand("give", new GiveCommand(pi));
+		console.registerCommand("give", new GiveCommand(player.getInventory()));
 		
-		VoxelWorld world = new VoxelWorld(renderer, loader, camera, pi);
-		KeyMaster.registerKeyRequester(pi);
-		camera.assignWorld(world);
+		VoxelWorld world = new VoxelWorld(renderer, loader, player);
+		KeyMaster.registerKeyRequester(player.getInventory());
 		
 		Mouse.setGrabbed(false);
 		
-		scene = new MainMenu(ui, renderer, camera, world, loader);
+		scene = new MainMenu(ui, renderer, player, world, loader);
 		//scene = new VoxelRenderer(renderer, camera, world);
 		
 		//System.out.println(MeshStore.models.get(VoxelWorld.createSixBooleans(true, true, true, true, true, true)) == MeshStore.models.get(VoxelWorld.createSixBooleans(true, true, true, true, true, true)));
@@ -251,6 +249,7 @@ public class VoxelScreenManager {
 		loadOfCrap.enableText();
 		
 		Chunk.init();
+
 		
 		System.gc();
 		while (!Display.isCloseRequested()) {
@@ -270,7 +269,7 @@ public class VoxelScreenManager {
 			/**
 			 * Everything below here must be rendered
 			 */
-			pi.update();
+			player.update();
 			ui.render();
 			InventoryMaster.render(ui.getRenderer());
 			console.update();
@@ -293,7 +292,7 @@ public class VoxelScreenManager {
 				sb.append(" + FrameTimeMilli: ");
 				sb.append(averageFrameTimeMilliseconds);
 				sb.append(" + YAW: ");
-				sb.append(camera.getYaw());
+				sb.append(player.getYaw());
 				loadOfCrap.changeText(sb.toString());
 				//System.out.println(sb.toString());
 				frames = 0;
@@ -302,7 +301,7 @@ public class VoxelScreenManager {
 		}
 		isOpen = false;
 		Mouse.setGrabbed(false);
-		pi.cleanup();
+		player.cleanup();
 		BlockCrafting.craft.saveInventory();
 		//testserver.close();
 		//client.close();and it will 
