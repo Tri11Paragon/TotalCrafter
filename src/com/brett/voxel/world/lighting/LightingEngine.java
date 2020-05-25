@@ -6,7 +6,9 @@ import org.apache.commons.collections4.map.MultiKeyMap;
 import org.lwjgl.Sys;
 
 import com.brett.voxel.VoxelScreenManager;
+import com.brett.voxel.renderer.RENDERMODE;
 import com.brett.voxel.world.VoxelWorld;
+import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.chunk.ChunkStore;
 import com.brett.world.cameras.Camera;
@@ -27,7 +29,7 @@ public class LightingEngine {
 	private static MultiKeyMap<Integer, Byte> permalightSources = new MultiKeyMap<Integer, Byte>();
 	//private static VoxelWorld world;
 	
-	public static byte sunLevel = 0;
+	public static byte sunLevel = 15;
 	private static Camera cam;
 	private static VoxelWorld world;
 	
@@ -75,17 +77,16 @@ public class LightingEngine {
 						MapIterator<MultiKey<? extends Integer>, Byte> it = lightSources.mapIterator();
 						while (it.hasNext()) {
 							MultiKey<? extends Integer> key = it.next();
-							//if (it.getValue() < 0)
-								//recalculate();
-							//applyLightPatern(world, key.getKey(0), key.getKey(1), key.getKey(2), it.getValue());
-							//recalcualteChunks(key.getKey(0), key.getKey(2));
+							applyLightPatern(world, key.getKey(0), key.getKey(1), key.getKey(2), it.getValue());
+							recalcualteChunks(key.getKey(0), key.getKey(2));
+							// lightSources.removeMultiKey(key.getKey(0), key.getKey(1), key.getKey(2));
 						}
 
 						lightSources.clear();
-	
+						
 						lastTime = Sys.getTime();
 						Thread.sleep(32 - (lastTime - startTime) > 0 ? 32 - (lastTime - startTime) : 0);
-					} catch (Exception e) {}
+					} catch (Exception e) {e.printStackTrace();}
 				}
 			}
 		}).start();
@@ -103,13 +104,13 @@ public class LightingEngine {
 	}
 	
 	public static void applyLightPatern(VoxelWorld world, int x, int y, int z, byte level) {
-		boolean neg = false;
-		if (level < 0) {
-			neg = true;
-			level = (byte) -level;
-		}
+		//boolean neg = false;
+		//if (level < 0) {
+		//	neg = true;
+		//	level = (byte) -level;
+		//}
 		
-		for (int i = -level; i < (level-1); i++) {
+		/*for (int i = -level; i < (level-1); i++) {
 			for (int j = -level; j < (level-1); j++) {
 				for (int k = -level; k < (level-1); k++) {
 					int xp = x+i;
@@ -132,11 +133,61 @@ public class LightingEngine {
 					}
 				}
 			}
-		}
+		}*/
+		//System.out.println(level);
+		flood(x, y, z, level);
+	}
+	
+	private static byte top = 0b0001;
+	private static byte bottom = 0b0011;
+	private static byte left = 0b0100;
+	private static byte right = 0b0101;
+	private static byte front = 0b0111;
+	private static byte back = 0b1000;
+	
+	public static void flood(int x, int y, int z, int lightLevel) {
+		
+		
+		world.chunk.setLightLevelTorch(x, y, z, lightLevel);
+		
+		floodrecur(x, y-1, z, lightLevel - 1, top);
+		floodrecur(x, y+1, z, lightLevel - 1, bottom);
+		floodrecur(x - 1, y, z, lightLevel - 1, right);
+		floodrecur(x + 1, y, z, lightLevel - 1, left);
+		floodrecur(x, y, z + 1, lightLevel - 1, back);
+		floodrecur(x, y, z - 1, lightLevel - 1, front);
+	}
+	
+	public static void floodrecur(int x, int y, int z, int lightLevel, byte caller) {
+		
+		if (lightLevel <= 0)
+			return;
+		if (Block.blocks.get(world.chunk.getBlock(x, y, z)).getRendermode() == RENDERMODE.SOLID) 
+			return;
+		
+		world.chunk.setLightLevelTorch(x, y, z, lightLevel);
+		
+		if ((caller & bottom) != bottom)
+			floodrecur(x, y-1, z, lightLevel - 1, top);
+		if ((caller & top) != top)
+			floodrecur(x, y+1, z, lightLevel - 1, bottom);
+		if ((caller & left) != left)
+			floodrecur(x - 1, y, z, lightLevel - 1, right);
+		if ((caller & right) != right)
+			floodrecur(x + 1, y, z, lightLevel - 1, left);
+		if ((caller & front) != front)
+			floodrecur(x, y, z + 1, lightLevel - 1, back);
+		if ((caller & back) != back)
+			floodrecur(x, y, z - 1, lightLevel - 1, front);
+		
 	}
 	
 	public static void recalculate() {
+		return;
+		/*
+		locked = true;
 		lightSources.putAll(permalightSources);
+		locked = false;*/
 	}
 	
 	public static void recalcalculateSun() {

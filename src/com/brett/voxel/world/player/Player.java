@@ -8,6 +8,7 @@ import com.brett.DisplayManager;
 import com.brett.renderer.Loader;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.voxel.inventory.PlayerInventory;
+import com.brett.voxel.renderer.COLLISIONTYPE;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.world.cameras.Camera;
 
@@ -21,16 +22,25 @@ public class Player extends Camera {
 	
 	private static final int RECUR_AMT = 100;
 	
-	private double speed = 40;
+	private double speed = 5;
 	private double turnSpeed = 5.0;
 	private double moveAtX = 0;
 	private double moveAtY = 0;
 	private double moveatZ = 0;
+	private boolean onGround = false;
 	
 	private PlayerInventory pi;
 	private VoxelWorld world;
 	private Loader loader;
 	private UIMaster ui;
+	
+	private float lowestPoint = -1.75f;
+	private Vector3f[] cords = {new Vector3f(-0.25f, lowestPoint, -0.25f), new Vector3f(0.25f, lowestPoint, 0.25f), 
+								new Vector3f(0.25f, lowestPoint, -0.25f), new Vector3f(-0.25f, lowestPoint, 0.25f),
+								
+								new Vector3f(-0.25f, 0f, -0.25f), new Vector3f(0.25f, 0f, 0.25f), 
+								new Vector3f(0.25f, 0f, -0.25f), new Vector3f(-0.25f, 0f, 0.25f)};
+	
 	
 	public Player(Loader loader, UIMaster ui) {
 		pi = new PlayerInventory(ui);
@@ -48,12 +58,10 @@ public class Player extends Camera {
 	public void move() {
 		if (!Mouse.isGrabbed())
 			return;
-		if (Keyboard.isKeyDown(Keyboard.KEY_LMENU)) {
-			speed = 5;
-			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
-				speed=1;
+		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+			speed = 2.5f;
 		} else
-			speed = 40;
+			speed = 5;
 		
 		if (Keyboard.isKeyDown(Keyboard.KEY_W))
 			moveAtX = -speed * DisplayManager.getFrameTimeSeconds();
@@ -71,13 +79,19 @@ public class Player extends Camera {
 		else 
 			moveatZ = 0;
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
-			moveAtY = speed * DisplayManager.getFrameTimeSeconds();
-		else
-			moveAtY = 0;
+		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && onGround) {
+			moveAtY += 10.25f;
+			onGround = false;
+		}
 			
-		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-			moveAtY = -speed * DisplayManager.getFrameTimeSeconds();
+		//if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+			//moveAtY = -speed * DisplayManager.getFrameTimeSeconds();
+		moveAtY -= (VoxelWorld.GRAVITY*4) * DisplayManager.getFrameTimeSeconds();
+		
+		//System.out.println(moveAtY);
+		
+		if (moveAtY < -VoxelWorld.GRAVITY * 4)
+			moveAtY = -VoxelWorld.GRAVITY * 4;
 		
 		float speed = 30;
 		
@@ -116,24 +130,53 @@ public class Player extends Camera {
 		double wx = 0, wy = 0, wz = 0;
 		double xb = 0, yb = 0, zb = 0;
 
-		for (int i = 0; i < RECUR_AMT; i++) {
+		l1: for (int d = 0; d < RECUR_AMT; d++) {
 			wx += xStep;
-			if (world.chunk.getBlock(position.x + ((float)wx), position.y, position.z) == 0) {
-				xb = wx;
+			if (world.chunk.getBlockCollision(position.x + ((float)wx), position.y, position.z) != COLLISIONTYPE.SOLID) {
+				int amt = 0;
+				for (int i = 0; i < cords.length; i++) {
+					if (world.chunk.getBlockCollision(position.x + cords[i].x + ((float)wx), position.y + cords[i].y, position.z + cords[i].z) != COLLISIONTYPE.SOLID)
+						amt++;
+					else
+						break l1;
+				}
+				if (amt == cords.length)
+					xb = wx;
 			} else
 				break;
 		}
-		for (int i = 0; i < RECUR_AMT; i++) {
+		
+		int amty = 0;
+		l1: for (int d = 0; d < RECUR_AMT; d++) {
 			wy += yStep;
-			if (world.chunk.getBlock(position.x, position.y + ((float)wy), position.z) == 0) {
-				yb = wy;
+			if (world.chunk.getBlockCollision(position.x, position.y + ((float)wy), position.z) != COLLISIONTYPE.SOLID) {
+				for (int i = 0; i < cords.length; i++) {
+					if (world.chunk.getBlockCollision(position.x + cords[i].x, position.y + cords[i].y + ((float)wy), position.z + cords[i].z) != COLLISIONTYPE.SOLID)
+						amty++;
+					else
+						break l1;
+				}
+				if (amty == cords.length)
+					yb = wy;
 			} else
 				break;
 		}
-		for (int i = 0; i < RECUR_AMT; i++) {
+		if (yb == 0) {
+			onGround = true;
+			moveAtY = 0;
+		}
+		l1: for (int d = 0; d < RECUR_AMT; d++) {
 			wz += zStep;
-			if (world.chunk.getBlock(position.x, position.y, position.z + ((float)wz)) == 0) {
-				zb = wz;
+			if (world.chunk.getBlockCollision(position.x, position.y, position.z + ((float)wz)) != COLLISIONTYPE.SOLID) {
+				int amt = 0;
+				for (int i = 0; i < cords.length; i++) {
+					if (world.chunk.getBlockCollision(position.x + cords[i].x, position.y + cords[i].y, position.z + cords[i].z + ((float)wz)) != COLLISIONTYPE.SOLID)
+						amt++;
+					else
+						break l1;
+				}
+				if (amt == cords.length)
+					zb = wz;
 			} else 
 				break;
 		}

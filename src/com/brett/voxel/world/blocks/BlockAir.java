@@ -1,5 +1,6 @@
 package com.brett.voxel.world.blocks;
 
+import com.brett.voxel.renderer.COLLISIONTYPE;
 import com.brett.voxel.renderer.RENDERMODE;
 
 /**
@@ -25,6 +26,7 @@ public class BlockAir extends Block {
 		 * turns out the retard that coded the chunk mesher forgot to change the blocks[][][] in the exception :/							
 		 */
 		this.setRendermode(RENDERMODE.TRANSPARENT);
+		this.setCollisiontype(COLLISIONTYPE.NOT);
 	}
 	
 }

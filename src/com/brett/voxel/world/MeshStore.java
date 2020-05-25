@@ -136,15 +136,13 @@ public class MeshStore {
 		}
 	}
 	
-	public static float[] updateCompression(float[] fa, byte light, byte sun, int layer) {
+	public static float[] updateCompression(float[] fa, byte light, int layer) {
 		float[] tr = new float[fa.length];
 		for (int i = 0; i < fa.length; i++) {
 			int fai = (int)fa[i];
 			int li = light << 2;
-			int su = sun << 6;
 			int la = layer << 10;
 			fai |= li;
-			fai |= su;
 			fai |= la;
 			tr[i] = fai;
 		}
@@ -316,30 +314,30 @@ public class MeshStore {
 	 * IMPORTED FROM A MODEL I MADE IN BLENDER
 	 */
 	public static float[] flowerVerts = {
-			0.494975f,-0.5f,0.494975f, 
-			-0.494975f,0.5f,-0.494975f, 
-			-0.494975f,-0.5f,-0.494975f, 
-			-0.494975f,-0.5f,0.494975f, 
-			0.494975f,0.5f,-0.494975f, 
-			0.494975f,-0.5f,-0.494975f, 
-			-0.494975f,-0.5f,-0.494975f, 
-			0.494975f,0.5f,0.494975f, 
-			0.494975f,-0.5f,0.494975f, 
-			0.494975f,-0.5f,-0.494975f, 
-			-0.494975f,0.5f,0.494975f, 
-			-0.494975f,-0.5f,0.494975f, 
-			0.494975f,-0.5f,0.494975f, 
-			0.494975f,0.5f,0.494975f, 
-			-0.494975f,0.5f,-0.494975f, 
-			-0.494975f,-0.5f,0.494975f, 
-			-0.494975f,0.5f,0.494975f, 
-			0.494975f,0.5f,-0.494975f, 
-			-0.494975f,-0.5f,-0.494975f, 
-			-0.494975f,0.5f,-0.494975f, 
-			0.494975f,0.5f,0.494975f, 
-			0.494975f,-0.5f,-0.494975f, 
-			0.494975f,0.5f,-0.494975f, 
-			-0.494975f,0.5f,0.494975f, 
+			1,0,1, 
+			0,1,0, 
+			0,0,0, 
+			0,0,1, 
+			1,1,0, 
+			1,0,0, 
+			0,0,0, 
+			1,1,1, 
+			1,0,1, 
+			1,0,0, 
+			0,1,1, 
+			0,0,1, 
+			1,0,1, 
+			1,1,1, 
+			0,1,0, 
+			0,0,1, 
+			0,1,1, 
+			1,1,0, 
+			0,0,0, 
+			0,1,0, 
+			1,1,1, 
+			1,0,0, 
+			1,1,0, 
+			0,1,1, 
 	};
 	public static float[] flowerUVs = {
 			1.0E-4f,0.9999f, 

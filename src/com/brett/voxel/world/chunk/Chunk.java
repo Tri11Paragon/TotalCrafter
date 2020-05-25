@@ -16,7 +16,6 @@ import com.brett.voxel.renderer.shaders.VoxelShader;
 import com.brett.voxel.world.MeshStore;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
-import com.brett.voxel.world.lighting.LightingEngine;
 
 /**
 *
@@ -245,98 +244,78 @@ public class Chunk {
 			//verts = expandArrays(verts, count * MeshStore.vertsLeftComplete.length);
 			//uvs = expandArrays(uvs, count * MeshStore.uvLeftCompleteCompress.length);
 			
-			//float xOff = (xoff * Chunk.x) + i;
-			//float zOff = (zoff * Chunk.z) + k;
+			float xOff = (xoff * Chunk.x) + i;
+			float zOff = (zoff * Chunk.z) + k;
 			if (left) {
-				//byte w = s.chunk.getLightLevel(xOff-1, j, zOff);
-				//w += LightingEngine.sunLevel;
-				//if (w > 15)
-				//	w = 15;
+				byte w = s.chunk.getLightLevel(xOff-1, j, zOff);
 				if (b.getRendermode() == RENDERMODE.SOLID) {
-					verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureLeft));
+					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsLeftComplete, i, j, k));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, w, b.textureLeft));
 				} else {
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureLeft));
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsLeftComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, w, b.textureLeft));
 				}
 			}
 			if (right) {
-				//byte w = s.chunk.getLightLevel(xOff+1, j, zOff);
-				//w += LightingEngine.sunLevel;
-				//if (w > 15)
-				//	w = 15;
+				byte w = s.chunk.getLightLevel(xOff+1, j, zOff);
 				if (b.getRendermode() == RENDERMODE.SOLID) {
-					verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsRightComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, (byte)13, LightingEngine.sunLevel, b.textureRight));
+					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsRightComplete, i, j, k));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, w, b.textureRight));
 				} else {
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(MeshStore.vertsRightComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, (byte)13, LightingEngine.sunLevel, b.textureRight));
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsRightComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, w, b.textureRight));
 				}
 			}
 			if (front) {
-				//byte w = s.chunk.getLightLevel(xOff, j, zOff+1);
-				//w += LightingEngine.sunLevel;
-				//if (w > 15)
-				//	w = 15;
+				byte w = s.chunk.getLightLevel(xOff, j, zOff+1);
 				if (b.getRendermode() == RENDERMODE.SOLID) {
-					verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureFront));
+					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsFrontComplete, i, j, k));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, w, b.textureFront));
 				} else {
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureFront));
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsFrontComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, w, b.textureFront));
 				}
 			}
 			if (back) {
-				//byte w = s.chunk.getLightLevel(xOff, j, zOff-1);
-				//w += LightingEngine.sunLevel;
-				//if (w > 15)
-				//	w = 15;
+				byte w = s.chunk.getLightLevel(xOff, j, zOff-1);
 				if (b.getRendermode() == RENDERMODE.SOLID) {
-					verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, (byte)11, LightingEngine.sunLevel, b.textureBack));
+					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBackComplete, i, j, k));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, w, b.textureBack));
 				} else {
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, (byte)11, LightingEngine.sunLevel, b.textureBack));
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBackComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, w, b.textureBack));
 				}
 			}
 			if (top) {
 				int j1 = j+1;
 				if (j1 >= Chunk.y)
 					j1 = Chunk.y-1;
-				//byte w = lightLevel[i][j1][k];
-				//w += LightingEngine.sunLevel;
-				//if (w > 15)
-				//	w = 15;
+				byte w = lightLevel[i][j1][k];
 				if (b.getRendermode() == RENDERMODE.SOLID) {
-					verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsTopComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureTop));
+					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsTopComplete, i, j, k));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, w, b.textureTop));
 				} else {
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(MeshStore.vertsTopComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, (byte)15, LightingEngine.sunLevel, b.textureTop));
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsTopComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, w, b.textureTop));
 				}
 			}
 			if (bottom) {
 				int j1 = j-1;
 				if (j1 < 0)
 					j1 = 0;
-				//byte w = lightLevel[i][j1][k];
-				//w += LightingEngine.sunLevel;
-				//if (w > 15)
-				//	w = 15;
+				byte w = lightLevel[i][j1][k];
 				if (b.getRendermode() == RENDERMODE.SOLID) {
-					verts = addArrays(verts, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBottomComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, (byte)11, LightingEngine.sunLevel, b.textureBottom));
+					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBottomComplete, i, j, k));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, w, b.textureBottom));
 				} else {
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(MeshStore.vertsBottomComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, (byte)11, LightingEngine.sunLevel, b.textureBottom));
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBottomComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, w, b.textureBottom));
 				}
 			}
 		} else {
-			//byte w = lightLevel[i][j][k];
-			//if (w > 15)
-			//	w = 15;
-			vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslation(b.getSpecialVerts(), i, j, k));
-			uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(b.getSpecialTextures(), (byte) 15, LightingEngine.sunLevel,b.textureFront));
+			byte w = lightLevel[i][j][k];
+			vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(b.getSpecialVerts(), i, j, k));
+			uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(b.getSpecialTextures(), w,b.textureFront));
 		}
 		return data;
 		//blocksModels[i][j][k] = MeshStore.models.get(VoxelWorld.createSixBooleans(left, right, front, back, top, bottom));
@@ -537,6 +516,10 @@ public class Chunk {
 		return blocks[x][y][z];
 	}
 	
+	/**
+	 * Returns compressed light level.
+	 * First 4 bits is sunlight, last 4 bits is torch light.
+	 */
 	public byte getLightLevel(int x, int y, int z) {
 		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
 			return 0;
@@ -545,6 +528,26 @@ public class Chunk {
 		if (z < 0)
 			z *= -1;
 		return lightLevel[x][y][z];
+	}
+	
+	public byte getLightLevelTorch(int x, int y, int z) {
+		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
+			return 0;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
+		return (byte) (lightLevel[x][y][z] & 0x0F);
+	}
+	
+	public byte getLightLevelSun(int x, int y, int z) {
+		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
+			return 0;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
+		return (byte) (lightLevel[x][y][z] & 0xF0);
 	}
 	
 	public boolean isBlockUnderGround(int x, int y, int z) {
@@ -601,7 +604,11 @@ public class Chunk {
 		return zoff;
 	}
 	
-	public void setLightLevel(int x, int y, int z, byte level) {
+	/**
+	 * Sets the compressed light level for the block
+	 * first 4 bits is sunlight, last 4 bits is torch light
+	 */
+	public void setLightLevel(int x, int y, int z, int level) {
 		if (x >= Chunk.x || z >= Chunk.z)
 			return;
 		if (x < 0)
@@ -612,7 +619,37 @@ public class Chunk {
 			y = Chunk.y-1;
 		if (y < 0)
 			y = 0;
-		lightLevel[x][y][z] = level;
+		lightLevel[x][y][z] = (byte) (level & 0xFF);
+	}
+	
+	public void setLightLevelSun(int x, int y, int z, int level) {
+		if (x >= Chunk.x || z >= Chunk.z)
+			return;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
+		if (y >= Chunk.y)
+			y = Chunk.y-1;
+		if (y < 0)
+			y = 0;
+		lightLevel[x][y][z] &= 0x0F;
+		lightLevel[x][y][z] |= ((level & 0xF) << 4);
+	}
+	
+	public void setLightLevelTorch(int x, int y, int z, int level) {
+		if (x >= Chunk.x || z >= Chunk.z)
+			return;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
+		if (y >= Chunk.y)
+			y = Chunk.y-1;
+		if (y < 0)
+			y = 0;
+		lightLevel[x][y][z] &= 0xF0;
+		lightLevel[x][y][z] |= ((level & 0xF));
 	}
 	
 	public void setBlock(int x, int y, int z, int rx, int rz, int block) {

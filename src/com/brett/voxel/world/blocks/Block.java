@@ -8,6 +8,7 @@ import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.PlayerInventory;
+import com.brett.voxel.renderer.COLLISIONTYPE;
 import com.brett.voxel.renderer.RENDERMODE;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.lighting.LightingEngine;
@@ -60,6 +61,7 @@ public class Block {
 	private int miningLevel = 0;
 	private int effectiveTool = 0;
 	private RENDERMODE rendermode = RENDERMODE.SOLID;
+	private COLLISIONTYPE collisiontype = COLLISIONTYPE.SOLID;
 	private float[] specialVerts;
 	private float[] specialTextures;
 	
@@ -236,6 +238,15 @@ public class Block {
 
 	public Block setSpecialTextures(float[] specialTextures) {
 		this.specialTextures = specialTextures;
+		return this;
+	}
+
+	public COLLISIONTYPE getCollisiontype() {
+		return collisiontype;
+	}
+
+	public Block setCollisiontype(COLLISIONTYPE collisiontype) {
+		this.collisiontype = collisiontype;
 		return this;
 	}
 	

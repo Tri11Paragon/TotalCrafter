@@ -124,10 +124,10 @@ public class Loader {
 	public RawModel loadToVAO(float[] positions, float[] textureCoords, boolean b) {
 		int vaoID = createVAO();
 		int[] vbos = new int[2];
-		vbos[0] = this.storeDataInAttributeList(0, 3, positions);
+		vbos[0] = this.storeDataInAttributeList(0, 1, positions);
 		vbos[1] = this.storeDataInAttributeList(1, 1, textureCoords);
 		unbindVAO();
-		return new RawBlockModel(vaoID, vbos, positions.length/3);
+		return new RawBlockModel(vaoID, vbos, positions.length);
 	}
 	
 	public int createEmptyVBO(int floatCount) {

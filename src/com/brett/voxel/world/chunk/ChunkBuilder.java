@@ -21,6 +21,7 @@ public class ChunkBuilder {
 	/**
 	 * Creates Z value errors and I don't know why. It is unused but is a neat idea
 	 * for reducing 2 floats it doesn't really show on the profiler.
+	 * (Turns out this was caused by flowers again)
 	 */
 	public static float[] updateVertexTranslationCompress(float[] verts, int xTrans, int yTrans, int zTrans) {
 		float[] newVerts = new float[verts.length/3];

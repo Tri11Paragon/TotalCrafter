@@ -37,7 +37,7 @@ public class WorldGenerator {
 		ff = new ForestNoise(LevelLoader.seed);
 		bf = new BiomeNoise(((LevelLoader.seed/2)*128)/255);
 		ores = new WorldGenMineable(
-				new MineData(Block.BLOCK_GLOWSTONE, 1, 8, 0.0),
+				//new MineData(Block.BLOCK_GLOWSTONE, 1, 8, 0.0),
 				new MineData(Block.BLOCK_IRON, 32, 60, 0.0, 60, 1),
 				new MineData(Block.BLOCK_COAL, 40, 70, 0.0),
 				new MineData(Block.BLOCK_COPPER, 45, 70, 0.0),

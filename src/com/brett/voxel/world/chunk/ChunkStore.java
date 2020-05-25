@@ -9,11 +9,13 @@ import org.lwjgl.util.vector.Matrix4f;
 import com.brett.renderer.Loader;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
+import com.brett.voxel.renderer.COLLISIONTYPE;
 import com.brett.voxel.renderer.shaders.VoxelShader;
 import com.brett.voxel.world.GameRegistry;
 import com.brett.voxel.world.LevelLoader;
 import com.brett.voxel.world.Region;
 import com.brett.voxel.world.VoxelWorld;
+import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.generators.WorldGenerator;
 import com.brett.world.cameras.Camera;
 
@@ -408,6 +410,28 @@ public class ChunkStore {
 		return c.getBlock((int)x, (int)y, (int)z);
 	}
 	
+	public COLLISIONTYPE getBlockCollision(float x, float y, float z) {
+		if (y < 0)
+			return COLLISIONTYPE.NOT;
+		if (y > Chunk.y)
+			return COLLISIONTYPE.NOT;
+		int xoff = 0,zoff = 0;
+		if (x < 0)
+			xoff = -1;
+		if (z < 0)
+			zoff = -1;
+		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
+		if (c == null)
+			return COLLISIONTYPE.SOLID;
+		x%=Chunk.x;
+		z%=Chunk.z;
+		if (x < 0)
+			x = biasNegative(x, -Chunk.x);
+		if (z < 0)
+			z = biasNegative(z, -Chunk.z);
+		return Block.blocks.get(c.getBlock((int)x, (int)y, (int)z)).getCollisiontype();
+	}
+	
 	public void setBlock(float x, float y, float z, short block) {
 		if (y < 0)
 			return;
@@ -468,6 +492,50 @@ public class ChunkStore {
 		c.setLightLevel((int)x,(int)y, (int)z, level);
 	}
 	
+	public void setLightLevelTorch(float x, float y, float z, int level) {
+		if (y < 0)
+			return;
+		if (y > Chunk.y)
+			return;
+		int xoff = 0,zoff = 0;
+		if (x < 0)
+			xoff = -1;
+		if (z < 0)
+			zoff = -1;
+		Chunk c = getChunk((int)(x/(float)Chunk.x) + xoff, (int)(z/(float)Chunk.z) + zoff);
+		if (c == null)
+			return;
+		x%=Chunk.x;
+		z%=Chunk.z;
+		if (x < 0)
+			x = biasNegative(x, -Chunk.x);
+		if (z < 0)
+			z = biasNegative(z, -Chunk.z);
+		c.setLightLevelTorch((int)x,(int)y, (int)z, level);
+	}
+	
+	public void setLightLevelSun(float x, float y, float z, int level) {
+		if (y < 0)
+			return;
+		if (y > Chunk.y)
+			return;
+		int xoff = 0,zoff = 0;
+		if (x < 0)
+			xoff = -1;
+		if (z < 0)
+			zoff = -1;
+		Chunk c = getChunk((int)(x/(float)Chunk.x) + xoff, (int)(z/(float)Chunk.z) + zoff);
+		if (c == null)
+			return;
+		x%=Chunk.x;
+		z%=Chunk.z;
+		if (x < 0)
+			x = biasNegative(x, -Chunk.x);
+		if (z < 0)
+			z = biasNegative(z, -Chunk.z);
+		c.setLightLevelSun((int)x,(int)y, (int)z, level);
+	}
+	
 	public byte getLightLevel(float x, float y, float z) {
 		if (y < 0)
 			return 0;
@@ -488,6 +556,50 @@ public class ChunkStore {
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
 		return c.getLightLevel((int)x, (int)y, (int)z);
+	}
+	
+	public byte getLightLevelSun(float x, float y, float z) {
+		if (y < 0)
+			return 0;
+		if (y > Chunk.y)
+			return 0;
+		int xoff = 0,zoff = 0;
+		if (x < 0)
+			xoff = -1;
+		if (z < 0)
+			zoff = -1;
+		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
+		if (c == null)
+			return 0;
+		x%=Chunk.x;
+		z%=Chunk.z;
+		if (x < 0)
+			x = biasNegative(x, -Chunk.x);
+		if (z < 0)
+			z = biasNegative(z, -Chunk.z);
+		return c.getLightLevelSun((int)x, (int)y, (int)z);
+	}
+	
+	public byte getLightLevelTorch(float x, float y, float z) {
+		if (y < 0)
+			return 0;
+		if (y > Chunk.y)
+			return 0;
+		int xoff = 0,zoff = 0;
+		if (x < 0)
+			xoff = -1;
+		if (z < 0)
+			zoff = -1;
+		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
+		if (c == null)
+			return 0;
+		x%=Chunk.x;
+		z%=Chunk.z;
+		if (x < 0)
+			x = biasNegative(x, -Chunk.x);
+		if (z < 0)
+			z = biasNegative(z, -Chunk.z);
+		return c.getLightLevelTorch((int)x, (int)y, (int)z);
 	}
 	
 	public void setBlockBIAS(float x, float y, float z, short block) {
