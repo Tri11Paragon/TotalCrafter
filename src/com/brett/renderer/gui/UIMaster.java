@@ -21,6 +21,8 @@ import com.brett.renderer.font.GUIDynamicText;
 
 public class UIMaster {
 	
+	public static int inventoryTexture = 0;
+	
 	private int SWIDTH = 800;
 	private int SHEIGHT = 600;
 	private GUIRenderer renderer;
@@ -33,6 +35,7 @@ public class UIMaster {
 		SHEIGHT = Display.getHeight();
 		renderer = new GUIRenderer(loader);
 		guimenus.add(new EscapeMenu(this, loader));
+		inventoryTexture = loader.loadSpecialTexture("gui/background");
 	}
 	
 	public void render() {

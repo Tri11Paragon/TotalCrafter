@@ -36,8 +36,9 @@ public class PlayerInventory implements IKeyState {
 		float sizeX = 48*15;
 		float sizeY = 48*7;
 		float x = Display.getWidth()/2 - sizeX/2;
-		float y = Display.getHeight()/2 - sizeY/2 + 80;
+		float y = Display.getHeight()/2 - sizeY/2 + 100;
 		i = new Inventory((int)LevelLoader.seed, "player");
+		i.setBackground(ui.createCenteredTexture(UIMaster.inventoryTexture, -1, -1, 0, 100, sizeX + 30, sizeY + 30));
 		h = new Hotbar(i, ui);
 		for (int j = 0; j < 15; j++) {
 			for (int k = 0; k < 7; k++) {

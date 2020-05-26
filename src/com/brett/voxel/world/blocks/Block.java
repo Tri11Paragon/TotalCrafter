@@ -50,6 +50,7 @@ public class Block {
 	public static final short BLOCK_REDFLOWER = 23;
 	public static final short BLOCK_TALLGRASS = 24;
 	public static final short BLOCK_FURNACE = 25;
+	public static final short BLOCK_CHEST = 26;
 	
 	public ModelTexture model;
 	public int textureTop, textureBottom, textureLeft, textureRight, textureFront, textureBack;

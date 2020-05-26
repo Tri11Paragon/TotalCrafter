@@ -56,34 +56,49 @@ public class Player extends Camera {
 	
 	@Override
 	public void move() {
-		if (!Mouse.isGrabbed())
-			return;
-		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			speed = 2.5f;
-		} else
-			speed = 5;
-		
-		if (Keyboard.isKeyDown(Keyboard.KEY_W))
-			moveAtX = -speed * DisplayManager.getFrameTimeSeconds();
-		
-		else if (Keyboard.isKeyDown(Keyboard.KEY_S))
-			moveAtX = speed * DisplayManager.getFrameTimeSeconds();
-		else
-			moveAtX = 0;
+		if (Mouse.isGrabbed()) {
+			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+				speed = 2.5f;
+			} else
+				speed = 5;
 			
-		if (Keyboard.isKeyDown(Keyboard.KEY_A))
-			moveatZ = speed * DisplayManager.getFrameTimeSeconds();
-		else
-		if (Keyboard.isKeyDown(Keyboard.KEY_D))
-			moveatZ = -speed * DisplayManager.getFrameTimeSeconds();
-		else 
-			moveatZ = 0;
-
-		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && onGround) {
-			moveAtY += 10.25f;
-			onGround = false;
+			if (Keyboard.isKeyDown(Keyboard.KEY_W))
+				moveAtX = -speed * DisplayManager.getFrameTimeSeconds();
+			else if (Keyboard.isKeyDown(Keyboard.KEY_S))
+				moveAtX = speed * DisplayManager.getFrameTimeSeconds();
+			else {
+				moveAtX = 0;
+				
+			}
+				
+			if (Keyboard.isKeyDown(Keyboard.KEY_A))
+				moveatZ = speed * DisplayManager.getFrameTimeSeconds();
+			else
+			if (Keyboard.isKeyDown(Keyboard.KEY_D))
+				moveatZ = -speed * DisplayManager.getFrameTimeSeconds();
+			else 
+				moveatZ = 0;
+	
+			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && onGround) {
+				moveAtY += 10.25f;
+				onGround = false;
+			}
+		
+			pitch += -Mouse.getDY() * turnSpeed/100;
+			yaw += Mouse.getDX() * turnSpeed/100;
+			
+			float speed = 30;
+			
+			if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
+				yaw += -speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
+			if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+				yaw += speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
+			if (Keyboard.isKeyDown(Keyboard.KEY_UP))
+				pitch += -speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
+			if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+				pitch += speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
 		}
-			
+		
 		//if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
 			//moveAtY = -speed * DisplayManager.getFrameTimeSeconds();
 		moveAtY -= (VoxelWorld.GRAVITY*4) * DisplayManager.getFrameTimeSeconds();
@@ -93,21 +108,6 @@ public class Player extends Camera {
 		if (moveAtY < -VoxelWorld.GRAVITY * 4)
 			moveAtY = -VoxelWorld.GRAVITY * 4;
 		
-		float speed = 30;
-		
-		if (Mouse.isGrabbed()) {
-			pitch += -Mouse.getDY() * turnSpeed/100;
-			yaw += Mouse.getDX() * turnSpeed/100;
-		}
-		
-		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
-			yaw += -speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
-		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
-			yaw += speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
-		if (Keyboard.isKeyDown(Keyboard.KEY_UP))
-			pitch += -speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
-		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
-			pitch += speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
 		
 		if (this.pitch > 90)
 			this.pitch = 90;
@@ -118,10 +118,9 @@ public class Player extends Camera {
 		if (this.yaw > 360)
 			this.yaw = 0;
 		
-		double prez = 1000000d;
-		double dx = (Math.round((((-((moveAtX) * Math.round(Math.sin(Math.toRadians(yaw)) * prez) / prez)) + -((moveatZ) * Math.round(Math.cos(Math.toRadians(yaw))*prez)/prez)))*prez)/prez);
+		double dx = (-((moveAtX) * Math.sin(Math.toRadians(yaw))) + -((moveatZ) * Math.cos(Math.toRadians(yaw))) );
 		double dy = ((((moveAtX * (Math.sin(Math.toRadians(roll)))) + moveAtY)));
-		double dz = (Math.round((((moveAtX) * Math.round(Math.cos(Math.toRadians(yaw)) * prez)/prez) + -((moveatZ) * Math.round(Math.sin(Math.toRadians(yaw))*prez)/prez))*prez)/prez);
+		double dz = ((((moveAtX) * Math.cos(Math.toRadians(yaw))) + -((moveatZ) * Math.sin(Math.toRadians(yaw)))));
 		
 		double xStep = (dx)/RECUR_AMT;
 		double yStep = (dy)/RECUR_AMT;

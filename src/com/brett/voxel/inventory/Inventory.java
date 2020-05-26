@@ -14,7 +14,7 @@ import java.util.Random;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
-
+import com.brett.renderer.datatypes.GUITexture;
 import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.IMenu;
 import com.brett.renderer.gui.UIElement;
@@ -31,6 +31,9 @@ import com.brett.voxel.world.items.ItemStack;
 
 public class Inventory implements IMenu {
 	
+	private List<Slot> slots = new ArrayList<Slot>();
+	private List<UIElement> slotAsElements = new ArrayList<UIElement>();
+	private boolean enabled = false;
 	private final String NBTID;
 	
 	public Inventory(int seed) {
@@ -56,9 +59,9 @@ public class Inventory implements IMenu {
 		this.NBTID = b.toString();
 	}
 	
-	private List<Slot> slots = new ArrayList<Slot>();
-	private List<UIElement> slotAsElements = new ArrayList<UIElement>();
-	private boolean enabled = false;
+	public void setBackground(GUITexture texture) {
+		slotAsElements.add(texture);
+	}
 	
 	public void addSlot(Slot s) {
 		slots.add(s);
@@ -158,13 +161,13 @@ public class Inventory implements IMenu {
 			Mouse.setGrabbed(false);
 			for (Slot s : slots){
 				if (s.text != null)
-					s.text.enableText();;
+					s.text.enableText();
 			}
 		}else {
 			Mouse.setGrabbed(true);
 			for (Slot s : slots) {
 				if (s.text != null)
-					s.text.disableText();;
+					s.text.disableText();
 			}
 		}
 	}

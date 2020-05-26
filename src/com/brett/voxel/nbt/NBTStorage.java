@@ -40,6 +40,8 @@ public class NBTStorage {
 		this.location = location;
 		DataInputStream is = null;
 		try {
+			//new File(this.location).mkdirs();
+			new File(this.location).createNewFile();
 			// data loaders
 			is = new DataInputStream(new BufferedInputStream(new FileInputStream(this.location), 4096));
 			os = new DataOutputStream(new BufferedOutputStream( new FileOutputStream(this.location), 4096));
@@ -66,7 +68,7 @@ public class NBTStorage {
 				nbtData.put(name, data);
 			}
 			is.close();
-		} catch (IOException e) {}
+		} catch (IOException e) {e.printStackTrace();}
 	}
 	
 	/**
@@ -80,15 +82,15 @@ public class NBTStorage {
 			int[] data = convertNBT(s.getValue());
 			// save the nbt to disk.
 			for (int i = 0 ; i < tag.length; i++) {
-				try {os.write(tag[i]);} catch (Exception e) {}
+				try {os.write(tag[i]);} catch (Exception e) {e.printStackTrace();}
 			}
-			for (int i = 0 ; i < tag.length; i++) {
-				try {os.write(data[i]);} catch (Exception e) {}
+			for (int i = 0 ; i < data.length; i++) {
+				try {os.write(data[i]);} catch (Exception e) {e.printStackTrace();}
 			}
 		}
 		try {
 			os.close();
-		} catch (Exception e) {}
+		} catch (Exception e) {e.printStackTrace();}
 	}
 	
 	/*

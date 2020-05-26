@@ -17,6 +17,7 @@ import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemStack;
 import com.brett.voxel.world.items.ItemTool;
+import com.brett.voxel.world.player.Player;
 import com.brett.world.cameras.Camera;
 
 /**
@@ -41,16 +42,18 @@ public class MouseBlockPicker {
 	private Matrix4f viewMatrix;
 	private Camera camera;
 	private PlayerInventory i;
+	private Player ply;
 	private VOverlayRenderer renderer;
 	
 	private VoxelWorld world;
 
-	public MouseBlockPicker(Camera cam, Matrix4f projection, VoxelWorld terrain, PlayerInventory i, VOverlayRenderer renderer) {
+	public MouseBlockPicker(Camera cam, Matrix4f projection, VoxelWorld terrain, Player ply, VOverlayRenderer renderer) {
 		camera = cam;
 		projectionMatrix = projection;
 		viewMatrix = Maths.createViewMatrix(camera);
 		this.world = terrain;
-		this.i = i;
+		this.i = ply.getInventory();
+		this.ply = ply;
 		this.renderer = renderer;
 	}
 	

@@ -12,10 +12,12 @@ import com.brett.voxel.inventory.recipe.CraftingManager;
 import com.brett.voxel.renderer.RENDERMODE;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.blocks.BlockAir;
+import com.brett.voxel.world.blocks.BlockChest;
 import com.brett.voxel.world.blocks.BlockCrafting;
 import com.brett.voxel.world.blocks.BlockFlower;
 import com.brett.voxel.world.blocks.BlockFurnace;
 import com.brett.voxel.world.blocks.BlockGrass;
+import com.brett.voxel.world.blocks.BlockLeaves;
 import com.brett.voxel.world.blocks.BlockSand;
 import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemCopperPickaxe;
@@ -70,6 +72,7 @@ public class GameRegistry {
 		CraftingManager.registerCrafting(Item.ITEM_DIAMOND + "," + Item.ITEM_DIAMOND + "," + Item.ITEM_DIAMOND + 
 				";0,"+Item.ITEM_STICK + ",0;0," + Item.ITEM_STICK +",0", Item.ITEM_DIAMONDPICK, 1);
 		CraftingManager.registerCrafting("8,8,8;8,0,8;8,8,8", Block.BLOCK_FURNACE, 1);
+		CraftingManager.registerCrafting("19,19,19;19,0,19;19,19,19", Block.BLOCK_CHEST, 1);
 	}
 	
 	private static void registerBlocks(Loader loader) {
@@ -131,7 +134,7 @@ public class GameRegistry {
 		registerBlock(Block.BLOCK_LOG, new Block(new ModelTexture(loader.loadTexture("pine")), 22
 				).setBreakSound(AudioController.loadSound("wood1.ogg")).setHardness(0.78f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
 		
-		registerBlock(Block.BLOCK_LEAVES, new Block(new ModelTexture(loader.loadTexture("leaves_oak")), 23
+		registerBlock(Block.BLOCK_LEAVES, new BlockLeaves(new ModelTexture(loader.loadTexture("leaves_oak")), 23
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.60f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_SWORD)
 				.setRendermode(RENDERMODE.TRANSPARENT));
 		
@@ -156,6 +159,9 @@ public class GameRegistry {
 		
 		registerBlock(Block.BLOCK_FURNACE, new BlockFurnace(new ModelTexture(loader.loadTexture("furnace_front_off")))
 				.setBreakSound(AudioController.loadSound("stone1.ogg")).setBlockDropped(Block.BLOCK_FURNACE).setHardness(2.98f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+		
+		registerBlock(Block.BLOCK_CHEST, new BlockChest(new ModelTexture(loader.loadTexture("chest_front")))
+				.setBreakSound(AudioController.loadSound("wood1.ogg")).setBlockDropped(Block.BLOCK_CHEST).setHardness(2.98f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
 		
 	}
 	
@@ -212,6 +218,9 @@ public class GameRegistry {
 		textures.put(33, "furnace_front_on");
 		textures.put(34, "furnace_side");
 		textures.put(35, "furnace_top");
+		textures.put(36, "chest_top");
+		textures.put(37, "chest_side");
+		textures.put(38, "chest_front");
 		return textures;
 	}
 	

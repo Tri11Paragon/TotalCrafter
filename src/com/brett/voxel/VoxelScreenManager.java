@@ -31,6 +31,7 @@ import com.brett.tools.SettingsLoader;
 import com.brett.voxel.gui.MainMenu;
 import com.brett.voxel.inventory.InventoryMaster;
 import com.brett.voxel.world.GameRegistry;
+import com.brett.voxel.world.LevelLoader;
 import com.brett.voxel.world.MeshStore;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.BlockCrafting;
@@ -98,6 +99,7 @@ public class VoxelScreenManager {
 		GameRegistry.init(loader);
 		
 		Player player = new Player(loader, ui);
+		LevelLoader.ply = player;
 		
 		MasterRenderer renderer = new MasterRenderer(loader, player);
 		ls.loadProjectionMatrix(renderer.getProjectionMatrix());

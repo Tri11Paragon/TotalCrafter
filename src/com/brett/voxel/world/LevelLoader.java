@@ -9,6 +9,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.lwjgl.util.vector.Vector3f;
+
+import com.brett.voxel.world.player.Player;
+
 /** 
 *	Brett Terpstra
 *	Mar 6, 2020
@@ -17,6 +21,8 @@ import java.io.IOException;
 public class LevelLoader {
 
 	public static long seed = 694;
+	public static Player ply;
+	public static Vector3f pos;
 	
 	public static void loadLevelData(String topLevelWorldLocation) {
 		DataInputStream is = null;
@@ -26,8 +32,11 @@ public class LevelLoader {
 		
 		try {
 			seed = is.readLong();
+			ply.setPosition(new Vector3f(is.readFloat(), is.readFloat(), is.readFloat()));
+			ply.setPitch(is.readFloat());
+			ply.setYaw(is.readFloat());
 		} catch (IOException e1) {}
-		
+			
 		try {
 			is.close();
 		} catch (IOException e) {}
@@ -42,6 +51,11 @@ public class LevelLoader {
 		
 		try {
 			os.writeLong(seed);
+			os.writeFloat(ply.getPosition().x);
+			os.writeFloat(ply.getPosition().y);
+			os.writeFloat(ply.getPosition().z);
+			os.writeFloat(ply.getPitch());
+			os.writeFloat(ply.getYaw());
 		} catch (IOException e1) {}
 		
 		try {

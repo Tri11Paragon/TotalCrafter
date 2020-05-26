@@ -77,7 +77,7 @@ public class VoxelWorld {
 		this.ply = ply;
 		this.textureAtlas = loader.loadSpecialTextureATLAS(16,16);
 		this.voverlayrenderer = new VOverlayRenderer(renderer, ply, this);
-		picker = new MouseBlockPicker(ply, renderer.getProjectionMatrix(), this, ply.getInventory(), this.voverlayrenderer);
+		picker = new MouseBlockPicker(ply, renderer.getProjectionMatrix(), this, ply, this.voverlayrenderer);
 		entityRenderer = new VEntityRenderer(this, renderer, ply);
 		MyFile fi = new MyFile("resources/models");
 		AnimatedModel mod = AnimatedModelLoader.loadEntity(new MyFile(fi, "model.dae"), loader, new ModelTexture(loader.loadTexture("clay")));
