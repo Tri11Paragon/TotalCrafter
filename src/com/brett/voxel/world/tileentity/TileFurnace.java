@@ -88,11 +88,11 @@ public class TileFurnace extends Container {
 			return;
 		if (i != null) {
 			List<Slot> slots = i.getSlots();
-			if (slots.get(1).getItem() != null) {
-				if (slots.get(0).getItem() != null) {
-					long val = CraftingManager.getFurnaceRecipe(slots.get(0).getItemID());
-					if (val == 0)
-						return;
+			if (slots.get(0).getItem() != null) {
+				long val = CraftingManager.getFurnaceRecipe(slots.get(0).getItemID());
+				if (val == 0)
+					return;
+				if (slots.get(1).getItem() != null) {
 					int fuelTime = GameRegistry.getItemFuel(slots.get(1).getItemID());
 					if (fuel <= 0 && fuelTime > 0) {
 						slots.get(1).getItemStack().decreaseStack(1);
@@ -100,27 +100,27 @@ public class TileFurnace extends Container {
 							slots.get(1).changeItem(null);
 						fuel = fuelTime;
 					}
-					if (fuel > 0) {
-						long temp = val << 32;
-						int id = (int) (temp >> 32);
-						int time = (int)(val >> 32);
-						progress+=skip;
-						if (progress < time)
-							fuel--;
-						if (progress >= time) {
-							if (slots.get(2).getItem() == null) {
-								slots.get(2).setItemStack(new ItemStack(Item.items.get((short)id), 1));
-							} else {
-								if (slots.get(2).getItemID() == id) {
-									slots.get(2).getItemStack().increaseStack(1);
-								} else
-									return;
-							}
-							progress = 0;
-							slots.get(0).getItemStack().decreaseStack(1);
-							if (slots.get(0).getItemsAmount() <= 0)
-								slots.get(0).changeItem(null);
+				}
+				if (fuel > 0) {
+					long temp = val << 32;
+					int id = (int) (temp >> 32);
+					int time = (int)(val >> 32);
+					progress+=skip;
+					if (progress < time)
+						fuel--;
+					if (progress >= time) {
+						if (slots.get(2).getItem() == null) {
+							slots.get(2).setItemStack(new ItemStack(Item.items.get((short)id), 1));
+						} else {
+							if (slots.get(2).getItemID() == id) {
+								slots.get(2).getItemStack().increaseStack(1);
+							} else
+								return;
 						}
+						progress = 0;
+						slots.get(0).getItemStack().decreaseStack(1);
+						if (slots.get(0).getItemsAmount() <= 0)
+							slots.get(0).changeItem(null);
 					}
 				}
 			}

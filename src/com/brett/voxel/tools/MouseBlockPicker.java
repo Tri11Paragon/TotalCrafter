@@ -333,7 +333,7 @@ public class MouseBlockPicker {
 				if (posadj.z < 0)
 					posadj.z = biasNegative(posadj.z, -Chunk.z);
 				short blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
-				if (blockid == 0) {
+				if (blockid == 0 && !ply.hasCollision(posadjUn)) {
 					//b.playBreakSound((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z));
 					//b.onBlockBreaked((int) (posadjUn.x), (int) posadjUn.y, (int) (posadjUn.z), world);
 					c.setBlock((int)(posadj.x), (int)posadj.y,  (int)(posadj.z), (int)posadjUn.x, (int)posadjUn.z, block);

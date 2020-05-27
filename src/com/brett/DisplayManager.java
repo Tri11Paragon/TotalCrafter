@@ -35,7 +35,7 @@ public class DisplayManager {
 				Display.create(new PixelFormat().withSamples(4), attribs);
 			else
 				Display.create(new PixelFormat(), attribs);
-			Display.setTitle("RMS - V0.11A // Майнкрафт³ - V0.32.1A");
+			Display.setTitle("RMS - V0.11A // Майнкрафт³ - V0.33.0A");
 			GL11.glEnable(GL13.GL_MULTISAMPLE);
 		} catch (LWJGLException e) {e.printStackTrace();}
 		

@@ -3,7 +3,6 @@ package com.brett.voxel.world.player;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
-
 import com.brett.DisplayManager;
 import com.brett.renderer.Loader;
 import com.brett.renderer.gui.UIMaster;
@@ -39,6 +38,9 @@ public class Player extends Camera {
 	private Vector3f[] cords = {new Vector3f(-0.25f, lowestPoint, -0.25f), new Vector3f(0.25f, lowestPoint, 0.25f), 
 								new Vector3f(0.25f, lowestPoint, -0.25f), new Vector3f(-0.25f, lowestPoint, 0.25f),
 								
+								new Vector3f(0, lowestPoint/2, 0), new Vector3f(0, lowestPoint/4, 0),
+								new Vector3f(0, lowestPoint/2 + lowestPoint/4, 0), new Vector3f(0, lowestPoint/2 + lowestPoint/8, 0),
+								
 								new Vector3f(-0.25f, 0f, -0.25f), new Vector3f(0.25f, 0f, 0.25f), 
 								new Vector3f(0.25f, 0f, -0.25f), new Vector3f(-0.25f, 0f, 0.25f)};
 	
@@ -53,7 +55,6 @@ public class Player extends Camera {
 	public void assignWorld(VoxelWorld world) {
 		this.world = world;
 	}
-	
 	
 	@Override
 	public void move() {
@@ -100,11 +101,7 @@ public class Player extends Camera {
 				pitch += speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
 		}
 		
-		//if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-			//moveAtY = -speed * DisplayManager.getFrameTimeSeconds();
 		moveAtY -= (VoxelWorld.GRAVITY*4) * DisplayManager.getFrameTimeSeconds();
-		
-		//System.out.println(moveAtY);
 		
 		if (moveAtY < -VoxelWorld.GRAVITY * 4)
 			moveAtY = -VoxelWorld.GRAVITY * 4;
@@ -189,6 +186,25 @@ public class Player extends Camera {
 		
 		if (world.chunk.getBlock(position.x , position.y, position.z + ((float)zb)) == 0)
 			position.z += zb;
+	}
+	
+	public boolean hasCollision(Vector3f pos) {
+		boolean hadColid = false;
+		for (int i = 0; i < cords.length; i++) {
+			if (vectorC_I(position.x + cords[i].x, position.y + cords[i].y, position.z + cords[i].z, pos))
+				hadColid = true;
+		}
+		if (vectorC_I(position.x, position.y, position.z, pos))
+			return true;
+		return hadColid;
+	}
+	
+	public boolean vectorC_I(float x, float y, float z, Vector3f v2) {
+		return ((int)x == (int)v2.x) && ((int)y == (int)v2.y) && ((int)z == (int)v2.z);
+	}
+	
+	public boolean vectorC_I(Vector3f v1, Vector3f v2) {
+		return ((int)v1.x == (int)v2.x) && ((int)v1.y == (int)v2.y) && ((int)v1.z == (int)v2.z);
 	}
 	
 	public void update() {

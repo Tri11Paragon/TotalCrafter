@@ -494,7 +494,9 @@ public class Chunk {
 		int xz = s.random.nextInt(Chunk.x);
 		int yz = s.random.nextInt(Chunk.y);
 		int zz = s.random.nextInt(Chunk.z);
-		if (blocks[xz][yz][zz] != 0)
+		if (blocks == null)
+			return;
+		if (blocks[xz][yz][zz] != 0) // TODO: check if this is right
 			Block.blocks.get(blocks[xz][yz][zz]).onBlockTick(xz + xoff*Chunk.x, yz, zz + zoff*Chunk.z, s);
 	}
 	
@@ -512,6 +514,8 @@ public class Chunk {
 		if (z < 0)
 			z *= -1;
 		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
+			return 0;
+		if (blocks == null)
 			return 0;
 		return blocks[x][y][z];
 	}

@@ -44,30 +44,34 @@ public class NBTStorage {
 			new File(this.location).createNewFile();
 			// data loaders
 			is = new DataInputStream(new BufferedInputStream(new FileInputStream(this.location), 4096));
-			os = new DataOutputStream(new BufferedOutputStream( new FileOutputStream(this.location), 4096));
 			// registed flag.
-			int flag = 0;
+			byte flag = 0;
 			// loop while data is in the file
 			while(is.available() > 0) {
 				// expanding list
 				List<Integer> tag = new ArrayList<Integer>();
 				// read the tag
-				while ((flag = is.readInt()) != -1) {
-					tag.add(flag);
-				}
+				try {
+					while ((flag = is.readByte()) != -1) {
+						tag.add((int)flag);
+					}
+				} catch (Exception e) {e.printStackTrace();}
 				// convert the tag
 				String name = deconvertNBT(tag.toArray());
 				tag.clear();
 				// read the data
-				while ((flag = is.readInt()) != -1) {
-					tag.add(flag);
-				}
+				try {
+					while ((flag = is.readByte()) != -1) {
+						tag.add((int)flag);
+					}
+				} catch (Exception e) {e.printStackTrace();}
 				// convert data
 				String data = deconvertNBT(tag.toArray());
 				// save data with the tag.
 				nbtData.put(name, data);
 			}
 			is.close();
+			os = new DataOutputStream(new BufferedOutputStream( new FileOutputStream(this.location), 4096));
 		} catch (IOException e) {e.printStackTrace();}
 	}
 	
@@ -81,9 +85,11 @@ public class NBTStorage {
 			int[] tag = convertNBT(s.getKey());
 			int[] data = convertNBT(s.getValue());
 			// save the nbt to disk.
+			//System.out.println(tag.length);
 			for (int i = 0 ; i < tag.length; i++) {
 				try {os.write(tag[i]);} catch (Exception e) {e.printStackTrace();}
 			}
+			//System.out.println(data.length);
 			for (int i = 0 ; i < data.length; i++) {
 				try {os.write(data[i]);} catch (Exception e) {e.printStackTrace();}
 			}
@@ -115,7 +121,7 @@ public class NBTStorage {
 	private String deconvertNBT(Object[] tag) {
 		char[] nbt = new char[tag.length];
 		for (int i = 0; i < tag.length; i++)
-			nbt[i] = (char) tag[i];
+			nbt[i] = (char) ((int)tag[i]);
 		return new String(nbt);
 	}
 	
