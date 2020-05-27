@@ -48,6 +48,8 @@ public class ChunkStore {
 
 	public ChunkStore(Camera cam, Loader loader, VoxelWorld world) {
 		new File(dimLocation).mkdirs();
+		new File(worldLocation + "tile").mkdirs();
+		new File(worldLocation + "ents").mkdirs();
 		LevelLoader.loadLevelData(worldLocation);
 		this.cam = cam;
 		this.loader = loader;

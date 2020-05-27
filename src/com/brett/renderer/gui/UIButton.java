@@ -18,7 +18,7 @@ public class UIButton extends GUITexture implements UIElement {
 	
 	protected float px, py, pw, ph;
 	protected int ht;
-	private UIControl event;
+	protected UIControl event;
 	
 	public UIButton(int texture, int hovertexture, UIControl event, UIMaster master, float x, float y, float width, float height) {
 		super(texture, -1, master.calcVec(x, y), master.calcVec(width, height));
@@ -28,6 +28,10 @@ public class UIButton extends GUITexture implements UIElement {
 		this.ph = height;
 		this.ht = hovertexture;
 		this.event = event;
+	}
+	
+	public UIButton(int texture, int texture2, Vector2f position, Vector2f scale) {
+		super(texture, texture2, position, scale);
 	}
 	
 	public UIButton(int texture, int hovertexture, UIControl event, float x, float y, float width, float height) {
@@ -41,22 +45,27 @@ public class UIButton extends GUITexture implements UIElement {
 	}
 	
 	public void update() {
+		if (isButtonSelected()) {
+			super.texture2 = ht;
+			if (Mouse.isButtonDown(0)) {
+				if (event != null)
+					event.event(null);
+			}
+		} else {
+			super.texture2 = -1;
+		}
+	}
+	
+	public boolean isButtonSelected() {
 		float mx = Mouse.getX();
 		float my = Mouse.getY();
 		my = Display.getHeight() - my;
 		if (mx > px && mx < (px + pw)) {
 			if (my > py && my < (py + ph)) {
-				super.texture2 = ht;
-				if (Mouse.isButtonDown(0)) {
-					if (event != null)
-						event.event(null);
-				}
-			} else {
-				super.texture2 = -1;
+				return true;
 			}
-		} else {
-			super.texture2 = -1;
 		}
+		return false;
 	}
 	
 	public void setPos(float x, float y) {
@@ -93,10 +102,6 @@ public class UIButton extends GUITexture implements UIElement {
 	
 	public float getPh() {
 		return ph;
-	}
-	
-	public static Vector2f calcVec(float x, float y) {
-		return new Vector2f(x / Display.getWidth(), y / Display.getHeight());
 	}
 	
 }

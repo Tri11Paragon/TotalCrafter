@@ -330,6 +330,8 @@ public class Loader {
 	 * it could also be multithreaded
 	 */
 	public int loadSpecialTexture(String texture) {
+		if (textureMap.containsKey(texture))
+			return textureMap.get(texture);
 		TextureData d = decodeTextureFile("resources/textures/" + texture + ".png");
 		int id = GL11.glGenTextures();
 		
@@ -347,6 +349,7 @@ public class Loader {
 		float amount = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
 		
+		textureMap.put(texture, id);
 		textures.add(id);
 		return id;
 	}

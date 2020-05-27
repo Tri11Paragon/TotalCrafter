@@ -6,3 +6,4 @@ FPS: 120
 renderDistance: 12
 key_console: 41
 key_clear: 64
+sensitivity: 0.5032258033752441

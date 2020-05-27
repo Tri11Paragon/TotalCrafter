@@ -22,6 +22,10 @@ public class BlockGrass extends Block {
 	
 	@Override
 	public void onBlockTick(int x, int y, int z, VoxelWorld world) {
+		if (Block.blocks.get(world.chunk.getBlockBIAS(x, y+1, z)).getRendermode() == RENDERMODE.SOLID) {
+			world.chunk.setBlockBIAS(x, y, z, BLOCK_DIRT);
+			return;
+		}
 		switch (world.random.nextInt(12)) {
 		case 0:
 			if (world.chunk.getBlockBIAS(x, y, z+1) == BLOCK_DIRT) {

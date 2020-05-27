@@ -2,6 +2,7 @@ package com.brett.tools;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -29,10 +30,12 @@ public class SettingsLoader {
 	
 	public static int KEY_CONSOLE = Keyboard.KEY_GRAVE;
 	public static int KEY_CLEAR = Keyboard.KEY_F6;
+	public static double SENSITIVITY = 0.5d;
 	
 	private static int readLines = 1;
 	public static void loadSettings() {
 		try {
+			new File(SETTINGS_LOCATION).createNewFile();
 			BufferedReader reader = new BufferedReader(new FileReader(SETTINGS_LOCATION));
 			String line;
 			while((line = reader.readLine()) != null) {
@@ -53,6 +56,8 @@ public class SettingsLoader {
 					KEY_CONSOLE = (int) Float.parseFloat(name[1]);
 				if (name[0].equals("key_clear"))
 					KEY_CLEAR = (int) Float.parseFloat(name[1]);
+				if (name[0].equals("sensitivity"))
+					SENSITIVITY = Double.parseDouble(name[1]);
 			}
 			reader.close();
 		} catch (FileNotFoundException e) {
@@ -72,6 +77,7 @@ public class SettingsLoader {
 			writeLine(writer, "renderDistance: " + ChunkStore.renderDistance);
 			writeLine(writer, "key_console: " + KEY_CONSOLE);
 			writeLine(writer, "key_clear: " + KEY_CLEAR);
+			writeLine(writer, "sensitivity: " + SENSITIVITY);
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();

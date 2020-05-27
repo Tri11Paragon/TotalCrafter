@@ -1,5 +1,6 @@
 package com.brett.renderer.datatypes;
 
+import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -130,6 +131,10 @@ public class GUITexture implements UIElement {
 	@Override
 	public float getTextureScaleY() {
 		return textureScaleY;
+	}
+	
+	public static Vector2f calcVec(float x, float y) {
+		return new Vector2f(x / Display.getWidth(), y / Display.getHeight());
 	}
 	
 }

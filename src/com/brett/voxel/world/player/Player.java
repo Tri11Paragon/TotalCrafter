@@ -7,6 +7,7 @@ import org.lwjgl.util.vector.Vector3f;
 import com.brett.DisplayManager;
 import com.brett.renderer.Loader;
 import com.brett.renderer.gui.UIMaster;
+import com.brett.tools.SettingsLoader;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.renderer.COLLISIONTYPE;
 import com.brett.voxel.world.VoxelWorld;
@@ -23,7 +24,7 @@ public class Player extends Camera {
 	private static final int RECUR_AMT = 100;
 	
 	private double speed = 5;
-	private double turnSpeed = 5.0;
+	private double turnSpeed = 10.0;
 	private double moveAtX = 0;
 	private double moveAtY = 0;
 	private double moveatZ = 0;
@@ -84,8 +85,8 @@ public class Player extends Camera {
 				onGround = false;
 			}
 		
-			pitch += -Mouse.getDY() * turnSpeed/100;
-			yaw += Mouse.getDX() * turnSpeed/100;
+			pitch += -Mouse.getDY() * (turnSpeed*SettingsLoader.SENSITIVITY)/100;
+			yaw += Mouse.getDX() * (turnSpeed*SettingsLoader.SENSITIVITY)/100;
 			
 			float speed = 30;
 			
