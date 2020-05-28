@@ -28,18 +28,18 @@ public class TextMeshCreator {
 	private List<Line> createStructure(GUIText text) {
 		char[] chars = text.getTextString().toCharArray();
 		List<Line> lines = new ArrayList<Line>();
-		Line currentLine = new Line(metaData.getSpaceWidth(), text.getFontSize(), text.getMaxLineSize());
-		Word currentWord = new Word(text.getFontSize());
+		Line currentLine = new Line(metaData.getSpaceWidth(), text.getFontSizeX(), text.getFontSizeY(), text.getMaxLineSize());
+		Word currentWord = new Word(text.getFontSizeX());
 		for (char c : chars) {
 			int ascii = (int) c;
 			if (ascii == 10) {
 				if (lines.size() < text.getMaxNumberOfLines()) {
 					currentLine.attemptToAddWord(currentWord);
 					lines.add(currentLine);
-					currentLine = new Line(metaData.getSpaceWidth(), text.getFontSize(), text.getMaxLineSize()); 
+					currentLine = new Line(metaData.getSpaceWidth(), text.getFontSizeX(), text.getFontSizeY(), text.getMaxLineSize()); 
 					text.setHeight(text.getHeight() +  maxHeight);
 					maxHeight = 0;
-					currentWord = new Word(text.getFontSize());
+					currentWord = new Word(text.getFontSizeX());
 				} else
 					text.setAtMax(true);
 			}
@@ -52,14 +52,14 @@ public class TextMeshCreator {
 				if (!added) {
 					if (lines.size() < text.getMaxNumberOfLines()) {
 						lines.add(currentLine);
-						currentLine = new Line(metaData.getSpaceWidth(), text.getFontSize(), text.getMaxLineSize());
+						currentLine = new Line(metaData.getSpaceWidth(), text.getFontSizeX(), text.getFontSizeY(), text.getMaxLineSize());
 						text.setHeight(text.getHeight() +  maxHeight);
 						maxHeight = 0;
 						currentLine.attemptToAddWord(currentWord);
 					} else
 						text.setAtMax(true);
 				}
-				currentWord = new Word(text.getFontSize());
+				currentWord = new Word(text.getFontSizeX());
 				continue;
 			}
 			Character character = metaData.getCharacter(ascii);
@@ -73,7 +73,7 @@ public class TextMeshCreator {
 		boolean added = currentLine.attemptToAddWord(currentWord);
 		if (!added) {
 			lines.add(currentLine);
-			currentLine = new Line(metaData.getSpaceWidth(), text.getFontSize(), text.getMaxLineSize());
+			currentLine = new Line(metaData.getSpaceWidth(), text.getFontSizeX(), text.getFontSizeY(), text.getMaxLineSize());
 			currentLine.attemptToAddWord(currentWord);
 		}
 		lines.add(currentLine);
@@ -91,31 +91,32 @@ public class TextMeshCreator {
 			}
 			for (Word word : line.getWords()) {
 				for (Character letter : word.getCharacters()) {
-					addVerticesForCharacter(curserX, curserY, letter, text.getFontSize(), vertices);
+					addVerticesForCharacter(curserX, curserY, letter, text.getFontSizeX(), text.getFontSizeY(), vertices);
 					addTexCoords(textureCoords, letter.getxTextureCoord(), letter.getyTextureCoord(),
 							letter.getXMaxTextureCoord(), letter.getYMaxTextureCoord());
-					curserX += letter.getxAdvance() * text.getFontSize();
+					curserX += letter.getxAdvance() * text.getFontSizeX();
 				}
-				curserX += metaData.getSpaceWidth() * text.getFontSize();
+				curserX += metaData.getSpaceWidth() * text.getFontSizeX();
 			}
 			curserX = 0;
-			curserY += LINE_HEIGHT * text.getFontSize();
+			curserY += LINE_HEIGHT * text.getFontSizeY();
 		}		
 		return new TextMeshData(listToArray(vertices), listToArray(textureCoords));
 	}
-
-	private void addVerticesForCharacter(double curserX, double curserY, Character character, double fontSize,
+	
+	private void addVerticesForCharacter(double curserX, double curserY, Character character, double fontSizeX, double fontSizeY,
 			List<Float> vertices) {
-		double x = curserX + (character.getxOffset() * fontSize);
-		double y = curserY + (character.getyOffset() * fontSize);
-		double maxX = x + (character.getSizeX() * fontSize);
-		double maxY = y + (character.getSizeY() * fontSize);
+		double x = curserX + (character.getxOffset() * fontSizeX);
+		double y = curserY + (character.getyOffset() * fontSizeY);
+		double maxX = x + (character.getSizeX() * fontSizeX);
+		double maxY = y + (character.getSizeY() * fontSizeY);
 		double properX = (2 * x) - 1;
 		double properY = (-2 * y) + 1;
 		double properMaxX = (2 * maxX) - 1;
 		double properMaxY = (-2 * maxY) + 1;
 		addVertices(vertices, properX, properY, properMaxX, properMaxY);
 	}
+
 
 	private static void addVertices(List<Float> vertices, double x, double y, double maxX, double maxY) {
 		vertices.add((float) x);

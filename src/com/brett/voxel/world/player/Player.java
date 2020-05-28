@@ -97,7 +97,7 @@ public class Player extends Camera {
 				moveatZ = 0;
 	
 			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && onGround) {
-				moveAtY += 0.5f;
+				moveAtY += 0.5f/5;
 				onGround = false;
 			}
 		
@@ -116,7 +116,7 @@ public class Player extends Camera {
 				pitch += speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
 		}
 		
-		moveAtY -= (VoxelWorld.GRAVITY/4) * DisplayManager.getFrameTimeSeconds();
+		moveAtY -= (VoxelWorld.GRAVITY/24) * DisplayManager.getFrameTimeSeconds();
 		
 		if (moveAtY < -VoxelWorld.GRAVITY * 3)
 			moveAtY = -VoxelWorld.GRAVITY * 3;
@@ -142,7 +142,7 @@ public class Player extends Camera {
 		double wx = 0, wy = 0, wz = 0;
 		double xb = 0, yb = 0, zb = 0;
 
-		l1: for (int d = 0; d < RECUR_AMT; d++) {
+		x1: for (int d = 0; d < RECUR_AMT; d++) {
 			wx += xStep;
 			if (world.chunk.getBlockCollision(position.x + ((float)wx), position.y, position.z) != COLLISIONTYPE.SOLID) {
 				int amt = 0;
@@ -150,7 +150,7 @@ public class Player extends Camera {
 					if (world.chunk.getBlockCollision(position.x + cords[i].x + ((float)wx), position.y + cords[i].y, position.z + cords[i].z) != COLLISIONTYPE.SOLID)
 						amt++;
 					else
-						break l1;
+						break x1;
 				}
 				if (amt == cords.length)
 					xb = wx;
@@ -158,15 +158,31 @@ public class Player extends Camera {
 				break;
 		}
 		
-		int amty = 0;
-		l1: for (int d = 0; d < RECUR_AMT; d++) {
+		z1: for (int d = 0; d < RECUR_AMT; d++) {
+			wz += zStep;
+			if (world.chunk.getBlockCollision(position.x, position.y, position.z + ((float)wz)) != COLLISIONTYPE.SOLID) {
+				int amt = 0;
+				for (int i = 0; i < cords.length; i++) {
+					if (world.chunk.getBlockCollision(position.x + cords[i].x, position.y + cords[i].y, position.z + cords[i].z + ((float)wz)) != COLLISIONTYPE.SOLID)
+						amt++;
+					else
+						break z1;
+				}
+				if (amt == cords.length)
+					zb = wz;
+			} else 
+				break;
+		}
+		
+		y1: for (int d = 0; d < RECUR_AMT; d++) {
 			wy += yStep;
 			if (world.chunk.getBlockCollision(position.x, position.y + ((float)wy), position.z) != COLLISIONTYPE.SOLID) {
+				int amty = 0;
 				for (int i = 0; i < cords.length; i++) {
 					if (world.chunk.getBlockCollision(position.x + cords[i].x, position.y + cords[i].y + ((float)wy), position.z + cords[i].z) != COLLISIONTYPE.SOLID)
 						amty++;
 					else
-						break l1;
+						break y1;
 				}
 				if (amty == cords.length)
 					yb = wy;
@@ -176,21 +192,6 @@ public class Player extends Camera {
 		if (yb == 0) {
 			onGround = true;
 			moveAtY = 0;
-		}
-		l1: for (int d = 0; d < RECUR_AMT; d++) {
-			wz += zStep;
-			if (world.chunk.getBlockCollision(position.x, position.y, position.z + ((float)wz)) != COLLISIONTYPE.SOLID) {
-				int amt = 0;
-				for (int i = 0; i < cords.length; i++) {
-					if (world.chunk.getBlockCollision(position.x + cords[i].x, position.y + cords[i].y, position.z + cords[i].z + ((float)wz)) != COLLISIONTYPE.SOLID)
-						amt++;
-					else
-						break l1;
-				}
-				if (amt == cords.length)
-					zb = wz;
-			} else 
-				break;
 		}
 		
 		if (world.chunk.getBlock(position.x + ((float)xb), position.y, position.z) == 0)

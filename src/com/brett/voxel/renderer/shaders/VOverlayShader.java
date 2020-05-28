@@ -14,8 +14,8 @@ import com.brett.world.cameras.ICamera;
 
 public class VOverlayShader extends ShaderProgram {
 	
-	private static final String VERTEX_FILE = "voxelOverlayVertexShader.txt";
-	private static final String FRAGMENT_FILE = "voxelOverlayFragmentShader.txt";
+	private static final String VERTEX_FILE = "voxelOverlayVertexShader.vert";
+	private static final String FRAGMENT_FILE = "voxelOverlayFragmentShader.frag";
 	
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;

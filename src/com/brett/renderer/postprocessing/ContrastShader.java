@@ -10,8 +10,8 @@ import com.brett.renderer.shaders.ShaderProgram;
 
 public class ContrastShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "contrastVertex.txt";
-	private static final String FRAGMENT_FILE = "contrastFragment.txt";
+	private static final String VERTEX_FILE = "contrastVertex.vert";
+	private static final String FRAGMENT_FILE = "contrastFragment.frag";
 	
 	public ContrastShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);

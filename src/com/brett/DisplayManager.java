@@ -17,6 +17,7 @@ public class DisplayManager {
 
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
+	public static final int AVG = (int) Math.round(Math.sqrt((WIDTH^2+HEIGHT^2)));
 	// note: this value is overwritten by the settings found in settings.txt
 	public static int FPS_MAX = 120;
 	

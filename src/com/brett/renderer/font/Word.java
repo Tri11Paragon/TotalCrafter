@@ -9,8 +9,8 @@ public class Word {
 	private double width = 0;
 	private double fontSize;
 	
-	protected Word(double fontSize){
-		this.fontSize = fontSize;
+	protected Word(double fontSizeX){
+		this.fontSize = fontSizeX;
 	}
 	
 	protected void addCharacter(Character character){

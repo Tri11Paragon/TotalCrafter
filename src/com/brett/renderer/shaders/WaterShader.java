@@ -9,8 +9,8 @@ import com.brett.world.cameras.Camera;
 
 public class WaterShader extends ShaderProgram {
 
-	private final static String VERTEX_FILE = "waterVertex.txt";
-    private final static String FRAGMENT_FILE = "waterFragment.txt";
+	private final static String VERTEX_FILE = "waterVertex.vert";
+    private final static String FRAGMENT_FILE = "waterFragment.frag";
  
     private int location_modelMatrix;
     private int location_viewMatrix;

@@ -40,8 +40,8 @@ public class PointShader extends ShaderProgram {
 		     0.5f,  0.5f, 0.0f
 		};  
 	
-	private static final String VERTEX_FILE = "pointVertexShader.txt";
-	private static final String FRAGMENT_FILE = "pointFragmentShader.txt";
+	private static final String VERTEX_FILE = "pointVertexShader.vert";
+	private static final String FRAGMENT_FILE = "pointFragmentShader.frag";
 	
 	private int location_projectionMatrix;
 	private int location_viewMatrix;

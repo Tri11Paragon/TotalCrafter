@@ -14,8 +14,8 @@ import com.brett.world.cameras.Camera;
 
 public class VEntityShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "vEntityVertexShader.txt";
-	private static final String FRAGMENT_FILE = "vEntityFragmentShader.txt";
+	private static final String VERTEX_FILE = "vEntityVertexShader.vert";
+	private static final String FRAGMENT_FILE = "vEntityFragmentShader.frag";
 	private static final int MAX_JOINTS = 50;
 	
 	private int location_jointTransforms[];

@@ -7,8 +7,8 @@ import com.brett.renderer.shaders.ShaderProgram;
 
 public class VoxelShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "voxelVertexShader.txt";
-	private static final String FRAGMENT_FILE = "voxelFragmentShader.txt";
+	private static final String VERTEX_FILE = "voxelVertexShader.vert";
+	private static final String FRAGMENT_FILE = "voxelFragmentShader.frag";
 	
 	private int location_transformationMatrix;
 

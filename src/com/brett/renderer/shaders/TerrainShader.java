@@ -12,8 +12,8 @@ import com.brett.world.cameras.Camera;
 
 public class TerrainShader extends ShaderProgram {
 	
-	private static final String VERTEX_FILE = "yes/terrainVertexShader.txt";
-	private static final String FRAGMENT_FILE = "yes/terrainFragmentShader.txt";
+	private static final String VERTEX_FILE = "yes/terrainVertexShader.vert";
+	private static final String FRAGMENT_FILE = "yes/terrainFragmentShader.frag";
 	private static final int MAX_LIGHTS = 4;
 	
 	private int location_transformationMatrix;

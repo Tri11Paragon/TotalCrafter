@@ -37,8 +37,8 @@ public class LineShader extends ShaderProgram {
 	private int vbo;
 	private int count;
 	
-	private static final String VERTEX_FILE = "lineVertexShader.txt";
-	private static final String FRAGMENT_FILE = "lineFragmentShader.txt";
+	private static final String VERTEX_FILE = "lineVertexShader.vert";
+	private static final String FRAGMENT_FILE = "lineFragmentShader.frag";
 	
 	private int location_projectionMatrix;
 	private int location_viewMatrix;

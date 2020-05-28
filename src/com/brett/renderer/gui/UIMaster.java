@@ -127,6 +127,14 @@ public class UIMaster {
 		return new GUIDynamicText(text, size, type, calcVec(x, y), maxWidth/this.SWIDTH, centered);
 	}
 	
+	public GUIDynamicText createDynamicText(String text, float sizeX, float sizeY, FontType type, float x, float y, float maxWidth, boolean centered) {
+		return new GUIDynamicText(text, sizeX, sizeY, type, calcVec(x, y), maxWidth/this.SWIDTH, centered, 1);
+	}
+	
+	public GUIDynamicText createDynamicText(String text, float sizeX, float sizeY, FontType type, float x, float y, float maxWidth, boolean centered, int maxNumberOfLines) {
+		return new GUIDynamicText(text, sizeX, sizeY, type, calcVec(x, y), maxWidth/this.SWIDTH, centered, maxNumberOfLines);
+	}
+	
 	public Vector2f calcVec(float x, float y) {
 		return new Vector2f(x / SWIDTH, y / SHEIGHT);
 	}

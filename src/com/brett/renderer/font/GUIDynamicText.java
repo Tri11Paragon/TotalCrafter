@@ -22,6 +22,11 @@ public class GUIDynamicText extends GUIText {
 		super(text, fontSize, font, position, maxLineLength, centered);
 	}
 	
+	public GUIDynamicText(String text, float fontSizeX, float fontSizeY, FontType font, Vector2f position, float maxLineLength, boolean centered, int maxNumberOfLines) {
+		super(text, fontSizeX, fontSizeY, font, position, maxLineLength, centered, maxNumberOfLines);
+		//TextMaster.loadText(this);
+	}
+	
 	public void setPosition(Vector2f pos) {
 		this.position = pos;
 	}

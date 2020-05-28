@@ -11,8 +11,8 @@ public class Line {
 	private List<Word> words = new ArrayList<Word>();
 	private double currentLineLength = 0;
 
-	protected Line(double spaceWidth, double fontSize, double maxLength) {
-		this.spaceSize = spaceWidth * fontSize;
+	protected Line(double spaceWidth, double fontSizeX, double fontSizeY, double maxLength) {
+		this.spaceSize = spaceWidth * fontSizeX;
 		this.maxLength = maxLength;
 	}
 

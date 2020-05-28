@@ -8,7 +8,8 @@ import com.brett.renderer.font.fontRendering.TextMaster;
 public class GUIText {
 
 	protected String textString;
-	private float fontSize;
+	private float fontSizeX;
+	private float fontSizeY;
 
 	private int textMeshVao;
 	private int vertexCount;
@@ -44,7 +45,8 @@ public class GUIText {
 
 	public GUIText(String text, float fontSize, FontType font, Vector2f position, float maxLineLength, boolean centered) {
 		this.textString = text;
-		this.fontSize = fontSize;
+		this.fontSizeX = fontSize;
+		this.fontSizeY = fontSize;
 		this.font = font;
 		this.position = position;
 		this.lineMaxSize = maxLineLength;
@@ -53,7 +55,20 @@ public class GUIText {
 	
 	public GUIText(String text, float fontSize, FontType font, Vector2f position, float maxLineLength, boolean centered, int maxNumberOfLines) {
 		this.textString = text;
-		this.fontSize = fontSize;
+		this.fontSizeX = fontSize;
+		this.fontSizeY = fontSize;
+		this.font = font;
+		this.position = position;
+		this.lineMaxSize = maxLineLength;
+		this.centerText = centered;
+		this.maxNumberOfLines = maxNumberOfLines;
+		//TextMaster.loadText(this);
+	}
+	
+	public GUIText(String text, float fontSizeX, float fontSizeY, FontType font, Vector2f position, float maxLineLength, boolean centered, int maxNumberOfLines) {
+		this.textString = text;
+		this.fontSizeX = fontSizeX;
+		this.fontSizeY = fontSizeY;
 		this.font = font;
 		this.position = position;
 		this.lineMaxSize = maxLineLength;
@@ -111,8 +126,12 @@ public class GUIText {
 		return this.vertexCount;
 	}
 
-	protected float getFontSize() {
-		return fontSize;
+	protected float getFontSizeX() {
+		return fontSizeX;
+	}
+	
+	protected float getFontSizeY() {
+		return fontSizeY;
 	}
 
 	protected GUIText setNumberOfLines(int number) {

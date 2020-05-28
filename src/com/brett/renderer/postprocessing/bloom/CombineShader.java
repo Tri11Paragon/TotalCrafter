@@ -4,8 +4,8 @@ import com.brett.renderer.shaders.ShaderProgram;
 
 public class CombineShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "yes/simpleVertex.txt";
-	private static final String FRAGMENT_FILE = "yes/combineFragment.txt";
+	private static final String VERTEX_FILE = "yes/simpleVertex.vert";
+	private static final String FRAGMENT_FILE = "yes/combineFragment.frag";
 	
 	private int location_colourTexture;
 	private int location_highlightTexture;

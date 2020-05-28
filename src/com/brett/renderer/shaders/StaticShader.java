@@ -14,8 +14,8 @@ import com.brett.world.cameras.Camera;
 
 public class StaticShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "yes/vertexShader.txt";
-	private static final String FRAGMENT_FILE = "yes/fragmentShader.txt";
+	private static final String VERTEX_FILE = "yes/vertexShader.vert";
+	private static final String FRAGMENT_FILE = "yes/fragmentShader.frag";
 	private static final int MAX_LIGHTS = 4;
 	
 	private int location_transformationMatrix;

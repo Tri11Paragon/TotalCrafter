@@ -54,7 +54,7 @@ public class ScreenShot implements IKeyState {
 			LocalDateTime now = LocalDateTime.now();
 			
 			// make sure this folder exists
-			File iff = new File("screenshots/" + df.format(now) + "_" + (System.currentTimeMillis() % 1000));
+			File iff = new File("screenshots/" + df.format(now) + "_" + (System.currentTimeMillis() % 1000 + ".png"));
 			iff.mkdirs();
 			
 			

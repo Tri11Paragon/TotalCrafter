@@ -8,8 +8,8 @@ import com.brett.world.cameras.ICamera;
 
 public class SkyboxShader extends ShaderProgram{
 
-	private static final String VERTEX_FILE = "skyboxVertexShader.txt";
-	private static final String FRAGMENT_FILE = "skyboxFragmentShader.txt";
+	private static final String VERTEX_FILE = "skyboxVertexShader.vert";
+	private static final String FRAGMENT_FILE = "skyboxFragmentShader.frag";
 	
 	private int location_projectionMatrix;
 	private int location_viewMatrix;
