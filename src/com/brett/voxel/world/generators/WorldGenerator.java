@@ -38,13 +38,13 @@ public class WorldGenerator {
 		bf = new BiomeNoise(((LevelLoader.seed/2)*128)/255);
 		ores = new WorldGenMineable(
 				//new MineData(Block.BLOCK_GLOWSTONE, 1, 8, 0.0),
-				new MineData(Block.BLOCK_IRON, 32, 60, 0.0, 60, 1),
-				new MineData(Block.BLOCK_COAL, 40, 70, 0.0),
-				new MineData(Block.BLOCK_COPPER, 45, 70, 0.0),
-				new MineData(Block.BLOCK_GOLD, 10, 32, 0.0, 32, 1),
-				new MineData(Block.BLOCK_REDSTONE, 30, 48, 0.0, 24, 1),
-				new MineData(Block.BLOCK_EMERALD, 2, 8, 0.0),
-				new MineData(Block.BLOCK_DIAMOND, 5, 20, 0.0, 24, 1)
+				new MineData(Block.IRON, 32, 60, 0.0, 60, 1),
+				new MineData(Block.COAL, 40, 70, 0.0),
+				new MineData(Block.COPPER, 45, 70, 0.0),
+				new MineData(Block.GOLD, 10, 32, 0.0, 32, 1),
+				new MineData(Block.REDSTONE, 30, 48, 0.0, 24, 1),
+				new MineData(Block.EMERALD, 2, 8, 0.0),
+				new MineData(Block.DIAMOND, 5, 20, 0.0, 24, 1)
 				);
 		BIOMESFUNCTIONS = new BlockNoise[] {hf, ff, ff};
 		this.world = world;
@@ -64,7 +64,7 @@ public class WorldGenerator {
 						ff.getBlockHeight(i + x*Chunk.x, k + z*Chunk.z), 
 						getBiomeNoise(i + x*Chunk.x, k + z*Chunk.z));
 				int tree = rnd.nextInt(250);
-				if (tree == 5 && ref < 90) {
+				if (tree == 5 && ref < 90 && ref > 30) {
 					int height = rnd.nextInt(3)+4;
 					for (int lx = -2; lx < 3; lx++) {
 						for (int lz = -2; lz < 3; lz++) {
@@ -72,9 +72,9 @@ public class WorldGenerator {
 							int lzp = k+lz;
 							for (int hh = 0; hh <= 2; hh++) {							
 								if (lxp < 0 || lxp > (Chunk.x-1) || lzp < 0 || lzp > (Chunk.z-1)) {
-									world.chunk.setBlock(lxp + x*Chunk.x, ref+height+hh-2, lzp + z*Chunk.z, Block.BLOCK_LEAVES);
+									world.chunk.setBlock(lxp + x*Chunk.x, ref+height+hh-2, lzp + z*Chunk.z, Block.LEAVES);
 								} else
-									blks[lxp][ref+height+hh-2][lzp] = Block.BLOCK_LEAVES;
+									blks[lxp][ref+height+hh-2][lzp] = Block.LEAVES;
 							}
 						}
 					}
@@ -83,34 +83,44 @@ public class WorldGenerator {
 							int lxp = i+lx;
 							int lzp = k+lz;					
 							if (lxp < 0 || lxp > (Chunk.x - 1) || lzp < 0 || lzp > (Chunk.z - 1)) {
-								world.chunk.setBlock(lxp + x * Chunk.x, ref + height + 1, lzp + z * Chunk.z, Block.BLOCK_LEAVES);
+								world.chunk.setBlock(lxp + x * Chunk.x, ref + height + 1, lzp + z * Chunk.z, Block.LEAVES);
 							} else
-								blks[lxp][ref + height+1][lzp] = Block.BLOCK_LEAVES;
+								blks[lxp][ref + height+1][lzp] = Block.LEAVES;
 						}
 					}
-					blks[i][ref + height+2][k] = Block.BLOCK_LEAVES;
+					blks[i][ref + height+2][k] = Block.LEAVES;
 					for (int t = ref; t <= ref+height; t++) {
-						blks[i][t][k] = Block.BLOCK_LOG;
+						blks[i][t][k] = Block.LOG;
 					}
 				}
-				if (rnd.nextInt(150) == 5) {
-					blks[i][ref+1][k] = Block.BLOCK_REDFLOWER;
+				if (ref > 30) {
+					if (rnd.nextInt(150) == 5) {
+						if (ref+1 < Chunk.y)
+							blks[i][ref+1][k] = Block.REDFLOWER;
+					}
+					if (rnd.nextInt(100) == 5) {
+						if (ref+1 < Chunk.y)
+							blks[i][ref+1][k] = Block.YELLOWFLOWER;
+					}
+					if (rnd.nextInt(20) == 5 && ref<80) {
+						if (ref+1 < Chunk.y)
+							blks[i][ref+1][k] = Block.TALLGRASS;
+					}
 				}
-				if (rnd.nextInt(100) == 5) {
-					blks[i][ref+1][k] = Block.BLOCK_YELLOWFLOWER;
-				}
-				if (rnd.nextInt(20) == 5 && ref<80) {
-					blks[i][ref+1][k] = Block.BLOCK_TALLGRASS;
-				}
-				for (int j=0; j < Chunk.y; j++) {
-					if (j == ref)
-						blks[i][j][k] = 4;
-					if (j < ref && j > ref-4)
-						blks[i][j][k] = 2;
+				for (int j=0; j <= ref; j++) {
+					if (ref < 30) {
+						if (j > ref-4)
+							blks[i][j][k] = Block.SAND;
+					} else {
+						if (j == ref)
+							blks[i][j][k] = Block.GRASS;
+						if (j < ref && j > ref-4)
+							blks[i][j][k] = Block.DIRT;
+					}
 					if (j < ref-3)
-						blks[i][j][k] = 1;
+						blks[i][j][k] = Block.STONE;
 					if (j == 0)
-						blks[i][j][k] = 3;
+						blks[i][j][k] = Block.WILL;
 				}
 			}
 		}

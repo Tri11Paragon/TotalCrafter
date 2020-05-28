@@ -21,12 +21,16 @@ import com.brett.voxel.world.blocks.BlockLeaves;
 import com.brett.voxel.world.blocks.BlockSand;
 import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemCopperPickaxe;
+import com.brett.voxel.world.items.ItemDiamondAxe;
 import com.brett.voxel.world.items.ItemDiamondPickaxe;
+import com.brett.voxel.world.items.ItemIronAxe;
 import com.brett.voxel.world.items.ItemIronPickaxe;
+import com.brett.voxel.world.items.ItemStoneAxe;
 import com.brett.voxel.world.items.ItemStonePickaxe;
 import com.brett.voxel.world.items.ItemTinPickaxe;
 import com.brett.voxel.world.items.ItemTool;
 import com.brett.voxel.world.items.ItemWillPickaxe;
+import com.brett.voxel.world.items.ItemWoodenAxe;
 import com.brett.voxel.world.items.ItemWoodenPickaxe;
 
 /**
@@ -50,135 +54,147 @@ public class GameRegistry {
 	public static void init(Loader loader) {
 		registerBlocks(loader);
 		registerItems(loader);
-		registerFuel(Item.ITEM_COAL, 800);
-		registerFuel(Block.BLOCK_PLANKS, 150);
-		registerFuel(Block.BLOCK_LOG, 150);
-		registerFuel(Block.BLOCK_LEAVES, 50);
-		registerFuel(Item.ITEM_STICK, 50);
-		CraftingManager.registerSmeltingRecipe(Block.BLOCK_IRON, Item.ITEM_IRONINGOT, 100);
-		CraftingManager.registerSmeltingRecipe(Block.BLOCK_COBBLE, Block.BLOCK_STONE, 100);
-		CraftingManager.registerSmeltingRecipe(Block.BLOCK_SAND, Block.BLOCK_GLASS, 100);
-		CraftingManager.registerSmeltingRecipe(Block.BLOCK_GOLD, Item.ITEM_GOLDINGOT, 100);
+		registerFuel(Item.COAL, 800);
+		registerFuel(Block.PLANKS, 150);
+		registerFuel(Block.LOG, 150);
+		registerFuel(Block.LEAVES, 50);
+		registerFuel(Item.STICK, 50);
+		CraftingManager.registerSmeltingRecipe(Block.IRON, Item.IRONINGOT, 100);
+		CraftingManager.registerSmeltingRecipe(Block.COBBLE, Block.STONE, 100);
+		CraftingManager.registerSmeltingRecipe(Block.SAND, Block.GLASS, 100);
+		CraftingManager.registerSmeltingRecipe(Block.GOLD, Item.GOLDINGOT, 100);
 		
-		CraftingManager.registerCrafting(Block.BLOCK_LOG + "", Block.BLOCK_PLANKS, 4);
-		CraftingManager.registerCrafting(Block.BLOCK_PLANKS + ";" + Block.BLOCK_PLANKS, Item.ITEM_STICK, 16);
-		CraftingManager.registerCrafting(Block.BLOCK_PLANKS + "," + Block.BLOCK_PLANKS + ";" + Block.BLOCK_PLANKS + "," + Block.BLOCK_PLANKS, Block.BLOCK_CRAFT, 1);
-		CraftingManager.registerCrafting(Block.BLOCK_PLANKS + "," + Block.BLOCK_PLANKS + "," + Block.BLOCK_PLANKS + 
-				";0,"+Item.ITEM_STICK + ",0;0," + Item.ITEM_STICK +",0", Item.ITEM_WOODPICK, 1);
-		CraftingManager.registerCrafting(Block.BLOCK_COBBLE + "," + Block.BLOCK_COBBLE + "," + Block.BLOCK_COBBLE + 
-				";0,"+Item.ITEM_STICK + ",0;0," + Item.ITEM_STICK +",0", Item.ITEM_STONEPICK, 1);
-		CraftingManager.registerCrafting(Item.ITEM_IRONINGOT + "," + Item.ITEM_IRONINGOT + "," + Item.ITEM_IRONINGOT + 
-				";0,"+Item.ITEM_STICK + ",0;0," + Item.ITEM_STICK +",0", Item.ITEM_IRONPICK, 1);
-		CraftingManager.registerCrafting(Item.ITEM_DIAMOND + "," + Item.ITEM_DIAMOND + "," + Item.ITEM_DIAMOND + 
-				";0,"+Item.ITEM_STICK + ",0;0," + Item.ITEM_STICK +",0", Item.ITEM_DIAMONDPICK, 1);
-		CraftingManager.registerCrafting("8,8,8;8,0,8;8,8,8", Block.BLOCK_FURNACE, 1);
-		CraftingManager.registerCrafting("19,19,19;19,0,19;19,19,19", Block.BLOCK_CHEST, 1);
+		CraftingManager.registerCrafting(Block.LOG + "", Block.PLANKS, 4);
+		CraftingManager.registerCrafting(Block.PLANKS + ";" + Block.PLANKS, Item.STICK, 16);
+		CraftingManager.registerCrafting(Block.PLANKS + "," + Block.PLANKS + ";" + Block.PLANKS + "," + Block.PLANKS, Block.CRAFT, 1);
+		CraftingManager.registerCrafting(Block.PLANKS + "," + Block.PLANKS + "," + Block.PLANKS + 
+				";0,"+Item.STICK + ",0;0," + Item.STICK +",0", Item.WOODPICK, 1);
+		CraftingManager.registerCrafting(Block.COBBLE + "," + Block.COBBLE + "," + Block.COBBLE + 
+				";0,"+Item.STICK + ",0;0," + Item.STICK +",0", Item.STONEPICK, 1);
+		CraftingManager.registerCrafting(Item.IRONINGOT + "," + Item.IRONINGOT + "," + Item.IRONINGOT + 
+				";0,"+Item.STICK + ",0;0," + Item.STICK +",0", Item.IRONPICK, 1);
+		CraftingManager.registerCrafting(Item.DIAMOND + "," + Item.DIAMOND + "," + Item.DIAMOND + 
+				";0,"+Item.STICK + ",0;0," + Item.STICK +",0", Item.DIAMONDPICK, 1);
+		CraftingManager.registerCrafting("8,8,8;8,0,8;8,8,8", Block.FURNACE, 1);
+		CraftingManager.registerCrafting("19,19,19;19,0,19;19,19,19", Block.CHEST, 1);
+		CraftingManager.registerCrafting(Block.PLANKS + "," + Block.PLANKS + ",0;" 
+										+ Block.PLANKS + "," + Item.STICK + ",0;0," + Item.STICK + ",0", Item.WOODAXE, 1);
+		CraftingManager.registerCrafting(Block.COBBLE + "," + Block.COBBLE + ",0;" 
+				+ Block.COBBLE + "," + Item.STICK + ",0;0," + Item.STICK + ",0", Item.STONEAXE, 1);
+		CraftingManager.registerCrafting(Item.IRONINGOT + "," + Item.IRONINGOT + ",0;" 
+				+ Item.IRONINGOT + "," + Item.STICK + ",0;0," + Item.STICK + ",0", Item.IRONAXE, 1);
+		CraftingManager.registerCrafting(Item.DIAMOND + "," + Item.DIAMOND + ",0;" 
+				+ Item.DIAMOND + "," + Item.STICK + ",0;0," + Item.STICK + ",0", Item.DIAMONDAXE, 1);
 	}
 	
 	private static void registerBlocks(Loader loader) {
 		//TODO: maybe move into their own class
-		registerBlock(Block.BLOCK_AIR, new BlockAir());
+		registerBlock(Block.AIR, new BlockAir());
 		
-		registerBlock(Block.BLOCK_STONE, new Block(new ModelTexture(loader.loadTexture("stone")), 2
-				).setBreakSound(AudioController.loadSound("stone1.ogg")).setBlockDropped(Block.BLOCK_COBBLE).setHardness(3).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+		registerBlock(Block.STONE, new Block(new ModelTexture(loader.loadTexture("stone")), 2
+				).setBreakSound(AudioController.loadSound("stone1.ogg")).setBlockDropped(Block.COBBLE).setHardness(3).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
-		registerBlock(Block.BLOCK_DIRT, new Block(new ModelTexture(loader.loadTexture("dirt")), 1
+		registerBlock(Block.DIRT, new Block(new ModelTexture(loader.loadTexture("dirt")), 1
 				).setBreakSound(AudioController.loadSound("gravel1.ogg")).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
 		
-		registerBlock(Block.BLOCK_WILL, new Block(new ModelTexture(loader.loadTexture("icon/logo")), 7
+		registerBlock(Block.WILL, new Block(new ModelTexture(loader.loadTexture("icon/logo")), 7
 				).setBreakSound(AudioController.loadSound("cloth1.ogg")).setHardness(Short.MAX_VALUE*2).setMiningLevel(Short.MAX_VALUE*2).setEffectiveTool(ItemTool.TOOL_SWORD));
 		
-		registerBlock(Block.BLOCK_GRASS, new BlockGrass(new ModelTexture(loader.loadTexture("grassy2"))
+		registerBlock(Block.GRASS, new BlockGrass(new ModelTexture(loader.loadTexture("grassy2"))
 				).setBreakSound(AudioController.loadSound("grass1.ogg")).setHardness(2).setEffectiveTool(ItemTool.TOOL_SHOVEL));
 		
-		registerBlock(Block.BLOCK_SAND, new BlockSand(new ModelTexture(loader.loadTexture("sand"))
+		registerBlock(Block.SAND, new BlockSand(new ModelTexture(loader.loadTexture("sand"))
 				).setBreakSound(AudioController.loadSound("sand1.ogg")).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
 		
-		registerBlock(Block.BLOCK_CLAY, new Block(new ModelTexture(loader.loadTexture("clay")), 8
+		registerBlock(Block.CLAY, new Block(new ModelTexture(loader.loadTexture("clay")), 8
 				).setBreakSound(AudioController.loadSound("gravel2.ogg")).setHardness(1.0f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
 		
-		registerBlock(Block.BLOCK_SNOW, new Block(new ModelTexture(loader.loadTexture("snow")), 5
+		registerBlock(Block.SNOW, new Block(new ModelTexture(loader.loadTexture("snow")), 5
 				).setBreakSound(AudioController.loadSound("snow1.ogg")).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SWORD));
 		
-		registerBlock(Block.BLOCK_COBBLE, new Block(new ModelTexture(loader.loadTexture("cobble")), 3
+		registerBlock(Block.COBBLE, new Block(new ModelTexture(loader.loadTexture("cobble")), 3
 				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(2.5f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
-		registerBlock(Block.BLOCK_GLASS, new Block(new ModelTexture(loader.loadTexture("glass")), 9
+		registerBlock(Block.GLASS, new Block(new ModelTexture(loader.loadTexture("glass")), 9
 				).setBreakSound(AudioController.loadSound("glass3.ogg")).setHardness(2.5f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE)
 				.setRendermode(RENDERMODE.TRANSPARENT).setBlockDropped((short)-1));
 		
-		registerBlock(Block.BLOCK_GLOWSTONE, new Block(new ModelTexture(loader.loadTexture("glowstone")), 10
+		registerBlock(Block.GLOWSTONE, new Block(new ModelTexture(loader.loadTexture("glowstone")), 10
 				).setBreakSound(AudioController.loadSound("glass1.ogg")).setHardness(0.78f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE).setLightLevel((byte) 15));
 		
-		registerBlock(Block.BLOCK_IRON, new Block(new ModelTexture(loader.loadTexture("iron_ore")), 19
+		registerBlock(Block.IRON, new Block(new ModelTexture(loader.loadTexture("iron_ore")), 19
 				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(1.38f).setMiningLevel(2).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
-		registerBlock(Block.BLOCK_GOLD, new Block(new ModelTexture(loader.loadTexture("gold_ore")), 11
+		registerBlock(Block.GOLD, new Block(new ModelTexture(loader.loadTexture("gold_ore")), 11
 				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(1.68f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
-		registerBlock(Block.BLOCK_REDSTONE, new Block(new ModelTexture(loader.loadTexture("redstone_ore")), 12
+		registerBlock(Block.REDSTONE, new Block(new ModelTexture(loader.loadTexture("redstone_ore")), 12
 				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(2.48f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
-		registerBlock(Block.BLOCK_EMERALD, new Block(new ModelTexture(loader.loadTexture("emerald_ore")), 13
+		registerBlock(Block.EMERALD, new Block(new ModelTexture(loader.loadTexture("emerald_ore")), 13
 				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(4.79f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE)
-				.setBlockDropped(Item.ITEM_EMERALD));
+				.setBlockDropped(Item.EMERALD));
 		
-		registerBlock(Block.BLOCK_DIAMOND, new Block(new ModelTexture(loader.loadTexture("diamond_ore")), 14
+		registerBlock(Block.DIAMOND, new Block(new ModelTexture(loader.loadTexture("diamond_ore")), 14
 				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(3.72f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE)
-				.setBlockDropped(Item.ITEM_DIAMOND));
+				.setBlockDropped(Item.DIAMOND));
 		
-		registerBlock(Block.BLOCK_COAL, new Block(new ModelTexture(loader.loadTexture("coal_ore")), 15
+		registerBlock(Block.COAL, new Block(new ModelTexture(loader.loadTexture("coal_ore")), 15
 				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(1.78f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE)
-				.setBlockDropped(Item.ITEM_COAL));
+				.setBlockDropped(Item.COAL));
 		
-		registerBlock(Block.BLOCK_LOG, new Block(new ModelTexture(loader.loadTexture("pine")), 22
+		registerBlock(Block.LOG, new Block(new ModelTexture(loader.loadTexture("pine")), 22
 				).setBreakSound(AudioController.loadSound("wood1.ogg")).setHardness(0.78f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
 		
-		registerBlock(Block.BLOCK_LEAVES, new BlockLeaves(new ModelTexture(loader.loadTexture("leaves_oak")), 23
+		registerBlock(Block.LEAVES, new BlockLeaves(new ModelTexture(loader.loadTexture("leaves_oak")), 23
 				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.60f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_SWORD)
 				.setRendermode(RENDERMODE.TRANSPARENT));
 		
-		registerBlock(Block.BLOCK_PLANKS, new Block(new ModelTexture(loader.loadTexture("planks")), 6
+		registerBlock(Block.PLANKS, new Block(new ModelTexture(loader.loadTexture("planks")), 6
 				).setBreakSound(AudioController.loadSound("wood2.ogg")).setHardness(0.59f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
 		
-		registerBlock(Block.BLOCK_CRAFT, new BlockCrafting(new ModelTexture(loader.loadTexture("crafting_table_front"))
+		registerBlock(Block.CRAFT, new BlockCrafting(new ModelTexture(loader.loadTexture("crafting_table_front"))
 				).setBreakSound(AudioController.loadSound("wood1.ogg")).setHardness(0.39f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
 		
-		registerBlock(Block.BLOCK_COPPER, new Block(new ModelTexture(loader.loadTexture("copper_ore")), 28
+		registerBlock(Block.COPPER, new Block(new ModelTexture(loader.loadTexture("copper_ore")), 28
 				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(0.99f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
-		registerBlock(Block.BLOCK_YELLOWFLOWER, new BlockFlower(new ModelTexture(loader.loadTexture("flower_yellow")), 29
+		registerBlock(Block.YELLOWFLOWER, new BlockFlower(new ModelTexture(loader.loadTexture("flower_yellow")), 29
 				).setBreakSound(AudioController.loadSound("grass2.ogg")).setHardness(0.1f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_HAND));
 		
-		registerBlock(Block.BLOCK_REDFLOWER, new BlockFlower(new ModelTexture(loader.loadTexture("flower_red")), 30
+		registerBlock(Block.REDFLOWER, new BlockFlower(new ModelTexture(loader.loadTexture("flower_red")), 30
 				).setBreakSound(AudioController.loadSound("grass2.ogg")).setHardness(0.1f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_HAND));
 		
-		registerBlock(Block.BLOCK_TALLGRASS, new BlockFlower(new ModelTexture(loader.loadTexture("tallgrass")), 31
+		registerBlock(Block.TALLGRASS, new BlockFlower(new ModelTexture(loader.loadTexture("tallgrass")), 31
 				).setBreakSound(AudioController.loadSound("grass2.ogg")).setHardness(0.1f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_HAND)
 				.setBlockDropped((short)-1));
 		
-		registerBlock(Block.BLOCK_FURNACE, new BlockFurnace(new ModelTexture(loader.loadTexture("furnace_front_off")))
-				.setBreakSound(AudioController.loadSound("stone1.ogg")).setBlockDropped(Block.BLOCK_FURNACE).setHardness(2.98f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+		registerBlock(Block.FURNACE, new BlockFurnace(new ModelTexture(loader.loadTexture("furnace_front_off")))
+				.setBreakSound(AudioController.loadSound("stone1.ogg")).setBlockDropped(Block.FURNACE).setHardness(2.98f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
-		registerBlock(Block.BLOCK_CHEST, new BlockChest(new ModelTexture(loader.loadTexture("chest_front")))
-				.setBreakSound(AudioController.loadSound("wood1.ogg")).setBlockDropped(Block.BLOCK_CHEST).setHardness(2.98f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
+		registerBlock(Block.CHEST, new BlockChest(new ModelTexture(loader.loadTexture("chest_front")))
+				.setBreakSound(AudioController.loadSound("wood1.ogg")).setBlockDropped(Block.CHEST).setHardness(2.98f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
 		
 	}
 	
 	private static void registerItems(Loader loader) {
-		registerItem(new ItemWillPickaxe(Item.ITEM_WILLPICK, new ModelTexture(loader.loadTexture("willpick"))));
-		registerItem(new ItemCopperPickaxe(Item.ITEM_COPPERPICK, new ModelTexture(loader.loadTexture("copperpick"))));
-		registerItem(new ItemDiamondPickaxe(Item.ITEM_DIAMONDPICK, new ModelTexture(loader.loadTexture("diamondpick"))));
-		registerItem(new ItemIronPickaxe(Item.ITEM_IRONPICK, new ModelTexture(loader.loadTexture("ironpick"))));
-		registerItem(new ItemStonePickaxe(Item.ITEM_STONEPICK, new ModelTexture(loader.loadTexture("stonepick"))));
-		registerItem(new ItemTinPickaxe(Item.ITEM_TINPICK, new ModelTexture(loader.loadTexture("tinpick"))));
-		registerItem(new ItemWoodenPickaxe(Item.ITEM_WOODPICK, new ModelTexture(loader.loadTexture("woodenpick"))));
-		registerItem(new Item(Item.ITEM_STICK, new ModelTexture(loader.loadTexture("sticks"))));
-		registerItem(new Item(Item.ITEM_COAL, new ModelTexture(loader.loadTexture("coal"))));
-		registerItem(new Item(Item.ITEM_IRONINGOT, new ModelTexture(loader.loadTexture("iron_ingot"))));
-		registerItem(new Item(Item.ITEM_GOLDINGOT, new ModelTexture(loader.loadTexture("gold_ingot"))));
-		registerItem(new Item(Item.ITEM_DIAMOND, new ModelTexture(loader.loadTexture("diamond"))));
-		registerItem(new Item(Item.ITEM_EMERALD, new ModelTexture(loader.loadTexture("emerald"))));
+		registerItem(new ItemWillPickaxe(Item.WILLPICK, new ModelTexture(loader.loadTexture("willpick"))));
+		registerItem(new ItemCopperPickaxe(Item.COPPERPICK, new ModelTexture(loader.loadTexture("copperpick"))));
+		registerItem(new ItemDiamondPickaxe(Item.DIAMONDPICK, new ModelTexture(loader.loadTexture("diamondpick"))));
+		registerItem(new ItemIronPickaxe(Item.IRONPICK, new ModelTexture(loader.loadTexture("ironpick"))));
+		registerItem(new ItemStonePickaxe(Item.STONEPICK, new ModelTexture(loader.loadTexture("stonepick"))));
+		registerItem(new ItemTinPickaxe(Item.TINPICK, new ModelTexture(loader.loadTexture("tinpick"))));
+		registerItem(new ItemWoodenPickaxe(Item.WOODPICK, new ModelTexture(loader.loadTexture("woodenpick"))));
+		registerItem(new Item(Item.STICK, new ModelTexture(loader.loadTexture("sticks"))));
+		registerItem(new Item(Item.COAL, new ModelTexture(loader.loadTexture("coal"))));
+		registerItem(new Item(Item.IRONINGOT, new ModelTexture(loader.loadTexture("iron_ingot"))));
+		registerItem(new Item(Item.GOLDINGOT, new ModelTexture(loader.loadTexture("gold_ingot"))));
+		registerItem(new Item(Item.DIAMOND, new ModelTexture(loader.loadTexture("diamond"))));
+		registerItem(new Item(Item.EMERALD, new ModelTexture(loader.loadTexture("emerald"))));
+		registerItem(new ItemWoodenAxe(Item.WOODAXE, new ModelTexture(loader.loadTexture("wood_axe"))));
+		registerItem(new ItemStoneAxe(Item.STONEAXE, new ModelTexture(loader.loadTexture("stone_axe"))));
+		registerItem(new ItemIronAxe(Item.IRONAXE, new ModelTexture(loader.loadTexture("iron_axe"))));
+		registerItem(new ItemDiamondAxe(Item.DIAMONDAXE, new ModelTexture(loader.loadTexture("diamond_axe"))));
 	}
 	
 	public static HashMap<Integer, String> registerTextures() {

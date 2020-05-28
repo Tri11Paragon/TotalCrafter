@@ -34,7 +34,7 @@ public class BlockSand extends Block {
 		// please don't remove marks for this
 		if (world.chunk.getBlockBIAS(x, y - 1, z) == 0) {
 			world.chunk.setBlockBIAS(x, y, z, 0);
-			world.chunk.setBlockBIAS(x, y - 1, z, Block.BLOCK_SAND);
+			world.chunk.setBlockBIAS(x, y - 1, z, Block.SAND);
 			world.updateBlocksAround(x, y, z);
 			world.updateBlocksAround(x, y - 1, z);
 		}

@@ -230,10 +230,10 @@ public class ChunkStore {
 			for (int k = -renderDistance; k <= renderDistance; k++) {
 				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
 				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
-				float fx = cam.getPosition().x + (i*Chunk.x);
-				float fz = cam.getPosition().z + (k * Chunk.z);
-				if (!cam.cubeInFrustum(fx, 0, fz, fx + Chunk.x, Chunk.y, fz + Chunk.z))
-					continue;
+				//float fx = cam.getPosition().x + (i*Chunk.x);
+				//float fz = cam.getPosition().z + (k * Chunk.z);
+				//if (!cam.cubeInFrustum(fx, 0, fz, fx + Chunk.x, Chunk.y, fz + Chunk.z))
+					//continue;
 				Chunk c = getChunk(cx, cz);
 				if (c == null) {
 					queChunk(cx, cz);

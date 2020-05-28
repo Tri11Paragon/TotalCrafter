@@ -14,7 +14,7 @@ public class ForestNoise extends BlockNoise {
 
 	@Override
 	public int getBlockHeight(float x, float z) {
-		return (int) super.simplexNoise(x/32f, z/64f) + 60;	
+		return (int) super.simplexNoise(x/32f, z/64f) + 50;	
 	}
 
 }

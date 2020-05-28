@@ -56,17 +56,22 @@ public class Chunk {
 			@Override
 			public void run() {
 				while (VoxelScreenManager.isOpen) {
-					for (int i = 0; i < meshables.size(); i++) {
-						Chunk c = meshables.get(i);
-						if (c != null) {
-							if (c.remeshNo(-1))
-								continue;
-						}
-						meshables.remove(i);
-					}
 					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {}
+						for (int i = 0; i < meshables.size(); i++) {
+							Chunk c = meshables.get(i);
+							if (c != null) {
+								if (c.remeshNo(-1))
+									continue;
+							}
+							meshables.remove(i);
+						}
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e) {}
+					} catch (Exception e) {
+						System.err.println("There has been an error in the chunk mesher.");
+						System.err.println(e.getCause());
+					}
 				}
 			}
 		}).start();
@@ -74,17 +79,22 @@ public class Chunk {
 			@Override
 			public void run() {
 				while (VoxelScreenManager.isOpen) {
-					for (int i = 0; i < meshables2.size(); i++) {
-						Chunk c = meshables2.get(i);
-						if (c != null) {
-							if (c.remeshNo(-1))
-								continue;
-						}
-						meshables2.remove(i);
-					}
 					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {}
+						for (int i = 0; i < meshables2.size(); i++) {
+							Chunk c = meshables2.get(i);
+							if (c != null) {
+								if (c.remeshNo(-1))
+									continue;
+							}
+							meshables2.remove(i);
+						}
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e) {}
+					} catch (Exception e) {
+						System.err.println("There has been an error in the chunk mesher.");
+						System.err.println(e.getCause());
+					}
 				}
 			}
 		}).start();
@@ -92,17 +102,22 @@ public class Chunk {
 			@Override
 			public void run() {
 				while (VoxelScreenManager.isOpen) {
-					for (int i = 0; i < meshables3.size(); i++) {
-						Chunk c = meshables3.get(i);
-						if (c != null) {
-							if (c.remeshNo(-1))
-								continue;
-						}
-						meshables3.remove(i);
-					}
 					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {}
+						for (int i = 0; i < meshables3.size(); i++) {
+							Chunk c = meshables3.get(i);
+							if (c != null) {
+								if (c.remeshNo(-1))
+									continue;
+							}
+							meshables3.remove(i);
+						}
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e) {}
+					} catch (Exception e) {
+						System.err.println("There has been an error in the chunk mesher.");
+						System.err.println(e.getCause());
+					}
 				}
 			}
 		}).start();
@@ -110,17 +125,22 @@ public class Chunk {
 			@Override
 			public void run() {
 				while (VoxelScreenManager.isOpen) {
-					for (int i = 0; i < meshables4.size(); i++) {
-						Chunk c = meshables4.get(i);
-						if (c != null) {
-							if (c.remeshNo(-1))
-								continue;
-						}
-						meshables4.remove(i);
-					}
 					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {}
+						for (int i = 0; i < meshables4.size(); i++) {
+							Chunk c = meshables4.get(i);
+							if (c != null) {
+								if (c.remeshNo(-1))
+									continue;
+							}
+							meshables4.remove(i);
+						}
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e) {}
+					} catch (Exception e) {
+						System.err.println("There has been an error in the chunk mesher.");
+						System.err.println(e.getCause());
+					}
 				}
 			}
 		}).start();
@@ -670,7 +690,7 @@ public class Chunk {
 		if (block != 0)
 			Block.blocks.get((short) block).onBlockPlaced(rx, y, rz, s);
 		Block.blocks.get(blocks[x][y][z]).onBlockBreaked(rx, y, rz, s);
-		if (blocks[x][y][z] != Block.BLOCK_WILL)
+		if (blocks[x][y][z] != Block.WILL)
 			blocks[x][y][z] = (short)block;
 	}
 	

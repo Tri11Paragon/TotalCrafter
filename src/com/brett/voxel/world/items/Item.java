@@ -14,19 +14,23 @@ import com.brett.voxel.world.blocks.Block;
 
 public class Item {
 	
-	public static final short ITEM_WILLPICK = 1024;
-	public static final short ITEM_WOODPICK = 1025;
-	public static final short ITEM_STONEPICK = 1026;
-	public static final short ITEM_IRONPICK = 1027;
-	public static final short ITEM_COPPERPICK = 1028;
-	public static final short ITEM_TINPICK = 1029;
-	public static final short ITEM_DIAMONDPICK = 1030;
-	public static final short ITEM_STICK = 1031;
-	public static final short ITEM_COAL = 1032;
-	public static final short ITEM_IRONINGOT = 1033;
-	public static final short ITEM_GOLDINGOT = 1034;
-	public static final short ITEM_DIAMOND = 1035;
-	public static final short ITEM_EMERALD = 1036;
+	public static final short WILLPICK = 1024;
+	public static final short WOODPICK = 1025;
+	public static final short STONEPICK = 1026;
+	public static final short IRONPICK = 1027;
+	public static final short COPPERPICK = 1028;
+	public static final short TINPICK = 1029;
+	public static final short DIAMONDPICK = 1030;
+	public static final short STICK = 1031;
+	public static final short COAL = 1032;
+	public static final short IRONINGOT = 1033;
+	public static final short GOLDINGOT = 1034;
+	public static final short DIAMOND = 1035;
+	public static final short EMERALD = 1036;
+	public static final short WOODAXE = 1037;
+	public static final short STONEAXE = 1038;
+	public static final short IRONAXE = 1039;
+	public static final short DIAMONDAXE = 1040;
 	
 	public static Map<Short, Item> items = new HashMap<Short, Item>();
 	public static Map<Item, Short> inverseItems = new HashMap<Item, Short>();

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,8 +31,15 @@ public class AudioController {
 
 	private static List<Integer> buffers = new ArrayList<Integer>();
 	private static HashMap<String, Integer> loaded = new HashMap<String, Integer>();
+	private static FloatBuffer listndata = BufferUtils.createFloatBuffer(6);
 	
 	public static void init() {
+		listndata.put( 0, 0 );
+		listndata.put( 1, 0 );
+		listndata.put( 2, 0 );
+		listndata.put( 3, 0 );
+		listndata.put( 4, 1 );
+		listndata.put( 5, 0 );
 		try {
 			AL.create();
 		} catch (LWJGLException e) {
@@ -42,16 +50,22 @@ public class AudioController {
 	/**
 	 * Sets position of the listener
 	 */
-	public static void setListenerData(float x, float y, float z, float yaw, float pitch, float roll) {
+	public static void setListenerData(float x, float y, float z, float rx, float ry, float rz) {
 		AL10.alListener3f(AL10.AL_POSITION, x, y, z);
 		AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
-		AL10.alListener3f(AL10.AL_DIRECTION, pitch, yaw, roll);
+		listndata.put( 0, rx);
+		listndata.put( 1, ry );
+		listndata.put( 2, rz );
+		AL10.alListener(AL10.AL_ORIENTATION, listndata);
 	}
 	
-	public static void setListenerPosition(Vector3f f, float yaw, float pitch, float roll) {
+	public static void setListenerPosition(Vector3f f, float rx, float ry, float rz) {
 		AL10.alListener3f(AL10.AL_POSITION, f.x, f.y, f.z);
 		AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
-		AL10.alListener3f(AL10.AL_DIRECTION, pitch, yaw, roll);
+		listndata.put( 0, rx);
+		listndata.put( 1, ry );
+		listndata.put( 2, rz );
+		AL10.alListener(AL10.AL_ORIENTATION, listndata);
 	}
 	
 	public static int[] loadSoundFolder(String folder) {

@@ -40,7 +40,7 @@ public class MasterRenderer {
 	public static final float GREEN = 0.62f;
 	public static final float BLUE = 0.69f;
 	
-	private Matrix4f projectionMatrix;
+	public static Matrix4f projectionMatrix;
 	
 	private StaticShader shader;
 	private EntityRenderer renderer;
