@@ -23,15 +23,19 @@ import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemCopperPickaxe;
 import com.brett.voxel.world.items.ItemDiamondAxe;
 import com.brett.voxel.world.items.ItemDiamondPickaxe;
+import com.brett.voxel.world.items.ItemDiamondShovel;
 import com.brett.voxel.world.items.ItemIronAxe;
 import com.brett.voxel.world.items.ItemIronPickaxe;
+import com.brett.voxel.world.items.ItemIronShovel;
 import com.brett.voxel.world.items.ItemStoneAxe;
 import com.brett.voxel.world.items.ItemStonePickaxe;
+import com.brett.voxel.world.items.ItemStoneShovel;
 import com.brett.voxel.world.items.ItemTinPickaxe;
 import com.brett.voxel.world.items.ItemTool;
 import com.brett.voxel.world.items.ItemWillPickaxe;
 import com.brett.voxel.world.items.ItemWoodenAxe;
 import com.brett.voxel.world.items.ItemWoodenPickaxe;
+import com.brett.voxel.world.items.ItemWoodenShovel;
 
 /**
 *
@@ -85,6 +89,10 @@ public class GameRegistry {
 				+ Item.IRONINGOT + "," + Item.STICK + ",0;0," + Item.STICK + ",0", Item.IRONAXE, 1);
 		CraftingManager.registerCrafting(Item.DIAMOND + "," + Item.DIAMOND + ",0;" 
 				+ Item.DIAMOND + "," + Item.STICK + ",0;0," + Item.STICK + ",0", Item.DIAMONDAXE, 1);
+		CraftingManager.registerCrafting("0,"+Block.PLANKS+",0;0,"+Item.STICK+",0;0,"+Item.STICK+",0", Item.WOODSHOVEL, 1);
+		CraftingManager.registerCrafting("0,"+Block.COBBLE+",0;0,"+Item.STICK+",0;0,"+Item.STICK+",0", Item.STONESHOVEL, 1);
+		CraftingManager.registerCrafting("0,"+Item.IRONINGOT+",0;0,"+Item.STICK+",0;0,"+Item.STICK+",0", Item.IRONSHOVEL, 1);
+		CraftingManager.registerCrafting("0,"+Item.DIAMOND+",0;0,"+Item.STICK+",0;0,"+Item.STICK+",0", Item.DIAMONDSHOVEL, 1);
 	}
 	
 	private static void registerBlocks(Loader loader) {
@@ -95,7 +103,7 @@ public class GameRegistry {
 				).setBreakSound(AudioController.loadSound("stone1.ogg")).setBlockDropped(Block.COBBLE).setHardness(3).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
 		registerBlock(Block.DIRT, new Block(new ModelTexture(loader.loadTexture("dirt")), 1
-				).setBreakSound(AudioController.loadSound("gravel1.ogg")).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
+				).setBreakSound(AudioController.loadSound("gravel1.ogg")).setHardness(1.14f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
 		
 		registerBlock(Block.WILL, new Block(new ModelTexture(loader.loadTexture("icon/logo")), 7
 				).setBreakSound(AudioController.loadSound("cloth1.ogg")).setHardness(Short.MAX_VALUE*2).setMiningLevel(Short.MAX_VALUE*2).setEffectiveTool(ItemTool.TOOL_SWORD));
@@ -104,7 +112,7 @@ public class GameRegistry {
 				).setBreakSound(AudioController.loadSound("grass1.ogg")).setHardness(2).setEffectiveTool(ItemTool.TOOL_SHOVEL));
 		
 		registerBlock(Block.SAND, new BlockSand(new ModelTexture(loader.loadTexture("sand"))
-				).setBreakSound(AudioController.loadSound("sand1.ogg")).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
+				).setBreakSound(AudioController.loadSound("sand1.ogg")).setHardness(0.9f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
 		
 		registerBlock(Block.CLAY, new Block(new ModelTexture(loader.loadTexture("clay")), 8
 				).setBreakSound(AudioController.loadSound("gravel2.ogg")).setHardness(1.0f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
@@ -195,6 +203,10 @@ public class GameRegistry {
 		registerItem(new ItemStoneAxe(Item.STONEAXE, new ModelTexture(loader.loadTexture("stone_axe"))));
 		registerItem(new ItemIronAxe(Item.IRONAXE, new ModelTexture(loader.loadTexture("iron_axe"))));
 		registerItem(new ItemDiamondAxe(Item.DIAMONDAXE, new ModelTexture(loader.loadTexture("diamond_axe"))));
+		registerItem(new ItemWoodenShovel(Item.WOODSHOVEL, new ModelTexture(loader.loadTexture("wood_shovel"))));
+		registerItem(new ItemStoneShovel(Item.STONESHOVEL, new ModelTexture(loader.loadTexture("stone_shovel"))));
+		registerItem(new ItemIronShovel(Item.IRONSHOVEL, new ModelTexture(loader.loadTexture("iron_shovel"))));
+		registerItem(new ItemDiamondShovel(Item.DIAMONDSHOVEL, new ModelTexture(loader.loadTexture("diamond_shovel"))));
 	}
 	
 	public static HashMap<Integer, String> registerTextures() {

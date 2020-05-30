@@ -2,20 +2,15 @@ package com.brett.voxel.world.player;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
-
 import com.brett.DisplayManager;
 import com.brett.renderer.Loader;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.sound.AudioController;
-import com.brett.tools.Maths;
 import com.brett.tools.SettingsLoader;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.renderer.COLLISIONTYPE;
+import com.brett.voxel.tools.MouseBlockPicker;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.world.cameras.Camera;
 
@@ -28,47 +23,60 @@ import com.brett.world.cameras.Camera;
 public class Player extends Camera {
 	
 	private static final int RECUR_AMT = 5;
+	public static boolean flight = false;
 	
 	private double speed = 5;
-	public static double normalSpeed = 5;
+	public static double normalSpeed = 6;
 	private double turnSpeed = 10.0;
 	private double moveAtX = 0;
 	private double moveAtY = 0;
 	private double moveatZ = 0;
 	private boolean onGround = false;
-	private Vector3f lookdir = new Vector3f();
 	
 	private PlayerInventory pi;
 	private VoxelWorld world;
 	private Loader loader;
 	private UIMaster ui;
-	private Matrix4f projectionMatrix;
-	private Matrix4f viewMatrix;
 	
 	private float lowestPoint = -1.75f;
-	private Vector3f[] cords = {new Vector3f(-0.25f, lowestPoint, -0.25f), new Vector3f(0.25f, lowestPoint, 0.25f), 
-								new Vector3f(0.25f, lowestPoint, -0.25f), new Vector3f(-0.25f, lowestPoint, 0.25f),
+	private float size = 0.25f;
+	private Vector3f[] cords = {new Vector3f(-size, lowestPoint, -size), new Vector3f(size, lowestPoint, size), 
+								new Vector3f(size, lowestPoint, -size), new Vector3f(-size, lowestPoint, size),
+								
+								new Vector3f(-size, lowestPoint/2, -size), new Vector3f(size, lowestPoint/2, size), 
+								new Vector3f(size, lowestPoint/2, -size), new Vector3f(-size, lowestPoint/2, size),
+								
+								new Vector3f(-size, lowestPoint/4, -size), new Vector3f(size, lowestPoint/4, size), 
+								new Vector3f(size, lowestPoint/4, -size), new Vector3f(-size, lowestPoint/4, size),
+								
+								/*new Vector3f(-0.25f, lowestPoint/2 + lowestPoint/4, -0.25f), new Vector3f(0.25f, lowestPoint/2 + lowestPoint/4, 0.25f), 
+								new Vector3f(0.25f, lowestPoint/2 + lowestPoint/4, -0.25f), new Vector3f(-0.25f, lowestPoint/2 + lowestPoint/4, 0.25f),
+								
+								new Vector3f(-0.25f, lowestPoint/2 - lowestPoint/4, -0.25f), new Vector3f(0.25f, lowestPoint/2 - lowestPoint/4, 0.25f), 
+								new Vector3f(0.25f, lowestPoint/2 - lowestPoint/4, -0.25f), new Vector3f(-0.25f, lowestPoint/2 - lowestPoint/4, 0.25f),
+								
+								new Vector3f(-0.25f, lowestPoint/2 + lowestPoint/8, -0.25f), new Vector3f(0.25f, lowestPoint/2 + lowestPoint/8, 0.25f), 
+								new Vector3f(0.25f, lowestPoint/2 + lowestPoint/8, -0.25f), new Vector3f(-0.25f, lowestPoint/2 + lowestPoint/8, 0.25f),
+								
+								new Vector3f(-0.25f, lowestPoint/2 - lowestPoint/8, -0.25f), new Vector3f(0.25f, lowestPoint/2 - lowestPoint/8, 0.25f), 
+								new Vector3f(0.25f, lowestPoint/2 - lowestPoint/8, -0.25f), new Vector3f(-0.25f, lowestPoint/2 - lowestPoint/8, 0.25f),*/
 								
 								new Vector3f(0, lowestPoint/2, 0), new Vector3f(0, lowestPoint/4, 0),
 								new Vector3f(0, lowestPoint/2 + lowestPoint/4, 0), new Vector3f(0, lowestPoint/2 + lowestPoint/8, 0),
 								
-								new Vector3f(-0.25f, 0f, -0.25f), new Vector3f(0.25f, 0f, 0.25f), 
-								new Vector3f(0.25f, 0f, -0.25f), new Vector3f(-0.25f, 0f, 0.25f)};
+								new Vector3f(-size, 0f, -size), new Vector3f(size, 0f, size), 
+								new Vector3f(size, 0f, -size), new Vector3f(-size, 0f, size)};
 	
 	
 	public Player(Loader loader, UIMaster ui) {
 		pi = new PlayerInventory(ui);
 		this.loader = loader;
 		this.ui = ui;
-		this.position = new Vector3f(0, 80, 0);
+		this.position = new Vector3f(0, 120, 0);
 	}
 	
 	public void assignWorld(VoxelWorld world) {
 		this.world = world;
-	}
-	
-	public void assignProjectionMatrix(Matrix4f matrix) {
-		this.projectionMatrix = matrix;
 	}
 	
 	@Override
@@ -96,9 +104,11 @@ public class Player extends Camera {
 			else 
 				moveatZ = 0;
 	
-			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && onGround) {
-				moveAtY += 0.5f/5;
-				onGround = false;
+			if (!flight) {
+				if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && onGround) {
+					moveAtY += 0.5f/5;
+					onGround = false;
+				}
 			}
 		
 			pitch += -Mouse.getDY() * (turnSpeed*SettingsLoader.SENSITIVITY)/100;
@@ -114,12 +124,25 @@ public class Player extends Camera {
 				pitch += -speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
 			if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
 				pitch += speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
+		} else {
+			moveAtX = 0;
+			moveatZ = 0;
 		}
 		
-		moveAtY -= (VoxelWorld.GRAVITY/24) * DisplayManager.getFrameTimeSeconds();
-		
-		if (moveAtY < -VoxelWorld.GRAVITY * 3)
-			moveAtY = -VoxelWorld.GRAVITY * 3;
+		if (flight) {
+			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+				moveAtY = speed * DisplayManager.getFrameTimeSeconds();
+			else
+				moveAtY = 0;
+				
+			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+				moveAtY = -speed * DisplayManager.getFrameTimeSeconds();
+		} else {
+			moveAtY -= (VoxelWorld.GRAVITY/24) * DisplayManager.getFrameTimeSeconds();
+			
+			if (moveAtY < -VoxelWorld.GRAVITY * 3)
+				moveAtY = -VoxelWorld.GRAVITY * 3;
+		}
 		
 		
 		if (this.pitch > 90)
@@ -142,6 +165,26 @@ public class Player extends Camera {
 		double wx = 0, wy = 0, wz = 0;
 		double xb = 0, yb = 0, zb = 0;
 
+		y1: for (int d = 0; d < RECUR_AMT; d++) {
+			wy += yStep;
+			if (world.chunk.getBlockCollision(position.x, position.y + ((float)wy), position.z) != COLLISIONTYPE.SOLID) {
+				int amty = 0;
+				for (int i = 0; i < cords.length; i++) {
+					if (world.chunk.getBlockCollision(position.x + cords[i].x, position.y + cords[i].y + ((float)wy), position.z + cords[i].z) != COLLISIONTYPE.SOLID)
+						amty++;
+					else
+						break y1;
+				}
+				if (amty == cords.length)
+					yb = wy;
+			} else
+				break;
+		}
+		if (yb == 0) {
+			onGround = true;
+			moveAtY = 0;
+		}
+		
 		x1: for (int d = 0; d < RECUR_AMT; d++) {
 			wx += xStep;
 			if (world.chunk.getBlockCollision(position.x + ((float)wx), position.y, position.z) != COLLISIONTYPE.SOLID) {
@@ -174,26 +217,6 @@ public class Player extends Camera {
 				break;
 		}
 		
-		y1: for (int d = 0; d < RECUR_AMT; d++) {
-			wy += yStep;
-			if (world.chunk.getBlockCollision(position.x, position.y + ((float)wy), position.z) != COLLISIONTYPE.SOLID) {
-				int amty = 0;
-				for (int i = 0; i < cords.length; i++) {
-					if (world.chunk.getBlockCollision(position.x + cords[i].x, position.y + cords[i].y + ((float)wy), position.z + cords[i].z) != COLLISIONTYPE.SOLID)
-						amty++;
-					else
-						break y1;
-				}
-				if (amty == cords.length)
-					yb = wy;
-			} else
-				break;
-		}
-		if (yb == 0) {
-			onGround = true;
-			moveAtY = 0;
-		}
-		
 		if (world.chunk.getBlock(position.x + ((float)xb), position.y, position.z) == 0)
 			position.x += xb;
 		
@@ -203,9 +226,99 @@ public class Player extends Camera {
 		if (world.chunk.getBlock(position.x , position.y, position.z + ((float)zb)) == 0)
 			position.z += zb;
 		
-		viewMatrix = Maths.createViewMatrix(this);
-		lookdir = calculateMouseRay();
-		AudioController.setListenerPosition(this.position, lookdir.x, lookdir.y, lookdir.z);
+		AudioController.setListenerPosition(this.position, MouseBlockPicker.currentRay.x, MouseBlockPicker.currentRay.y, MouseBlockPicker.currentRay.z);
+	}
+	
+	public void generateCollisionVectors() {
+		/*float forwardX = round(size * Math.sin(Math.toRadians(yaw)));
+		float backwardX = round(size * Math.sin(Math.toRadians(yaw+180)));
+		float leftX = round(size * Math.sin(Math.toRadians(yaw-90)));
+		float rightX = round(size * Math.sin(Math.toRadians(yaw+90)));
+		
+		float forwardZ = round(size * -Math.cos(Math.toRadians(yaw)));
+		float backwardZ = round(size * -Math.cos(Math.toRadians(yaw+180)));
+		float leftZ = round(size * -Math.cos(Math.toRadians(yaw-90)));
+		float rightZ = round(size * -Math.cos(Math.toRadians(yaw+90)));
+		
+		cords[0].x = forwardX;
+		cords[0].z = forwardZ;
+		
+		cords[1].x = backwardX;
+		cords[1].z = backwardZ;
+		
+		cords[2].x = rightX;
+		cords[2].z = rightZ;
+		
+		cords[3].x = leftX;
+		cords[3].z = leftZ;
+		
+		
+		cords[4].x = forwardX;
+		cords[4].z = forwardZ;
+		
+		cords[5].x = backwardX;
+		cords[5].z = backwardZ;
+		
+		cords[6].x = rightX;
+		cords[6].z = rightZ;
+		
+		cords[7].x = leftX;
+		cords[7].z = leftZ;
+		
+		
+		cords[8].x = forwardX;
+		cords[8].z = forwardZ;
+		
+		cords[9].x = backwardX;
+		cords[9].z = backwardZ;
+		
+		cords[10].x = rightX;
+		cords[10].z = rightZ;
+		
+		cords[11].x = leftX;
+		cords[11].z = leftZ;
+		
+		
+		cords[12].x = forwardX;
+		cords[12].z = forwardZ;
+		
+		cords[13].x = backwardX;
+		cords[13].z = backwardZ;
+		
+		cords[14].x = rightX;
+		cords[14].z = rightZ;
+		
+		cords[15].x = leftX;
+		cords[15].z = leftZ;*/
+		
+		
+		//double sx = Math.round(Math.abs(-(size * Math.sin(Math.toRadians(yaw))) + -(size * Math.cos(Math.toRadians(yaw)))) * 1000d)/1000d;
+		//double sz = Math.round(Math.abs((size) * Math.cos(Math.toRadians(yaw)) + -(size * Math.sin(Math.toRadians(yaw)))) * 1000d)/1000d;
+		/*System.out.println("SX: " + sx + " :: SZ: " + sz);
+		for (int i = 0; i < cords.length; i++) {
+			if (cords[i].x < 0)
+				cords[i].x = (float) -sx;
+			else
+				cords[i].x = (float) sx;
+			if (cords[i].z < 0)
+				cords[i].z = (float) -sz;
+			else
+				cords[i].z = (float) sz;
+		}*/
+		//VoxelScreenManager.pt.addStaticPoint(new Vector3f(position.x + (float)round(size * Math.sin(Math.toRadians(yaw))), position.y+1, position.z + (float) round(size * -Math.cos(Math.toRadians(yaw)))));
+		//VoxelScreenManager.ls.renderIN(position, new Vector3f(position.x + (float)round( Math.sin(Math.toRadians(yaw))), position.y-1, position.z + (float) round(-Math.cos(Math.toRadians(yaw)))));
+		//VoxelScreenManager.ls.renderIN(position, new Vector3f(position.x+1, position.y-2, position.z + 5));
+		/*VoxelScreenManager.ls.renderIN(new Vector3f(position.x,70,position.z), 
+				new Vector3f((float) (position.x+(cords[0].x*10)),90,(float) (position.z+(cords[0].z*10))));
+		VoxelScreenManager.ls.renderIN(new Vector3f(position.x,70,position.z), 
+				new Vector3f((float) (position.x+round(10 * Math.sin(Math.toRadians(yaw+90)))),90,(float) (position.z+round(10 * -Math.cos(Math.toRadians(yaw+90))))));
+		VoxelScreenManager.ls.renderIN(new Vector3f(position.x,70,position.z), 
+				new Vector3f((float) (position.x+round(10 * Math.sin(Math.toRadians(yaw-90)))),90,(float) (position.z+round(10 * -Math.cos(Math.toRadians(yaw-90))))));*/
+		//System.out.println("LP: " + round(size * Math.sin(Math.toRadians(yaw))) + " :: " + round(size * -Math.cos(Math.toRadians(yaw))));
+	}
+	
+	public float round(double r) {
+		return Math.round(r*1000d)/1000f;
 	}
 	
 	public boolean hasCollision(Vector3f pos) {
@@ -249,36 +362,6 @@ public class Player extends Camera {
 
 	public UIMaster getUi() {
 		return ui;
-	}
-	
-	private Vector3f calculateMouseRay() {
-		float mouseX = Display.getWidth()/2;
-		float mouseY = Display.getHeight()/2;
-		Vector2f normalizedCoords = getNormalisedDeviceCoordinates(mouseX, mouseY);
-		Vector4f clipCoords = new Vector4f(normalizedCoords.x, normalizedCoords.y, -1.0f, 1.0f);
-		Vector4f eyeCoords = toEyeCoords(clipCoords);
-		Vector3f worldRay = toWorldCoords(eyeCoords);
-		return worldRay;
-	}
-
-	private Vector3f toWorldCoords(Vector4f eyeCoords) {
-		Matrix4f invertedView = Matrix4f.invert(viewMatrix, null);
-		Vector4f rayWorld = Matrix4f.transform(invertedView, eyeCoords, null);
-		Vector3f mouseRay = new Vector3f(rayWorld.x, rayWorld.y, rayWorld.z);
-		mouseRay.normalise();
-		return mouseRay;
-	}
-
-	private Vector4f toEyeCoords(Vector4f clipCoords) {
-		Matrix4f invertedProjection = Matrix4f.invert(projectionMatrix, null);
-		Vector4f eyeCoords = Matrix4f.transform(invertedProjection, clipCoords, null);
-		return new Vector4f(eyeCoords.x, eyeCoords.y, -1f, 0f);
-	}
-
-	private Vector2f getNormalisedDeviceCoordinates(float mouseX, float mouseY) {
-		float x = (2.0f * mouseX) / Display.getWidth() - 1f;
-		float y = (2.0f * mouseY) / Display.getHeight() - 1f;
-		return new Vector2f(x, y);
 	}
 	
 }

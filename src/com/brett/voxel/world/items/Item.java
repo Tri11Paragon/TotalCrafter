@@ -31,6 +31,10 @@ public class Item {
 	public static final short STONEAXE = 1038;
 	public static final short IRONAXE = 1039;
 	public static final short DIAMONDAXE = 1040;
+	public static final short WOODSHOVEL = 1041;
+	public static final short STONESHOVEL = 1042;
+	public static final short IRONSHOVEL = 1043;
+	public static final short DIAMONDSHOVEL = 1044;
 	
 	public static Map<Short, Item> items = new HashMap<Short, Item>();
 	public static Map<Item, Short> inverseItems = new HashMap<Item, Short>();

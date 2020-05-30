@@ -15,7 +15,6 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.tools.Maths;
 import com.brett.tools.SettingsLoader;
-import com.brett.world.cameras.ICamera;
 
 /**
 *
@@ -105,9 +104,10 @@ public class PointShader extends ShaderProgram {
 	/**
 	 * renderers the last static line.
 	 */
-	public void render() {
+	public void render(Matrix4f matrix) {
 		timeSinceStart += 0.049230f/4;
 		this.start();
+		super.loadMatrix(location_viewMatrix, matrix);
 		super.loadFloat(location_time, timeSinceStart);
 		GL30.glBindVertexArray(vao);
 		GL20.glEnableVertexAttribArray(0);
@@ -171,13 +171,6 @@ public class PointShader extends ShaderProgram {
 	
 	public void loadTranslationMatrix(Vector3f pos) {
 		super.loadMatrix(location_translationMatrix, Maths.createTransformationMatrix(pos));
-	}
-	
-	public void loadViewMatrix(ICamera camera){
-		this.start();
-		Matrix4f viewMatrix = Maths.createViewMatrix(camera);
-		super.loadMatrix(location_viewMatrix, viewMatrix);
-		this.stop();
 	}
 
 }

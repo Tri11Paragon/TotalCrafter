@@ -47,14 +47,18 @@ public class ChunkStore {
 	private VoxelWorld world;
 
 	public ChunkStore(Camera cam, Loader loader, VoxelWorld world) {
+		this.cam = cam;
+		this.loader = loader;
+		this.world = world;
+		init();
+	}
+	
+	public void init() {
 		new File(dimLocation).mkdirs();
 		new File(worldLocation + "tile").mkdirs();
 		new File(worldLocation + "ents").mkdirs();
 		LevelLoader.loadLevelData(worldLocation);
-		this.cam = cam;
-		this.loader = loader;
 		this.gen = new WorldGenerator(world);
-		this.world = world;
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -242,59 +246,19 @@ public class ChunkStore {
 				c.render(shader, view);
 			}
 		}
-		for (int i = -renderDistance; i <= 0; i++) {
-			for (int k = -renderDistance; k <= 0; k++) {
+		for (int i = -renderDistance; i <= renderDistance; i++) {
+			for (int k = -renderDistance; k <= renderDistance; k++) {
 				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
 				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
-				float fx = cam.getPosition().x + (i*Chunk.x);
-				float fz = cam.getPosition().z + (k * Chunk.z);
-				if (!cam.cubeInFrustum(fx, 0, fz, fx + Chunk.x, Chunk.y, fz + Chunk.z))
-					continue;
+				//float fx = cam.getPosition().x + (i*Chunk.x);
+				//float fz = cam.getPosition().z + (k * Chunk.z);
+				//if (!cam.cubeInFrustum(fx, 0, fz, fx + Chunk.x, Chunk.y, fz + Chunk.z))
+					//continue;
 				Chunk c = getChunk(cx, cz);
-				if (c == null)
+				if (c == null) {
+					queChunk(cx, cz);
 					continue;
-				c.renderSpecial(shader, view);
-			}
-		}
-		for (int i = renderDistance; i >= 0; i--) {
-			for (int k = renderDistance; k >= 0; k--) {
-				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
-				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
-				float fx = cam.getPosition().x + (i*Chunk.x);
-				float fz = cam.getPosition().z + (k * Chunk.z);
-				if (!cam.cubeInFrustum(fx, 0, fz, fx + Chunk.x, Chunk.y, fz + Chunk.z))
-					continue;
-				Chunk c = getChunk(cx, cz);
-				if (c == null)
-					continue;
-				c.renderSpecial(shader, view);
-			}
-		}
-		for (int i = renderDistance; i > 0; i--) {
-			for (int k = -renderDistance; k < 0; k++) {
-				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
-				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
-				float fx = cam.getPosition().x + (i*Chunk.x);
-				float fz = cam.getPosition().z + (k * Chunk.z);
-				if (!cam.cubeInFrustum(fx, 0, fz, fx + Chunk.x, Chunk.y, fz + Chunk.z))
-					continue;
-				Chunk c = getChunk(cx, cz);
-				if (c == null)
-					continue;
-				c.renderSpecial(shader, view);
-			}
-		}
-		for (int i = -renderDistance; i < 0; i++) {
-			for (int k = renderDistance; k > 0; k--) {
-				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
-				int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
-				float fx = cam.getPosition().x + (i*Chunk.x);
-				float fz = cam.getPosition().z + (k * Chunk.z);
-				if (!cam.cubeInFrustum(fx, 0, fz, fx + Chunk.x, Chunk.y, fz + Chunk.z))
-					continue;
-				Chunk c = getChunk(cx, cz);
-				if (c == null)
-					continue;
+				}
 				c.renderSpecial(shader, view);
 			}
 		}

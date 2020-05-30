@@ -33,6 +33,7 @@ public class LightingEngine {
 	private static Camera cam;
 	private static VoxelWorld world;
 	
+	@SuppressWarnings("unused")
 	private static long startSTime = 0;
 	public static void init(VoxelWorld world, Camera cam) {
 		LightingEngine.world = world;

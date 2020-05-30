@@ -54,16 +54,6 @@ public abstract class BlockNoise {
 	
 	public abstract int getBlockHeight(float x, float z);
 	
-	public static int getBlockHeightBiome(int x, int z, BlockNoise... onf) {
-		float d = (float) Math.pow(2, (onf.length*2)-1);
-		float total = onf[0].getBlockHeight(x, z);
-		for (int i = 0; i < (onf.length); i++) {
-			total = interpolate(total, onf[i].getBlockHeight(x, z), d);
-		}
-		total /= onf.length;
-		return (int) total;
-	}
-	
 	public float simplexNoise(float x, float z) {
 		x = x < 0 ? -x : x;
     	z = z < 0 ? -z : z;
@@ -77,13 +67,13 @@ public abstract class BlockNoise {
         return (float) total;
 	}
 	
-	public boolean genTree(int x, int z, int treeDensity) {
-		float tx = generateHeight(x, z) * treeDensity;
-		if (tx > (treeDensity - 10))
-			return true;
-		return false;
+	public float fastNoise(float x, float z) {
+		if (x < 0)
+			x = -x;
+		if (z < 0)
+			z = -z;
+		return (generateHeight(x, z) * AMPLITUDE);
 	}
-     
  
     public float generateHeight(float x, float z) {
 		int intX = (int) x;

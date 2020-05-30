@@ -102,7 +102,6 @@ public class VoxelScreenManager {
 		LevelLoader.ply = player;
 		
 		MasterRenderer renderer = new MasterRenderer(loader, player);
-		player.assignProjectionMatrix(renderer.getProjectionMatrix());
 		ls.loadProjectionMatrix(renderer.getProjectionMatrix());
 		pt.loadProjectionMatrix(renderer.getProjectionMatrix());
 		//World world = new World(renderer, loader, camera, -5);

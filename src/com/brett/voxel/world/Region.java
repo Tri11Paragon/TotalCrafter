@@ -136,6 +136,8 @@ public class Region {
 						os.writeInt(ke.getKey(0));
 						os.writeInt(ke.getKey(1));
 						short[][][] ch = c.getBlocks();
+						if (ch == null)
+							continue;
 						for (int i = 0; i < ch.length; i++) {
 							for (int j = 0; j < ch[i].length; j++) {
 								for (int k = 0; k < ch[i][j].length; k++) {

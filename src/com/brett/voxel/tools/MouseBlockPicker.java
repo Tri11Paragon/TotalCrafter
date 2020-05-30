@@ -36,7 +36,7 @@ public class MouseBlockPicker {
 	private static final int RE_MNT = 12;
 	private static final float RAY_RANGE = 6;
 
-	private Vector3f currentRay = new Vector3f();
+	public static Vector3f currentRay = new Vector3f();
 
 	private Matrix4f projectionMatrix;
 	private Matrix4f viewMatrix;
@@ -67,8 +67,8 @@ public class MouseBlockPicker {
 	
 	private int setCurrentBlockPoint(short block) {
 		Vector3f pos = camera.getPosition();
-		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
-		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
+		Vector3f pointRay = new Vector3f(currentRay.x/10, currentRay.y/10,currentRay.z/10);
+		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
 		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
 		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
 		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
@@ -115,8 +115,8 @@ public class MouseBlockPicker {
 	
 	public void test() {
 		Vector3f pos = camera.getPosition();
-		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
-		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
+		Vector3f pointRay = new Vector3f(currentRay.x/10, currentRay.y/10,currentRay.z/10);
+		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
 		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
 		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
 		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
@@ -157,8 +157,8 @@ public class MouseBlockPicker {
 	
 	public int getCurrentBlockPoint() {
 		Vector3f pos = camera.getPosition();
-		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
-		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
+		Vector3f pointRay = new Vector3f(currentRay.x/10, currentRay.y/10, currentRay.z/10);
+		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
 		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
 		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
 		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
@@ -189,8 +189,8 @@ public class MouseBlockPicker {
 	public int[] getCurrentBlockPointPos() {
 		Vector3f pos = camera.getPosition();
 		int[] blockPos = {(int) pos.x, (int) pos.y, (int) pos.z, 0};
-		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
-		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
+		Vector3f pointRay = new Vector3f(currentRay.x/10, currentRay.y/10,currentRay.z/10);
+		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
 		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
 		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
 		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
@@ -225,8 +225,8 @@ public class MouseBlockPicker {
 	
 	public Vector3f getCurrentBlockPos() {
 		Vector3f pos = camera.getPosition();
-		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
-		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
+		Vector3f pointRay = new Vector3f(MouseBlockPicker.currentRay.x/10, MouseBlockPicker.currentRay.y/10,MouseBlockPicker.currentRay.z/10);
+		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
 		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
 		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
 		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
@@ -257,8 +257,8 @@ public class MouseBlockPicker {
 	
 	public int[] getCurrentBlockPoF() {
 		Vector3f pos = camera.getPosition();
-		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
-		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
+		Vector3f pointRay = new Vector3f(MouseBlockPicker.currentRay.x/10, MouseBlockPicker.currentRay.y/10,MouseBlockPicker.currentRay.z/10);
+		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
 		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
 		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
 		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
@@ -306,7 +306,7 @@ public class MouseBlockPicker {
 		if (!Mouse.isGrabbed())
 			return false;
 		Vector3f pos = camera.getPosition();
-		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
+		Vector3f pointRay = new Vector3f(MouseBlockPicker.currentRay.x/10, MouseBlockPicker.currentRay.y/10,MouseBlockPicker.currentRay.z/10);
 		Vector3f currentRay = findRange();
 		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
 		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
@@ -348,8 +348,8 @@ public class MouseBlockPicker {
 	
 	private Vector3f findRange() {
 		Vector3f pos = camera.getPosition();
-		Vector3f pointRay = new Vector3f(this.currentRay.x/10, this.currentRay.y/10,this.currentRay.z/10);
-		Vector3f currentRay = biasVector(this.currentRay, RAY_RANGE);
+		Vector3f pointRay = new Vector3f(MouseBlockPicker.currentRay.x/10, MouseBlockPicker.currentRay.y/10,MouseBlockPicker.currentRay.z/10);
+		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
 		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
 		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
 		float zStep = (currentRay.z-pointRay.z)/RE_MNT;

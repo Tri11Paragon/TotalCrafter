@@ -23,9 +23,9 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import com.brett.renderer.MasterRenderer;
 import com.brett.tools.Maths;
 import com.brett.tools.SettingsLoader;
-import com.brett.world.cameras.ICamera;
 
 public class LineShader extends ShaderProgram {
 
@@ -60,6 +60,7 @@ public class LineShader extends ShaderProgram {
 	
 	public void renderIN(Vector3f pos1, Vector3f pos2) {
 		this.start();
+		MasterRenderer.disableCulling();
 		int vaoID = GL30.glGenVertexArrays();
 		GL30.glBindVertexArray(vaoID);
 		float[] f = {pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z};
@@ -70,6 +71,7 @@ public class LineShader extends ShaderProgram {
 		GL30.glBindVertexArray(0);
 		GL15.glDeleteBuffers(vboID);
 		GL30.glDeleteVertexArrays(vaoID);
+		MasterRenderer.enableCulling();
 		this.stop();
 	}
 	
@@ -103,23 +105,22 @@ public class LineShader extends ShaderProgram {
 	/**
 	 * renderers the lines
 	 */
-	public void render() {
+	public void render(Matrix4f matrix) {
 		Iterator<Entry<Integer, Integer>> is = vaols.entrySet().iterator();
+		this.start();
+		super.loadMatrix(location_viewMatrix, matrix);
 		while (is.hasNext()) {
-			this.start();
 			Entry<Integer, Integer> nxt = is.next();
 			GL30.glBindVertexArray(nxt.getKey());
 			GL20.glEnableVertexAttribArray(0);
 			GL11.glDrawArrays(GL11.GL_LINES, 0, nxt.getValue());
 			GL20.glDisableVertexAttribArray(0);
 			GL30.glBindVertexArray(0);
-			this.stop();
 		}
 		if(Keyboard.isKeyDown(SettingsLoader.KEY_CLEAR)) 
 			clearLines();
 		if (vao == 0)
 			return;
-		this.start();
 		GL30.glBindVertexArray(vao);
 		GL20.glEnableVertexAttribArray(0);
 		GL11.glDrawArrays(GL11.GL_LINES, 0, count);
@@ -180,13 +181,6 @@ public class LineShader extends ShaderProgram {
 	
 	public void loadTranslationMatrix() {
 		super.loadMatrix(location_translationMatrix, Maths.createTransformationMatrix(new Vector3f(0,0,0), 0, 0, 0, 1));
-	}
-	
-	public void loadViewMatrix(ICamera camera){
-		this.start();
-		Matrix4f viewMatrix = Maths.createViewMatrix(camera);
-		super.loadMatrix(location_viewMatrix, viewMatrix);
-		this.stop();
 	}
 
 }
