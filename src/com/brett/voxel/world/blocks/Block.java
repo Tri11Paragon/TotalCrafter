@@ -53,7 +53,7 @@ public class Block {
 	public static final short CHEST = 26;
 	
 	public ModelTexture model;
-	public int textureTop, textureBottom, textureLeft, textureRight, textureFront, textureBack;
+	public int textureTop, textureBottom, textureLeft, textureRight, textureFront, textureFront2, textureBack;
 	private int[] breakSound = {0};
 	private short droppedBlock = 0;
 	private int amountDropped = 1;
@@ -81,6 +81,7 @@ public class Block {
 		this.textureLeft = textureIndex;
 		this.textureRight = textureIndex;
 		this.textureFront = textureIndex;
+		this.textureFront2 = textureIndex;
 		this.textureBack = textureIndex;
 		rendermode = RENDERMODE.SOLID;
 	}

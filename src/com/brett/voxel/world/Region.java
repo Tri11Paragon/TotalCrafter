@@ -87,7 +87,7 @@ public class Region {
 										xk = 1;
 									if (posZ < 0)
 										zk = 1;
-									Block.blocks.get(blks[i][j][k]).onBlockPlaced(i + (posX * Chunk.x) + xk, j, k + (posZ * Chunk.z) + zk, s);
+									Block.blocks.get((short)(blks[i][j][k] & 0xFFF)).onBlockPlaced(i + (posX * Chunk.x) + xk, j, k + (posZ * Chunk.z) + zk, s);
 								}
 							}
 						}

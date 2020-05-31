@@ -27,13 +27,9 @@ import com.brett.world.cameras.Camera;
 */
 
 public class MouseBlockPicker {
-
-	
-	// http://antongerdelan.net/opengl/raycasting.html
 	
 	// amount of times the binary search can run
-	private static final int RECURSION_COUNT = 200;
-	private static final int RE_MNT = 12;
+	private static final int RECURSION_AMOUNT = 12;
 	private static final float RAY_RANGE = 6;
 
 	public static Vector3f currentRay = new Vector3f();
@@ -57,24 +53,16 @@ public class MouseBlockPicker {
 		this.renderer = renderer;
 	}
 	
-	public Vector3f getCurrentTerrainPoint() {
-		if (intersectionInRange(0, RAY_RANGE, currentRay)) {
-			///System.out.println("SEACHING");
-			return binarySearch(0, 0, RAY_RANGE, currentRay);
-		}else
-			return null;
-	}
-	
 	private int setCurrentBlockPoint(short block) {
 		Vector3f pos = camera.getPosition();
 		Vector3f pointRay = new Vector3f(currentRay.x/10, currentRay.y/10,currentRay.z/10);
 		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
-		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
-		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
-		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
+		float xStep = (currentRay.x-pointRay.x)/RECURSION_AMOUNT;
+		float yStep = (currentRay.y-pointRay.y)/RECURSION_AMOUNT;
+		float zStep = (currentRay.z-pointRay.z)/RECURSION_AMOUNT;
 		
 		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
-		for (int i = 0; i < RE_MNT; i++) {
+		for (int i = 0; i < RECURSION_AMOUNT; i++) {
 			walked.x += xStep;
 			walked.y += yStep;
 			walked.z += zStep;
@@ -113,58 +101,16 @@ public class MouseBlockPicker {
 		return 0;
 	}
 	
-	public void test() {
-		Vector3f pos = camera.getPosition();
-		Vector3f pointRay = new Vector3f(currentRay.x/10, currentRay.y/10,currentRay.z/10);
-		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
-		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
-		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
-		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
-		
-		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
-		for (int i = 0; i < RE_MNT; i++) {
-			walked.x += xStep;
-			walked.y += yStep;
-			walked.z += zStep;
-			Vector3f posadj = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
-			System.out.println((int)posadj.x + " " + (int)posadj.y + " " + (int)posadj.z);
-			short blockid = world.chunk.getBlock((int)posadj.x, (int)posadj.y, (int)posadj.z);
-			if (blockid == 0 || blockid == 3)
-				continue;
-			System.out.println("THIS: " + blockid);
-			System.out.println("THIS: " + Block.blocks.get(blockid).getRendermode());
-			blockid = world.chunk.getBlock((int)posadj.x + 1, (int)posadj.y, (int)posadj.z);
-			System.out.println("LEFT: " + blockid);
-			System.out.println("LEFT: " + Block.blocks.get(blockid).getRendermode());
-			blockid = world.chunk.getBlock((int)posadj.x - 1, (int)posadj.y, (int)posadj.z);
-			System.out.println("RIGHT: " + blockid);
-			System.out.println("RIGHT: " + Block.blocks.get(blockid).getRendermode());
-			blockid = world.chunk.getBlock((int)posadj.x, (int)posadj.y + 1, (int)posadj.z);
-			System.out.println("TOP: " + blockid);
-			System.out.println("TOP: " + Block.blocks.get(blockid).getRendermode());
-			blockid = world.chunk.getBlock((int)posadj.x, (int)posadj.y - 1, (int)posadj.z);
-			System.out.println("BOTTOM: " + blockid);
-			System.out.println("BOTTOM: " + Block.blocks.get(blockid).getRendermode());
-			blockid = world.chunk.getBlock((int)posadj.x, (int)posadj.y, (int)posadj.z + 1);
-			System.out.println("FRONT: " + blockid);
-			System.out.println("FRONT: " + Block.blocks.get(blockid).getRendermode());
-			blockid = world.chunk.getBlock((int)posadj.x, (int)posadj.y, (int)posadj.z - 1);
-			System.out.println("BACK: " + blockid);
-			System.out.println("BACK: " + Block.blocks.get(blockid).getRendermode());
-			return;
-		}
-	}
-	
 	public int getCurrentBlockPoint() {
 		Vector3f pos = camera.getPosition();
 		Vector3f pointRay = new Vector3f(currentRay.x/10, currentRay.y/10, currentRay.z/10);
 		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
-		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
-		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
-		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
+		float xStep = (currentRay.x-pointRay.x)/RECURSION_AMOUNT;
+		float yStep = (currentRay.y-pointRay.y)/RECURSION_AMOUNT;
+		float zStep = (currentRay.z-pointRay.z)/RECURSION_AMOUNT;
 		
 		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
-		for (int i = 0; i < RE_MNT; i++) {
+		for (int i = 0; i < RECURSION_AMOUNT; i++) {
 			walked.x += xStep;
 			walked.y += yStep;
 			walked.z += zStep;
@@ -191,12 +137,12 @@ public class MouseBlockPicker {
 		int[] blockPos = {(int) pos.x, (int) pos.y, (int) pos.z, 0};
 		Vector3f pointRay = new Vector3f(currentRay.x/10, currentRay.y/10,currentRay.z/10);
 		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
-		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
-		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
-		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
+		float xStep = (currentRay.x-pointRay.x)/RECURSION_AMOUNT;
+		float yStep = (currentRay.y-pointRay.y)/RECURSION_AMOUNT;
+		float zStep = (currentRay.z-pointRay.z)/RECURSION_AMOUNT;
 		
 		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
-		for (int i = 0; i < RE_MNT; i++) {
+		for (int i = 0; i < RECURSION_AMOUNT; i++) {
 			walked.x += xStep;
 			walked.y += yStep;
 			walked.z += zStep;
@@ -223,49 +169,17 @@ public class MouseBlockPicker {
 		return blockPos;
 	}
 	
-	public Vector3f getCurrentBlockPos() {
-		Vector3f pos = camera.getPosition();
-		Vector3f pointRay = new Vector3f(MouseBlockPicker.currentRay.x/10, MouseBlockPicker.currentRay.y/10,MouseBlockPicker.currentRay.z/10);
-		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
-		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
-		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
-		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
-		
-		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
-		for (int i = 0; i < RE_MNT; i++) {
-			walked.x += xStep;
-			walked.y += yStep;
-			walked.z += zStep;
-			Vector3f posadj = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
-			Vector3f posadjUn = new Vector3f(pos.x + walked.x, pos.y + walked.y, pos.z + walked.z);
-			Chunk c = getTerrain(posadj.x, posadj.z);
-			if (c == null)
-				continue;
-			posadj.x %= Chunk.x;
-			posadj.z %= Chunk.z;
-			if (posadj.x < 0)
-				posadj.x = biasNegative(posadj.x, -Chunk.x);
-			if (posadj.z < 0)
-				posadj.z = biasNegative(posadj.z, -Chunk.z);
-			short blockid = c.getBlock((int)(posadj.x),(int)posadj.y, (int)(posadj.z));
-			if (blockid == 0 || blockid == 3)
-				continue;
-			return posadjUn;
-		}
-		return pos;
-	}
-	
 	public int[] getCurrentBlockPoF() {
 		Vector3f pos = camera.getPosition();
 		Vector3f pointRay = new Vector3f(MouseBlockPicker.currentRay.x/10, MouseBlockPicker.currentRay.y/10,MouseBlockPicker.currentRay.z/10);
 		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
-		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
-		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
-		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
+		float xStep = (currentRay.x-pointRay.x)/RECURSION_AMOUNT;
+		float yStep = (currentRay.y-pointRay.y)/RECURSION_AMOUNT;
+		float zStep = (currentRay.z-pointRay.z)/RECURSION_AMOUNT;
 		int[] posi = {(int)currentRay.x, (int)currentRay.y, (int)currentRay.z, 1};
 		
 		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
-		for (int i = 0; i < RE_MNT; i++) {
+		for (int i = 0; i < RECURSION_AMOUNT; i++) {
 			walked.x += xStep;
 			walked.y += yStep;
 			walked.z += zStep;
@@ -308,16 +222,16 @@ public class MouseBlockPicker {
 		Vector3f pos = camera.getPosition();
 		Vector3f pointRay = new Vector3f(MouseBlockPicker.currentRay.x/10, MouseBlockPicker.currentRay.y/10,MouseBlockPicker.currentRay.z/10);
 		Vector3f currentRay = findRange();
-		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
-		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
-		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
+		float xStep = (currentRay.x-pointRay.x)/RECURSION_AMOUNT;
+		float yStep = (currentRay.y-pointRay.y)/RECURSION_AMOUNT;
+		float zStep = (currentRay.z-pointRay.z)/RECURSION_AMOUNT;
 		
 		int[] pointf = getCurrentBlockPointPos();
 		if (!Block.blocks.get((short)pointf[3]).onBlockInteract(pointf[0], pointf[1], pointf[2], world, i)) {
 			if (!Item.itemBlocks.containsKey(Item.items.get(block)) || block == 0)
 				return false;
 			Vector3f walked = new Vector3f(currentRay.x, currentRay.y, currentRay.z);
-			for (int i = 0; i < RE_MNT; i++) {
+			for (int i = 0; i < RECURSION_AMOUNT; i++) {
 				walked.x -= xStep;
 				walked.y -= yStep;
 				walked.z -= zStep;
@@ -350,12 +264,12 @@ public class MouseBlockPicker {
 		Vector3f pos = camera.getPosition();
 		Vector3f pointRay = new Vector3f(MouseBlockPicker.currentRay.x/10, MouseBlockPicker.currentRay.y/10,MouseBlockPicker.currentRay.z/10);
 		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
-		float xStep = (currentRay.x-pointRay.x)/RE_MNT;
-		float yStep = (currentRay.y-pointRay.y)/RE_MNT;
-		float zStep = (currentRay.z-pointRay.z)/RE_MNT;
+		float xStep = (currentRay.x-pointRay.x)/RECURSION_AMOUNT;
+		float yStep = (currentRay.y-pointRay.y)/RECURSION_AMOUNT;
+		float zStep = (currentRay.z-pointRay.z)/RECURSION_AMOUNT;
 		
 		Vector3f walked = new Vector3f(pointRay.x, pointRay.y, pointRay.z);
-		for (int i = 0; i < RE_MNT; i++) {
+		for (int i = 0; i < RECURSION_AMOUNT; i++) {
 			walked.x += xStep;
 			walked.y += yStep;
 			walked.z += zStep;
@@ -375,10 +289,6 @@ public class MouseBlockPicker {
 				continue;
 			return posadjUn;
 		}
-		return currentRay;
-	}
-
-	public Vector3f getCurrentRay() {
 		return currentRay;
 	}
 	
@@ -452,7 +362,6 @@ public class MouseBlockPicker {
 	
 	int[] last = {0,0,0};
 	private boolean blockChanged(int[] c) {
-		//System.out.println(last[0] + " " + last[1] + " " + last[2] + " \\ " + current[0] + " " + current[1] + " " + current[2]);
 		if (isYes(last, c)) {
 			return false;
 		} else {
@@ -467,8 +376,35 @@ public class MouseBlockPicker {
 		return false;
 	}
 
+	private Chunk getTerrain(float worldX, float worldZ) {
+		int xoff = 0,zoff = 0;
+		if (worldX < 0)
+			xoff = -1;
+		if (worldZ < 0)
+			zoff = -1;
+		return world.chunk.getChunk((int)(worldX/(float)Chunk.x) + xoff, (int)(worldZ/(float)Chunk.z) + zoff);
+	}
+	
+	private Chunk getTerrain(float worldX, float worldZ, int xof, int zof) {
+		int xoff = 0,zoff = 0;
+		if (worldX < 0)
+			xoff = -1;
+		if (worldZ < 0)
+			zoff = -1;
+		return world.chunk.getChunk((int)(worldX/(float)Chunk.x) + xof + xoff, (int)(worldZ/(float)Chunk.z) + zof + zoff);
+	}
+	
+	private Vector3f biasVector(Vector3f v, float x) {
+		return new Vector3f(v.x * x, v.y * x, v.z * x);
+	}
+	
+	private float biasNegative(float f, float unitSize) {
+		return unitSize - f;
+	}
+	
 	/**
 	 * NOT MY CODE BELOW
+	 * http://antongerdelan.net/opengl/raycasting.html
 	 */
 	private Vector3f calculateMouseRay() {
 		float mouseX = Display.getWidth()/2;
@@ -499,95 +435,4 @@ public class MouseBlockPicker {
 		float y = (2.0f * mouseY) / Display.getHeight() - 1f;
 		return new Vector2f(x, y);
 	}
-	
-	// terrain stuff beyond this point
-	//**********************************************************
-	
-	private Vector3f getPointOnRay(Vector3f ray, float distance) {
-		Vector3f camPos = camera.getPosition();
-		Vector3f start = new Vector3f(camPos.x, camPos.y, camPos.z);
-		Vector3f scaledRay = new Vector3f(ray.x * distance, ray.y * distance, ray.z * distance);
-		return Vector3f.add(start, scaledRay, null);
-	}
-	
-	private Vector3f binarySearch(int count, float start, float finish, Vector3f ray) {
-		float half = start + ((finish - start) / 2f);
-		if (count >= RECURSION_COUNT) {
-			Vector3f endPoint = getPointOnRay(ray, half);
-			Chunk terrain = getTerrain(endPoint.getX(), endPoint.getZ());
-			if (terrain != null) {
-				return endPoint;
-			} else {
-				return null;
-			}
-		}
-		if (intersectionInRange(start, half, ray)) {
-			return binarySearch(count + 1, start, half, ray);
-		} else {
-			return binarySearch(count + 1, half, finish, ray);
-		}
-	}
-
-	private boolean intersectionInRange(float start, float finish, Vector3f ray) {
-		Vector3f startPoint = getPointOnRay(ray, start);
-		Vector3f endPoint = getPointOnRay(ray, finish);
-		if (!isUnderGround(startPoint) && isUnderGround(endPoint)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private boolean isUnderGround(Vector3f testPoint) {
-		Chunk terrain = getTerrain(testPoint.getX(), testPoint.getZ());
-		float height = 0;
-		if (terrain != null) {
-			height = terrain.getHeight((int)testPoint.getX() % Chunk.x, (int)testPoint.getZ() % Chunk.z) - 0.0001f;
-		}
-		if (testPoint.y < height) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private Chunk getTerrain(float worldX, float worldZ) {
-		int xoff = 0,zoff = 0;
-		if (worldX < 0)
-			xoff = -1;
-		if (worldZ < 0)
-			zoff = -1;
-		//System.out.println(worldX+" // " + ((int)(worldX/(float)Chunk.x) + xoff) + " - " + worldZ + " // " + ((int)(worldZ/(float)Chunk.z) + zoff));
-		return world.chunk.getChunk((int)(worldX/(float)Chunk.x) + xoff, (int)(worldZ/(float)Chunk.z) + zoff);
-	}
-	
-	private Chunk getTerrain(float worldX, float worldZ, int xof, int zof) {
-		int xoff = 0,zoff = 0;
-		if (worldX < 0)
-			xoff = -1;
-		if (worldZ < 0)
-			zoff = -1;
-		//System.out.println(worldX+" // " + ((int)(worldX/(float)Chunk.x) + xoff) + " - " + worldZ + " // " + ((int)(worldZ/(float)Chunk.z) + zoff));
-		return world.chunk.getChunk((int)((worldX/(float)Chunk.x) + xof) + xoff, (int)((worldZ/(float)Chunk.z) + zof) + zoff);
-	}
-	
-	private Vector3f biasVector(Vector3f v, float x) {
-		return new Vector3f(v.x * x, v.y * x, v.z * x);
-	}
-	
-	private float biasNegative(float f, float unitSize) {
-		return unitSize - f;
-	}
-	
-	@SuppressWarnings("unused")
-	private Vector3f accountForFloatErrors(Vector3f x) {
-		if (x == null)
-			return x;
-		x.x = Math.round(x.x);
-		x.y = Math.round(x.y);
-		x.z = Math.round(x.z);
-		return x;
-	}
-	
-	
 }

@@ -69,10 +69,13 @@ public class Player extends Camera {
 	
 	
 	public Player(Loader loader, UIMaster ui) {
-		pi = new PlayerInventory(ui);
 		this.loader = loader;
 		this.ui = ui;
 		this.position = new Vector3f(0, 120, 0);
+	}
+	
+	public void init() {
+		pi = new PlayerInventory(ui);
 	}
 	
 	public void assignWorld(VoxelWorld world) {
@@ -341,11 +344,13 @@ public class Player extends Camera {
 	}
 	
 	public void update() {
-		pi.update();
+		if (pi != null)
+			pi.update();
 	}
 	
 	public void cleanup() {
-		pi.cleanup();
+		if (pi != null)
+			pi.cleanup();
 	}
 	
 	public PlayerInventory getInventory() {

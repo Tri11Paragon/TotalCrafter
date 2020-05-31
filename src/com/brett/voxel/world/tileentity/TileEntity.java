@@ -16,7 +16,7 @@ import com.brett.voxel.world.chunk.ChunkStore;
 public class TileEntity implements IKeyState {
 	
 	private int x,y,z;
-	private VoxelWorld world;
+	protected VoxelWorld world;
 	private NBTStorage nbt;
 	private String location = "";
 	

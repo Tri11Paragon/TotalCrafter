@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 /**
 *
@@ -14,7 +15,9 @@ import org.lwjgl.input.Keyboard;
 public class KeyMaster {
 	
 	private static List<IKeyState> keys = new ArrayList<IKeyState>();
+	private static List<IMouseState> mice = new ArrayList<IMouseState>();
 	public static boolean state;
+	public static boolean mouseState;
 	
 	public static void init() {
 		
@@ -24,17 +27,36 @@ public class KeyMaster {
 		state = Keyboard.next();
 		if(state) {
 			if(Keyboard.getEventKeyState()) {
-				for (IKeyState k : keys)
-					k.onKeyPressed();
+				for (int i = 0; i < keys.size(); i++)
+					keys.get(i).onKeyPressed();
 			} else {
-				for (IKeyState k : keys)
-					k.onKeyReleased();
+				for (int i = 0; i < keys.size(); i++)
+					keys.get(i).onKeyReleased();
+			}
+		}
+		mouseState = Mouse.next();
+		if ((mouseState)) {
+			if (Mouse.getEventButtonState()) {
+				for (int i = 0; i < mice.size(); i++) {
+					mice.get(i).onMousePressed();
+				}
+			} else {
+				for (int i = 0; i < mice.size(); i++)
+					mice.get(i).onMouseReleased();
 			}
 		}
 	}
 	
 	public static void registerKeyRequester(IKeyState req) {
+		if (req == null)
+			return;
 		keys.add(req);
+	}
+	
+	public static void registerMouseRequester(IMouseState req) {
+		if (req == null)
+			return;
+		mice.add(req);
 	}
 	
 }

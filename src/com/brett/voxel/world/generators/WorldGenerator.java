@@ -192,18 +192,18 @@ public class WorldGenerator {
 	}
 	
 	public float getBiomeMix(float x, float z, float scale) {
-		float height = (float) (((lf.perlinNoise(x/128f, LevelLoader.seed/128f, z/128f) + 
-				((df.perlinNoise(x/24f, LevelLoader.seed/128f, z/24f)*rf.perlinNoise(x/72f, LevelLoader.seed/32f, z/72f))))/scale)*48 + 72);
+		float height = (float) (((lf.perlinNoise(x/128f + (345345/LevelLoader.seed), LevelLoader.seed/128f, z/128f + (53485834/LevelLoader.seed)) + 
+				((df.perlinNoise(x/24f + (34595/LevelLoader.seed), LevelLoader.seed/128f, z/24f)*rf.perlinNoise(x/72f, LevelLoader.seed/32f, z/72f + (345992/LevelLoader.seed)))))/scale)*48 + 72);
 		
 		return height;
 	}
 	
 	public float getForestAmount(float x, float z) {
-		return (float) Math.abs(lf.perlinNoise(x/512f, LevelLoader.seed/78f, z/512f)) * 10;
+		return (float) Math.abs(lf.perlinNoise(x/512f + (1/LevelLoader.seed), LevelLoader.seed/78f, z/512f + (1/LevelLoader.seed))) * 10;
 	}
 	
 	public float getDesertAmount(float x, float z) {
-		return (float) Math.abs(lf.perlinNoise(x/136f, LevelLoader.seed/256f, z/128f)) * 10;
+		return (float) Math.abs(lf.perlinNoise(x/136f + (1/LevelLoader.seed), LevelLoader.seed/256f, z/128f + (1/LevelLoader.seed))) * 10;
 	}
 	
 }

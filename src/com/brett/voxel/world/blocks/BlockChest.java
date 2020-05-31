@@ -38,6 +38,16 @@ public class BlockChest extends Block {
 		super.onBlockPlaced(x, y, z, world);
 		TileChest ent = new TileChest();
 		world.spawnTileEntity(ent, x, y, z);
+		float yaw = world.ply.getYaw();
+		if (yaw < 0)
+			yaw = 360 - (-yaw);
+		if (yaw > 45 && yaw <= 135) {
+			world.chunk.setBlockStateBIAS(x, y, z, (byte)1);
+		} else if (yaw > 135 && yaw <= 225) {
+			world.chunk.setBlockStateBIAS(x, y, z, (byte)3);
+		} else if (yaw > 225 && yaw <= 315) {
+			world.chunk.setBlockStateBIAS(x, y, z, (byte)2);
+		}
 	}
 	
 	@Override

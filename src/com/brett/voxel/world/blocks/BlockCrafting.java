@@ -36,5 +36,20 @@ public class BlockCrafting extends Block {
 		i.toggleEnabledIOnly();
 		return true;
 	}
+	
+	@Override
+	public void onBlockPlaced(int x, int y, int z, VoxelWorld world) {
+		super.onBlockPlaced(x, y, z, world);
+		float yaw = world.ply.getYaw();
+		if (yaw < 0)
+			yaw = 360 - (-yaw);
+		if (yaw > 45 && yaw <= 135) {
+			world.chunk.setBlockStateBIAS(x, y, z, (byte)1);
+		} else if (yaw > 135 && yaw <= 225) {
+			world.chunk.setBlockStateBIAS(x, y, z, (byte)3);
+		} else if (yaw > 225 && yaw <= 315) {
+			world.chunk.setBlockStateBIAS(x, y, z, (byte)2);
+		}
+	}
 
 }

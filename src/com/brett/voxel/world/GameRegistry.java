@@ -109,7 +109,7 @@ public class GameRegistry {
 				).setBreakSound(AudioController.loadSound("cloth1.ogg")).setHardness(Short.MAX_VALUE*2).setMiningLevel(Short.MAX_VALUE*2).setEffectiveTool(ItemTool.TOOL_SWORD));
 		
 		registerBlock(Block.GRASS, new BlockGrass(new ModelTexture(loader.loadTexture("grassy2"))
-				).setBreakSound(AudioController.loadSound("grass1.ogg")).setHardness(2).setEffectiveTool(ItemTool.TOOL_SHOVEL));
+				).setBreakSound(AudioController.loadSound("grass1.ogg")).setHardness(2).setEffectiveTool(ItemTool.TOOL_SHOVEL).setMiningLevel(0));
 		
 		registerBlock(Block.SAND, new BlockSand(new ModelTexture(loader.loadTexture("sand"))
 				).setBreakSound(AudioController.loadSound("sand1.ogg")).setHardness(0.9f).setEffectiveTool(ItemTool.TOOL_SHOVEL));

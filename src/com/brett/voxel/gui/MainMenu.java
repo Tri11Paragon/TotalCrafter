@@ -1,8 +1,11 @@
 package com.brett.voxel.gui;
 
+import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -19,10 +22,12 @@ import com.brett.renderer.gui.UIControl;
 import com.brett.renderer.gui.UIElement;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.renderer.gui.UISlider;
+import com.brett.renderer.gui.UITextBox;
 import com.brett.tools.EventQueue;
 import com.brett.tools.SettingsLoader;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.renderer.VoxelRenderer;
+import com.brett.voxel.world.LevelLoader;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.chunk.ChunkStore;
 import com.brett.world.cameras.Camera;
@@ -45,6 +50,7 @@ public class MainMenu implements DisplaySource {
 	private VoxelRenderer vrenderer;
 	private UIMaster master;
 	private Loader loader;
+	private String seedData = "";
 	
 	public MainMenu(UIMaster master, MasterRenderer renderer, Camera camera, VoxelWorld world, Loader loader) {
 		MainMenu.menu = this;
@@ -60,7 +66,7 @@ public class MainMenu implements DisplaySource {
 		int localWidth = Display.getWidth()/2;
 		elements.add(master.createUITexture(loader.loadSpecialTexture("dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
 		elements.add(master.createUITexture(loader.loadSpecialTexture("gui/banner"), -1, -1, localWidth-640/2, 100, 640, 360/2));
-		UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new SinglePlayer(vrenderer), master, localWidth-200, 320, 400, 60);
+		UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new SinglePlayer(), master, localWidth-200, 320, 400, 60);
 		GUIText t = master.createDynamicText("Single Player", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 335, 400, true);
 		UIButton op = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), options, localWidth-200, 390, 400, 60);
 		GUIText opt = master.createDynamicText("Options", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 405, 400, true);
@@ -80,6 +86,320 @@ public class MainMenu implements DisplaySource {
 		renderer.render(elements);
 		for (int i = 0; i < buttons.size(); i++)
 			buttons.get(i).update();
+	}
+	
+	public class SinglePlayer implements UIControl {
+		
+		public SinglePlayer() {
+			
+		}
+		
+		@Override
+		public void event(String d) {
+			int width = Display.getWidth()/2;
+			int height = Display.getHeight();
+			for (GUIText t : texts)
+				TextMaster.removeText(t);
+			elements.clear();
+			buttons.clear();
+			texts.clear();
+			elements.add(master.createUITexture(loader.loadSpecialTexture("dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+			UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Main(), master, width-200, height-65, 400, 60);
+			GUIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, width-200, height-50, 400, true);
+			TextMaster.loadText(bbt);
+			texts.add(bbt);
+			buttons.add(b);
+			elements.add(b);
+			
+			UIButton bw1 = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new StartWorld(vrenderer, "w1/"), master, width-200, 85, 400, 60);
+			UIButton bw1d = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new DeleteWorld("w1/"), master, width+230, 90, 50, 50);
+			GUIText bbtw1 = master.createDynamicText("World 1 - " + folderFormat("worlds/w1"), 1.5f, VoxelScreenManager.monospaced, width-200, 100, 400, true);
+			TextMaster.loadText(bbtw1);
+			texts.add(bbtw1);
+			buttons.add(bw1);
+			elements.add(bw1);
+			buttons.add(bw1d);
+			elements.add(bw1d);
+			
+			UIButton bw2 = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new StartWorld(vrenderer, "w2/"), master, width-200, 85 + 75, 400, 60);
+			UIButton bw2d = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new DeleteWorld("w2/"), master, width+230, 85+75+5, 50, 50);
+			GUIText bbtw2 = master.createDynamicText("World 2 - " + folderFormat("worlds/w2"), 1.5f, VoxelScreenManager.monospaced, width-200, 175, 400, true);
+			TextMaster.loadText(bbtw2);
+			texts.add(bbtw2);
+			buttons.add(bw2);
+			elements.add(bw2);
+			buttons.add(bw2d);
+			elements.add(bw2d);
+			
+			UIButton bw3 = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new StartWorld(vrenderer, "w3/"), master, width-200, 235, 400, 60);
+			UIButton bw3d = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new DeleteWorld("w3/"), master, width+230, 240, 50, 50);
+			GUIText bbtw3 = master.createDynamicText("World 3 - " + folderFormat("worlds/w3"), 1.5f, VoxelScreenManager.monospaced, width-200, 250, 400, true);
+			TextMaster.loadText(bbtw3);
+			texts.add(bbtw3);
+			buttons.add(bw3);
+			elements.add(bw3);
+			buttons.add(bw3d);
+			elements.add(bw3d);
+			
+			UIButton bw4 = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new StartWorld(vrenderer, "w4/"), master, width-200, 385, 400, 60);
+			UIButton bw4d = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new DeleteWorld("w4/"), master, width+230, 390, 50, 50);
+			GUIText bbtw4 = master.createDynamicText("World 4 - " + folderFormat("worlds/w4"), 1.5f, VoxelScreenManager.monospaced, width-200, 400, 400, true);
+			TextMaster.loadText(bbtw4);
+			texts.add(bbtw4);
+			buttons.add(bw4);
+			elements.add(bw4);
+			buttons.add(bw4d);
+			elements.add(bw4d);
+			
+			UIButton bw5 = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new StartWorld(vrenderer, "w5/"), master, width-200, 460, 400, 60);
+			UIButton bw5d = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new DeleteWorld("w5/"), master, width+230, 465, 50, 50);
+			GUIText bbtw5 = master.createDynamicText("World 5 - " + folderFormat("worlds/w5"), 1.5f, VoxelScreenManager.monospaced, width-200, 475, 400, true);
+			TextMaster.loadText(bbtw5);
+			texts.add(bbtw5);
+			buttons.add(bw5);
+			elements.add(bw5);
+			buttons.add(bw5d);
+			elements.add(bw5d);
+			
+			UIButton bw6 = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new StartWorld(vrenderer, "w6/"), master, width-200, 535, 400, 60);
+			UIButton bw6d = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new DeleteWorld("w6/"), master, width+230, 540, 50, 50);
+			GUIText bbtw6 = master.createDynamicText("World 6 - " + folderFormat("worlds/w6"), 1.5f, VoxelScreenManager.monospaced, width-200, 550, 400, true);
+			TextMaster.loadText(bbtw6);
+			texts.add(bbtw6);
+			buttons.add(bw6);
+			elements.add(bw6);
+			buttons.add(bw6d);
+			elements.add(bw6d);
+		}
+		
+		public long folderSize(File dir) {
+		    long length = 0;
+		    if (!dir.exists())
+		    	return length;
+		    for (File file : dir.listFiles()) {
+		        if (file.isFile())
+		            length += file.length();
+		        else
+		            length += folderSize(file);
+		    }
+		    return length;
+		}
+		
+		DecimalFormat fr = new DecimalFormat("#,###,###.##");
+		public String folderFormat(String dir) {
+			long size = folderSize(new File(dir));
+			if (size < Math.pow(2, 30)) {
+				return fr.format(size / (Math.pow(2, 20))) + "MB";
+			} else
+				return fr.format(size / (Math.pow(2, 30))) + "GB";
+		}
+		
+	}
+	
+	public class DeleteWorld implements UIControl {
+		private String data;
+		
+		public DeleteWorld( String data) {
+			this.data = data;
+		}
+
+		@Override
+		public void event(String data) {
+			for (GUIText t : texts)
+				TextMaster.removeText(t);
+			elements.clear();
+			buttons.clear();
+			texts.clear();
+			int width = Display.getWidth()/2;
+			int height = Display.getHeight();
+			elements.add(master.createUITexture(loader.loadSpecialTexture("dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+			UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Main(), master, width-200, height-65, 400, 60);
+			GUIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, width-200, height-50, 400, true);
+			TextMaster.loadText(bbt);
+			texts.add(bbt);
+			buttons.add(b);
+			elements.add(b);
+			
+			GUIText areyousure = master.createDynamicText("Are you sure you want to delete " + this.data + "? (this can't be undone!)", 1.5f, VoxelScreenManager.monospaced, 
+					width/2, height/2, width, true);
+			TextMaster.loadText(areyousure);
+			texts.add(areyousure);
+			
+			UIButton by = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new TheyAreSure(this.data), master, width+300, height-65, 150, 60);
+			GUIText bbty = master.createDynamicText("Delete", 1.5f, VoxelScreenManager.monospaced, width+325, height-50, 100, true);
+			TextMaster.loadText(bbty);
+			texts.add(bbty);
+			buttons.add(by);
+			elements.add(by);
+		}
+	}
+	
+	public class TheyAreSure implements UIControl {
+		private String data;
+		
+		public TheyAreSure( String data) {
+			this.data = data;
+		}
+		
+		@Override
+		public void event(String data) {
+			deleteWorld(new File("worlds/"+this.data));
+			deleteWorldFolder(new File("worlds/"+this.data));
+			new File("worlds/"+this.data).delete();
+			for (GUIText t : texts)
+				TextMaster.removeText(t);
+			elements.clear();
+			buttons.clear();
+			texts.clear();
+			new SinglePlayer().event("eee");;
+		}
+	}
+	
+	private void deleteWorld(File f) {
+	    if (!f.exists())
+	    	return;
+	    for (File file : f.listFiles()) {
+	        if (file.isFile())
+	            file.delete();
+	        else
+	        	deleteWorld(file);
+	    }
+	}
+	
+	private void deleteWorldFolder(File f) {
+		if (!f.exists())
+			return;
+	    for (File file : f.listFiles()) {
+	        if (file.isFile())
+	            file.delete();
+	        else {
+	        	if (file.listFiles().length > 0) {
+	        		deleteWorldFolder(file);
+	        	} else {
+	        		file.delete();
+	        	}
+	        }
+	    }
+	}
+	
+	public class CreateWorld implements UIControl {
+		
+		private VoxelRenderer renderer;
+		private String data;
+		
+		public CreateWorld(VoxelRenderer renderer, String data) {
+			this.renderer = renderer;
+			this.data = data;
+		}
+		
+		@Override
+		public void event(String data) {
+			for (GUIText t : texts)
+				TextMaster.removeText(t);
+			elements.clear();
+			buttons.clear();
+			texts.clear();
+			ChunkStore.worldLocation = "worlds/" + this.data;
+			String stS = "";
+			if (seedData.trim().length() > 0) {
+				char[] stdchar = seedData.toCharArray();
+				for (int i = 0; i < stdchar.length; i++) {
+					stS += (int)(stdchar[i]);
+				}
+				String first = stS.substring(0, stS.length()/4);
+				String mid = stS.substring(stS.length()/4, stS.length()/4 + stS.length()/4);
+				// i wrote this at 12:30am. Give me a break
+				String mid2 = stS.substring(stS.length()/4 + stS.length()/4, stS.length()/4 + stS.length()/4 + stS.length()/4);
+				String last = stS.substring(stS.length()/4 + stS.length()/4 + stS.length()/4, stS.length());
+				try {
+					LevelLoader.seed = Long.parseLong(first);
+				} catch (Exception e) {}
+				try {
+					LevelLoader.seed += Long.parseLong(mid);
+				} catch (Exception e) {}
+				try {
+					LevelLoader.seed += Long.parseLong(mid2);
+				} catch (Exception e) {}
+				try {
+					LevelLoader.seed += Long.parseLong(last);
+				} catch (Exception e) {}
+			} else {
+				LevelLoader.seed = (long)(new Random().nextInt(Integer.MAX_VALUE)) + (long)(new Random().nextInt(Integer.MAX_VALUE));
+			}
+			
+			VoxelScreenManager.world.init();			
+			VoxelScreenManager.changeDisplaySource(renderer);
+			VoxelScreenManager.ui.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);
+			EventQueue.doEvent(0);
+		}
+		
+	}
+	
+	public class StartWorld implements UIControl {
+		
+		private VoxelRenderer renderer;
+		private String data;
+		
+		public StartWorld(VoxelRenderer renderer, String data) {
+			this.renderer = renderer;
+			this.data = data;
+		}
+		
+		@Override
+		public void event(String data) {
+			for (GUIText t : texts)
+				TextMaster.removeText(t);
+			elements.clear();
+			buttons.clear();
+			texts.clear();
+			if (new File("worlds/"+this.data).exists()) {
+				ChunkStore.worldLocation = "worlds/" + this.data;
+				VoxelScreenManager.world.init();
+				VoxelScreenManager.changeDisplaySource(renderer);
+				VoxelScreenManager.ui.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);
+				EventQueue.doEvent(0);
+			} else {
+				int width = Display.getWidth()/2;
+				int height = Display.getHeight();
+				
+				elements.add(master.createUITexture(loader.loadSpecialTexture("dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+				UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new SinglePlayer(), master, width-200, height-65, 400, 60);
+				GUIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, width-200, height-50, 400, true);
+				TextMaster.loadText(bbt);
+				texts.add(bbt);
+				buttons.add(b);
+				elements.add(b);
+				
+				GUIText areyousure = master.createDynamicText("Enter seed to be used for world generation. Blank for random.", 1.5f, VoxelScreenManager.monospaced, 
+						width/2, height/2 - 120, width, true);
+				TextMaster.loadText(areyousure);
+				texts.add(areyousure);
+				
+				GUIText tbt = master.createDynamicText("694", 1.5f, VoxelScreenManager.monospaced, width-190, height/2-190, 400, false);
+				UITextBox tb = new UITextBox(loader.loadSpecialTexture("gui/slider"), new UIControl() {
+					@Override
+					public void event(String data) {
+						seedData = data;
+						TextMaster.removeText(tbt);
+						tbt.setText(data);
+						TextMaster.loadText(tbt);
+					}
+				}, 23, width-200, height/2-200, 400, 60);
+				tb.inputTextBuffer = "694";
+				TextMaster.loadText(tbt);
+				texts.add(tbt);
+				buttons.add(tb);
+				elements.add(tb);
+				
+				UIButton bg = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new CreateWorld(renderer, this.data), master, width-200, height/2+200, 400, 60);
+				GUIText bbtg = master.createDynamicText("Generate World", 1.5f, VoxelScreenManager.monospaced, width-200, height/2+200+15, 400, true);
+				TextMaster.loadText(bbtg);
+				texts.add(bbtg);
+				buttons.add(bg);
+				elements.add(bg);
+			}
+		}
+		
 	}
 	
 	public class Options implements UIControl,DisplaySource {
@@ -188,28 +508,6 @@ public class MainMenu implements DisplaySource {
 			buttons.clear();
 			menu.init();
 			VoxelScreenManager.changeDisplaySource(menu);
-		}
-		
-	}
-	
-	public class SinglePlayer implements UIControl {
-
-		private VoxelRenderer renderer;
-		
-		public SinglePlayer(VoxelRenderer renderer) {
-			this.renderer = renderer;
-		}
-		
-		@Override
-		public void event(String data) {
-			for (GUIText t : texts)
-				TextMaster.removeText(t);
-			elements.clear();
-			buttons.clear();
-			texts.clear();
-			VoxelScreenManager.changeDisplaySource(renderer);
-			VoxelScreenManager.ui.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);
-			EventQueue.doEvent(0);
 		}
 		
 	}

@@ -28,8 +28,8 @@ import com.brett.world.cameras.Camera;
 public class ChunkStore {
 
 	public static int renderDistance = 12;
-	public static final String worldLocation = "worlds/w1/";
-	public static final String dimLocation = worldLocation + "DIM";
+	public static String worldLocation = "worlds/w1/";
+	public static String dimLocation = worldLocation + "DIM";
 
 	// actually the best way of storing chunk data.
 	// however will need to add a way of moving between active and non active
@@ -54,6 +54,7 @@ public class ChunkStore {
 	}
 	
 	public void init() {
+		dimLocation = worldLocation + "DIM";
 		new File(dimLocation).mkdirs();
 		new File(worldLocation + "tile").mkdirs();
 		new File(worldLocation + "ents").mkdirs();
@@ -120,11 +121,13 @@ public class ChunkStore {
 										zoff = -1;
 									int rx = cx / Region.x + xoff;
 									int rz = cz / Region.z + zoff;
-									if (chunksCopy == null)
-										chunksCopy = new MultiKeyMap<Integer, Region>();
-									Region c = chunks.get(rx, rz);
-									if (c != null) {
-										chunksCopy.put(rx, rz, c);
+									try {
+										Region c = chunks.get(rx, rz);
+										if (c != null) {
+											chunksCopy.put(rx, rz, c);
+										}
+									} catch (Exception e) {
+										System.err.println("Broken (Region unloaded??)");
 									}
 								}
 							}
@@ -376,6 +379,28 @@ public class ChunkStore {
 		return c.getBlock((int)x, (int)y, (int)z);
 	}
 	
+	public byte getBlockState(float x, float y, float z) {
+		if (y < 0)
+			return 0;
+		if (y > Chunk.y)
+			return 0;
+		int xoff = 0,zoff = 0;
+		if (x < 0)
+			xoff = -1;
+		if (z < 0)
+			zoff = -1;
+		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
+		if (c == null)
+			return 0;
+		x%=Chunk.x;
+		z%=Chunk.z;
+		if (x < 0)
+			x = biasNegative(x, -Chunk.x);
+		if (z < 0)
+			z = biasNegative(z, -Chunk.z);
+		return c.getBlockState((int)x, (int)y, (int)z);
+	}
+	
 	public COLLISIONTYPE getBlockCollision(float x, float y, float z) {
 		if (y < 0)
 			return COLLISIONTYPE.NOT;
@@ -434,6 +459,40 @@ public class ChunkStore {
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
 		c.setBlock((int)x,(int)y, (int)z, rx, rz, block);
+	}
+	
+	public void setBlockState(float x, float y, float z, byte state) {
+		if (y < 0)
+			return;
+		if (y > Chunk.y)
+			return;
+		int xoff = 0,zoff = 0;
+		if (x < 0)
+			xoff = -1;
+		if (z < 0)
+			zoff = -1;
+		int cxpos = ((int)(x/(float)Chunk.x) + xoff), czpos = ((int)(z/(float)Chunk.z) + zoff);
+		Chunk c = getChunk(cxpos, czpos);
+		if (c == null) {
+			return;
+		}
+		int rx = (int)x;
+		int rz = (int)z;
+		x%=Chunk.x;
+		z%=Chunk.z;
+		if (x < 0)
+			x = biasNegative(x, -Chunk.x);
+		if (z < 0)
+			z = biasNegative(z, -Chunk.z);
+		c.setBlockState((int)x,(int)y, (int)z, rx, rz, state);
+	}
+	
+	public void setBlockStateBIAS(float x, float y, float z, byte state) {
+		if (x < 0)
+			x -= 1;
+		if (z < 0)
+			z -= 1;
+		setBlockState(x, y, z, state);
 	}
 	
 	public void setLightLevel(float x, float y, float z, byte level) {

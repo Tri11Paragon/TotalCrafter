@@ -21,7 +21,6 @@ import com.brett.voxel.world.blocks.Block;
 *
 * @author brett
 *
-*
 */
 
 public class Chunk {
@@ -174,23 +173,23 @@ public class Chunk {
 		boolean back = true;
 		byte data = 0;
 		
-		Block b = Block.blocks.get(blocks[i][j][k]);
+		Block b = Block.blocks.get((short)(blocks[i][j][k] & 0xFFF));
 		
 		if (b.getRendermode() != RENDERMODE.SPECIAL) {
 			try {
-				if (Block.blocks.get(blocks[i][j + 1][k]).getRendermode() == RENDERMODE.SOLID) {
+				if (Block.blocks.get((short)(blocks[i][j + 1][k] & 0xFFF)).getRendermode() == RENDERMODE.SOLID) {
 					top = false;
 				} else
 					top = true;
 			} catch (IndexOutOfBoundsException e) {}
 			try {
-				if (Block.blocks.get(blocks[i][j - 1][k]).getRendermode() == RENDERMODE.SOLID) {
+				if (Block.blocks.get((short)(blocks[i][j - 1][k] & 0xFFF)).getRendermode() == RENDERMODE.SOLID) {
 					bottom = false;
 				} else 
 					bottom = true;
 			} catch (IndexOutOfBoundsException e) {bottom = false;}
 			try {
-				if (Block.blocks.get(blocks[i - 1][j][k]).getRendermode() == RENDERMODE.SOLID) {
+				if (Block.blocks.get((short)(blocks[i - 1][j][k] & 0xFFF)).getRendermode() == RENDERMODE.SOLID) {
 					left = false;
 				} else
 					left = true;
@@ -203,14 +202,14 @@ public class Chunk {
 					// top brain indeed
 					data |= 0b0001;
 				} else {
-					if (Block.blocks.get(c.blocks[x-1][j][k]).getRendermode() == RENDERMODE.SOLID)
+					if (Block.blocks.get((short)(c.blocks[x-1][j][k] & 0xFFF)).getRendermode() == RENDERMODE.SOLID)
 						left = false;
 					else
 						left = true;
 				}
 			}
 			try {
-				if (Block.blocks.get(blocks[i+1][j][k]).getRendermode() == RENDERMODE.SOLID) {
+				if (Block.blocks.get((short)(blocks[i+1][j][k] & 0xFFF)).getRendermode() == RENDERMODE.SOLID) {
 					right = false;
 				} else
 					right = true;
@@ -220,14 +219,14 @@ public class Chunk {
 					right = false;
 					data |= 0b0010;
 				} else {
-					if (Block.blocks.get(c.blocks[0][j][k]).getRendermode() == RENDERMODE.SOLID)
+					if (Block.blocks.get((short)(c.blocks[0][j][k] & 0xFFF)).getRendermode() == RENDERMODE.SOLID)
 						right = false;
 					else
 						right = true;
 				}
 			}
 			try {
-				if (Block.blocks.get(blocks[i][j][k + 1]).getRendermode() == RENDERMODE.SOLID) {
+				if (Block.blocks.get((short)(blocks[i][j][k + 1] & 0xFFF)).getRendermode() == RENDERMODE.SOLID) {
 					front = false;
 				} else
 					front = true;
@@ -237,14 +236,14 @@ public class Chunk {
 					front = false;
 					data |= 0b0100;
 				} else {
-					if (Block.blocks.get(c.blocks[i][j][0]).getRendermode() == RENDERMODE.SOLID)
+					if (Block.blocks.get((short)(c.blocks[i][j][0] & 0xFFF)).getRendermode() == RENDERMODE.SOLID)
 						front = false;
 					else
 						front = true;
 				}
 			}
 			try {
-				if (Block.blocks.get(blocks[i][j][k-1]).getRendermode() == RENDERMODE.SOLID) {
+				if (Block.blocks.get((short)(blocks[i][j][k-1] & 0xFFF)).getRendermode() == RENDERMODE.SOLID) {
 					back = false;
 				}
 			} catch (IndexOutOfBoundsException e) {
@@ -253,7 +252,7 @@ public class Chunk {
 					back = false;
 					data |= 0b1000;
 				} else {
-					if (Block.blocks.get(c.blocks[i][j][z-1]).getRendermode() == RENDERMODE.SOLID)
+					if (Block.blocks.get((short)(c.blocks[i][j][z-1] & 0xFFF)).getRendermode() == RENDERMODE.SOLID)
 						back = false;
 				}
 			}
@@ -264,72 +263,145 @@ public class Chunk {
 			//verts = expandArrays(verts, count * MeshStore.vertsLeftComplete.length);
 			//uvs = expandArrays(uvs, count * MeshStore.uvLeftCompleteCompress.length);
 			
+			byte blockState = (byte)(blocks[i][j][k] >> 12);
+			int tLeft = 0, tRight = 0, tFront = 0, tBack = 0, tTop = 0, tBottom = 0;
+			
+			if (blockState != 0) {
+				if (blockState == 1) {
+					tLeft = b.textureFront;
+					tRight = b.textureBack;
+					tFront = b.textureRight;
+					tBack = b.textureLeft;
+					tTop = b.textureTop;
+					tBottom = b.textureBottom;
+				} else if (blockState == 2) {
+					tLeft = b.textureBack;
+					tRight = b.textureFront;
+					tFront = b.textureLeft;
+					tBack = b.textureRight;
+					tTop = b.textureTop;
+					tBottom = b.textureBottom;
+				} else if (blockState == 3) {
+					tLeft = b.textureRight;
+					tRight = b.textureLeft;
+					tFront = b.textureBack;
+					tBack = b.textureFront;
+					tTop = b.textureTop;
+					tBottom = b.textureBottom;
+				} else if (blockState == 4) {
+					tLeft = b.textureFront2;
+					tRight = b.textureBack;
+					tFront = b.textureRight;
+					tBack = b.textureLeft;
+					tTop = b.textureTop;
+					tBottom = b.textureBottom;
+				} else if (blockState == 5) {
+					tLeft = b.textureBack;
+					tRight = b.textureFront2;
+					tFront = b.textureLeft;
+					tBack = b.textureRight;
+					tTop = b.textureTop;
+					tBottom = b.textureBottom;
+				} else if (blockState == 6) {
+					tLeft = b.textureRight;
+					tRight = b.textureLeft;
+					tFront = b.textureBack;
+					tBack = b.textureFront2;
+					tTop = b.textureTop;
+					tBottom = b.textureBottom;
+				} else if (blockState == 7) {
+					tLeft = b.textureLeft;
+					tRight = b.textureRight;
+					tFront = b.textureFront2;
+					tBack = b.textureBack;
+					tTop = b.textureTop;
+					tBottom = b.textureBottom;
+				}
+			} else {
+				tLeft = b.textureLeft;
+				tRight = b.textureRight;
+				tFront = b.textureFront;
+				tBack = b.textureBack;
+				tTop = b.textureTop;
+				tBottom = b.textureBottom;
+			}
+			
+			
 			float xOff = (xoff * Chunk.x) + i;
 			float zOff = (zoff * Chunk.z) + k;
-			if (left) {
-				byte w = s.chunk.getLightLevel(xOff-1, j, zOff);
-				if (b.getRendermode() == RENDERMODE.SOLID) {
+			if (b.getRendermode() == RENDERMODE.SOLID) {
+				if (left) {
+					byte w = s.chunk.getLightLevel(xOff-1, j, zOff);
 					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsLeftComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, w, b.textureLeft));
-				} else {
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsLeftComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, w, b.textureLeft));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, w, tLeft));
 				}
-			}
-			if (right) {
-				byte w = s.chunk.getLightLevel(xOff+1, j, zOff);
-				if (b.getRendermode() == RENDERMODE.SOLID) {
+				if (right) {
+					byte w = s.chunk.getLightLevel(xOff+1, j, zOff);
 					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsRightComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, w, b.textureRight));
-				} else {
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsRightComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, w, b.textureRight));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, w, tRight));
 				}
-			}
-			if (front) {
-				byte w = s.chunk.getLightLevel(xOff, j, zOff+1);
-				if (b.getRendermode() == RENDERMODE.SOLID) {
+				if (front) {
+					byte w = s.chunk.getLightLevel(xOff, j, zOff+1);
 					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsFrontComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, w, b.textureFront));
-				} else {
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsFrontComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, w, b.textureFront));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, w, tFront));
 				}
-			}
-			if (back) {
-				byte w = s.chunk.getLightLevel(xOff, j, zOff-1);
-				if (b.getRendermode() == RENDERMODE.SOLID) {
+				if (back) {
+					byte w = s.chunk.getLightLevel(xOff, j, zOff-1);
 					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBackComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, w, b.textureBack));
-				} else {
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBackComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, w, b.textureBack));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, w, tBack));
 				}
-			}
-			if (top) {
-				int j1 = j+1;
-				if (j1 >= Chunk.y)
-					j1 = Chunk.y-1;
-				byte w = lightLevel[i][j1][k];
-				if (b.getRendermode() == RENDERMODE.SOLID) {
+				if (top) {
+					int j1 = j+1;
+					if (j1 >= Chunk.y)
+						j1 = Chunk.y-1;
+					byte w = lightLevel[i][j1][k];
 					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsTopComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, w, b.textureTop));
-				} else {
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsTopComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, w, b.textureTop));
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, w, tTop));
 				}
-			}
-			if (bottom) {
-				int j1 = j-1;
-				if (j1 < 0)
-					j1 = 0;
-				byte w = lightLevel[i][j1][k];
-				if (b.getRendermode() == RENDERMODE.SOLID) {
+				if (bottom) {
+					int j1 = j-1;
+					if (j1 < 0)
+						j1 = 0;
+					byte w = lightLevel[i][j1][k];
 					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBottomComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, w, b.textureBottom));
-				} else {
+					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, w, tBottom));
+				}
+			} else {
+				if (left) {
+					byte w = s.chunk.getLightLevel(xOff-1, j, zOff);
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsLeftComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, w, tLeft));
+				}
+				if (right) {
+					byte w = s.chunk.getLightLevel(xOff+1, j, zOff);
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsRightComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, w, tRight));
+				}
+				if (front) {
+					byte w = s.chunk.getLightLevel(xOff, j, zOff+1);
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsFrontComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, w, tFront));
+				}
+				if (back) {
+					byte w = s.chunk.getLightLevel(xOff, j, zOff-1);
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBackComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, w, tBack));
+				}
+				if (top) {
+					int j1 = j+1;
+					if (j1 >= Chunk.y)
+						j1 = Chunk.y-1;
+					byte w = lightLevel[i][j1][k];
+					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsTopComplete, i, j, k));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, w, tTop));
+				}
+				if (bottom) {
+					int j1 = j-1;
+					if (j1 < 0)
+						j1 = 0;
+					byte w = lightLevel[i][j1][k];
 					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBottomComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, w, b.textureBottom));
+					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, w, tBottom));
 				}
 			}
 		} else {
@@ -517,7 +589,7 @@ public class Chunk {
 		if (blocks == null)
 			return;
 		if (blocks[xz][yz][zz] != 0) // TODO: check if this is right
-			Block.blocks.get(blocks[xz][yz][zz]).onBlockTick(xz + xoff*Chunk.x, yz, zz + zoff*Chunk.z, s);
+			Block.blocks.get((short) (blocks[xz][yz][zz] & 0xFFF)).onBlockTick(xz + xoff*Chunk.x, yz, zz + zoff*Chunk.z, s);
 	}
 	
 	public void nul() {
@@ -528,7 +600,7 @@ public class Chunk {
 		this.blocks = null;
 	}
 	
-	public short getBlock(int x, int y, int z) {
+	public short getBlockRaw(int x, int y, int z) {
 		if (x < 0)
 			x *= -1;
 		if (z < 0)
@@ -538,6 +610,14 @@ public class Chunk {
 		if (blocks == null)
 			return 0;
 		return blocks[x][y][z];
+	}
+	
+	public short getBlock(int x, int y, int z) {
+		return (short) (getBlockRaw(x, y, z) & 0xFFF);
+	}
+	
+	public byte getBlockState(int x, int y, int z) {
+		return (byte) (getBlockRaw(x, y, z) >> 12);
 	}
 	
 	/**
@@ -583,7 +663,7 @@ public class Chunk {
 			x *= -1;
 		if (z < 0)
 			z *= -1;
-		return blocks[x][y + 1][z] == 0 ? false : true;
+		return (short) (blocks[x][y + 1][z] & 0xFFF) == 0 ? false : true;
 	}
 	
 	public int getHeight(int x, int z) {
@@ -594,7 +674,7 @@ public class Chunk {
 		if (z < 0)
 			z *= -1;
 		for (int i = 0; i < 128; i++) {
-			if (blocks[x][i][z] == 0) {
+			if ((short) (blocks[x][i][z] & 0xFFF) == 0) {
 				return i-1;
 			}
 		}
@@ -609,7 +689,7 @@ public class Chunk {
 		if (z < 0)
 			z *= -1;
 		for (int i = 0; i < 128; i++) {
-			if (blocks[x][i][z] == 0) {
+			if ((short) (blocks[x][i][z] & 0xFFF) == 0) {
 				return i;
 			}
 		}
@@ -676,7 +756,7 @@ public class Chunk {
 		lightLevel[x][y][z] |= ((level & 0xF));
 	}
 	
-	public void setBlock(int x, int y, int z, int rx, int rz, int block) {
+	public void setBlockRaw(int x, int y, int z, int rx, int rz, int block) {
 		if (x >= Chunk.x || z >= Chunk.z)
 			return;
 		if (x < 0)
@@ -687,11 +767,31 @@ public class Chunk {
 			y = Chunk.y-1;
 		if (y < 0)
 			y = 0;
+		Block.blocks.get((short) (blocks[x][y][z] & 0xFFF)).onBlockBreaked(rx, y, rz, s);
+		if ((blocks[x][y][z] & 0xFFF) != Block.WILL)
+			blocks[x][y][z] = (short) (block);
 		if (block != 0)
 			Block.blocks.get((short) block).onBlockPlaced(rx, y, rz, s);
-		Block.blocks.get(blocks[x][y][z]).onBlockBreaked(rx, y, rz, s);
+	}
+	
+	public void setBlock(int x, int y, int z, int rx, int rz, int block) {
+		setBlockRaw(x, y, z, rx, rz, (block & 0xFFFF));
+	}
+	
+	public void setBlockState(int x, int y, int z, int rx, int rz, byte state) {
+		if (x >= Chunk.x || z >= Chunk.z)
+			return;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
+		if (y >= Chunk.y)
+			y = Chunk.y-1;
+		if (y < 0)
+			y = 0;
+		blocks[x][y][z] &= 0x0FFF;
 		if (blocks[x][y][z] != Block.WILL)
-			blocks[x][y][z] = (short)block;
+			blocks[x][y][z] |= (state << 12);
 	}
 	
 	public void enableCulling() {

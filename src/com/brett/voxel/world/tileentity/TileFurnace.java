@@ -47,7 +47,6 @@ public class TileFurnace extends Container {
 			fuel = Integer.parseInt(fue);
 		if (prog != null)
 			progress = Integer.parseInt(prog);
-		System.out.println(fuel);
 	}
 	
 	@Override
@@ -122,6 +121,7 @@ public class TileFurnace extends Container {
 						if (slots.get(0).getItemsAmount() <= 0)
 							slots.get(0).changeItem(null);
 					}
+				} else {
 				}
 			}
 		}

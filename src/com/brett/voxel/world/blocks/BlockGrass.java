@@ -17,6 +17,7 @@ public class BlockGrass extends Block {
 		super(model, 20);
 		super.textureTop = 0;
 		super.textureBottom = 1;
+		this.setMiningLevel(0);
 		this.setBlockDropped(DIRT);
 	}
 	

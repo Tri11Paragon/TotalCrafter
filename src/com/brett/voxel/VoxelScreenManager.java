@@ -59,6 +59,7 @@ public class VoxelScreenManager {
 	public static LineShader ls;
 	public static PointShader pt;
 	public static UIMaster ui;
+	public static VoxelWorld world;
 	
 	private static DisplaySource scene;
 	
@@ -225,8 +226,7 @@ public class VoxelScreenManager {
 		
 		console.registerCommand("give", new GiveCommand(player.getInventory()));
 		
-		VoxelWorld world = new VoxelWorld(renderer, loader, player);
-		KeyMaster.registerKeyRequester(player.getInventory());
+		world = new VoxelWorld(renderer, loader, player);
 		
 		Mouse.setGrabbed(false);
 		

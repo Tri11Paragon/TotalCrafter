@@ -77,8 +77,8 @@ public class GUIText {
 		//TextMaster.loadText(this);
 	}
 	
-	public void setText(String test) {
-		this.textString = test;
+	public void setText(String text) {
+		this.textString = text;
 	}
 	
 	public String getText() {
