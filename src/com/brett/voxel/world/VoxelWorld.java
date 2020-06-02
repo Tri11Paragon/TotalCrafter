@@ -1,12 +1,5 @@
 package com.brett.voxel.world;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import org.apache.commons.collections4.MapIterator;
-import org.apache.commons.collections4.keyvalue.MultiKey;
-import org.apache.commons.collections4.map.MultiKeyMap;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -18,18 +11,17 @@ import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.PlayerInventory;
+import com.brett.voxel.networking.Client;
 import com.brett.voxel.renderer.ScreenShot;
 import com.brett.voxel.renderer.VOverlayRenderer;
 import com.brett.voxel.renderer.shaders.VoxelShader;
 import com.brett.voxel.tools.MouseBlockPicker;
-import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.chunk.ChunkStore;
 import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemStack;
 import com.brett.voxel.world.items.ItemTool;
 import com.brett.voxel.world.lighting.LightingEngine;
 import com.brett.voxel.world.player.Player;
-import com.brett.voxel.world.tileentity.TileEntity;
 import com.brett.world.cameras.ICamera;
 
 /**
@@ -38,22 +30,20 @@ import com.brett.world.cameras.ICamera;
 * @date Feb. 14, 2020
 */
 
-public class VoxelWorld implements IMouseState {
+public class VoxelWorld extends IWorldProvider implements IMouseState {
 	
 	public static final float GRAVITY = 9.8f;
+	// is this a remote server?
+	public static boolean isRemote = false;
+	public static Client localClient;
 	
 	private VoxelShader shader;
 	private Loader loader;
 	private MouseBlockPicker picker;
-	public volatile ChunkStore chunk;
 	private MasterRenderer renderer;
 	
 	private VOverlayRenderer voverlayrenderer;
 	
-	public Random random = new Random();
-	private List<TileEntity> tents = new ArrayList<TileEntity>();
-	private MultiKeyMap<Integer, TileEntity> tileEntities = new MultiKeyMap<Integer, TileEntity>();
-	public Player ply;
 	private int textureAtlas;
 	
 	// replace pi with a player (done)
@@ -71,12 +61,15 @@ public class VoxelWorld implements IMouseState {
 		chunk = new ChunkStore(ply, loader, this);
 		random.setSeed(LevelLoader.seed);
 		LightingEngine.init(this, ply);
-		this.textureAtlas = loader.loadSpecialTextureATLAS(16,16);
+		this.textureAtlas = loader.loadSpecialTextureATLAS(16, 16);
 		this.voverlayrenderer = new VOverlayRenderer(renderer, ply, this);
 		picker = new MouseBlockPicker(ply, renderer.getProjectionMatrix(), this, ply, this.voverlayrenderer);
-		tickTileEnts();
+		if (!isRemote)
+			tickTileEnts();
 		KeyMaster.registerKeyRequester(new ScreenShot());
 		KeyMaster.registerMouseRequester(this);
+		if (localClient != null)
+			localClient.world = this;
 	}
 	
 	public void render(ICamera camera) {
@@ -93,15 +86,6 @@ public class VoxelWorld implements IMouseState {
 	
 	public void createExplosion(float x, float y, float z, float size) {
 		new Explosion(x, y, z, size, this).explode();
-	}
-	
-	public void updateBlocksAround(int x, int y, int z) {
-		Block.blocks.get(this.chunk.getBlockBIAS(x, y + 1, z)).onBlockUpdated(x, y + 1, z, this);
-		Block.blocks.get(this.chunk.getBlockBIAS(x, y - 1, z)).onBlockUpdated(x, y - 1, z, this);
-		Block.blocks.get(this.chunk.getBlockBIAS(x+1, y, z)).onBlockUpdated(x+1, y, z, this);
-		Block.blocks.get(this.chunk.getBlockBIAS(x-1, y, z)).onBlockUpdated(x-1, y, z, this);
-		Block.blocks.get(this.chunk.getBlockBIAS(x, y, z+1)).onBlockUpdated(x, y, z+1, this);
-		Block.blocks.get(this.chunk.getBlockBIAS(x, y, z-1)).onBlockUpdated(x, y, z-1, this);
 	}
 	
 	public void tickTileEnts() {
@@ -179,34 +163,6 @@ public class VoxelWorld implements IMouseState {
 				}
 			}
 		}
-	}
-
-	
-	public void spawnTileEntity(TileEntity e, int x, int y, int z) {
-		tents.add(e);
-		tileEntities.put(x, y, z, e);
-		e.spawnTileEntity(x, y, z, this);
-	}
-	
-	public TileEntity getTileEntity(int x, int y, int z) {
-		return tileEntities.get(x, y, z);
-	}
-	
-	public void destoryTileEntity(TileEntity e) {
-		if (e == null)
-			return;
-		e.destroy();
-		if (tents.contains(e))
-			tents.remove(e);
-		MapIterator<MultiKey<? extends Integer>,TileEntity> ents = tileEntities.mapIterator();
-		try {
-			while (ents.hasNext()) {
-				MultiKey<? extends Integer> kes = ents.next();
-				if (tileEntities.containsKey(kes.getKey(0), kes.getKey(1), kes.getKey(2))) {
-					tileEntities.removeMultiKey(kes.getKey(0), kes.getKey(1), kes.getKey(2));
-				}
-			}
-		} catch (Exception edd) {}
 	}
 	
 	public Loader getLoader() {

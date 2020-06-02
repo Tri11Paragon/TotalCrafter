@@ -16,6 +16,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
+import org.lwjgl.opengl.GLContext;
 import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.openal.OggData;
 import org.newdawn.slick.openal.OggDecoder;
@@ -51,24 +52,29 @@ public class AudioController {
 	 * Sets position of the listener
 	 */
 	public static void setListenerData(float x, float y, float z, float rx, float ry, float rz) {
+		try {
 		AL10.alListener3f(AL10.AL_POSITION, x, y, z);
 		AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
 		listndata.put( 0, rx);
 		listndata.put( 1, ry );
 		listndata.put( 2, rz );
 		AL10.alListener(AL10.AL_ORIENTATION, listndata);
+		} catch (Exception e) {}
 	}
 	
 	public static void setListenerPosition(Vector3f f, float rx, float ry, float rz) {
+		try {
 		AL10.alListener3f(AL10.AL_POSITION, f.x, f.y, f.z);
 		AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
 		listndata.put( 0, rx);
 		listndata.put( 1, ry );
 		listndata.put( 2, rz );
 		AL10.alListener(AL10.AL_ORIENTATION, listndata);
+		} catch (Exception e) {}
 	}
 	
 	public static int[] loadSoundFolder(String folder) {
+		try {
 		folder = "resources/sound/" + folder;
 		File sfolder = new File(folder);
 		File[] sfiles = sfolder.listFiles();
@@ -85,13 +91,20 @@ public class AudioController {
 			is[i] = ints.get(i);
 		
 		return is;
+		} catch (Exception e) {}
+		return null;
 	}
 	
 	public static int loadSound(String file) {
-		return loadS("resources/sound/" + file);
+		try {
+			return loadS("resources/sound/" + file);
+		} catch (Exception e) {}
+		return 0;
 	}
 	
 	public static int loadS(String file) {
+		if (GLContext.getCapabilities() == null)
+			return 0;
 		int buffer = AL10.alGenBuffers();
 		buffers.add(buffer);
 		try {

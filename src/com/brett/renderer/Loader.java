@@ -167,7 +167,12 @@ public class Loader {
 	}
 	
 	public int loadTexture(String filename) {
-		return loadTexture(filename, -0.2f);
+		try {
+			if (GLContext.getCapabilities() == null)
+				return 0;
+			return loadTexture(filename, -0.2f);
+		} catch (RuntimeException e) {}
+		return 0;
 	}
 	
 	public int loadTexture(String filename, float bias) {
@@ -199,7 +204,8 @@ public class Loader {
 			e.printStackTrace();
 			System.err.println("Tried to load texture " + filename + ".png , didn't work");
 			if (filename.toLowerCase().equals("error")) {
-				System.exit(-1);
+				//System.exit(-1);
+				return 0;
 			} else {
 				return loadTexture("error");
 			}
@@ -330,86 +336,91 @@ public class Loader {
 	 * it could also be multithreaded
 	 */
 	public int loadSpecialTexture(String texture) {
-		if (textureMap.containsKey(texture))
-			return textureMap.get(texture);
-		TextureData d = decodeTextureFile("resources/textures/" + texture + ".png");
-		int id = GL11.glGenTextures();
-		
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
-		// don't ask
-		// i don't think it works the way i want
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST); 
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST); 
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, d.getWidth(), d.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, d.getBuffer());
-		GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_NEAREST);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST_MIPMAP_NEAREST);
-		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -0.2f);
-		float amount = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
-		
-		textureMap.put(texture, id);
-		textures.add(id);
-		return id;
+		try {
+			if (textureMap.containsKey(texture))
+				return textureMap.get(texture);
+			TextureData d = decodeTextureFile("resources/textures/" + texture + ".png");
+			int id = GL11.glGenTextures();
+			
+			GL13.glActiveTexture(GL13.GL_TEXTURE0);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+			// don't ask
+			// i don't think it works the way i want
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST); 
+	        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST); 
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, d.getWidth(), d.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, d.getBuffer());
+			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_NEAREST);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST_MIPMAP_NEAREST);
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -0.2f);
+			float amount = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
+			
+			textureMap.put(texture, id);
+			textures.add(id);
+			return id;
+		} catch (Exception e) {return 0;}
 	}
 	
 	public int loadSpecialTextureATLAS(int width, int height) {
-		//for more detail on array textures
-		//https://www.khronos.org/opengl/wiki/Array_Texture
-		float anisf = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-		//TextureData d = decodeTextureFile("resources/textures/" + texture + ".png");
-		HashMap<Integer, String> texs = GameRegistry.registerTextures();
-		int id = GL11.glGenTextures();
-		
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, id); 
-		
-        // i really don't like this
-        // openGL4.2. i was trying to use < 3.2
-        // if you are having issues its likely because of this.
-        // "OpenGL 4.2 (2011)"
-        // i feel like this should be in gl30
-		// but at the same time im able to use contect of 3.3 without any issues
-		// this is very weird and I think this is in the wrong class.
-        GL42.glTexStorage3D(GL30.GL_TEXTURE_2D_ARRAY, 4, GL11.GL_RGBA8, width, height, texs.size());
-        
-        for (Entry<Integer, String> s : texs.entrySet()) {
-        	// i don't understand why this is in gl12 but to allocate this is in gl42
-        	GL12.glTexSubImage3D(GL30.GL_TEXTURE_2D_ARRAY,
-        			// level
-        			0, 
-        			// x,y,z offsets
-        			0, 0, s.getKey(),
-        			// width, height depth
-        			width, height, 1, 
-        			// format, format
-        			GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, 
-        			// image data
-        			decodeTextureFile("resources/textures/" + s.getValue() + ".png").getBuffer());
-        	// AF
-        	GL11.glTexParameterf(GL30.GL_TEXTURE_2D_ARRAY, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, anisf);
-        }
-        
-        /**
-         * Texture filters
-         */
-        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST); 
-        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-        
-        /**
-         * mipmap and mipmap filters
-         */
-        GL30.glGenerateMipmap(GL30.GL_TEXTURE_2D_ARRAY);
-		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
-		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
-		// > 0 = less detail
-		GL11.glTexParameterf(GL30.GL_TEXTURE_2D_ARRAY, GL14.GL_TEXTURE_LOD_BIAS, 0.2f);
-        
-		textures.add(id);
-		return id;
+		try {
+			//for more detail on array textures
+			//https://www.khronos.org/opengl/wiki/Array_Texture
+			float anisf = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+			//TextureData d = decodeTextureFile("resources/textures/" + texture + ".png");
+			HashMap<Integer, String> texs = GameRegistry.registerTextures();
+			int id = GL11.glGenTextures();
+			
+			GL13.glActiveTexture(GL13.GL_TEXTURE0);
+			GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, id); 
+			
+	        // i really don't like this
+	        // openGL4.2. i was trying to use < 3.2
+	        // if you are having issues its likely because of this.
+	        // "OpenGL 4.2 (2011)"
+	        // i feel like this should be in gl30
+			// but at the same time im able to use contect of 3.3 without any issues
+			// this is very weird and I think this is in the wrong class.
+	        GL42.glTexStorage3D(GL30.GL_TEXTURE_2D_ARRAY, 4, GL11.GL_RGBA8, width, height, texs.size());
+	        
+	        for (Entry<Integer, String> s : texs.entrySet()) {
+	        	// i don't understand why this is in gl12 but to allocate this is in gl42
+	        	GL12.glTexSubImage3D(GL30.GL_TEXTURE_2D_ARRAY,
+	        			// level
+	        			0, 
+	        			// x,y,z offsets
+	        			0, 0, s.getKey(),
+	        			// width, height depth
+	        			width, height, 1, 
+	        			// format, format
+	        			GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, 
+	        			// image data
+	        			decodeTextureFile("resources/textures/" + s.getValue() + ".png").getBuffer());
+	        	// AF
+	        	GL11.glTexParameterf(GL30.GL_TEXTURE_2D_ARRAY, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, anisf);
+	        }
+	        
+	        /**
+	         * Texture filters
+	         */
+	        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST); 
+	        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+	        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+	        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+	        
+	        /**
+	         * mipmap and mipmap filters
+	         */
+	        GL30.glGenerateMipmap(GL30.GL_TEXTURE_2D_ARRAY);
+			GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
+			GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
+			// > 0 = less detail
+			GL11.glTexParameterf(GL30.GL_TEXTURE_2D_ARRAY, GL14.GL_TEXTURE_LOD_BIAS, 0.2f);
+	        
+			textures.add(id);
+			return id;
+		} catch (Exception e) {}
+		return 0;
 	}
 	
 	private TextureData decodeTextureFile(String fileName) {

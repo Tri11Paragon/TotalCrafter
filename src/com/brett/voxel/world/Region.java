@@ -56,7 +56,7 @@ public class Region {
 	 * then take the world x and z, divide by your chunk size and then finally divide by
 	 * the region size. (Defined as x and z statically in this class.)
 	 */
-	public static Region loadRegion(Loader loader, VoxelWorld s, int x, int z, String worldLocation) {
+	public static Region loadRegion(Loader loader, IWorldProvider s, int x, int z, String worldLocation) {
 		Region r = new Region(x, z);
 		LZ4Factory factory = LZ4Factory.fastestInstance();
 		// Threading increases load / save speed by A LOT
@@ -80,6 +80,7 @@ public class Region {
 						for (int i = 0; i < blks.length; i++) {
 							for (int j = 0; j < blks[i].length; j++) {
 								for (int k = 0; k < blks[i][j].length; k++) {
+									try {
 									blks[i][j][k] = is.readShort();
 									int xk = 0;
 									int zk = 0;
@@ -88,6 +89,7 @@ public class Region {
 									if (posZ < 0)
 										zk = 1;
 									Block.blocks.get((short)(blks[i][j][k] & 0xFFF)).onBlockPlaced(i + (posX * Chunk.x) + xk, j, k + (posZ * Chunk.z) + zk, s);
+									} catch (Exception e) {if (j==0) blks[i][j][k]=Block.WILL; else blks[i][j][k] = 0;}
 								}
 							}
 						}

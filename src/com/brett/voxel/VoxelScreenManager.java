@@ -59,6 +59,7 @@ public class VoxelScreenManager {
 	public static LineShader ls;
 	public static PointShader pt;
 	public static UIMaster ui;
+	public static MasterRenderer renderer;
 	public static VoxelWorld world;
 	
 	private static DisplaySource scene;
@@ -102,7 +103,7 @@ public class VoxelScreenManager {
 		Player player = new Player(loader, ui);
 		LevelLoader.ply = player;
 		
-		MasterRenderer renderer = new MasterRenderer(loader, player);
+		renderer = new MasterRenderer(loader, player);
 		ls.loadProjectionMatrix(renderer.getProjectionMatrix());
 		pt.loadProjectionMatrix(renderer.getProjectionMatrix());
 		//World world = new World(renderer, loader, camera, -5);
@@ -301,6 +302,7 @@ public class VoxelScreenManager {
 				deltaTime = 0;
 			}
 		}
+		VoxelWorld.localClient.disconnect();
 		isOpen = false;
 		Mouse.setGrabbed(false);
 		player.cleanup();

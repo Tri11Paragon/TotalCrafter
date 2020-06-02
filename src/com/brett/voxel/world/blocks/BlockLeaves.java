@@ -1,7 +1,7 @@
 package com.brett.voxel.world.blocks;
 
 import com.brett.renderer.datatypes.ModelTexture;
-import com.brett.voxel.world.VoxelWorld;
+import com.brett.voxel.world.IWorldProvider;
 
 /**
 *
@@ -16,7 +16,7 @@ public class BlockLeaves extends Block {
 	}
 	
 	@Override
-	public void onBlockTick(int x, int y, int z, VoxelWorld world) {
+	public void onBlockTick(int x, int y, int z, IWorldProvider world) {
 		super.onBlockTick(x, y, z, world);
 	}
 

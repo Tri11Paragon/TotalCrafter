@@ -13,19 +13,23 @@ public class AudioSource {
 	private int sourceID;
 	
 	public AudioSource() {
+		try {
 		sourceID = AL10.alGenSources();
 		AL10.alSourcef(sourceID, AL10.AL_GAIN, 1);
 		AL10.alSourcef(sourceID, AL10.AL_PITCH, 1);
 		AL10.alSource3f(sourceID, AL10.AL_POSITION, 0, 0, 0);
+		} catch (Exception e) {}
 	}
 	
 	public AudioSource(int buffer) {
+		try {
 		sourceID = AL10.alGenSources();
 		AL10.alSourcef(sourceID, AL10.AL_GAIN, 1);
 		AL10.alSourcef(sourceID, AL10.AL_PITCH, 1);
 		AL10.alSource3f(sourceID, AL10.AL_POSITION, 0, 0, 0);
 		AL10.alSourcei(sourceID, AL10.AL_BUFFER, buffer);
 		AL10.alSourcePlay(sourceID);
+		} catch (Exception e) {}
 	}
 	
 	public void play(int buffer) {

@@ -4,6 +4,7 @@ import com.brett.renderer.datatypes.ModelTexture;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.inventory.recipe.TableCrafting;
+import com.brett.voxel.world.IWorldProvider;
 import com.brett.voxel.world.VoxelWorld;
 
 /**
@@ -27,7 +28,8 @@ public class BlockCrafting extends Block {
 		
 		craft = new TableCrafting();
 		craft.loadInventory();
-		VoxelScreenManager.ui.addMenu(craft);
+		if (VoxelScreenManager.ui != null)
+			VoxelScreenManager.ui.addMenu(craft);
 	}
 	
 	@Override
@@ -38,8 +40,10 @@ public class BlockCrafting extends Block {
 	}
 	
 	@Override
-	public void onBlockPlaced(int x, int y, int z, VoxelWorld world) {
+	public void onBlockPlaced(int x, int y, int z, IWorldProvider world) {
 		super.onBlockPlaced(x, y, z, world);
+		if (world.ply == null)
+			return;
 		float yaw = world.ply.getYaw();
 		if (yaw < 0)
 			yaw = 360 - (-yaw);

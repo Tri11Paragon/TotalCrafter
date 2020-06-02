@@ -5,7 +5,7 @@ package com.brett.voxel.world;
 * @author brett
 * @date Mar. 8, 2020
 */
-
+@SuppressWarnings("unused")
 public class Explosion {
 	
 	private static int RE_MNT = 12;

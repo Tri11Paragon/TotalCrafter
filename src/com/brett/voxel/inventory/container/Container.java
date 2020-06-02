@@ -4,8 +4,8 @@ import com.brett.IInventoryDisable;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.Inventory;
 import com.brett.voxel.inventory.PlayerInventory;
+import com.brett.voxel.world.IWorldProvider;
 import com.brett.voxel.world.LevelLoader;
-import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.tileentity.TileEntity;
 
 /**
@@ -19,7 +19,7 @@ public class Container extends TileEntity implements IInventoryDisable {
 	protected Inventory i;
 	
 	@Override
-	public void spawnTileEntity(int x, int y, int z, VoxelWorld world) {
+	public void spawnTileEntity(int x, int y, int z, IWorldProvider world) {
 		super.spawnTileEntity(x, y, z, world);
 		i = new Inventory((int)LevelLoader.seed, "tile/inv_" + x + "_" + y + "_" + z + "_");
 		PlayerInventory.registerDisableState(this);

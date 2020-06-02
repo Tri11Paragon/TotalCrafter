@@ -82,6 +82,7 @@ public class Player extends Camera {
 		this.world = world;
 	}
 	
+	private long last = 0;
 	@Override
 	public void move() {
 		if (Mouse.isGrabbed()) {
@@ -220,15 +221,30 @@ public class Player extends Camera {
 				break;
 		}
 		
-		if (world.chunk.getBlock(position.x + ((float)xb), position.y, position.z) == 0)
+		//if (world.chunk.getBlock(position.x + ((float)xb), position.y, position.z) == 0)
 			position.x += xb;
 		
-		if (world.chunk.getBlock(position.x, position.y + ((float)yb), position.z) == 0)
+		//if (world.chunk.getBlock(position.x, position.y + ((float)yb), position.z) == 0)
 			position.y += yb;
 		
-		if (world.chunk.getBlock(position.x , position.y, position.z + ((float)zb)) == 0)
+		//if (world.chunk.getBlock(position.x , position.y, position.z + ((float)zb)) == 0)
 			position.z += zb;
 		
+		/**
+		 * Sends the server an update of the position of this player
+		 * if they have changed positions and if it has been greater then 50 milliseconds
+		 * since last update.
+		 */
+		if (VoxelWorld.isRemote) {
+			if (xb > 0 || yb > 0 || zb > 0) {
+				long current = System.currentTimeMillis();
+				if (current - last > 50) {
+					VoxelWorld.localClient.updatePosition(this);
+					last = current;
+				}
+			}
+		}
+			
 		AudioController.setListenerPosition(this.position, MouseBlockPicker.currentRay.x, MouseBlockPicker.currentRay.y, MouseBlockPicker.currentRay.z);
 	}
 	

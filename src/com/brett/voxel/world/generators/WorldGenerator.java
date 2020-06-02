@@ -2,8 +2,8 @@ package com.brett.voxel.world.generators;
 
 import java.util.Random;
 
+import com.brett.voxel.world.IWorldProvider;
 import com.brett.voxel.world.LevelLoader;
-import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.generators.noise.DetailNoise;
@@ -25,9 +25,9 @@ public class WorldGenerator {
 	private RoughnessNoise rf;
 	private WorldGenMineable ores;
 	private Random rnd;
-	private VoxelWorld world;
+	private IWorldProvider world;
 		
-	public WorldGenerator(VoxelWorld world) {
+	public WorldGenerator(IWorldProvider world) {
 		rnd = new Random(LevelLoader.seed);
 		lf = new LevelNoise(LevelLoader.seed);
 		df = new DetailNoise(LevelLoader.seed);

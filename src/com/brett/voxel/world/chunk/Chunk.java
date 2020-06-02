@@ -13,6 +13,7 @@ import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.renderer.RENDERMODE;
 import com.brett.voxel.renderer.shaders.VoxelShader;
+import com.brett.voxel.world.IWorldProvider;
 import com.brett.voxel.world.MeshStore;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
@@ -38,7 +39,7 @@ public class Chunk {
 	private float[] vertsTrans;
 	private float[] uvsTrans;
 	private int xoff,zoff;
-	private VoxelWorld s;
+	private IWorldProvider s;
 	private Loader loader;
 	private boolean waitingForMesh = false;
 	private boolean isMeshing = false;
@@ -55,22 +56,25 @@ public class Chunk {
 			@Override
 			public void run() {
 				while (VoxelScreenManager.isOpen) {
-					try {
 						for (int i = 0; i < meshables.size(); i++) {
-							Chunk c = meshables.get(i);
-							if (c != null) {
-								if (c.remeshNo(-1))
-									continue;
+							try {
+								Chunk c = meshables.get(i);
+								if (c != null) {
+									if (c.remeshNo(-1))
+										continue;
+								}
+								try {
+									meshables.remove(i);
+								} catch (Exception e) {}
+							} catch (Exception e) {
+								System.err.println("There has been an error in the chunk mesher. 1");
+								System.err.println(e.getCause());
+								e.printStackTrace();
 							}
-							meshables.remove(i);
 						}
 						try {
 							Thread.sleep(1);
 						} catch (InterruptedException e) {}
-					} catch (Exception e) {
-						System.err.println("There has been an error in the chunk mesher.");
-						System.err.println(e.getCause());
-					}
 				}
 			}
 		}).start();
@@ -85,13 +89,15 @@ public class Chunk {
 								if (c.remeshNo(-1))
 									continue;
 							}
-							meshables2.remove(i);
+							try {
+								meshables2.remove(i);
+							} catch (Exception e) {}
 						}
 						try {
 							Thread.sleep(1);
 						} catch (InterruptedException e) {}
 					} catch (Exception e) {
-						System.err.println("There has been an error in the chunk mesher.");
+						System.err.println("There has been an error in the chunk mesher. 2");
 						System.err.println(e.getCause());
 					}
 				}
@@ -108,13 +114,15 @@ public class Chunk {
 								if (c.remeshNo(-1))
 									continue;
 							}
-							meshables3.remove(i);
+							try {
+								meshables3.remove(i);
+							} catch (Exception e) {}
 						}
 						try {
 							Thread.sleep(1);
 						} catch (InterruptedException e) {}
 					} catch (Exception e) {
-						System.err.println("There has been an error in the chunk mesher.");
+						System.err.println("There has been an error in the chunk mesher. 3");
 						System.err.println(e.getCause());
 					}
 				}
@@ -131,13 +139,15 @@ public class Chunk {
 								if (c.remeshNo(-1))
 									continue;
 							}
-							meshables4.remove(i);
+							try {
+								meshables4.remove(i);
+							} catch (Exception e) {}
 						}
 						try {
 							Thread.sleep(1);
 						} catch (InterruptedException e) {}
 					} catch (Exception e) {
-						System.err.println("There has been an error in the chunk mesher.");
+						System.err.println("There has been an error in the chunk mesher. 4");
 						System.err.println(e.getCause());
 					}
 				}
@@ -145,7 +155,7 @@ public class Chunk {
 		}).start();
 	}
 
-	public Chunk(Loader loader, VoxelWorld s, short[][][] blocks, int xoff, int zoff) {
+	public Chunk(Loader loader, IWorldProvider s, short[][][] blocks, int xoff, int zoff) {
 		this.xoff = xoff;
 		this.zoff = zoff;
 		this.s = s;
@@ -512,7 +522,7 @@ public class Chunk {
 		return false;
 	}
 	
-	public void render(VoxelShader shader, Matrix4f view) {
+	public void render(VoxelShader shader, Matrix4f view, int cx, int cz) {
 		if (waitingForMesh) {
 			isMeshing = true;
 			if(rawID != null)
@@ -547,7 +557,7 @@ public class Chunk {
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
 		
-		Matrix4f trans = Maths.createTransformationMatrixCube(x*xoff,0,z*zoff);
+		Matrix4f trans = Maths.createTransformationMatrixCube(x*cx,0,z*cz);
 		Matrix4f.mul(view, trans, trans);
 		shader.loadTransformationMatrix(trans);
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, rawID.getVertexCount());
@@ -561,7 +571,7 @@ public class Chunk {
 	/**
 	 * slowdown at the cost of it looking good.
 	 */
-	public void renderSpecial(VoxelShader shader, Matrix4f view) {
+	public void renderSpecial(VoxelShader shader, Matrix4f view, int cx, int cz) {
 		if (blocks == null)
 			return;
 		if (rawIDTrans == null)
@@ -571,7 +581,7 @@ public class Chunk {
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
 		
-		Matrix4f trans = Maths.createTransformationMatrixCube(x*xoff,0,z*zoff);
+		Matrix4f trans = Maths.createTransformationMatrixCube(x*cx,0,z*cz);
 		Matrix4f.mul(view, trans, trans);
 		shader.loadTransformationMatrix(trans);
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, rawIDTrans.getVertexCount());
@@ -757,6 +767,28 @@ public class Chunk {
 	}
 	
 	public void setBlockRaw(int x, int y, int z, int rx, int rz, int block) {
+		if (VoxelWorld.isRemote)
+			VoxelWorld.localClient.updateBlock((int)rx, (int)y, (int)rz, (short)block);
+		if (x >= Chunk.x || z >= Chunk.z)
+			return;
+		if (x < 0)
+			x *= -1;
+		if (z < 0)
+			z *= -1;
+		if (y >= Chunk.y)
+			y = Chunk.y-1;
+		if (y < 0)
+			y = 0;
+		Block.blocks.get((short) (blocks[x][y][z] & 0xFFF)).onBlockBreaked(rx, y, rz, s);
+		if ((blocks[x][y][z] & 0xFFF) != Block.WILL)
+			blocks[x][y][z] = (short) (block);
+		if (block != 0)
+			Block.blocks.get((short) block).onBlockPlaced(rx, y, rz, s);
+	}
+	
+	public void setBlockRawServer(int x, int y, int z, int rx, int rz, int block) {
+		//if (VoxelWorld.isRemote)
+		//	VoxelWorld.localClient.updateBlock((int)rx, (int)y, (int)rz, (short)block);
 		if (x >= Chunk.x || z >= Chunk.z)
 			return;
 		if (x < 0)
@@ -776,6 +808,10 @@ public class Chunk {
 	
 	public void setBlock(int x, int y, int z, int rx, int rz, int block) {
 		setBlockRaw(x, y, z, rx, rz, (block & 0xFFFF));
+	}
+	
+	public void setBlockServer(int x, int y, int z, int rx, int rz, int block) {
+		setBlockRawServer(x, y, z, rx, rz, (block & 0xFFFF));
 	}
 	
 	public void setBlockState(int x, int y, int z, int rx, int rz, byte state) {

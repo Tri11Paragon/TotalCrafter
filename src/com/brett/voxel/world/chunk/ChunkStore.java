@@ -1,7 +1,10 @@
 package com.brett.voxel.world.chunk;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.List;
+
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
@@ -25,7 +28,7 @@ import com.brett.world.cameras.Camera;
  * @date Feb. 19, 2020
  */
 
-public class ChunkStore {
+public class ChunkStore implements IChunkProvider {
 
 	public static int renderDistance = 12;
 	public static String worldLocation = "worlds/w1/";
@@ -39,7 +42,8 @@ public class ChunkStore {
 	private volatile MultiKeyMap<Integer, Region> chunks = new MultiKeyMap<Integer, Region>();
 	private volatile MultiKeyMap<Integer, NulChunk> ungenChunkData = new MultiKeyMap<Integer, NulChunk>();
 	private volatile MultiKeyMap<Integer, Region> chunksCopy = null;
-	private volatile MultiKeyMap<Integer, Integer> ungeneratedChunks = new MultiKeyMap<Integer, Integer>();
+	private volatile MultiKeyMap<Integer, Long> ungeneratedChunks = new MultiKeyMap<Integer, Long>();
+	private volatile List<int[]> unsentChunkRequests = new ArrayList<int[]>();
 	
 	protected Camera cam;
 	private Loader loader;
@@ -63,9 +67,9 @@ public class ChunkStore {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				while(VoxelScreenManager.isOpen) {
+				while(VoxelScreenManager.isOpen && !VoxelWorld.isRemote) {
 					long start = System.currentTimeMillis();
-					MapIterator<MultiKey<? extends Integer>, Integer> it = ungeneratedChunks.mapIterator();
+					MapIterator<MultiKey<? extends Integer>, Long> it = ungeneratedChunks.mapIterator();
 					try {
 						while (it.hasNext()) {
 							MultiKey<? extends Integer> mk = it.next();
@@ -93,7 +97,7 @@ public class ChunkStore {
 						Thread.sleep(20*1000);
 					} catch (InterruptedException e) {}
 					
-					if (ungenChunkData.size() > 0) {
+					if (ungenChunkData.size() > 0 && !VoxelWorld.isRemote) {
 						MapIterator<MultiKey<? extends Integer>, NulChunk> itr = ungenChunkData.mapIterator();
 						while (itr.hasNext()) {
 							MultiKey<? extends Integer> keys = itr.next();
@@ -150,6 +154,8 @@ public class ChunkStore {
 	}
 
 	public Chunk generateChunk(int x, int z) {
+		if (VoxelWorld.isRemote)
+			return null;
 		int regionPosX = x / Region.x;
 		int regionPosZ = z / Region.z;
 		if (x < 0)
@@ -201,6 +207,8 @@ public class ChunkStore {
 	}
 
 	public void saveChunks() {
+		if (VoxelWorld.isRemote)
+			return;
 		System.out.println("Saving World");
 		MapIterator<MultiKey<? extends Integer>, Region> regionIt = chunks.mapIterator();
 		while (regionIt.hasNext()) {
@@ -214,6 +222,8 @@ public class ChunkStore {
 		System.out.println("World Saved");
 	}
 	
+	Matrix4f view = new Matrix4f();
+	long last = 0;
 	public void renderChunks(VoxelShader shader, Matrix4f project) {
 		if (chunksCopy != null) {
 			MapIterator<MultiKey<? extends Integer>, Region> rg = chunksCopy.mapIterator();
@@ -231,8 +241,18 @@ public class ChunkStore {
 			System.out.println("Chunking size: " + chunks.size());
 			chunksCopy = null;
 		}
-		Matrix4f view = new Matrix4f();
-		Matrix4f.mul(project, Maths.createViewMatrix(cam), view);
+		if (VoxelWorld.isRemote && unsentChunkRequests.size() > 0) {
+			long current = System.currentTimeMillis();
+			if (current - last > 35) {
+				int[] cc = unsentChunkRequests.get(0);
+				VoxelWorld.localClient.sendChunkRequest(cc[0], cc[1]);
+				unsentChunkRequests.remove(0);
+				last = current;
+			}
+		}
+		view.setIdentity();
+		Matrix4f.mul(project, Maths.createViewMatrixROT(cam), view);
+		//shader.loadViewMatrix(Maths.createViewMatrixROT(cam));
 		for (int i = -renderDistance; i <= renderDistance; i++) {
 			for (int k = -renderDistance; k <= renderDistance; k++) {
 				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
@@ -246,7 +266,7 @@ public class ChunkStore {
 					queChunk(cx, cz);
 					continue;
 				}
-				c.render(shader, view);
+				c.render(shader, view, i, k);
 			}
 		}
 		for (int i = -renderDistance; i <= renderDistance; i++) {
@@ -262,12 +282,14 @@ public class ChunkStore {
 					queChunk(cx, cz);
 					continue;
 				}
-				c.renderSpecial(shader, view);
+				c.renderSpecial(shader, view, i, k);
 			}
 		}
 	}
 	
 	public void updateChunks() {
+		if (VoxelWorld.isRemote)
+			return;
 		for (int i = -renderDistance; i <= renderDistance; i++) {
 			for (int k = -renderDistance; k <= renderDistance; k++) {
 				int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
@@ -300,12 +322,49 @@ public class ChunkStore {
 	}
 	
 	public void queChunk(int cx, int cz) {
+		if (VoxelWorld.isRemote) {
+			if (!ungeneratedChunks.containsKey(cx, cz)) {
+				ungeneratedChunks.put(cx, cz, System.currentTimeMillis());
+				unsentChunkRequests.add(new int[] {cx, cz});
+				//VoxelWorld.localClient.sendChunkRequest(cx, cz);
+			} else {
+				if (getChunk(cx, cz) != null)
+					return;
+				if (System.currentTimeMillis() - ungeneratedChunks.get(cx, cz) > 5000) {
+					//VoxelWorld.localClient.sendChunkRequest(cx, cz);
+				}
+			}
+			return;
+		}
 		try {
 			if (!ungeneratedChunks.containsKey(cx, cz))
-				ungeneratedChunks.put(cx, cz, 0);
+				ungeneratedChunks.put(cx, cz, 0l);
 		} catch (ConcurrentModificationException e) {
 			queChunk(cx, cz);
 		}
+	}
+	
+	public void insertChunk(Chunk c) {
+		int x = c.getX();
+		int z = c.getZ();
+		
+		if (ungeneratedChunks.containsKey(x, z))
+			ungeneratedChunks.removeMultiKey(x, z);
+		
+		int regionPosX = x / Region.x;
+		int regionPosZ = z / Region.z;
+		if (x < 0)
+			regionPosX -= 1;
+		if (z < 0)
+			regionPosZ -= 1;
+		if (chunks.containsKey(regionPosX, regionPosZ)) {
+			Region r = chunks.get(regionPosX, regionPosZ);
+			if (r != null) 
+				r.setChunk(x, z, c);
+			return;
+		}
+		chunks.put(regionPosX, regionPosZ, new Region(regionPosX, regionPosZ));
+		chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
 	}
 
 	public void cleanup() {
@@ -423,11 +482,52 @@ public class ChunkStore {
 		return Block.blocks.get(c.getBlock((int)x, (int)y, (int)z)).getCollisiontype();
 	}
 	
+	public void setBlockServer(float x, float y, float z, short block) {
+		if (y < 0)
+			return;
+		if (y > Chunk.y)
+			return;
+		int xoff = 0,zoff = 0;
+		if (x < 0)
+			xoff = -1;
+		if (z < 0)
+			zoff = -1;
+		int cxpos = ((int)(x/(float)Chunk.x) + xoff), czpos = ((int)(z/(float)Chunk.z) + zoff);
+		Chunk c = getChunk(cxpos, czpos);
+		if (c == null) {
+			NulChunk nc = ungenChunkData.get(cxpos, czpos);
+			if (nc == null)
+				nc = new NulChunk(world);
+			int rx = (int)x;
+			int rz = (int)z;
+			x%=Chunk.x;
+			z%=Chunk.z;
+			if (x < 0)
+				x = biasNegative(x, -Chunk.x);
+			if (z < 0)
+				z = biasNegative(z, -Chunk.z);
+			nc.setBlock((int)x,(int)y, (int)z, rx, rz, block);
+			return;
+		}
+		int rx = (int)x;
+		int rz = (int)z;
+		x%=Chunk.x;
+		z%=Chunk.z;
+		if (x < 0)
+			x = biasNegative(x, -Chunk.x);
+		if (z < 0)
+			z = biasNegative(z, -Chunk.z);
+		c.setBlockServer((int)x,(int)y, (int)z, rx, rz, block);
+		c.remesh();
+	}
+	
 	public void setBlock(float x, float y, float z, short block) {
 		if (y < 0)
 			return;
 		if (y > Chunk.y)
 			return;
+		//if (VoxelWorld.isRemote)
+		//	VoxelWorld.localClient.updateBlock((int)x, (int)y, (int)z, block);
 		int xoff = 0,zoff = 0;
 		if (x < 0)
 			xoff = -1;

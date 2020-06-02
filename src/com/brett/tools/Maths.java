@@ -174,6 +174,24 @@ public class Maths {
 		return viewMatrix;
 	}
 	
+	private static float x=0,z = 0;
+	public static Matrix4f createViewMatrixROT(ICamera camera) {
+		viewMatrix.setIdentity();
+		Matrix4f.rotate((float) Math.toRadians(camera.getPitch()), new Vector3f(1, 0, 0), viewMatrix, viewMatrix);
+		Matrix4f.rotate((float) Math.toRadians(camera.getYaw()), new Vector3f(0, 1, 0), viewMatrix, viewMatrix);
+		Vector3f cameraPos = camera.getPosition();
+		x = cameraPos.x;
+		z = cameraPos.z;
+		cameraPos.x %= 16d;
+		cameraPos.z %= 16d;
+		cameraPos.negate();
+		Matrix4f.translate(cameraPos, viewMatrix, viewMatrix);
+		cameraPos.negate();
+		cameraPos.x = x;
+		cameraPos.z = z;
+		return viewMatrix;
+	}
+	
 	public static Matrix4f createViewMatrixOTHER(ICamera camera) {
 		return createViewMatrix(camera);
 	}

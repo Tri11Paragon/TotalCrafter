@@ -32,6 +32,10 @@ public class LevelLoader {
 		
 		try {
 			seed = is.readLong();
+			if (ply == null || VoxelWorld.isRemote) {
+				is.close();
+				return;
+			}
 			ply.setPosition(new Vector3f(is.readFloat(), is.readFloat(), is.readFloat()));
 			ply.setPitch(is.readFloat());
 			ply.setYaw(is.readFloat());

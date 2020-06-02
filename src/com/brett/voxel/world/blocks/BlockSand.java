@@ -1,7 +1,7 @@
 package com.brett.voxel.world.blocks;
 
 import com.brett.renderer.datatypes.ModelTexture;
-import com.brett.voxel.world.VoxelWorld;
+import com.brett.voxel.world.IWorldProvider;
 
 /**
 *
@@ -19,7 +19,7 @@ public class BlockSand extends Block {
 	}
 	
 	@Override
-	public void onBlockUpdated(int x, int y, int z, VoxelWorld world) {
+	public void onBlockUpdated(int x, int y, int z, IWorldProvider world) {
 		super.onBlockUpdated(x, y, z, world);
 		// there is some kind of issue with this
 		// only happens in - chunks

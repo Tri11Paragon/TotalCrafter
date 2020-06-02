@@ -219,7 +219,7 @@ public class LightingEngine {
 	}
 	
 	private static void recalcualteChunks(int x, int z) {
-		ChunkStore cs = world.chunk;
+		ChunkStore cs = (ChunkStore) world.chunk;
 		int xoff = 0,zoff = 0;
 		if (x < 0)
 			xoff = -1;

@@ -26,6 +26,7 @@ import com.brett.renderer.gui.UITextBox;
 import com.brett.tools.EventQueue;
 import com.brett.tools.SettingsLoader;
 import com.brett.voxel.VoxelScreenManager;
+import com.brett.voxel.networking.Client;
 import com.brett.voxel.renderer.VoxelRenderer;
 import com.brett.voxel.world.LevelLoader;
 import com.brett.voxel.world.VoxelWorld;
@@ -51,6 +52,7 @@ public class MainMenu implements DisplaySource {
 	private UIMaster master;
 	private Loader loader;
 	private String seedData = "";
+	private String ip = "";
 	
 	public MainMenu(UIMaster master, MasterRenderer renderer, Camera camera, VoxelWorld world, Loader loader) {
 		MainMenu.menu = this;
@@ -64,19 +66,25 @@ public class MainMenu implements DisplaySource {
 	
 	public void init() {
 		int localWidth = Display.getWidth()/2;
-		elements.add(master.createUITexture(loader.loadSpecialTexture("dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+		elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
 		elements.add(master.createUITexture(loader.loadSpecialTexture("gui/banner"), -1, -1, localWidth-640/2, 100, 640, 360/2));
 		UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new SinglePlayer(), master, localWidth-200, 320, 400, 60);
 		GUIText t = master.createDynamicText("Single Player", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 335, 400, true);
-		UIButton op = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), options, localWidth-200, 390, 400, 60);
-		GUIText opt = master.createDynamicText("Options", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 405, 400, true);
+		UIButton bm = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new MultiPlayer(), master, localWidth-200, 390, 400, 60);
+		GUIText tm = master.createDynamicText("Multi Player", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 405, 400, true);
+		UIButton op = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), options, localWidth-200, 460, 400, 60);
+		GUIText opt = master.createDynamicText("Options", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 475, 400, true);
 		TextMaster.loadText(t);
 		TextMaster.loadText(opt);
+		TextMaster.loadText(tm);
 		texts.add(t);
+		texts.add(tm);
 		texts.add(opt);
 		elements.add(b);
+		elements.add(bm);
 		elements.add(op);
 		buttons.add(b);
+		buttons.add(bm);
 		buttons.add(op);
 	}
 
@@ -86,6 +94,71 @@ public class MainMenu implements DisplaySource {
 		renderer.render(elements);
 		for (int i = 0; i < buttons.size(); i++)
 			buttons.get(i).update();
+	}
+	
+	public class MultiPlayer implements UIControl {
+
+		@Override
+		public void event(String data) {
+			int width = Display.getWidth()/2;
+			int height = Display.getHeight();
+			for (GUIText t : texts)
+				TextMaster.removeText(t);
+			elements.clear();
+			buttons.clear();
+			texts.clear();
+			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+			GUIText tbt = master.createDynamicText("", 1.0f, VoxelScreenManager.monospaced, width-190, height/2-190, 400, false);
+			UITextBox tb = new UITextBox(loader.loadSpecialTexture("gui/slider"), new UIControl() {
+				@Override
+				public void event(String data) {
+					ip = data;
+					TextMaster.removeText(tbt);
+					tbt.setText(data);
+					TextMaster.loadText(tbt);
+				}
+			}, 35, width-200, height/2-200, 400, 60);
+			tb.inputTextBuffer = "";
+			TextMaster.loadText(tbt);
+			texts.add(tbt);
+			buttons.add(tb);
+			elements.add(tb);
+			
+			UIButton bg = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Connect(), master, width-200, height/2+200, 400, 60);
+			GUIText bbtg = master.createDynamicText("Connect", 1.5f, VoxelScreenManager.monospaced, width-200, height/2+200+15, 400, true);
+			TextMaster.loadText(bbtg);
+			texts.add(bbtg);
+			buttons.add(bg);
+			elements.add(bg);
+		}
+		
+	}
+	
+	public class Connect implements UIControl{
+		
+		
+		
+		@Override
+		public void event(String data) {
+			VoxelWorld.localClient = new Client(ip, "testplayer");
+			while (!VoxelWorld.localClient.connected) {
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			VoxelWorld.isRemote = true;
+			for (GUIText t : texts)
+				TextMaster.removeText(t);
+			elements.clear();
+			buttons.clear();
+			texts.clear();
+			VoxelScreenManager.world.init();
+			VoxelScreenManager.changeDisplaySource(vrenderer);
+			VoxelScreenManager.ui.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);
+			EventQueue.doEvent(0);
+		}
 	}
 	
 	public class SinglePlayer implements UIControl {
@@ -103,7 +176,7 @@ public class MainMenu implements DisplaySource {
 			elements.clear();
 			buttons.clear();
 			texts.clear();
-			elements.add(master.createUITexture(loader.loadSpecialTexture("dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
 			UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Main(), master, width-200, height-65, 400, 60);
 			GUIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, width-200, height-50, 400, true);
 			TextMaster.loadText(bbt);
@@ -212,7 +285,7 @@ public class MainMenu implements DisplaySource {
 			texts.clear();
 			int width = Display.getWidth()/2;
 			int height = Display.getHeight();
-			elements.add(master.createUITexture(loader.loadSpecialTexture("dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
 			UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Main(), master, width-200, height-65, 400, 60);
 			GUIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, width-200, height-50, 400, true);
 			TextMaster.loadText(bbt);
@@ -362,7 +435,7 @@ public class MainMenu implements DisplaySource {
 				int width = Display.getWidth()/2;
 				int height = Display.getHeight();
 				
-				elements.add(master.createUITexture(loader.loadSpecialTexture("dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+				elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
 				UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new SinglePlayer(), master, width-200, height-65, 400, 60);
 				GUIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, width-200, height-50, 400, true);
 				TextMaster.loadText(bbt);
@@ -418,7 +491,7 @@ public class MainMenu implements DisplaySource {
 		public void init() {
 			int localWidth = Display.getWidth()/2;
 			int height = Display.getHeight();
-			elements.add(master.createUITexture(loader.loadSpecialTexture("dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
 			UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Main(), master, localWidth-200, height-65, 400, 60);
 			GUIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, localWidth-200, height-50, 400, true);
 			TextMaster.loadText(bbt);

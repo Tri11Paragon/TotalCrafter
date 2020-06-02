@@ -10,6 +10,7 @@ import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.renderer.COLLISIONTYPE;
 import com.brett.voxel.renderer.RENDERMODE;
+import com.brett.voxel.world.IWorldProvider;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.lighting.LightingEngine;
 
@@ -92,23 +93,23 @@ public class Block {
 		rendermode = RENDERMODE.SOLID;
 	}
 	
-	public void onBlockPlaced(int x, int y, int z, VoxelWorld world) {
+	public void onBlockPlaced(int x, int y, int z, IWorldProvider world) {
 		//onBlockUpdated(x, y, z, world);
 		if (this.lightLevel > 0)
 			LightingEngine.addLightSource(x, y, z, this.lightLevel);
 	}
 	
-	public void onBlockBreaked(int x, int y, int z, VoxelWorld world) {
+	public void onBlockBreaked(int x, int y, int z, IWorldProvider world) {
 		//onBlockUpdated(x, y, z, world);
 		if(this.lightLevel > 0)
 			LightingEngine.removeLightSource(x, y, z, this.lightLevel);
 	}
 	
-	public void onBlockUpdated(int x, int y, int z, VoxelWorld world) {
+	public void onBlockUpdated(int x, int y, int z, IWorldProvider world) {
 		
 	}
 	
-	public void onBlockTick(int x, int y, int z, VoxelWorld world) {
+	public void onBlockTick(int x, int y, int z, IWorldProvider world) {
 		
 	}
 	

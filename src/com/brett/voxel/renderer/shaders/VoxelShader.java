@@ -26,8 +26,9 @@ public class VoxelShader extends ShaderProgram {
 	protected void getAllUniformLocations() {
 		location_transformationMatrix = super.getUniformLocation("transformationMatrix");
 	}
-	
+
 	public void loadTransformationMatrix(Matrix4f matrix){
 		super.loadMatrix(location_transformationMatrix, matrix);
 	}
+	
 }

@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.brett.IKeyState;
 import com.brett.voxel.nbt.NBTStorage;
-import com.brett.voxel.world.VoxelWorld;
+import com.brett.voxel.world.IWorldProvider;
 import com.brett.voxel.world.chunk.ChunkStore;
 
 /**
@@ -16,11 +16,11 @@ import com.brett.voxel.world.chunk.ChunkStore;
 public class TileEntity implements IKeyState {
 	
 	private int x,y,z;
-	protected VoxelWorld world;
+	protected IWorldProvider world;
 	private NBTStorage nbt;
 	private String location = "";
 	
-	public void spawnTileEntity(int x, int y, int z, VoxelWorld world) {
+	public void spawnTileEntity(int x, int y, int z, IWorldProvider world) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -85,7 +85,7 @@ public class TileEntity implements IKeyState {
 		return z;
 	}
 
-	public VoxelWorld getWorld() {
+	public IWorldProvider getWorld() {
 		return world;
 	}
 

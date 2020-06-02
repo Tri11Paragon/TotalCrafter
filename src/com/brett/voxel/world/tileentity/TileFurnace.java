@@ -8,7 +8,7 @@ import com.brett.voxel.inventory.Slot;
 import com.brett.voxel.inventory.container.Container;
 import com.brett.voxel.inventory.recipe.CraftingManager;
 import com.brett.voxel.world.GameRegistry;
-import com.brett.voxel.world.VoxelWorld;
+import com.brett.voxel.world.IWorldProvider;
 import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemStack;
 
@@ -25,7 +25,7 @@ public class TileFurnace extends Container {
 	private boolean spawned = false;
 	
 	@Override
-	public void spawnTileEntity(int x, int y, int z, VoxelWorld world) {
+	public void spawnTileEntity(int x, int y, int z, IWorldProvider world) {
 		super.spawnTileEntity(x, y, z, world);
 		float sizeX = 48*1;
 		float sizeY = 48*1;

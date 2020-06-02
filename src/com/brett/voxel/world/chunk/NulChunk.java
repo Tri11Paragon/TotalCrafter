@@ -1,6 +1,6 @@
 package com.brett.voxel.world.chunk;
 
-import com.brett.voxel.world.VoxelWorld;
+import com.brett.voxel.world.IWorldProvider;
 import com.brett.voxel.world.blocks.Block;
 
 /**
@@ -13,9 +13,9 @@ import com.brett.voxel.world.blocks.Block;
 public class NulChunk {
 	
 	private short[][][] blocks = new short[Chunk.x][Chunk.y][Chunk.z];
-	private VoxelWorld s;
+	private IWorldProvider s;
 	
-	public NulChunk(VoxelWorld world) {
+	public NulChunk(IWorldProvider world) {
 		this.s = world;
 	}
 	
@@ -51,8 +51,11 @@ public class NulChunk {
 			y = Chunk.y-1;
 		if (y < 0)
 			y = 0;
-		if (block != 0)
-			Block.blocks.get((short) block).onBlockPlaced(rx, y, rz, s);
+		if (block != 0) {
+			Block b = Block.blocks.get((short) block);
+			if (b != null)
+				b.onBlockPlaced(rx, y, rz, s);
+		}
 		blocks[x][y][z] = (short)block;
 	}
 	
