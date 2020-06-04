@@ -177,6 +177,7 @@ public class Server extends Thread {
 				int iddd = idbd.getInt();
 				PlayerSaver.disconnectedPlayer(clientMap.get(iddd));
 				clientMap.remove(iddd);
+				sendDataToAllClients(Arrays.copyOfRange(bt, 0, 10));
 				for (int i = 0; i < clients.size(); i++) {
 					if (clients.get(i).id == iddd) {
 						clients.remove(i);

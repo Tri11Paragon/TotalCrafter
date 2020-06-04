@@ -43,7 +43,7 @@ public class VEntityRenderer {
 		this.shader.stop();
 		this.camera = camera;
 		player = loader.loadToVAO(OBJLoader.loadOBJ("player"));
-		texture = loader.loadSpecialTexture("dirt");
+		texture = loader.loadSpecialTexture("player");
 	}
 	
 	public void render() {
