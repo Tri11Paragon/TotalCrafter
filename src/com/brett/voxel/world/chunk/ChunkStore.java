@@ -330,9 +330,11 @@ public class ChunkStore implements IChunkProvider {
 			} else {
 				if (getChunk(cx, cz) != null)
 					return;
+				try {
 				if (System.currentTimeMillis() - ungeneratedChunks.get(cx, cz) > 5000) {
 					//VoxelWorld.localClient.sendChunkRequest(cx, cz);
 				}
+				} catch (Exception e) {}
 			}
 			return;
 		}

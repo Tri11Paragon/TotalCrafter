@@ -1,6 +1,7 @@
 package com.brett.voxel.world.chunk;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -21,7 +22,7 @@ import com.brett.voxel.world.blocks.Block;
 /**
 *
 * @author brett
-*
+* Idk when I made this? likely close to when the semester started.
 */
 
 public class Chunk {
@@ -894,46 +895,12 @@ public class Chunk {
 	}
 	
 	public float[] addArrays(float[] array1, float[] array2) {
-		float[] rtv = new float[array1.length + array2.length];
 		
-		for (int i = 0; i<array1.length;i++) {
-			rtv[i] = array1[i];
-		}
+		float[] rtv = Arrays.copyOf(array1, array1.length + array2.length);
 		
-		for (int i = 0; i<array2.length; i++) {
-			rtv[i + array1.length] = array2[i];
-		}
+		System.arraycopy(array2, 0, rtv, array1.length, array2.length);
 		
 		return rtv;
-	}
-	
-	public int[] addArrays(int[] array1, int[] array2) {
-		int[] rtv = new int[array1.length + array2.length];
-		
-		for (int i = 0; i<array1.length;i++) {
-			rtv[i] = array1[i];
-		}
-		
-		for (int i = 0; i<array2.length; i++) {
-			rtv[i + array1.length] = array2[i];
-		}
-		
-		return rtv;
-	}
-	
-	public float[] expandArrays(float[] array, int count) {
-		float[] rtv = new float[array.length + count];
-		
-		for (int i = 0; i < array.length; i++) {
-			rtv[i]=array[i];
-		}
-		return rtv;
-	}
-	
-	public float[] editArrays(float[] array, float[] add, int start) {
-		for (int i = 0; i < add.length; i++)
-			array[start + i] = add[i];
-		return array;
 	}
 	
 	public void setBlocks(short[][][] blocks) {

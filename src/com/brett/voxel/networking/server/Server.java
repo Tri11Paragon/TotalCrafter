@@ -24,6 +24,7 @@ import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.networking.IReciveEvent;
 import com.brett.voxel.networking.PACKETS;
 import com.brett.voxel.world.chunk.Chunk;
+import com.tester.ServerTest;
 
 /**
 *
@@ -69,7 +70,7 @@ public class Server extends Thread {
 				ds.receive(recivePacket);
 			} catch (IOException e) {e.printStackTrace();}
 			handlePacket(recive, recivePacket);
-			Debug.print("Client: " + dataToString(recive));
+			//Debug.print("Client: " + dataToString(recive));
 			for (int i = 0; i < reciveEvent.size(); i++) {
 				reciveEvent.get(i).recieved(recive);
 			}
@@ -80,15 +81,54 @@ public class Server extends Thread {
 	
 	public void handlePacket(byte[] bt, DatagramPacket packet) {
 		byte[] idbuff = new byte[0];
+		byte[] buff = new byte[0];
 		ByteBuffer idb;
 		int id = 0;
 		switch (bt[0]) {
 			case PACKETS.LOGIN:
-				ConnectedClient cn = new ConnectedClient(packet.getAddress(), packet.getPort(), dataToString(bt).toString().substring(1),
+				buff = Arrays.copyOfRange(bt, 1, bt.length);
+				ByteBuffer bty = ByteBuffer.allocate(5);
+				bty.put(PACKETS.LOGIN);
+				bty.putInt(lastID);
+				for (int i = 0; i < clients.size(); i++) {
+					if (clients.isEmpty())
+						break;
+					clients.get(i).sendData(bty.array());
+				}
+				ConnectedClient cn = new ConnectedClient(packet.getAddress(), packet.getPort(), dataToString(buff).toString().trim(),
 						new Vector3f(0,0,0), lastID);
+				System.out.println("new client! " + dataToString(buff).toString().trim());
+				
 				clients.add(cn);
 				clientMap.put(lastID, cn);
-				cn.sendData(ByteBuffer.allocate(5).put(PACKETS.ID).putInt(lastID).array());
+				
+				StringBuilder bu = new StringBuilder();
+				Vector3f posd = PlayerSaver.loadPlayer(dataToString(buff).toString().trim());
+				bu.append(posd.x);
+				bu.append(";");
+				bu.append(posd.y);
+				bu.append(";");
+				bu.append(posd.z);
+				bu.append(";");
+				byte[] chars = bu.toString().getBytes();
+				idb = ByteBuffer.allocate(5 + chars.length*2);
+				idb.put(PACKETS.ID);
+				idb.putInt(lastID);
+				
+				for (int i = 0; i < chars.length; i++) {
+					idb.put(chars[i]);
+				}
+				
+				cn.sendData(idb.array());
+				
+				for (int i = 0; i < clients.size(); i++) {
+					if (clients.get(i).id == lastID)
+						continue;
+					ByteBuffer oldclients = ByteBuffer.allocate(5);
+					oldclients.put(PACKETS.LOGIN);
+					oldclients.putInt(clients.get(i).id);
+				}
+				
 				lastID++;
 				break;
 			case PACKETS.CHUNKREQ:
@@ -105,7 +145,7 @@ public class Server extends Thread {
 				sworld.queChunk(x, z, cll);
 				break;
 			case PACKETS.POSSYNC:
-				byte[] buff = Arrays.copyOfRange(bt, 5, bt.length);
+				buff = Arrays.copyOfRange(bt, 5, bt.length);
 				idbuff = Arrays.copyOfRange(bt, 1, 5);
 				idb = ByteBuffer.wrap(idbuff);
 				id = idb.getInt();
@@ -116,14 +156,26 @@ public class Server extends Thread {
 				String[] posa = pos.split(";");
 				try {
 					cl.plypos.x = Float.parseFloat(posa[0]);
+				}catch (Exception e) {}
+				try {
 					cl.plypos.y = Float.parseFloat(posa[1]);
+				}catch (Exception e) {}
+				try {
 					cl.plypos.z = Float.parseFloat(posa[2]);
 				}catch (Exception e) {}
+				for (int i = 0; i < clients.size(); i++) {
+					ConnectedClient crm = clients.get(i);
+					if (clients.get(i).id == id)
+						continue;
+					byte[] newbits = Arrays.copyOfRange(bt, 0, 3000);
+					crm.sendData(newbits);
+				}
 				break;
 			case PACKETS.DISCONNECT:
 				byte[] idbuffdd = Arrays.copyOfRange(bt, 1, 5);
 				ByteBuffer idbd = ByteBuffer.wrap(idbuffdd);
 				int iddd = idbd.getInt();
+				PlayerSaver.disconnectedPlayer(clientMap.get(iddd));
 				clientMap.remove(iddd);
 				for (int i = 0; i < clients.size(); i++) {
 					if (clients.get(i).id == iddd) {
@@ -153,9 +205,20 @@ public class Server extends Thread {
 						ccl.sendData(blmodbuff.array());
 					}
 				}
-				
+				break;
+			case PACKETS.EXIT:
+				sendDataToAllClients(new byte[] {PACKETS.EXIT, PACKETS.EXIT, PACKETS.EXIT});
+				ServerTest.line = "exit";
+				VoxelScreenManager.isOpen = false;
+				try {
+					ServerTest.sc.close();
+				} catch (IOException e) {e.printStackTrace();}
 				break;
 		}
+	}
+	
+	public void cleanup() {
+		
 	}
 	
 	public void sendDataToAllClients(byte[] buff) {

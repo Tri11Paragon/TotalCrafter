@@ -19,6 +19,7 @@ import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.IMenu;
 import com.brett.renderer.gui.UIElement;
 import com.brett.renderer.gui.UIMaster;
+import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.chunk.ChunkStore;
 import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemStack;
@@ -189,6 +190,8 @@ public class Inventory implements IMenu {
 	}
 	
 	public void saveInventory() {
+		if (VoxelWorld.isRemote)
+			return;
 		System.out.println("Saving " + NBTID + " Inventory");
 		DataOutputStream is = null;
 		try {
@@ -214,6 +217,8 @@ public class Inventory implements IMenu {
 	}
 	
 	public void loadInventory() {
+		if (VoxelWorld.isRemote)
+			return;
 		DataInputStream is = null;
 		try {
 			is = new DataInputStream(new BufferedInputStream(new FileInputStream(ChunkStore.worldLocation + NBTID + ".dat")));

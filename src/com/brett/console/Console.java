@@ -57,7 +57,7 @@ public class Console implements IKeyState {
 			if (isOpen) {
 				if(Keyboard.getEventKeyState()) {
 					char c = Keyboard.getEventCharacter();
-					if (c == SettingsLoader.KEY_CONSOLE)
+					if (c == 96)
 						return;
 					if (c == 8) {
 						if (inputTextBuffer.length() > 1)
@@ -73,7 +73,8 @@ public class Console implements IKeyState {
 					} else if (c < 32) {
 							
 					} else
-						inputTextBuffer += c;
+						if (c != SettingsLoader.KEY_CONSOLE)
+							inputTextBuffer += c;
 					texts.get(0).changeText(inputTextBuffer);
 				}
 			}

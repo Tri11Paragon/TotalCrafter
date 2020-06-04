@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -35,6 +36,8 @@ import com.brett.voxel.world.player.Player;
 
 public class Client extends Thread {
 	
+	public HashMap<Integer, Vector3f> clients = new HashMap<Integer, Vector3f>();
+	
 	public DatagramSocket ds;
 	// the receive packet.
 	public DatagramPacket rp;
@@ -45,7 +48,8 @@ public class Client extends Thread {
 	public boolean connected = false;
 	
 	
-	public Client(String ip, String username) {
+	public Client(String ip, String username, VoxelWorld world) {
+		this.world = world;
 		try {
 			try {
 				ds = new DatagramSocket();
@@ -111,12 +115,13 @@ public class Client extends Thread {
 		bu.append(pos.y);
 		bu.append(";");
 		bu.append(pos.z);
-		char[] chars = bu.toString().toCharArray();
+		bu.append(";");
+		byte[] chars = bu.toString().getBytes();
 		ByteBuffer buff = ByteBuffer.allocate(5 + chars.length*2);
 		buff.put(PACKETS.POSSYNC);
 		buff.putInt(id);
 		for (int i = 0; i < chars.length; i++) {
-			buff.putChar(chars[i]);
+			buff.put(chars[i]);
 		}
 		DatagramPacket sp = new DatagramPacket(buff.array(), buff.array().length, ipadd, Server.PORT);
 		try {
@@ -125,11 +130,30 @@ public class Client extends Thread {
 	}
 	
 	public void handlePacket(byte[] bt, DatagramPacket packet) {
+		byte[] idbuff = new byte[0];
+		byte[] buff = new byte[0];
+		ByteBuffer idb;
+		int id = 0;
 		switch (bt[0]) {
 			case PACKETS.ID:
 				ByteBuffer wrapped = ByteBuffer.wrap(new byte[] {bt[1], bt[2], bt[3], bt[4]});
 				this.id = wrapped.getInt();
 				connected = true;
+				
+				buff = Arrays.copyOfRange(bt, 5, bt.length);
+				
+				String posINIT = dataToString(buff).toString();
+				String[] posaINIT = posINIT.split(";");
+				try {
+					world.ply.getPosition().x = Float.parseFloat(posaINIT[0]);
+				}catch (Exception e) {}
+				try {
+					world.ply.getPosition().y = Float.parseFloat(posaINIT[1]);
+				}catch (Exception e) {}
+				try {
+					world.ply.getPosition().z = Float.parseFloat(posaINIT[2]);
+				}catch (Exception e) {}
+				
 				break;
 			case PACKETS.CHUNKREQ:
 				Chunk c = decodeChunk(bt);
@@ -144,8 +168,45 @@ public class Client extends Thread {
 				
 				world.chunk.setBlockServer(bx, by, bz, blk);
 				
+				break;
+			case PACKETS.LOGIN:
+				byte[] idbuffd = Arrays.copyOfRange(bt, 1, 5);
+				ByteBuffer idbb = ByteBuffer.wrap(idbuffd);
+				int idd = idbb.getInt();
+				clients.put(idd, new Vector3f());
+				break;
+			case PACKETS.DISCONNECT:
+				idbuff = Arrays.copyOfRange(bt, 1, 5);
+				idb = ByteBuffer.wrap(idbuff);
+				id = idb.getInt();
+				if (clients.containsKey(id))
+					clients.remove(id);
+				break;
+			case PACKETS.POSSYNC:
+				buff = Arrays.copyOfRange(bt, 5, bt.length);
+				idbuff = Arrays.copyOfRange(bt, 1, 5);
+				idb = ByteBuffer.wrap(idbuff);
+				id = idb.getInt();
+				Vector3f cl = clients.get(id);
+				if (cl == null) {
+					clients.put(id, new Vector3f());
+					cl = clients.get(id);
+					// something is very broken.
+					if (cl == null)
+						return;
+				}
+				String pos = dataToString(buff).toString();
+				String[] posa = pos.split(";");
+				try {
+					cl.x = Float.parseFloat(posa[0]);
+					cl.y = Float.parseFloat(posa[1]);
+					cl.z = Float.parseFloat(posa[2]);
+				}catch (Exception e) {}
+				break;
+			case PACKETS.EXIT:
 				
 				break;
+			
 		}
 	}
 	
@@ -163,6 +224,39 @@ public class Client extends Thread {
 		} catch (IOException e) {e.printStackTrace();}
 	}
 	
+	@Override
+	public void run() {
+		super.run();
+		while (VoxelScreenManager.isOpen) {
+			byte[] recive = new byte[65535]; 
+			while (VoxelScreenManager.isOpen) {
+				try {
+					rp = new DatagramPacket(recive, recive.length);
+					ds.receive(rp);
+					handlePacket(recive, rp);
+					//System.out.println("Server: " + Server.dataToString(recive));
+					for (int i = 0; i < reciveEvents.size(); i++) {
+						reciveEvents.get(i).recieved(recive);
+					}
+					recive = new byte[65535];
+				} catch (IOException e) {e.printStackTrace();}
+			}
+		}
+	}
+	
+    public static StringBuilder dataToString(byte[] a) 
+    { 
+        if (a == null) 
+            return null; 
+        StringBuilder ret = new StringBuilder(); 
+        for (int i = 0; i < a.length; i++) {
+        	if (a[i] == 0)
+        		break;
+            ret.append((char) a[i]); 
+        } 
+        return ret; 
+    } 
+    
 	public Chunk decodeChunk(byte[] bt) {
 		short[][][] blocks = new short[Chunk.x][Chunk.y][Chunk.z];
 		int xoff = 0;
@@ -223,26 +317,6 @@ public class Client extends Thread {
 		} catch (IOException e) {
 			Debug.print("error in compressor");
 			e.printStackTrace();
-		}
-	}
-	
-	@Override
-	public void run() {
-		super.run();
-		while (VoxelScreenManager.isOpen) {
-			byte[] recive = new byte[65535]; 
-			while (VoxelScreenManager.isOpen) {
-				try {
-					rp = new DatagramPacket(recive, recive.length);
-					ds.receive(rp);
-					handlePacket(recive, rp);
-					//System.out.println("Server: " + Server.dataToString(recive));
-					for (int i = 0; i < reciveEvents.size(); i++) {
-						reciveEvents.get(i).recieved(recive);
-					}
-					recive = new byte[65535];
-				} catch (IOException e) {e.printStackTrace();}
-			}
 		}
 	}
 	

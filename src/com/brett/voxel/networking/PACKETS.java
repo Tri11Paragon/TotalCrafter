@@ -14,6 +14,8 @@ public class PACKETS {
 	public static final byte BLOCKMOD = 0x4;
 	public static final byte POSSYNC = 0x5;
 	public static final byte DISCONNECT = 0x6;
-	public static final byte CHUNKMOD = 0x7F;
+	public static final byte CHUNKMOD = 0x7;
+	public static final byte EXIT = 0x8;
+	public static final byte CLIENTSYNC = 0x9;
 	
 }

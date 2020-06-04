@@ -13,6 +13,7 @@ import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.networking.Client;
 import com.brett.voxel.renderer.ScreenShot;
+import com.brett.voxel.renderer.VEntityRenderer;
 import com.brett.voxel.renderer.VOverlayRenderer;
 import com.brett.voxel.renderer.shaders.VoxelShader;
 import com.brett.voxel.tools.MouseBlockPicker;
@@ -41,6 +42,7 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 	private Loader loader;
 	private MouseBlockPicker picker;
 	private MasterRenderer renderer;
+	private VEntityRenderer vrend;
 	
 	private VOverlayRenderer voverlayrenderer;
 	
@@ -51,6 +53,7 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 		this.loader = loader;
 		this.renderer = renderer;
 		this.ply = ply;
+		vrend = new VEntityRenderer(this, renderer, ply, loader);
 	}
 	
 	public void init() {
@@ -76,6 +79,7 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 		MasterRenderer.enableCulling();
 		MasterRenderer.enableTransparentcy();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		vrend.render();
 		shader.start();
 			GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureAtlas);
 			chunk.renderChunks(shader, renderer.getProjectionMatrix());

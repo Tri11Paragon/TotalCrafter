@@ -13,6 +13,7 @@ import org.lwjgl.util.vector.Vector2f;
 import com.brett.DisplayManager;
 import com.brett.KeyMaster;
 import com.brett.console.Console;
+import com.brett.console.commands.CloseServerCommand;
 import com.brett.console.commands.GiveCommand;
 import com.brett.console.commands.TeleportCommand;
 import com.brett.renderer.DisplaySource;
@@ -228,6 +229,7 @@ public class VoxelScreenManager {
 		console.registerCommand("give", new GiveCommand(player.getInventory()));
 		
 		world = new VoxelWorld(renderer, loader, player);
+		console.registerCommand("exit", new CloseServerCommand());
 		
 		Mouse.setGrabbed(false);
 		
@@ -302,7 +304,8 @@ public class VoxelScreenManager {
 				deltaTime = 0;
 			}
 		}
-		VoxelWorld.localClient.disconnect();
+		if (VoxelWorld.isRemote)
+			VoxelWorld.localClient.disconnect();
 		isOpen = false;
 		Mouse.setGrabbed(false);
 		player.cleanup();

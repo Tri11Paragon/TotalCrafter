@@ -52,7 +52,8 @@ public class MainMenu implements DisplaySource {
 	private UIMaster master;
 	private Loader loader;
 	private String seedData = "";
-	private String ip = "";
+	public static String ip = "";
+	public static String username = "";
 	
 	public MainMenu(UIMaster master, MasterRenderer renderer, Camera camera, VoxelWorld world, Loader loader) {
 		MainMenu.menu = this;
@@ -108,7 +109,8 @@ public class MainMenu implements DisplaySource {
 			buttons.clear();
 			texts.clear();
 			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
-			GUIText tbt = master.createDynamicText("", 1.0f, VoxelScreenManager.monospaced, width-190, height/2-190, 400, false);
+			GUIText textIP = master.createDynamicText("Enter IP address below:", 1.0f, VoxelScreenManager.monospaced, width-190, height/2+65, 400, false);
+			GUIText tbt = master.createDynamicText("", 1.0f, VoxelScreenManager.monospaced, width-190, height/2+120, 400, false);
 			UITextBox tb = new UITextBox(loader.loadSpecialTexture("gui/slider"), new UIControl() {
 				@Override
 				public void event(String data) {
@@ -117,12 +119,34 @@ public class MainMenu implements DisplaySource {
 					tbt.setText(data);
 					TextMaster.loadText(tbt);
 				}
-			}, 35, width-200, height/2-200, 400, 60);
-			tb.inputTextBuffer = "";
+			}, 35, width-200, height/2+100, 400, 60);
+			tb.inputTextBuffer = ip;
+			tbt.setText(tb.inputTextBuffer);
+			GUIText textUsername = master.createDynamicText("Enter username below:", 1.0f, VoxelScreenManager.monospaced, width-190, height/2-135, 400, false);
+			GUIText tbtuser = master.createDynamicText("", 1.0f, VoxelScreenManager.monospaced, width-190, height/2-85, 400, false);
+			UITextBox tbuser = new UITextBox(loader.loadSpecialTexture("gui/slider"), new UIControl() {
+				@Override
+				public void event(String data) {
+					username = data;
+					TextMaster.removeText(tbtuser);
+					tbtuser.setText(data);
+					TextMaster.loadText(tbtuser);
+				}
+			}, 35, width-200, height/2-100, 400, 60);
+			tbuser.inputTextBuffer = username;
+			tbtuser.setText(username);
 			TextMaster.loadText(tbt);
+			TextMaster.loadText(textUsername);
+			TextMaster.loadText(tbtuser);
+			TextMaster.loadText(textIP);
 			texts.add(tbt);
+			texts.add(textIP);
+			texts.add(textUsername);
+			texts.add(tbtuser);
 			buttons.add(tb);
 			elements.add(tb);
+			buttons.add(tbuser);
+			elements.add(tbuser);
 			
 			UIButton bg = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Connect(), master, width-200, height/2+200, 400, 60);
 			GUIText bbtg = master.createDynamicText("Connect", 1.5f, VoxelScreenManager.monospaced, width-200, height/2+200+15, 400, true);
@@ -136,11 +160,15 @@ public class MainMenu implements DisplaySource {
 	
 	public class Connect implements UIControl{
 		
-		
-		
 		@Override
 		public void event(String data) {
-			VoxelWorld.localClient = new Client(ip, "testplayer");
+			if (username.trim().isEmpty() || username.replace(" ", "").contentEquals("")) {
+				int name = 0;
+				for (int i = 0; i < 32; i++)
+					name += new Random().nextInt(Short.MAX_VALUE);
+				username = "player" + name; 
+			}
+			VoxelWorld.localClient = new Client(ip, username, VoxelScreenManager.world);
 			while (!VoxelWorld.localClient.connected) {
 				try {
 					Thread.sleep(1);

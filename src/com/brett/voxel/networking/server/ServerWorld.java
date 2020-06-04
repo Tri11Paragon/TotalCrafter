@@ -1,8 +1,8 @@
 package com.brett.voxel.networking.server;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.collections4.MapIterator;
@@ -45,6 +45,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 	
 	private volatile MultiKeyMap<Integer, Region> chunks = new MultiKeyMap<Integer, Region>();
 	private volatile MultiKeyMap<Integer, NulChunk> ungenChunkData = new MultiKeyMap<Integer, NulChunk>();
+	@SuppressWarnings("unused")
 	private volatile MultiKeyMap<Integer, Region> chunksCopy = null;
 	private volatile MultiKeyMap<Integer, ConnectedClient> ungeneratedChunks = new MultiKeyMap<Integer, ConnectedClient>();
 	private volatile List<Tuple<Chunk, ConnectedClient>> unsentChunks = new ArrayList<Tuple<Chunk,ConnectedClient>>();
@@ -55,8 +56,12 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 		super.chunk = this;
 		this.gen = new WorldGenerator(this);
 		loader = new Loader();
+		new File(worldLocation).mkdirs();
+		new File(dimLocation).mkdirs();
+		new File(worldLocation + "tile").mkdirs();
+		new File(worldLocation + "ents").mkdirs();
+		new File(worldLocation + "players").mkdirs();
 		GameRegistry.init(loader);
-		//super(null, null, null);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -146,8 +151,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 	}
 	
 	public void saveChunks() {
-		if (VoxelWorld.isRemote)
-			return;
+		PlayerSaver.savePlayers(Server.server.clients);
 		System.out.println("Saving World");
 		MapIterator<MultiKey<? extends Integer>, Region> regionIt = chunks.mapIterator();
 		while (regionIt.hasNext()) {
@@ -557,6 +561,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 		return getChunk(x, z);
 	}
 
+	@SuppressWarnings("unused")
 	private void queSave(MultiKeyMap<Integer, Region> rgs) {
 		new Thread(new Runnable() {
 			@Override
