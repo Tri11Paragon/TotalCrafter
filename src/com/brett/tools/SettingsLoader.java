@@ -59,10 +59,14 @@ public class SettingsLoader {
 					KEY_CLEAR = (int) Float.parseFloat(name[1]);
 				if (name[0].equals("sensitivity"))
 					SENSITIVITY = Double.parseDouble(name[1]);
+				try {
 				if (name[0].equals("username"))
-					MainMenu.username = name[1];
-				if (name[0].equals("ip"))
-					MainMenu.ip = name[1];
+					MainMenu.username = name[1].trim();
+				} catch (Exception e) {}
+				try {
+					if (name[0].equals("ip"))
+						MainMenu.ip = name[1].trim();
+				} catch (Exception e) {}
 			}
 			reader.close();
 		} catch (FileNotFoundException e) {

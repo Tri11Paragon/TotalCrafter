@@ -75,18 +75,24 @@ public class MainMenu implements DisplaySource {
 		GUIText tm = master.createDynamicText("Multi Player", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 405, 400, true);
 		UIButton op = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), options, localWidth-200, 460, 400, 60);
 		GUIText opt = master.createDynamicText("Options", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 475, 400, true);
+		UIButton opc = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Credits(), localWidth-200,460 + 70, 400, 60);
+		GUIText optc = master.createDynamicText("Credits", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 475 + 70, 400, true);
 		TextMaster.loadText(t);
 		TextMaster.loadText(opt);
+		TextMaster.loadText(optc);
 		TextMaster.loadText(tm);
 		texts.add(t);
 		texts.add(tm);
 		texts.add(opt);
+		texts.add(optc);
 		elements.add(b);
 		elements.add(bm);
 		elements.add(op);
+		elements.add(opc);
 		buttons.add(b);
 		buttons.add(bm);
 		buttons.add(op);
+		buttons.add(opc);
 	}
 
 	@Override
@@ -95,6 +101,40 @@ public class MainMenu implements DisplaySource {
 		renderer.render(elements);
 		for (int i = 0; i < buttons.size(); i++)
 			buttons.get(i).update();
+	}
+
+	public class Credits implements UIControl{
+
+		@Override
+		public void event(String data) {
+			int width = Display.getWidth()/2;
+			int height = Display.getHeight();
+			for (GUIText t : texts)
+				TextMaster.removeText(t);
+			elements.clear();
+			buttons.clear();
+			texts.clear();
+			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+			UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Main(), master, width-200, height-65, 400, 60);
+			GUIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, width-200, height-50, 400, true);
+			TextMaster.loadText(bbt);
+			texts.add(bbt);
+			buttons.add(b);
+			elements.add(b);
+			
+			String text = "Main Programmer: Brett Terpstra \n"
+					+ "\n"
+					+ "\n"
+					+ "Entity Modeler: Joey Barclay \n"
+					+ "\n"
+					+ "\n"
+					+ "Textures: Brett / Minecraft";
+			
+			GUIText btextmax = master.createDynamicText(text, 1.5f, VoxelScreenManager.monospaced, 0, 150, width*2, true);
+			TextMaster.loadText(btextmax);
+			texts.add(btextmax);
+		}
+		
 	}
 	
 	public class MultiPlayer implements UIControl {
@@ -109,7 +149,14 @@ public class MainMenu implements DisplaySource {
 			buttons.clear();
 			texts.clear();
 			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
-			GUIText textIP = master.createDynamicText("Enter IP address below:", 1.0f, VoxelScreenManager.monospaced, width-190, height/2+65, 400, false);
+			UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Main(), master, width+200, height-65, 400, 60);
+			GUIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, width+200, height-50, 400, true);
+			TextMaster.loadText(bbt);
+			texts.add(bbt);
+			buttons.add(b);
+			elements.add(b);
+			
+			GUIText textIP = master.createDynamicText("Enter IP address below:", 1.0f, VoxelScreenManager.monospaced, width-205, height/2+65, 400, false);
 			GUIText tbt = master.createDynamicText("", 1.0f, VoxelScreenManager.monospaced, width-190, height/2+120, 400, false);
 			UITextBox tb = new UITextBox(loader.loadSpecialTexture("gui/slider"), new UIControl() {
 				@Override
@@ -122,7 +169,7 @@ public class MainMenu implements DisplaySource {
 			}, 35, width-200, height/2+100, 400, 60);
 			tb.inputTextBuffer = ip;
 			tbt.setText(tb.inputTextBuffer);
-			GUIText textUsername = master.createDynamicText("Enter username below:", 1.0f, VoxelScreenManager.monospaced, width-190, height/2-135, 400, false);
+			GUIText textUsername = master.createDynamicText("Enter username below:", 1.0f, VoxelScreenManager.monospaced, width-205, height/2-135, 400, false);
 			GUIText tbtuser = master.createDynamicText("", 1.0f, VoxelScreenManager.monospaced, width-190, height/2-85, 400, false);
 			UITextBox tbuser = new UITextBox(loader.loadSpecialTexture("gui/slider"), new UIControl() {
 				@Override

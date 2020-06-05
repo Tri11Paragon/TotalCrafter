@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.util.vector.Vector3f;
-
 import com.brett.renderer.datatypes.Tuple;
 
 /**
@@ -21,25 +19,30 @@ import com.brett.renderer.datatypes.Tuple;
 
 public class PlayerSaver {
 	
-	public static List<Tuple<String, Vector3f>> players = new ArrayList<Tuple<String,Vector3f>>();
+	public static List<Tuple<String, float[]>> players = new ArrayList<Tuple<String,float[]>>();
 	
 	private static boolean first = true;
-	public static Vector3f loadPlayer(String username) {
+	public static float[] loadPlayer(String username) {
 		if (!new File(ServerWorld.worldLocation + "/players/players.dat").exists())
-			return new Vector3f(0,100,0);
+			return new float[] {0, 100, 0, 0, 0, 0};
 		if (first) {
 			try {
 				BufferedReader wr = new BufferedReader(new FileReader(ServerWorld.worldLocation + "/players/players.dat"), 262144);
 				String line = "";
 				while ((line = wr.readLine()) != null) {
 					String[] data = line.split(";");
-					Vector3f pos = new Vector3f();
+					float[] pos = new float[6];
 					try {
-						pos.x = Float.parseFloat(data[1]);
-						pos.y = Float.parseFloat(data[2]);
-						pos.z = Float.parseFloat(data[3]);
+						pos[0] = Float.parseFloat(data[1]);
+						pos[1] = Float.parseFloat(data[2]);
+						pos[2] = Float.parseFloat(data[3]);
+						if (data.length > 4) {
+							pos[3] = Float.parseFloat(data[4]);
+							pos[4] = Float.parseFloat(data[5]);
+							pos[5] = Float.parseFloat(data[6]);
+						}
 					} catch (Exception e) {}
-					players.add(new Tuple<String, Vector3f>(data[0], pos));
+					players.add(new Tuple<String, float[]>(data[0], pos));
 				}
 				wr.close();
 			} catch (IOException e) {
@@ -52,7 +55,7 @@ public class PlayerSaver {
 				return players.get(i).getY();
 			}
 		}
-		return new Vector3f(0, 100, 0);
+		return new float[] {0, 100, 0, 0, 0, 0};
 	}
 	
 	public static void disconnectedPlayer(ConnectedClient cl) {
@@ -60,13 +63,13 @@ public class PlayerSaver {
 			boolean found = false;
 			for (int i = 0; i < players.size(); i++) {
 				if (players.get(i).getX().contentEquals(cl.username)) {
-					players.get(i).getY().set(cl.plypos);
+					players.get(i).setY(cl.plypos);
 					found = true;
 					break;
 				}
 			}
 			if (!found) {
-				players.add(new Tuple<String, Vector3f>(cl.username, cl.plypos));
+				players.add(new Tuple<String, float[]>(cl.username, cl.plypos));
 			}
 		} catch (Exception e) {}
 	}
@@ -81,7 +84,7 @@ public class PlayerSaver {
 				}
 			}
 			if (!found)
-				players.add(new Tuple<String, Vector3f>(clients.get(j).username, clients.get(j).plypos));
+				players.add(new Tuple<String, float[]>(clients.get(j).username, clients.get(j).plypos));
 		}
 		try {
 			// its stupid that this has to be called
@@ -90,8 +93,8 @@ public class PlayerSaver {
 			BufferedWriter wr = new BufferedWriter(new FileWriter(ServerWorld.worldLocation + "/players/players.dat"), 262144);
 			// write all the client positions and usernames to the data file
 			for (int i = 0; i < players.size(); i++) {
-				Vector3f cl = players.get(i).getY();
-				wr.write(players.get(i).getX() + ";" + cl.x + ";" +cl.y + ";" + cl.z);
+				float[] cl = players.get(i).getY();
+				wr.write(players.get(i).getX() + ";" + cl[0] + ";" +cl[1] + ";" + cl[2] + ";" + cl[3] + ";" + cl[4] + ";" + cl[5]);
 				wr.newLine();
 			}
 			wr.close();

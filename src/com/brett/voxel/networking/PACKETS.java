@@ -17,5 +17,6 @@ public class PACKETS {
 	public static final byte CHUNKMOD = 0x7;
 	public static final byte EXIT = 0x8;
 	public static final byte CLIENTSYNC = 0x9;
+	public static final byte INVENTORYREQ = 0xA;
 	
 }

@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.lwjgl.util.vector.Vector3f;
-
 import com.brett.renderer.MasterRenderer;
 import com.brett.tools.Debug;
 import com.brett.voxel.VoxelScreenManager;
@@ -96,19 +94,25 @@ public class Server extends Thread {
 					clients.get(i).sendData(bty.array());
 				}
 				ConnectedClient cn = new ConnectedClient(packet.getAddress(), packet.getPort(), dataToString(buff).toString().trim(),
-						new Vector3f(0,0,0), lastID);
+						new float[] {0, 100, 0, 0, 0, 0}, lastID);
 				System.out.println("new client! " + dataToString(buff).toString().trim());
 				
 				clients.add(cn);
 				clientMap.put(lastID, cn);
 				
 				StringBuilder bu = new StringBuilder();
-				Vector3f posd = PlayerSaver.loadPlayer(dataToString(buff).toString().trim());
-				bu.append(posd.x);
+				float[] posd = PlayerSaver.loadPlayer(dataToString(buff).toString().trim());
+				bu.append(posd[0]);
 				bu.append(";");
-				bu.append(posd.y);
+				bu.append(posd[1]);
 				bu.append(";");
-				bu.append(posd.z);
+				bu.append(posd[2]);
+				bu.append(";");
+				bu.append(posd[3]);
+				bu.append(";");
+				bu.append(posd[4]);
+				bu.append(";");
+				bu.append(posd[5]);
 				bu.append(";");
 				byte[] chars = bu.toString().getBytes();
 				idb = ByteBuffer.allocate(5 + chars.length*2);
@@ -155,13 +159,22 @@ public class Server extends Thread {
 				String pos = dataToString(buff).toString();
 				String[] posa = pos.split(";");
 				try {
-					cl.plypos.x = Float.parseFloat(posa[0]);
+					cl.plypos[0] = Float.parseFloat(posa[0]);
 				}catch (Exception e) {}
 				try {
-					cl.plypos.y = Float.parseFloat(posa[1]);
+					cl.plypos[1] = Float.parseFloat(posa[1]);
 				}catch (Exception e) {}
 				try {
-					cl.plypos.z = Float.parseFloat(posa[2]);
+					cl.plypos[2] = Float.parseFloat(posa[2]);
+				}catch (Exception e) {}
+				try {
+					cl.plypos[3] = Float.parseFloat(posa[3]);
+				}catch (Exception e) {}
+				try {
+					cl.plypos[4] = Float.parseFloat(posa[4]);
+				}catch (Exception e) {}
+				try {
+					cl.plypos[5] = Float.parseFloat(posa[5]);
 				}catch (Exception e) {}
 				for (int i = 0; i < clients.size(); i++) {
 					ConnectedClient crm = clients.get(i);
@@ -292,8 +305,7 @@ public class Server extends Thread {
 		return c;
 	}
 	
-    public static StringBuilder dataToString(byte[] a) 
-    { 
+    public static StringBuilder dataToString(byte[] a) { 
         if (a == null) 
             return null; 
         StringBuilder ret = new StringBuilder(); 

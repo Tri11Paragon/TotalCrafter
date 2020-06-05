@@ -6,8 +6,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
-import org.lwjgl.util.vector.Vector3f;
-
 /**
 *
 * @author brett
@@ -20,10 +18,10 @@ public class ConnectedClient {
 	public int port;
 	public InetAddress ipadd = null;
 	public DatagramSocket ds;
-	public Vector3f plypos;
+	public float[] plypos;
 	public int id;
 	
-	public ConnectedClient(InetAddress ip, int port, String username, Vector3f plypos, int id) {
+	public ConnectedClient(InetAddress ip, int port, String username, float[] plypos, int id) {
 		this.port = port;
 		this.username = username;
 		this.ipadd = ip;

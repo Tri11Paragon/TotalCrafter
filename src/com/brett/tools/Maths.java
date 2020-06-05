@@ -38,6 +38,61 @@ public class Maths {
 		return mtx;
 	}
 	
+	public static Matrix4f createTransformationMatrix(Vector3f translation, Vector3f rotation) {
+		mtx.setIdentity();
+		Matrix4f.translate(translation, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(rotation.x), Maths.rx, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(rotation.y), Maths.ry, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(rotation.z), Maths.rz, mtx, mtx);
+		return mtx;
+	}
+	
+	public static Matrix4f createTransformationMatrix(Vector3f translation, float[] rotation) {
+		mtx.setIdentity();
+		Matrix4f.translate(translation, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(rotation[0]), Maths.rx, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(rotation[1]), Maths.ry, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(rotation[2]), Maths.rz, mtx, mtx);
+		return mtx;
+	}
+	
+	static Vector3f trans = new Vector3f();
+	public static Matrix4f createTransformationMatrix(float[] translation, float[] rotation) {
+		mtx.setIdentity();
+		trans.x = translation[0];
+		trans.y = translation[1];
+		trans.z = translation[2];
+		Matrix4f.translate(trans, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(rotation[0]), Maths.rx, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(rotation[1]), Maths.ry, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(rotation[2]), Maths.rz, mtx, mtx);
+		return mtx;
+	}
+	
+	public static Matrix4f createTransformationMatrix(float[] translationandrotation) {
+		mtx.setIdentity();
+		trans.x = translationandrotation[0];
+		trans.y = translationandrotation[1];
+		trans.z = translationandrotation[2];
+		Matrix4f.translate(trans, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(translationandrotation[3]), Maths.rx, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(translationandrotation[4]), Maths.ry, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(translationandrotation[5]), Maths.rz, mtx, mtx);
+		return mtx;
+	}
+	
+	public static Matrix4f createTransformationMatrixYAW(float[] translationandrotation) {
+		mtx.setIdentity();
+		trans.x = translationandrotation[0];
+		trans.y = translationandrotation[1];
+		trans.z = translationandrotation[2];
+		Matrix4f.translate(trans, mtx, mtx);
+		//Matrix4f.rotate((float) Math.toRadians(translationandrotation[3]), Maths.rx, mtx, mtx);
+		Matrix4f.rotate((float) Math.toRadians(-translationandrotation[4]), Maths.ry, mtx, mtx);
+		//Matrix4f.rotate((float) Math.toRadians(translationandrotation[5]), Maths.rz, mtx, mtx);
+		return mtx;
+	}
+	
 	static Matrix4f mrx = new Matrix4f();
 	public static Matrix4f createTransformationMatrix(Vector3f translation, float scale) {
 		mrx.setIdentity();
@@ -206,6 +261,29 @@ public class Maths {
 		float z = point1.z + alpha * (point2.z - point1.z);
 	    return new Vector3f(x, y, z);
 	}
+	
+	public static void lerpN(Vector3f point1, Vector3f point2, float alpha){
+		point1.x = point1.x + (alpha * (point2.x - point1.x));
+		point1.y = point1.y + (alpha * (point2.y - point1.y));
+		point1.z = point1.z + (alpha * (point2.z - point1.z));
+	}
+	
+	public static void lerpVA3(float[] point1, float[] point2, float alpha){
+		point1[0] = point1[0] + (alpha * (point2[0] - point1[0]));
+		point1[1] = point1[1] + (alpha * (point2[1] - point1[1]));
+		point1[2] = point1[2] + (alpha * (point2[2] - point1[2]));
+	}
+	
+	public static void lerpVA6(float[] point1, float[] point2, float alpha){
+		point1[0] = point1[0] + (alpha * (point2[0] - point1[0]));
+		point1[1] = point1[1] + (alpha * (point2[1] - point1[1]));
+		point1[2] = point1[2] + (alpha * (point2[2] - point1[2]));
+		
+		point1[3] = point1[3] + (alpha * (point2[3] - point1[3]));
+		point1[4] = point1[4] + (alpha * (point2[4] - point1[4]));
+		point1[5] = point1[5] + (alpha * (point2[5] - point1[5]));
+	}
+	
 	public static Vector3f lerpA(Vector3f point1, Vector3f point2, float alpha){
 		float x = point1.x + alpha * (point2.x - point1.x);
 		float y = point1.y + alpha * (point2.y - point1.y);

@@ -21,6 +21,7 @@ import java.util.zip.GZIPOutputStream;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.renderer.MasterRenderer;
+import com.brett.renderer.datatypes.Tuple;
 import com.brett.tools.Debug;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.networking.server.Server;
@@ -36,7 +37,7 @@ import com.brett.voxel.world.player.Player;
 
 public class Client extends Thread {
 	
-	public HashMap<Integer, Vector3f> clients = new HashMap<Integer, Vector3f>();
+	public HashMap<Integer, Tuple<float[], float[]>> clients = new HashMap<Integer, Tuple<float[], float[]>>();
 	
 	public DatagramSocket ds;
 	// the receive packet.
@@ -116,6 +117,12 @@ public class Client extends Thread {
 		bu.append(";");
 		bu.append(pos.z);
 		bu.append(";");
+		bu.append(ply.getPitch());
+		bu.append(";");
+		bu.append(ply.getYaw());
+		bu.append(";");
+		bu.append(ply.getRoll());
+		bu.append(";");
 		byte[] chars = bu.toString().getBytes();
 		ByteBuffer buff = ByteBuffer.allocate(5 + chars.length*2);
 		buff.put(PACKETS.POSSYNC);
@@ -154,6 +161,18 @@ public class Client extends Thread {
 					world.ply.getPosition().z = Float.parseFloat(posaINIT[2]);
 				}catch (Exception e) {}
 				
+				if (posaINIT.length > 3) {
+					try {
+						world.ply.setPitch(Float.parseFloat(posaINIT[3]));
+					}catch (Exception e) {}
+					try {
+						world.ply.setYaw(Float.parseFloat(posaINIT[4]));
+					}catch (Exception e) {}
+					try {
+						world.ply.setRoll(Float.parseFloat(posaINIT[5]));
+					}catch (Exception e) {}
+				}
+				
 				break;
 			case PACKETS.CHUNKREQ:
 				Chunk c = decodeChunk(bt);
@@ -173,7 +192,7 @@ public class Client extends Thread {
 				byte[] idbuffd = Arrays.copyOfRange(bt, 1, 5);
 				ByteBuffer idbb = ByteBuffer.wrap(idbuffd);
 				int idd = idbb.getInt();
-				clients.put(idd, new Vector3f());
+				clients.put(idd, new Tuple<float[], float[]>(new float[6], new float[6]));
 				break;
 			case PACKETS.DISCONNECT:
 				idbuff = Arrays.copyOfRange(bt, 1, 5);
@@ -187,20 +206,27 @@ public class Client extends Thread {
 				idbuff = Arrays.copyOfRange(bt, 1, 5);
 				idb = ByteBuffer.wrap(idbuff);
 				id = idb.getInt();
-				Vector3f cl = clients.get(id);
+				Tuple<float[], float[]> cl = clients.get(id);
 				if (cl == null) {
-					clients.put(id, new Vector3f());
+					clients.put(id, new Tuple<float[], float[]>(new float[6], new float[6]));
 					cl = clients.get(id);
 					// something is very broken.
-					if (cl == null)
+					if (cl == null) {
+						System.err.println("We got a big issue with a null user!");
 						return;
+					}
 				}
 				String pos = dataToString(buff).toString();
 				String[] posa = pos.split(";");
 				try {
-					cl.x = Float.parseFloat(posa[0]);
-					cl.y = Float.parseFloat(posa[1]);
-					cl.z = Float.parseFloat(posa[2]);
+					cl.getY()[0] = Float.parseFloat(posa[0]);
+					cl.getY()[1] = Float.parseFloat(posa[1]);
+					cl.getY()[2] = Float.parseFloat(posa[2]);
+					if (posa.length > 3) {
+						cl.getY()[3] = Float.parseFloat(posa[3]);
+						cl.getY()[4] = Float.parseFloat(posa[4]);
+						cl.getY()[5] = Float.parseFloat(posa[5]);
+					}
 				}catch (Exception e) {}
 				break;
 			case PACKETS.EXIT:
@@ -244,8 +270,7 @@ public class Client extends Thread {
 		}
 	}
 	
-    public static StringBuilder dataToString(byte[] a) 
-    { 
+    public static StringBuilder dataToString(byte[] a) { 
         if (a == null) 
             return null; 
         StringBuilder ret = new StringBuilder(); 

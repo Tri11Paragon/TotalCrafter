@@ -8,7 +8,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -19,6 +21,8 @@ import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.IMenu;
 import com.brett.renderer.gui.UIElement;
 import com.brett.renderer.gui.UIMaster;
+import com.brett.voxel.gui.MainMenu;
+import com.brett.voxel.networking.PACKETS;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.chunk.ChunkStore;
 import com.brett.voxel.world.items.Item;
@@ -43,6 +47,8 @@ public class Inventory implements IMenu {
 		for(int i = 0; i < 10; i++) {
 			b.append((int)Math.abs(r.nextInt(10)));
 		}
+		if (VoxelWorld.isRemote)
+			b.append(MainMenu.username);
 		NBTID = b.toString();
 	}
 	
@@ -239,6 +245,54 @@ public class Inventory implements IMenu {
 			is.close();
 		} catch (IOException e) {}
 	}
+	
+	public byte[] serialize() {
+		byte[] nbtstr = NBTID.getBytes();
+		ByteBuffer buff = ByteBuffer.allocate(6 + 4*slots.size() + 4 * slots.size() + nbtstr.length);
+		buff.put(PACKETS.INVENTORYREQ);
+		buff.putInt(slots.size());
+		for (int i = 0; i < slots.size(); i++) {
+			Slot s = slots.get(i);
+			if (s.getItemStack() == null) {
+				buff.putInt(-1);
+				buff.putInt(-1);
+			} else {
+				buff.putInt(s.getItemID());
+				buff.putInt(s.getItemsAmount());
+			}
+		}
+		buff.put(Byte.MIN_VALUE);
+		for (int i = 0; i < nbtstr.length; i++) {
+			buff.put(nbtstr[i]);
+		}
+		return buff.array();
+	}
+	
+	public void deserialize(byte[] bytes) {
+		ByteBuffer buff = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0, 6000));
+		buff.get();
+		int size = buff.getInt();
+		for (int i = 0; i < size; i++) {
+			int id = buff.getInt();
+			int amount = buff.getInt();
+			if (id > 0) {
+				ItemStack st = new ItemStack(Item.items.get((short)id), amount);
+				slots.get(i).setItemStack(st);
+			}
+		}
+	}
+	
+    public static StringBuilder dataToString(byte[] a) { 
+        if (a == null) 
+            return null; 
+        StringBuilder ret = new StringBuilder(); 
+        for (int i = 0; i < a.length; i++) {
+        	if (a[i] == 0)
+        		break;
+            ret.append((char) a[i]); 
+        } 
+        return ret; 
+    } 
 	
 	public boolean getEnabled() {
 		return enabled;

@@ -230,14 +230,15 @@ public class Player extends Camera {
 		//if (world.chunk.getBlock(position.x , position.y, position.z + ((float)zb)) == 0)
 			position.z += zb;
 		
+			
 		/**
 		 * Sends the server an update of the position of this player
 		 * if they have changed positions and if it has been greater then 50 milliseconds
 		 * since last update.
 		 */
 		if (VoxelWorld.isRemote) {
-			if (xb > 0 || yb > 0 || zb > 0) {
-				long current = System.currentTimeMillis();
+			long current = System.currentTimeMillis();
+			if (xb > 0 || yb > 0 || zb > 0 || current - last > 100) {
 				if (current - last > 50) {
 					VoxelWorld.localClient.updatePosition(this);
 					last = current;

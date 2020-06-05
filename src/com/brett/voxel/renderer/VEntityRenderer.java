@@ -8,11 +8,10 @@ import java.util.Map.Entry;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.util.vector.Vector3f;
-
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.Tuple;
 import com.brett.tools.Maths;
 import com.brett.tools.obj.OBJLoader;
 import com.brett.voxel.renderer.shaders.VEntityShader;
@@ -42,10 +41,11 @@ public class VEntityRenderer {
 		this.shader.loadProjectionMatrix(renderer.getProjectionMatrix());
 		this.shader.stop();
 		this.camera = camera;
-		player = loader.loadToVAO(OBJLoader.loadOBJ("player"));
-		texture = loader.loadSpecialTexture("player");
+		player = loader.loadToVAO(OBJLoader.loadOBJ("player2"));
+		texture = loader.loadSpecialTexture("playerimage");
 	}
 	
+	private long last = 0;
 	public void render() {
 		shader.start();
 		shader.loadViewMatrix(camera);
@@ -71,13 +71,25 @@ public class VEntityRenderer {
 		GL20.glEnableVertexAttribArray(1);
 		GL20.glEnableVertexAttribArray(2);
 		
-		Iterator<Entry<Integer, Vector3f>> plyIt = VoxelWorld.localClient.clients.entrySet().iterator();
+		Iterator<Entry<Integer, Tuple<float[], float[]>>> plyIt = VoxelWorld.localClient.clients.entrySet().iterator();
 		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
+		
+		long current = System.currentTimeMillis();
+		long timeSinceLast = current - last;
+		
 		while (plyIt.hasNext()) {
-			shader.loadTranslationMatrix(Maths.createTransformationMatrix(plyIt.next().getValue()));
+			Tuple<float[], float[]> vecs = plyIt.next().getValue();
+			if (timeSinceLast <= 12) {
+				Maths.lerpVA3(vecs.getX(), vecs.getY(), timeSinceLast/12);
+			} else {
+				vecs.setX(vecs.getY());
+			}
+			shader.loadTranslationMatrix(Maths.createTransformationMatrixYAW(vecs.getX()));
 			GL11.glDrawElements(0x4, player.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 		}
+		
+		last = System.currentTimeMillis();
 		
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
