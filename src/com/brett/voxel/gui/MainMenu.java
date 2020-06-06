@@ -209,6 +209,7 @@ public class MainMenu implements DisplaySource {
 		
 		@Override
 		public void event(String data) {
+			VoxelWorld.isRemote = true;
 			if (username.trim().isEmpty() || username.replace(" ", "").contentEquals("")) {
 				int name = 0;
 				for (int i = 0; i < 32; i++)
@@ -223,7 +224,6 @@ public class MainMenu implements DisplaySource {
 					e.printStackTrace();
 				}
 			}
-			VoxelWorld.isRemote = true;
 			for (GUIText t : texts)
 				TextMaster.removeText(t);
 			elements.clear();

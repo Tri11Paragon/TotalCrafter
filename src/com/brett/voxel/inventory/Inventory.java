@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -23,6 +24,8 @@ import com.brett.renderer.gui.UIElement;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.voxel.gui.MainMenu;
 import com.brett.voxel.networking.PACKETS;
+import com.brett.voxel.networking.server.Server;
+import com.brett.voxel.networking.server.ServerWorld;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.chunk.ChunkStore;
 import com.brett.voxel.world.items.Item;
@@ -39,7 +42,7 @@ public class Inventory implements IMenu {
 	private List<Slot> slots = new ArrayList<Slot>();
 	private List<UIElement> slotAsElements = new ArrayList<UIElement>();
 	private boolean enabled = false;
-	private final String NBTID;
+	public final String NBTID;
 	
 	public Inventory(int seed) {
 		StringBuilder b = new StringBuilder();
@@ -47,13 +50,22 @@ public class Inventory implements IMenu {
 		for(int i = 0; i < 10; i++) {
 			b.append((int)Math.abs(r.nextInt(10)));
 		}
-		if (VoxelWorld.isRemote)
+		if (VoxelWorld.isRemote) {
 			b.append(MainMenu.username);
-		NBTID = b.toString();
+			NBTID = b.toString();
+			VoxelWorld.localClient.inventories.add(this);
+			VoxelWorld.localClient.requestInventory(NBTID);
+		} else
+			NBTID = b.toString();
 	}
 	
 	public Inventory(String NBTID) {
-		this.NBTID = NBTID;
+		if (VoxelWorld.isRemote) {
+			this.NBTID = NBTID + MainMenu.username;
+			VoxelWorld.localClient.inventories.add(this);
+			VoxelWorld.localClient.requestInventory(NBTID);
+		} else
+			this.NBTID = NBTID;
 	}
 	
 	public Inventory(int seed, String NBTID) {
@@ -63,7 +75,13 @@ public class Inventory implements IMenu {
 		for(int i = 0; i < 5; i++) {
 			b.append((int)Math.abs(r.nextInt(10)));
 		}
-		this.NBTID = b.toString();
+		if (VoxelWorld.isRemote) {
+			b.append(MainMenu.username);
+			this.NBTID = b.toString();
+			VoxelWorld.localClient.inventories.add(this);
+			VoxelWorld.localClient.requestInventory(NBTID);
+		} else
+			this.NBTID = b.toString();
 	}
 	
 	public void setBackground(GUITexture texture) {
@@ -86,6 +104,8 @@ public class Inventory implements IMenu {
 				s.updateText();
 				if (amount == 0) {
 					i = null;
+					if (VoxelWorld.localClient != null)
+						VoxelWorld.localClient.sendInventory(this);
 					return true;
 				}
 				continue;
@@ -95,6 +115,8 @@ public class Inventory implements IMenu {
 			if (s.getItemStack() == null) {
 				s.setItemStack(i);
 				s.updateText();
+				if (VoxelWorld.localClient != null)
+					VoxelWorld.localClient.sendInventory(this);
 				return true;
 			}
 		}
@@ -109,6 +131,8 @@ public class Inventory implements IMenu {
 				s.updateText();
 				if (amount == 0) {
 					i = null;
+					if (VoxelWorld.localClient != null)
+						VoxelWorld.localClient.sendInventory(this);
 					return true;
 				}
 				continue;
@@ -163,6 +187,8 @@ public class Inventory implements IMenu {
 	}
 	
 	public void toggleEnabled() {
+		if (VoxelWorld.localClient != null)
+			VoxelWorld.localClient.requestInventory(NBTID);
 		enabled = !enabled;
 		if (enabled) {
 			Mouse.setGrabbed(false);
@@ -180,6 +206,8 @@ public class Inventory implements IMenu {
 	}
 	
 	public void enable() {
+		if (VoxelWorld.localClient != null)
+			VoxelWorld.localClient.requestInventory(NBTID);
 		enabled = true;
 		for (Slot s : slots){
 			if (s.text != null)
@@ -188,6 +216,8 @@ public class Inventory implements IMenu {
 	}
 	
 	public void disable() {
+		if (VoxelWorld.localClient != null)
+			VoxelWorld.localClient.sendInventory(this);
 		enabled = false;
 		for (Slot s : slots) {
 			if (s.text != null)
@@ -196,12 +226,19 @@ public class Inventory implements IMenu {
 	}
 	
 	public void saveInventory() {
-		if (VoxelWorld.isRemote)
-			return;
 		System.out.println("Saving " + NBTID + " Inventory");
 		DataOutputStream is = null;
 		try {
-			is = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(ChunkStore.worldLocation + "/" + NBTID + ".dat")));
+			String world = ChunkStore.worldLocation;
+			if (Server.server != null)
+				world = ServerWorld.worldLocation;
+			if (VoxelWorld.isRemote) {
+				if (MainMenu.ip.trim().length() < 1)
+					MainMenu.ip = "localhost";
+				world = "worlds/servers/" + MainMenu.username + "/" + MainMenu.ip + "/";
+				new File(world).mkdirs();
+			}
+			is = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(world + NBTID + ".dat")));
 		} catch (FileNotFoundException e) {return;}
 		try {
 			
@@ -223,11 +260,18 @@ public class Inventory implements IMenu {
 	}
 	
 	public void loadInventory() {
-		if (VoxelWorld.isRemote)
-			return;
 		DataInputStream is = null;
 		try {
-			is = new DataInputStream(new BufferedInputStream(new FileInputStream(ChunkStore.worldLocation + NBTID + ".dat")));
+			String world = ChunkStore.worldLocation;
+			if (Server.server != null)
+				world = ServerWorld.worldLocation;
+			if (VoxelWorld.isRemote) {
+				if (MainMenu.ip.trim().length() < 1)
+					MainMenu.ip = "localhost";
+				world = "worlds/servers/" + MainMenu.username + "/" + MainMenu.ip + "/";
+				new File(world).mkdirs();
+			}
+			is = new DataInputStream(new BufferedInputStream(new FileInputStream(world + NBTID + ".dat")));
 		} catch (FileNotFoundException e) {return;}
 		try {
 			
@@ -248,8 +292,12 @@ public class Inventory implements IMenu {
 	
 	public byte[] serialize() {
 		byte[] nbtstr = NBTID.getBytes();
-		ByteBuffer buff = ByteBuffer.allocate(6 + 4*slots.size() + 4 * slots.size() + nbtstr.length);
-		buff.put(PACKETS.INVENTORYREQ);
+		ByteBuffer buff = ByteBuffer.allocate(6 + 4*slots.size() + 4 * slots.size() + nbtstr.length + 4);
+		buff.put(PACKETS.INVENTORYSEND);
+		if (VoxelWorld.localClient != null)
+			buff.putInt(VoxelWorld.localClient.id);
+		else
+			buff.putInt(0);
 		buff.putInt(slots.size());
 		for (int i = 0; i < slots.size(); i++) {
 			Slot s = slots.get(i);
@@ -271,7 +319,26 @@ public class Inventory implements IMenu {
 	public void deserialize(byte[] bytes) {
 		ByteBuffer buff = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0, 6000));
 		buff.get();
+		buff.getInt();
 		int size = buff.getInt();
+		for (int i = 0; i < size; i++) {
+			int id = buff.getInt();
+			int amount = buff.getInt();
+			if (id > 0) {
+				ItemStack st = new ItemStack(Item.items.get((short)id), amount);
+				slots.get(i).setItemStack(st);
+			}
+		}
+	}
+	
+	public void deserialize(byte[] bytes, boolean b) {
+		ByteBuffer buff = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0, 6000));
+		buff.get();
+		buff.getInt();
+		int size = buff.getInt();
+		for (int i = 0; i < size; i++) {
+			slots.add(new Slot(0,0,0,0));
+		}
 		for (int i = 0; i < size; i++) {
 			int id = buff.getInt();
 			int amount = buff.getInt();

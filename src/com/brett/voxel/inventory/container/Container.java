@@ -23,7 +23,8 @@ public class Container extends TileEntity implements IInventoryDisable {
 		super.spawnTileEntity(x, y, z, world);
 		i = new Inventory((int)LevelLoader.seed, "tile/inv_" + x + "_" + y + "_" + z + "_");
 		PlayerInventory.registerDisableState(this);
-		VoxelScreenManager.ui.addMenu(i);
+		if (VoxelScreenManager.ui != null)
+			VoxelScreenManager.ui.addMenu(i);
 	}
 	
 	public void openInventory() {
@@ -37,7 +38,8 @@ public class Container extends TileEntity implements IInventoryDisable {
 	@Override
 	public void destroy() {
 		PlayerInventory.removeDisableState(this);
-		VoxelScreenManager.ui.removeMenu(i);
+		if (VoxelScreenManager.ui != null)
+			VoxelScreenManager.ui.removeMenu(i);
 		super.destroy();
 	}
 	

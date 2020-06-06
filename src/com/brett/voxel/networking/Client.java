@@ -24,6 +24,7 @@ import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.Tuple;
 import com.brett.tools.Debug;
 import com.brett.voxel.VoxelScreenManager;
+import com.brett.voxel.inventory.Inventory;
 import com.brett.voxel.networking.server.Server;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.chunk.Chunk;
@@ -38,6 +39,7 @@ import com.brett.voxel.world.player.Player;
 public class Client extends Thread {
 	
 	public HashMap<Integer, Tuple<float[], float[]>> clients = new HashMap<Integer, Tuple<float[], float[]>>();
+	public List<Inventory> inventories = new ArrayList<Inventory>();
 	
 	public DatagramSocket ds;
 	// the receive packet.
@@ -232,8 +234,34 @@ public class Client extends Thread {
 			case PACKETS.EXIT:
 				
 				break;
-			
+			case PACKETS.INVENTORYSEND:
+				int p = 0;
+				for (int i = 0; i < bt.length; i++) {
+					if (bt[i] == Byte.MIN_VALUE)
+						p = i;
+				}
+				String inv = dataToString(Arrays.copyOfRange(bt, p+1, p + 3000)).toString().trim();
+				for (int i = 0; i < inventories.size(); i++) {
+					if (inventories.get(i).NBTID.contentEquals(inv)) {
+						inventories.get(i).deserialize(bt);
+					}
+				}
+				break;
 		}
+	}
+	
+	public void sendInventory(Inventory i) {
+		sendData(i.serialize());
+	}
+	
+	public void requestInventory(String NBTID) {
+		byte[] byt = NBTID.getBytes();
+		ByteBuffer buff = ByteBuffer.allocate(5 + byt.length);
+		buff.put(PACKETS.INVENTORYREQ);
+		buff.putInt(id);
+		for (int i = 0; i < byt.length; i++)
+			buff.put(byt[i]);
+		sendData(buff.array());
 	}
 	
 	public void updateBlock(int x, int y, int z, short blk) {

@@ -49,18 +49,6 @@ public class Player extends Camera {
 								new Vector3f(-size, lowestPoint/4, -size), new Vector3f(size, lowestPoint/4, size), 
 								new Vector3f(size, lowestPoint/4, -size), new Vector3f(-size, lowestPoint/4, size),
 								
-								/*new Vector3f(-0.25f, lowestPoint/2 + lowestPoint/4, -0.25f), new Vector3f(0.25f, lowestPoint/2 + lowestPoint/4, 0.25f), 
-								new Vector3f(0.25f, lowestPoint/2 + lowestPoint/4, -0.25f), new Vector3f(-0.25f, lowestPoint/2 + lowestPoint/4, 0.25f),
-								
-								new Vector3f(-0.25f, lowestPoint/2 - lowestPoint/4, -0.25f), new Vector3f(0.25f, lowestPoint/2 - lowestPoint/4, 0.25f), 
-								new Vector3f(0.25f, lowestPoint/2 - lowestPoint/4, -0.25f), new Vector3f(-0.25f, lowestPoint/2 - lowestPoint/4, 0.25f),
-								
-								new Vector3f(-0.25f, lowestPoint/2 + lowestPoint/8, -0.25f), new Vector3f(0.25f, lowestPoint/2 + lowestPoint/8, 0.25f), 
-								new Vector3f(0.25f, lowestPoint/2 + lowestPoint/8, -0.25f), new Vector3f(-0.25f, lowestPoint/2 + lowestPoint/8, 0.25f),
-								
-								new Vector3f(-0.25f, lowestPoint/2 - lowestPoint/8, -0.25f), new Vector3f(0.25f, lowestPoint/2 - lowestPoint/8, 0.25f), 
-								new Vector3f(0.25f, lowestPoint/2 - lowestPoint/8, -0.25f), new Vector3f(-0.25f, lowestPoint/2 - lowestPoint/8, 0.25f),*/
-								
 								new Vector3f(0, lowestPoint/2, 0), new Vector3f(0, lowestPoint/4, 0),
 								new Vector3f(0, lowestPoint/2 + lowestPoint/4, 0), new Vector3f(0, lowestPoint/2 + lowestPoint/8, 0),
 								

@@ -243,7 +243,7 @@ public class ChunkStore implements IChunkProvider {
 		}
 		if (VoxelWorld.isRemote && unsentChunkRequests.size() > 0) {
 			long current = System.currentTimeMillis();
-			if (current - last > 35) {
+			if (current - last > 20) {
 				int[] cc = unsentChunkRequests.get(0);
 				VoxelWorld.localClient.sendChunkRequest(cc[0], cc[1]);
 				unsentChunkRequests.remove(0);

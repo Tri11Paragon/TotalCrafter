@@ -32,6 +32,10 @@ public class ServerTest {
 		
 		sr.sworld.saveChunks();
 		VoxelScreenManager.isOpen = false;
+		for (int i = 0; i < sr.inventories.size(); i++) {
+			sr.inventories.get(i).saveInventory();
+		}
+		
 		
 		try {
 			sc.close();

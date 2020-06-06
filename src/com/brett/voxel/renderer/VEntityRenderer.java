@@ -71,6 +71,9 @@ public class VEntityRenderer {
 		GL20.glEnableVertexAttribArray(1);
 		GL20.glEnableVertexAttribArray(2);
 		
+		if (!VoxelWorld.isRemote)
+			return;
+		
 		Iterator<Entry<Integer, Tuple<float[], float[]>>> plyIt = VoxelWorld.localClient.clients.entrySet().iterator();
 		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
