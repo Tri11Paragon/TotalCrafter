@@ -10,6 +10,8 @@ import org.lwjgl.openal.AL11;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
+
 import com.brett.DisplayManager;
 import com.brett.KeyMaster;
 import com.brett.console.Console;
@@ -28,6 +30,7 @@ import com.brett.renderer.shaders.LineShader;
 import com.brett.renderer.shaders.PointShader;
 import com.brett.sound.AudioController;
 import com.brett.sound.AudioSource;
+import com.brett.sound.MusicMaster;
 import com.brett.tools.SettingsLoader;
 import com.brett.voxel.gui.MainMenu;
 import com.brett.voxel.inventory.InventoryMaster;
@@ -57,6 +60,7 @@ public class VoxelScreenManager {
 	public static Entity outlineEnt;
 	public static boolean isOpen = true;
 	public static AudioSource staticSource;
+	public static AudioSource musicSource;
 	public static LineShader ls;
 	public static PointShader pt;
 	public static UIMaster ui;
@@ -82,6 +86,7 @@ public class VoxelScreenManager {
 		AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE_CLAMPED);
 		staticSource = new AudioSource();
 		staticSource.setPosition(0, 0, 0);
+		musicSource = new AudioSource();
 		
 		os = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 		// MAIN STUFF (REQUIRED FOR GAME TO RUN)
@@ -255,6 +260,7 @@ public class VoxelScreenManager {
 		
 		Chunk.init();
 
+		MusicMaster.init();
 		
 		System.gc();
 		while (!Display.isCloseRequested()) {
@@ -284,6 +290,7 @@ public class VoxelScreenManager {
 			//	loader.deleteVAO(Chunk.deleteables.get(i));
 			//}
 			
+			MusicMaster.update();
 			DisplayManager.updateDisplay();
 			double lastFrame = Sys.getTime() * 1000 / Sys.getTimerResolution();
 			deltaTime += lastFrame - startTime;
@@ -292,12 +299,20 @@ public class VoxelScreenManager {
 				frameRate = (double)frames*0.5d + frameRate*0.5d;
 				averageFrameTimeMilliseconds  = 1000.0/(frameRate==0?0.001:frameRate);
 				StringBuilder sb = new StringBuilder();
-				sb.append("Frames Per Second: ");
+				sb.append("FPS: ");
 				sb.append((int)frameRate);
-				sb.append(" + FrameTimeMilli: ");
+				sb.append(" + FT-MS: ");
 				sb.append(averageFrameTimeMilliseconds);
 				sb.append(" + YAW: ");
 				sb.append(player.getYaw());
+				sb.append(" + POS: [");
+				Vector3f pos = player.getPosition();
+				sb.append(pos.x);
+				sb.append(", ");
+				sb.append(pos.y);
+				sb.append(", ");
+				sb.append(pos.z);
+				sb.append("]");
 				loadOfCrap.changeText(sb.toString());
 				//System.out.println(sb.toString());
 				frames = 0;
@@ -313,6 +328,7 @@ public class VoxelScreenManager {
 		//testserver.close();
 		//client.close();and it will 
 		staticSource.delete();
+		musicSource.delete();
 		AudioController.cleanup();
 		//PostProcessing.cleanUp();
 		//vworld.cleanup();

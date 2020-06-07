@@ -237,6 +237,7 @@ public class Inventory implements IMenu {
 					MainMenu.ip = "localhost";
 				world = "worlds/servers/" + MainMenu.username + "/" + MainMenu.ip + "/";
 				new File(world).mkdirs();
+				new File(world + NBTID + ".dat").mkdirs();
 			}
 			is = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(world + NBTID + ".dat")));
 		} catch (FileNotFoundException e) {return;}

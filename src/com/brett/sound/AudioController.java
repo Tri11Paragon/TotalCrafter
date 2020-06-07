@@ -115,6 +115,40 @@ public class AudioController {
 		return buffer;
 	}
 	
+	public static int loadS(File file) {
+		if (GLContext.getCapabilities() == null)
+			return 0;
+		int buffer = AL10.alGenBuffers();
+		buffers.add(buffer);
+		try {
+			buffer = getOgg(new BufferedInputStream(new FileInputStream(file)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return buffer;
+	}
+	
+	public static OggData LoadOgg(File f) {
+		OggDecoder decoder = new OggDecoder();
+		try {
+			return decoder.getData(new BufferedInputStream(new FileInputStream(f)));
+		} catch(Exception e) {}
+		return null;
+	}
+	
+	public static int loadS(String file, OggData data) {
+		int buffer = AL10.alGenBuffers();
+		buffers.add(buffer);
+		try {
+			if (data == null)
+				return buffer;
+			buffer = getOgg(file, data);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return buffer;
+	}
+	
 	public static void cleanup() {
 		for (int buffer : buffers) {
 			AL10.alDeleteBuffers(buffer);
@@ -127,10 +161,10 @@ public class AudioController {
 	// so i made it work for here.
 	// TODO: load this myself for faster loading.
 	
-	private static int getOgg(InputStream in) throws IOException {
+	public static int getOgg(InputStream in) throws IOException {
 		return getOgg(in.toString(), in);
 	}
-	private static int getOgg(String ref, InputStream in) throws IOException {
+	public static int getOgg(String ref, InputStream in) throws IOException {
 		int buffer = -1;
 		
 		if (loaded.get(ref) != null) {
@@ -142,6 +176,35 @@ public class AudioController {
 				OggDecoder decoder = new OggDecoder();
 				OggData ogg = decoder.getData(in);
 				
+				AL10.alGenBuffers(buf);
+				AL10.alBufferData(buf.get(0), ogg.channels > 1 ? AL10.AL_FORMAT_STEREO16 : AL10.AL_FORMAT_MONO16, ogg.data, ogg.rate);
+				
+				loaded.put(ref,new Integer(buf.get(0)));
+				                     
+				buffer = buf.get(0);
+			} catch (Exception e) {
+				Log.error(e);
+				Sys.alert("Error","Failed to load: "+ref+" - "+e.getMessage());
+				throw new IOException("Unable to load: "+ref);
+			}
+		}
+		
+		if (buffer == -1) {
+			throw new IOException("Unable to load: "+ref);
+		}
+		
+		return buffer;
+	}
+	
+	public static int getOgg(String ref, OggData ogg) throws IOException {
+		int buffer = -1;
+		
+		if (loaded.get(ref) != null) {
+			buffer = ((Integer) loaded.get(ref)).intValue();
+		} else {
+			try {
+				IntBuffer buf = BufferUtils.createIntBuffer(1);
+
 				AL10.alGenBuffers(buf);
 				AL10.alBufferData(buf.get(0), ogg.channels > 1 ? AL10.AL_FORMAT_STEREO16 : AL10.AL_FORMAT_MONO16, ogg.data, ogg.rate);
 				

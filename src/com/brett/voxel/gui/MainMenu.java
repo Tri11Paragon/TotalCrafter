@@ -128,7 +128,10 @@ public class MainMenu implements DisplaySource {
 					+ "Entity Modeler: Joey Barclay \n"
 					+ "\n"
 					+ "\n"
-					+ "Textures: Brett / Minecraft";
+					+ "Textures: Brett / Minecraft\n"
+					+ "\n"
+					+ "\n"
+					+ "Music: Brett Kilner / Brett Terpstra";
 			
 			GUIText btextmax = master.createDynamicText(text, 1.5f, VoxelScreenManager.monospaced, 0, 150, width*2, true);
 			TextMaster.loadText(btextmax);
