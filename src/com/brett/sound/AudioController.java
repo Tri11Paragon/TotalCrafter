@@ -150,10 +150,10 @@ public class AudioController {
 	}
 	
 	public static void cleanup() {
-		for (int buffer : buffers) {
-			AL10.alDeleteBuffers(buffer);
+		for (int i = 0; i < buffers.size(); i++) {
+			AL10.alDeleteBuffers(buffers.get(i));
 		}
-		AL.destroy();
+		//AL.destroy();
 	}
 	
 	// i stole this from the slick util jar that i've imported as a build jar

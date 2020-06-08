@@ -60,7 +60,6 @@ public class VoxelScreenManager {
 	public static Entity outlineEnt;
 	public static boolean isOpen = true;
 	public static AudioSource staticSource;
-	public static AudioSource musicSource;
 	public static LineShader ls;
 	public static PointShader pt;
 	public static UIMaster ui;
@@ -86,7 +85,6 @@ public class VoxelScreenManager {
 		AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE_CLAMPED);
 		staticSource = new AudioSource();
 		staticSource.setPosition(0, 0, 0);
-		musicSource = new AudioSource();
 		
 		os = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 		// MAIN STUFF (REQUIRED FOR GAME TO RUN)
@@ -328,8 +326,8 @@ public class VoxelScreenManager {
 		//testserver.close();
 		//client.close();and it will 
 		staticSource.delete();
-		musicSource.delete();
 		AudioController.cleanup();
+		MusicMaster.cleanup();
 		//PostProcessing.cleanUp();
 		//vworld.cleanup();
 		ui.cleanup();

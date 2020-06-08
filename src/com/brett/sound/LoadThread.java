@@ -1,13 +1,8 @@
 package com.brett.sound;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-
-import org.newdawn.slick.openal.OggData;
-import org.newdawn.slick.openal.OggDecoder;
-
-import com.brett.renderer.datatypes.Tuple;
+import java.net.URL;
+import java.util.ArrayList;
 
 /**
 *
@@ -15,22 +10,30 @@ import com.brett.renderer.datatypes.Tuple;
 * @date Jun. 6, 2020
 */
 
-public class LoadThread {
+public class LoadThread extends Thread {
 	
-	public LoadThread(File f) {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					// decode the ogg data
-					OggDecoder decoder = new OggDecoder();
-					OggData data = decoder.getData(new BufferedInputStream(new FileInputStream(f)));
-					// load it for loading.
-					MusicMaster.unprocessedMusic.add(new Tuple<String, OggData> (f.getName(), data));
-					MusicMaster.amount++;
-				} catch (Exception e) {}
-			}
-		}).start();
+	// reference to all the files to load
+    private ArrayList<File> f;
+	
+	public LoadThread(ArrayList<File> f) {
+		this.f = f;
+		// no reason to start a thread that won't do anything
+		if (f.size() == 0)
+			return;
+		this.start();
 	}
 	
+	@Override
+	public void run() {
+		// load all files inside the file array.
+		for (int i = 0; i < f.size(); i++) {
+			try {
+				System.out.println(f.get(i).toURI().toURL());
+				MusicMaster.musicSystem.loadSound(new URL("file:resources/sound/music/" + f.get(i).getName().replace(' ', '_')), f.get(i).getName().replace(' ', '_'));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 }

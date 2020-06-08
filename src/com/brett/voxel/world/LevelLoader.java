@@ -54,6 +54,10 @@ public class LevelLoader {
 		} catch (FileNotFoundException e1) {return;}
 		
 		try {
+			if (VoxelWorld.isRemote) {
+				os.close();
+				return;
+			}
 			os.writeLong(seed);
 			os.writeFloat(ply.getPosition().x);
 			os.writeFloat(ply.getPosition().y);
