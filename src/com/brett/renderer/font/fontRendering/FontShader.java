@@ -10,7 +10,8 @@ public class FontShader extends ShaderProgram{
 	private static final String VERTEX_FILE = "fontVertex.vert";
 	private static final String FRAGMENT_FILE = "fontFragment.frag";
 	
-	private int location_colour;
+	private int location_color;
+	private int location_outline;
 	private int location_translation;
 	
 	public FontShader() {
@@ -19,7 +20,8 @@ public class FontShader extends ShaderProgram{
 
 	@Override
 	protected void getAllUniformLocations() {
-		location_colour = super.getUniformLocation("color");
+		location_color = super.getUniformLocation("color");
+		location_outline = super.getUniformLocation("outlineColor");
 		location_translation = super.getUniformLocation("translation");
 	}
 
@@ -29,8 +31,12 @@ public class FontShader extends ShaderProgram{
 		super.bindAttribute(1, "textureCoords");
 	}
 	
-	protected void loadColour(Vector3f colour){
-		super.loadVector(location_colour, colour);
+	protected void loadColor(Vector3f color){
+		super.loadVector(location_color, color);
+	}
+	
+	protected void loadColorOutline(Vector3f color){
+		super.loadVector(location_outline, color);
 	}
 	
 	protected void loadTranslation(Vector2f translation){

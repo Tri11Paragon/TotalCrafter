@@ -84,7 +84,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 					} catch (ConcurrentModificationException e) {}
 					long end = System.currentTimeMillis();
 					long delta = Maths.preventNegs(32 - (end - start));
-					if (end - last > 35) {
+					if (end - last > 20) {
 						if (unsentChunks.size() > 0) {
 							Tuple<Chunk, ConnectedClient> c = unsentChunks.get(0);
 							Server.server.sendCompressedChunk(c.getX(), c.getY());
@@ -170,7 +170,6 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 			Chunk c = getChunk(cx, cz);
 			if (c != null) {
 				unsentChunks.add(new Tuple<Chunk, ConnectedClient>(c, cl));
-				//Server.server.sendCompressedChunk(c, cl);
 				return;
 			}
 			if (!ungeneratedChunks.containsKey(cx, cz))

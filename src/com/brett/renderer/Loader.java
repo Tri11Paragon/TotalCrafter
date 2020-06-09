@@ -42,6 +42,13 @@ public class Loader {
 	private List<Integer> textures = new ArrayList<Integer>();
 	public Map<String, Integer> textureMap = new HashMap<String, Integer>();
 	
+	public void printSizes() {
+		System.out.println("VAOs Size: " + vaos.size());
+		System.out.println("VBOs Size: " + vbos.size());
+		System.out.println("Textures Size: " + textures.size());
+		System.out.println("Texture Map Size: " + textureMap.size());
+	}
+	
 	public RawModel loadToVAO(float[] positions,float[] textureCoords,float[] normals,int[] indices){
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
@@ -222,13 +229,20 @@ public class Loader {
 	
 	public RawModel deleteVAO(RawModel model) {
 		try {
-			vaos.remove((Integer) model.getVaoID());
+			for (int i = 0; i < vaos.size(); i++) {
+				if (vaos.get(i) == model.getVaoID()) {
+					vaos.remove(i);
+				}
+			}
 			GL30.glDeleteVertexArrays(model.getVaoID());
 			if (model instanceof RawBlockModel) {
 				int[] vbos = ((RawBlockModel) model).getVbos();
 				for (int i = 0; i < vbos.length; i++) {
 					GL15.glDeleteBuffers(vbos[i]);
-					this.vbos.remove((Integer) vbos[i]);
+					for (int j = 0; j < this.vbos.size(); j++) {
+						if (this.vbos.get(i) == vbos[i])
+							this.vbos.remove(j);
+					}
 				}
 			}
 		} catch (Exception e) {}
@@ -336,9 +350,9 @@ public class Loader {
 	 * it could also be multithreaded
 	 */
 	public int loadSpecialTexture(String texture) {
+		if (textureMap.containsKey(texture))
+			return textureMap.get(texture);
 		try {
-			if (textureMap.containsKey(texture))
-				return textureMap.get(texture);
 			TextureData d = decodeTextureFile("resources/textures/" + texture + ".png");
 			int id = GL11.glGenTextures();
 			

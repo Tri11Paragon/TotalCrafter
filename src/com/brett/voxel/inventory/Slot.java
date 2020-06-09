@@ -103,7 +103,7 @@ public class Slot extends UIButton {
 				super.texture2 = ht;
 				if (!prevState && Mouse.isButtonDown(0)) {
 					if (stack == null) {
-						if (PlayerSlot.getStack() != null) {
+						if (PlayerSlot.getStack() != null && !name.contains("o")) {
 							stack = PlayerSlot.getStack();
 							PlayerSlot.changeStack(null);
 							text.changeText(Integer.toString(stack.getAmountInStack()));

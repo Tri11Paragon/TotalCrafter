@@ -268,12 +268,6 @@ public class Chunk {
 				}
 			}
 			
-			//int vstart = verts.length-1;
-			//int ustart = verts.length-1;
-			
-			//verts = expandArrays(verts, count * MeshStore.vertsLeftComplete.length);
-			//uvs = expandArrays(uvs, count * MeshStore.uvLeftCompleteCompress.length);
-			
 			byte blockState = (byte)(blocks[i][j][k] >> 12);
 			int tLeft = 0, tRight = 0, tFront = 0, tBack = 0, tTop = 0, tBottom = 0;
 			

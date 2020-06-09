@@ -90,7 +90,7 @@ public class LightingEngine {
 					} catch (Exception e) {e.printStackTrace();}
 				}
 			}
-		}).start();
+		});
 	}
 	
 	public static void addLightSource(int x, int y, int z, byte level) {

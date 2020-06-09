@@ -23,6 +23,8 @@ import com.brett.world.cameras.Camera;
 public class Player extends Camera {
 	
 	private static final int RECUR_AMT = 5;
+	private static final float LOWESTPOINT = -1.75f;
+	private static final float LOWESTPOINTCROUCH = -0.75f;
 	public static boolean flight = false;
 	
 	private double speed = 5;
@@ -31,23 +33,36 @@ public class Player extends Camera {
 	private double moveAtX = 0;
 	private double moveAtY = 0;
 	private double moveatZ = 0;
+	private double target = 0;
 	private boolean onGround = false;
+	public volatile boolean crouching = false;
 	
 	private PlayerInventory pi;
 	private VoxelWorld world;
 	private Loader loader;
 	private UIMaster ui;
 	
-	private float lowestPoint = -1.75f;
 	private float size = 0.25f;
-	private Vector3f[] cords = {new Vector3f(-size, lowestPoint, -size), new Vector3f(size, lowestPoint, size), 
-								new Vector3f(size, lowestPoint, -size), new Vector3f(-size, lowestPoint, size),
-								
-								new Vector3f(-size, lowestPoint/2, -size), new Vector3f(size, lowestPoint/2, size), 
-								new Vector3f(size, lowestPoint/2, -size), new Vector3f(-size, lowestPoint/2, size),
-								
-								new Vector3f(-size, 0f, -size), new Vector3f(size, 0f, size), 
-								new Vector3f(size, 0f, -size), new Vector3f(-size, 0f, size)};
+	private final Vector3f[] cordsStand = {new Vector3f(-size, LOWESTPOINT, -size), new Vector3f(size, LOWESTPOINT, size), 
+									 new Vector3f(size, LOWESTPOINT, -size), new Vector3f(-size, LOWESTPOINT, size),
+			
+									 new Vector3f(-size, LOWESTPOINT/2, -size), new Vector3f(size, LOWESTPOINT/2, size), 
+									 new Vector3f(size, LOWESTPOINT/2, -size), new Vector3f(-size, LOWESTPOINT/2, size),
+			
+									 new Vector3f(-size, 0f, -size), new Vector3f(size, 0f, size), 
+									 new Vector3f(size, 0f, -size), new Vector3f(-size, 0f, size)};
+	
+	private final Vector3f[] cordsCrouch = {new Vector3f(-size, LOWESTPOINTCROUCH, -size), new Vector3f(size, LOWESTPOINTCROUCH, size), 
+									  new Vector3f(size, LOWESTPOINTCROUCH, -size), new Vector3f(-size, LOWESTPOINTCROUCH, size),
+			
+									  new Vector3f(-size, LOWESTPOINTCROUCH/2, -size), new Vector3f(size, LOWESTPOINTCROUCH/2, size), 
+									  new Vector3f(size, LOWESTPOINTCROUCH/2, -size), new Vector3f(-size, LOWESTPOINTCROUCH/2, size),
+			
+									  new Vector3f(-size, 0f, -size), new Vector3f(size, 0f, size), 
+									  new Vector3f(size, 0f, -size), new Vector3f(-size, 0f, size)};
+	
+	
+	private Vector3f[] cords = cordsStand;
 	
 	
 	public Player(Loader loader, UIMaster ui) {
@@ -68,6 +83,29 @@ public class Player extends Camera {
 	@Override
 	public void move() {
 		if (Mouse.isGrabbed()) {
+			
+			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+				if (!crouching) {
+					crouching = true;
+					target = 0;
+					updateCrouching();
+				}
+			} else {
+				if (crouching) {
+					int passed = 0;
+					for (int i = 0; i < cords.length; i++) {
+						if (world.chunk.getBlock(this.position.x + cords[i].x, this.position.y + 1.0f, this.position.z + cords[i].z) == 0)
+							passed++;
+					}
+					if (passed == cords.length) {
+						//TODO: make this smooth
+						this.target = 1.0f;
+						crouching = false;
+						updateCrouching();
+					}
+				}
+			}
+			
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 				speed = normalSpeed/2;
 			} else
@@ -130,6 +168,12 @@ public class Player extends Camera {
 				moveAtY = -VoxelWorld.GRAVITY * 3;
 		}
 		
+		
+		if (target > 0) {
+			double amount = (VoxelWorld.GRAVITY) * DisplayManager.getFrameTimeSeconds();
+			this.position.y += amount;
+			this.target -= amount;
+		}
 		
 		if (this.pitch > 90)
 			this.pitch = 90;
@@ -233,92 +277,11 @@ public class Player extends Camera {
 		AudioController.setListenerPosition(this.position, MouseBlockPicker.currentRay.x, MouseBlockPicker.currentRay.y, MouseBlockPicker.currentRay.z);
 	}
 	
-	public void generateCollisionVectors() {
-		/*float forwardX = round(size * Math.sin(Math.toRadians(yaw)));
-		float backwardX = round(size * Math.sin(Math.toRadians(yaw+180)));
-		float leftX = round(size * Math.sin(Math.toRadians(yaw-90)));
-		float rightX = round(size * Math.sin(Math.toRadians(yaw+90)));
-		
-		float forwardZ = round(size * -Math.cos(Math.toRadians(yaw)));
-		float backwardZ = round(size * -Math.cos(Math.toRadians(yaw+180)));
-		float leftZ = round(size * -Math.cos(Math.toRadians(yaw-90)));
-		float rightZ = round(size * -Math.cos(Math.toRadians(yaw+90)));
-		
-		cords[0].x = forwardX;
-		cords[0].z = forwardZ;
-		
-		cords[1].x = backwardX;
-		cords[1].z = backwardZ;
-		
-		cords[2].x = rightX;
-		cords[2].z = rightZ;
-		
-		cords[3].x = leftX;
-		cords[3].z = leftZ;
-		
-		
-		cords[4].x = forwardX;
-		cords[4].z = forwardZ;
-		
-		cords[5].x = backwardX;
-		cords[5].z = backwardZ;
-		
-		cords[6].x = rightX;
-		cords[6].z = rightZ;
-		
-		cords[7].x = leftX;
-		cords[7].z = leftZ;
-		
-		
-		cords[8].x = forwardX;
-		cords[8].z = forwardZ;
-		
-		cords[9].x = backwardX;
-		cords[9].z = backwardZ;
-		
-		cords[10].x = rightX;
-		cords[10].z = rightZ;
-		
-		cords[11].x = leftX;
-		cords[11].z = leftZ;
-		
-		
-		cords[12].x = forwardX;
-		cords[12].z = forwardZ;
-		
-		cords[13].x = backwardX;
-		cords[13].z = backwardZ;
-		
-		cords[14].x = rightX;
-		cords[14].z = rightZ;
-		
-		cords[15].x = leftX;
-		cords[15].z = leftZ;*/
-		
-		
-		//double sx = Math.round(Math.abs(-(size * Math.sin(Math.toRadians(yaw))) + -(size * Math.cos(Math.toRadians(yaw)))) * 1000d)/1000d;
-		//double sz = Math.round(Math.abs((size) * Math.cos(Math.toRadians(yaw)) + -(size * Math.sin(Math.toRadians(yaw)))) * 1000d)/1000d;
-		/*System.out.println("SX: " + sx + " :: SZ: " + sz);
-		for (int i = 0; i < cords.length; i++) {
-			if (cords[i].x < 0)
-				cords[i].x = (float) -sx;
-			else
-				cords[i].x = (float) sx;
-			if (cords[i].z < 0)
-				cords[i].z = (float) -sz;
-			else
-				cords[i].z = (float) sz;
-		}*/
-		//VoxelScreenManager.pt.addStaticPoint(new Vector3f(position.x + (float)round(size * Math.sin(Math.toRadians(yaw))), position.y+1, position.z + (float) round(size * -Math.cos(Math.toRadians(yaw)))));
-		//VoxelScreenManager.ls.renderIN(position, new Vector3f(position.x + (float)round( Math.sin(Math.toRadians(yaw))), position.y-1, position.z + (float) round(-Math.cos(Math.toRadians(yaw)))));
-		//VoxelScreenManager.ls.renderIN(position, new Vector3f(position.x+1, position.y-2, position.z + 5));
-		/*VoxelScreenManager.ls.renderIN(new Vector3f(position.x,70,position.z), 
-				new Vector3f((float) (position.x+(cords[0].x*10)),90,(float) (position.z+(cords[0].z*10))));
-		VoxelScreenManager.ls.renderIN(new Vector3f(position.x,70,position.z), 
-				new Vector3f((float) (position.x+round(10 * Math.sin(Math.toRadians(yaw+90)))),90,(float) (position.z+round(10 * -Math.cos(Math.toRadians(yaw+90))))));
-		VoxelScreenManager.ls.renderIN(new Vector3f(position.x,70,position.z), 
-				new Vector3f((float) (position.x+round(10 * Math.sin(Math.toRadians(yaw-90)))),90,(float) (position.z+round(10 * -Math.cos(Math.toRadians(yaw-90))))));*/
-		//System.out.println("LP: " + round(size * Math.sin(Math.toRadians(yaw))) + " :: " + round(size * -Math.cos(Math.toRadians(yaw))));
+	public void updateCrouching() {
+		if (crouching)
+			cords = cordsCrouch;
+		else 
+			cords = cordsStand;
 	}
 	
 	public float round(double r) {

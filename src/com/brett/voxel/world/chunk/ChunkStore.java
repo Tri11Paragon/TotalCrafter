@@ -10,6 +10,7 @@ import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.lwjgl.util.vector.Matrix4f;
 import com.brett.renderer.Loader;
+import com.brett.renderer.MasterRenderer;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.renderer.COLLISIONTYPE;
@@ -224,6 +225,7 @@ public class ChunkStore implements IChunkProvider {
 	
 	Matrix4f view = new Matrix4f();
 	long last = 0;
+	private boolean lastTransparent = true;
 	public void renderChunks(VoxelShader shader, Matrix4f project) {
 		if (chunksCopy != null) {
 			MapIterator<MultiKey<? extends Integer>, Region> rg = chunksCopy.mapIterator();
@@ -282,9 +284,24 @@ public class ChunkStore implements IChunkProvider {
 					queChunk(cx, cz);
 					continue;
 				}
+				if (distance(cx, cz) > 32) {
+					if (lastTransparent) {
+						MasterRenderer.disableTransparentcy();
+						lastTransparent = false;
+					}
+				} else {
+					if (!lastTransparent) {
+						MasterRenderer.enableTransparentcy();
+						lastTransparent = true;
+					}
+				}
 				c.renderSpecial(shader, view, i, k);
 			}
 		}
+	}
+	
+	private double distance(int x, int z) {
+		return Math.sqrt(Math.pow(x, 2) + Math.pow(z, 2));
 	}
 	
 	public void updateChunks() {

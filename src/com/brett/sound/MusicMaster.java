@@ -58,8 +58,9 @@ public class MusicMaster {
 		// loop through all the musics in the music folder.
 		for (int i = 0; i < musics.length; i++) {
 			// check to make sure we are not loading some stupid file the user
-			// leaves in the music folder
+			// left in the music folder
 			if (musics[i].getName().contains(".ogg")) {
+				// add it to the list of music files
 				MusicMaster.musics.add(musics[i].getName().replace(' ', '_'));
 				System.out.println("Loading music ['" + musics[i].getName() + "']");
 			}
@@ -67,7 +68,9 @@ public class MusicMaster {
 		System.out.println("Music took " + (System.currentTimeMillis() - start) + "ms to load.");
 	}
 	
-	private static long lastTime = 0;
+	// last time since we played music.
+	// make sure that there wont be music for the first ten minutes after startup this way.
+	private static long lastTime = System.currentTimeMillis();
 	public static void update() {
 		if (musicSystem.playing()) {
 			return;
@@ -78,6 +81,8 @@ public class MusicMaster {
 			String music = musics.get(rand.nextInt(musics.size()));
 			System.out.println("Now playing '" + music + "'");
 			try {
+				// plays the music
+				// on any menu.
 				musicSystem.backgroundMusic(music, new URL("file:resources/sound/music/" + music), music, false);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();

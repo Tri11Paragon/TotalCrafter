@@ -124,14 +124,15 @@ public class MainMenu implements DisplaySource {
 			
 			String text = "Main Programmer: Brett Terpstra \n"
 					+ "\n"
-					+ "\n"
 					+ "Entity Modeler: Joey Barclay \n"
-					+ "\n"
 					+ "\n"
 					+ "Textures: Brett / Minecraft\n"
 					+ "\n"
+					+ "Music: Brett Kilner / Brett Terpstra\n"
 					+ "\n"
-					+ "Music: Brett Kilner / Brett Terpstra";
+					+ "Annoying Guy: Daniel D.\n"
+					+ "\n"
+					+ "Idea Man(Sometimes): Josiah McMillian";
 			
 			GUIText btextmax = master.createDynamicText(text, 1.5f, VoxelScreenManager.monospaced, 0, 150, width*2, true);
 			TextMaster.loadText(btextmax);

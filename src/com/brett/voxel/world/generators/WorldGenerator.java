@@ -36,7 +36,7 @@ public class WorldGenerator {
 		ores = new WorldGenMineable(
 				new MineData(Block.IRON, 32, 60, 0.0, 60, 1),
 				new MineData(Block.COAL, 40, 70, 0.0),
-				new MineData(Block.COPPER, 45, 70, 0.0),
+				new MineData(Block.COPPER, 15, 70, 0.0),
 				new MineData(Block.GOLD, 10, 32, 0.0, 32, 1),
 				new MineData(Block.REDSTONE, 30, 48, 0.0, 24, 1),
 				new MineData(Block.EMERALD, 2, 8, 0.0),
