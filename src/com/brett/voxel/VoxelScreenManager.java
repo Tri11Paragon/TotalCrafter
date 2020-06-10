@@ -78,7 +78,6 @@ public class VoxelScreenManager {
 		//OBJLoader.printArrays("back");
 		SettingsLoader.loadSettings();
 		DisplayManager.createDisplay(false);
-		KeyMaster.init();
 		// audio stuff
 		AudioController.init();
 		AudioController.setListenerData(0, 0, 0, 0, 0, 0);

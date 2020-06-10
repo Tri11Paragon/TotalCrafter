@@ -10,9 +10,21 @@ import com.brett.renderer.datatypes.TerrainTexturePack;
 import com.brett.tools.Maths;
 import com.brett.world.terrain.noisefunctions.BaseNoiseFunction;
 
+/**
+ * 
+ * @author brett
+ * date: sometime in july
+ * 
+ * * PLEASE IGNORE THIS. *
+ * 
+ * NOT A PART OF MC3
+ */
+
 public class Terrain {
 	
+	// size of the terrain
 	public static float SIZE = 800;
+	// max height
 	public static float MAX_HEIGHT = 40;
 	private HeightData generator;
 	
@@ -51,6 +63,9 @@ public class Terrain {
 		this.model = generateTerrain(loader);
 	}
 	
+	/**
+	 *  returns the height of the terrain for a position
+	 */
 	public float getHeightOfTerrain(float worldX, float worldZ) {
 		float terrainX = worldX - this.x;
 		float terrainZ = worldZ - this.z;
@@ -71,6 +86,9 @@ public class Terrain {
 		return answer;
 	}
 
+	/**
+	 * Generates model based on the noise generator.
+	 */
 	private RawModel generateTerrain(Loader loader){
 		
 		int VERTEX_COUNT = generator.getSize();

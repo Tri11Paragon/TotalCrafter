@@ -98,7 +98,6 @@ public class Player extends Camera {
 							passed++;
 					}
 					if (passed == cords.length) {
-						//TODO: make this smooth
 						this.target = 1.0f;
 						crouching = false;
 						updateCrouching();
@@ -109,6 +108,11 @@ public class Player extends Camera {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 				speed = normalSpeed/2;
 			} else
+				speed = normalSpeed;
+			
+			if (target > 0)
+				speed = 0;
+			else 
 				speed = normalSpeed;
 			
 			if (Keyboard.isKeyDown(Keyboard.KEY_W))

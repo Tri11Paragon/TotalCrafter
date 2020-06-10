@@ -32,28 +32,46 @@ import com.brett.world.entities.Entity;
 import com.brett.world.terrain.Terrain;
 import com.tester.Main;
 
+/**
+ * 
+ * @author brett
+ * date: idk like July 2019?
+ * This is one of the oldest classes and is NOT currently being used in MC3
+ * PLEASE IGNORE THIS.
+ * 
+ * NOT A PART OF MC3
+ */
+
 @SuppressWarnings("unused")
 public class World {
 
+	// list of all the stuff in the world
 	private List<Entity> ents;
 	private HashMap<String, Entity> sentities;
 	private List<WaterTile> waterTiles;
 	private List<Entity> normalMapEntities;
 	private List<Light> lights;
 	
+	// terrain storage
 	private TerrainArray terrains;
+	// reference to renderers
 	private MasterRenderer renderer;
 	private WaterRenderer waterRenderer;
 	
+	// height where we will place water
 	private float waterHeight = 0;
 	
+	// FBOs
 	private Fbo multisampleFbo;
 	private Fbo outputFbo;
 	private Fbo brightOutputFbo;
 	private WaterFrameBuffers waterFBO;
-	
+	// illegal geometry. doesn't work. ignore this.
 	private RenderedPortal portal;
 	
+	/*
+	 * constructors
+	 */
 	public World(MasterRenderer renderer, Loader loader, Camera camera) {
 		this.renderer = renderer;
 		setup(loader, camera);
@@ -66,6 +84,7 @@ public class World {
 	}
 	
 	private void setup(Loader loader, Camera camera) {
+		// create all the arrays
 		sentities = new HashMap<String, Entity>();
 		waterFBO = new WaterFrameBuffers();
 		ents = new ArrayList<Entity>();
@@ -73,6 +92,7 @@ public class World {
 		normalMapEntities = new ArrayList<Entity>();
 		lights = new ArrayList<Light>();
 		terrains = new TerrainArray();
+		// Ignore this. I was playing with illegal geometry.
 		portal = new RenderedPortal(camera,renderer.getProjectionMatrix(), null, new Vector3f(0, 74.5f, 0), 
 				new Vector3f(20, 74.5f, 20), new Vector3f(0,0,0), new Vector3f(0,0,0), new Vector3f(4, 4, 1), new Vector3f(4, 4, 1));
 		//multisampleFbo = new Fbo(Display.getWidth(), Display.getHeight());
@@ -81,6 +101,9 @@ public class World {
 		//waterRenderer = new WaterRenderer(loader, new WaterShader(), renderer.getProjectionMatrix(), waterFBO);
 	}
 	
+	/**
+	 * unused function as of the moment.
+	 */
 	public void render(Camera camera, Light sun, boolean renderWaterFBOs) {
 		/*if (renderWaterFBOs) {
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
@@ -130,11 +153,15 @@ public class World {
 	}
 	
 	public void update() {
+		// update all the entities
 		for (int i = 0; i < ents.size(); i++) {
 			ents.get(i).update(this);
 		}
 	}
 	
+	/**
+	 * cleans all the stuff that needs to be deleted.
+	 */
 	public void cleanup() {
 		portal.cleanup();
 		//multisampleFbo.cleanUp();

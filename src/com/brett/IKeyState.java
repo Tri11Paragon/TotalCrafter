@@ -4,6 +4,7 @@ package com.brett;
 *
 * @author brett
 * @date Mar. 14, 2020
+* Listener for keystates
 */
 
 public interface IKeyState {

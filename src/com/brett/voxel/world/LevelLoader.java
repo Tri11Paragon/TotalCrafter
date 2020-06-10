@@ -11,6 +11,7 @@ import java.io.IOException;
 
 import org.lwjgl.util.vector.Vector3f;
 
+import com.brett.voxel.gui.MainMenu;
 import com.brett.voxel.world.player.Player;
 
 /** 
@@ -54,7 +55,7 @@ public class LevelLoader {
 		} catch (FileNotFoundException e1) {return;}
 		
 		try {
-			if (VoxelWorld.isRemote) {
+			if (VoxelWorld.isRemote || !MainMenu.ingame) {
 				os.close();
 				return;
 			}

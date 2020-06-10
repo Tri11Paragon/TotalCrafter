@@ -54,6 +54,7 @@ public class MainMenu implements DisplaySource {
 	private String seedData = "";
 	public static String ip = "";
 	public static String username = "";
+	public static boolean ingame = false;
 	
 	public MainMenu(UIMaster master, MasterRenderer renderer, Camera camera, VoxelWorld world, Loader loader) {
 		MainMenu.menu = this;
@@ -233,6 +234,7 @@ public class MainMenu implements DisplaySource {
 			elements.clear();
 			buttons.clear();
 			texts.clear();
+			ingame = true;
 			VoxelScreenManager.world.init();
 			VoxelScreenManager.changeDisplaySource(vrenderer);
 			VoxelScreenManager.ui.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);
@@ -479,6 +481,7 @@ public class MainMenu implements DisplaySource {
 				LevelLoader.seed = (long)(new Random().nextInt(Integer.MAX_VALUE)) + (long)(new Random().nextInt(Integer.MAX_VALUE));
 			}
 			
+			ingame = true;
 			VoxelScreenManager.world.init();			
 			VoxelScreenManager.changeDisplaySource(renderer);
 			VoxelScreenManager.ui.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);
@@ -506,6 +509,7 @@ public class MainMenu implements DisplaySource {
 			texts.clear();
 			if (new File("worlds/"+this.data).exists()) {
 				ChunkStore.worldLocation = "worlds/" + this.data;
+				ingame = true;
 				VoxelScreenManager.world.init();
 				VoxelScreenManager.changeDisplaySource(renderer);
 				VoxelScreenManager.ui.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);

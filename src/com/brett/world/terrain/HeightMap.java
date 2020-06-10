@@ -9,7 +9,9 @@ import javax.imageio.ImageIO;
 /**
 *
 * @author brett
-*
+* * PLEASE IGNORE THIS. *
+* 
+* NOT A PART OF MC3
 */
 
 public class HeightMap extends HeightData {
@@ -39,6 +41,9 @@ public class HeightMap extends HeightData {
 		}
 	}
 	
+	/**
+	 * gets height at an x and z pos
+	 */
 	@Override
 	public float getHeight(int x, int z) {
 		float x_ = Math.abs(x + xOffset);
@@ -46,6 +51,9 @@ public class HeightMap extends HeightData {
 		return getHeight((int)x_, (int)z_, image);
 	}
 	
+	/**
+	 * gets height based on the image for the x and y
+	 */
 	public float getHeight(int x, int y, BufferedImage image) {
 		if (image == null)
 			return 0;

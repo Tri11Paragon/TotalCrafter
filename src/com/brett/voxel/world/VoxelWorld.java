@@ -168,7 +168,7 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 			}
 		}
 		if (Mouse.getEventButton() == 2) {
-			
+			new Explosion(ply.getPosition().x, ply.getPosition().y, ply.getPosition().z, 3, this).explode();
 		}
 	}
 	
