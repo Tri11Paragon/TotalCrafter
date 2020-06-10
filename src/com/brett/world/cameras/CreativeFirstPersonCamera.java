@@ -5,9 +5,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.DisplayManager;
-import com.brett.tools.TerrainArray;
 import com.brett.voxel.world.VoxelWorld;
-import com.brett.world.terrain.Terrain;
 
 public class CreativeFirstPersonCamera extends Camera {
 	
@@ -131,21 +129,6 @@ public class CreativeFirstPersonCamera extends Camera {
 		
 		if (world.chunk.getBlock(position.x , position.y, position.z + (zb)) == 0)
 			position.z += zb;
-	}
-	
-	public void checkCollision(TerrainArray terrains) {
-		Terrain terrain = terrains.get(this.position);
-		float offset = 1;
-		if (terrain == null) {
-			if (this.position.y < offset)
-				this.position.y = offset;
-			return;
-		}
-		float terrainHeight = terrain.getHeightOfTerrain(getPosition().x, getPosition().z);
-		
-		if (getPosition().y < terrainHeight + offset) {
-			getPosition().y = terrainHeight + offset;
-		}
 	}
 	
 }

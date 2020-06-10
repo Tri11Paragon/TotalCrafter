@@ -1,4 +1,4 @@
-package com.brett.world.cameras;
+/*package com.brett.world.cameras;
 
 import org.lwjgl.input.Mouse;
 
@@ -67,4 +67,4 @@ public class ThirdPersonCamera extends Camera {
 		}
 	}
 	
-}
+}*/

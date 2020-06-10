@@ -64,7 +64,7 @@ public class SkyboxRenderer {
 	
 	private HashMap<String, String[]> cubemaps = new HashMap<String, String[]>();
 	
-	private static float ROTATE_SPEED = 0.01f;
+	private static float ROTATE_SPEED = 0.1f;
 	private float rotation = 0;
 	
 	private RawModel cube;
@@ -82,7 +82,6 @@ public class SkyboxRenderer {
 		shader.connectTextureUnits();
 		shader.loadProjectionMatrix(projectionMatrix);
 		shader.loadFogColor(r, g, b);
-		shader.loadBlendFactor(0f);
 		shader.stop();
 	}
 	
@@ -108,6 +107,7 @@ public class SkyboxRenderer {
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texture);
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, nightTexture);
+		shader.loadBlendFactor(0f);
 	}
 	
 	// this keeps tracks of all the cube maps (allows for the user to add atop of the default game cubemaps)
@@ -115,7 +115,7 @@ public class SkyboxRenderer {
 		cubemaps.put("day", new String[]{"right", "left", "top", "bottom", "back", "front"});
 		cubemaps.put("night", new String[]{"nightRight", "nightLeft", "nightTop", "nightBottom", "nightBack", "nightFront"});
 		//cubemaps.put("will1", new String[]{"W1right", "W1left", "W1top", "W1bottom", "W1back", "W1front"});
-		//cubemaps.put("will2", new String[]{"W2right", "W2left", "W2top", "W2bottom", "W2front", "W2back"});
+		cubemaps.put("will2", new String[]{"W2right", "W2left", "W2top", "W2bottom", "W2front", "W2back"});
 		//cubemaps.put("will3", new String[]{"W3right", "W3left", "W3top", "W3bottom", "W3back", "W3front"});
 	}
 	

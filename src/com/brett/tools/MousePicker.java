@@ -1,4 +1,4 @@
-package com.brett.tools;
+/*package com.brett.tools;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -8,7 +8,6 @@ import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 import com.brett.world.cameras.Camera;
-import com.brett.world.terrain.Terrain;
 
 public class MousePicker {
 
@@ -35,17 +34,6 @@ public class MousePicker {
 		this.terrain = terrain;
 	}
 	
-	/**
-	 * Returns the current point on the terrain. This should not be used
-	 * and will be removed
-	 * 
-	 * @return the current terrain point
-	 */
-	@Deprecated
-	public Vector3f getCurrentTerrainPointFast() {
-		return currentTerrainPoint;
-	}
-	
 	public Vector3f getCurrentTerrainPoint() {
 		if (intersectionInRange(0, RAY_RANGE, currentRay))
 			return binarySearch(0, 0, RAY_RANGE, currentRay);
@@ -60,12 +48,6 @@ public class MousePicker {
 	public void update() {
 		viewMatrix = Maths.createViewMatrix(camera);
 		currentRay = calculateMouseRay();
-		// DEPRECATED
-		/*if (intersectionInRange(0, RAY_RANGE, currentRay)) {
-			currentTerrainPoint = binarySearch(0, 0, RAY_RANGE, currentRay);
-		} else {
-			currentTerrainPoint = null;
-		}*/
 	}
 
 	private Vector3f calculateMouseRay() {
@@ -158,4 +140,4 @@ public class MousePicker {
 		return terrain.get(pos);
 	}
 	
-}
+}*/

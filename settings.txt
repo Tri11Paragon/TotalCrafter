@@ -9,3 +9,4 @@ key_clear: 64
 sensitivity: 0.5032258033752441
 username: brett
 ip: localhost
+samples: 4

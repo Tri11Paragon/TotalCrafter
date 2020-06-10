@@ -1,4 +1,4 @@
-package com.brett.console.commands;
+/*package com.brett.console.commands;
 
 import java.io.File;
 
@@ -10,12 +10,6 @@ import com.brett.renderer.datatypes.TexturedModel;
 import com.brett.tools.MousePicker;
 import com.brett.world.World;
 import com.brett.world.entities.Entity;
-
-/**
-*
-* @author brett
-*
-*/
 
 public class SpawnCommand extends Command {
 
@@ -75,4 +69,4 @@ public class SpawnCommand extends Command {
 		return "Spawn Failed";
 	}
 	
-}
+}*/

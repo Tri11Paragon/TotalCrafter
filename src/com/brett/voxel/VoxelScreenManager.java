@@ -25,7 +25,6 @@ import com.brett.renderer.font.FontType;
 import com.brett.renderer.font.GUIDynamicText;
 import com.brett.renderer.font.fontRendering.TextMaster;
 import com.brett.renderer.gui.UIMaster;
-import com.brett.renderer.particles.ParticleMaster;
 import com.brett.renderer.shaders.LineShader;
 import com.brett.renderer.shaders.PointShader;
 import com.brett.sound.AudioController;
@@ -42,7 +41,6 @@ import com.brett.voxel.world.blocks.BlockCrafting;
 import com.brett.voxel.world.chunk.AtlasHelper;
 import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.player.Player;
-import com.brett.world.entities.Entity;
 import com.sun.management.OperatingSystemMXBean;
 
 /** 
@@ -56,8 +54,6 @@ public class VoxelScreenManager {
 	public static double  averageFrameTimeMilliseconds = 8;
 	public static OperatingSystemMXBean os;
 	public static FontType monospaced;
-	public static Entity hitent;
-	public static Entity outlineEnt;
 	public static boolean isOpen = true;
 	public static AudioSource staticSource;
 	public static LineShader ls;
@@ -110,7 +106,6 @@ public class VoxelScreenManager {
 		ls.loadProjectionMatrix(renderer.getProjectionMatrix());
 		pt.loadProjectionMatrix(renderer.getProjectionMatrix());
 		//World world = new World(renderer, loader, camera, -5);
-		ParticleMaster.init(loader, renderer.getProjectionMatrix());
 		
 		// TERRAIN TEXTURES
 		//TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
@@ -331,7 +326,6 @@ public class VoxelScreenManager {
 		//vworld.cleanup();
 		ui.cleanup();
 		TextMaster.cleanUp();
-		ParticleMaster.cleanUp();
 		ls.cleanUp();
 		world.cleanup();
 		loader.cleanUp();
