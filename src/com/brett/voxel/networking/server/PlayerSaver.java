@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.brett.renderer.datatypes.Tuple;
+import com.brett.datatypes.Tuple;
 
 /**
 *

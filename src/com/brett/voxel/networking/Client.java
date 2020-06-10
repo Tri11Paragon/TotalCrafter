@@ -20,8 +20,8 @@ import java.util.zip.GZIPOutputStream;
 
 import org.lwjgl.util.vector.Vector3f;
 
+import com.brett.datatypes.Tuple;
 import com.brett.renderer.MasterRenderer;
-import com.brett.renderer.datatypes.Tuple;
 import com.brett.tools.Debug;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.Inventory;

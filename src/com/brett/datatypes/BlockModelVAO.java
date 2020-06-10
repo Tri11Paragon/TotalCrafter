@@ -1,9 +1,10 @@
-package com.brett.renderer.datatypes;
+package com.brett.datatypes;
 
 /**
 *
 * @author brett
 * @date Mar. 3, 2020
+* Just a ModelVAO that stores the VBOs in an int[]
 */
 
 public class BlockModelVAO extends ModelVAO {

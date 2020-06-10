@@ -29,7 +29,7 @@ import com.brett.tools.SettingsLoader;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.networking.Client;
 import com.brett.voxel.renderer.VoxelRenderer;
-import com.brett.voxel.world.LevelLoader;
+import com.brett.voxel.tools.LevelLoader;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.chunk.ChunkStore;
 

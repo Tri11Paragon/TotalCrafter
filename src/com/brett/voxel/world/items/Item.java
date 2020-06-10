@@ -3,7 +3,7 @@ package com.brett.voxel.world.items;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.brett.renderer.datatypes.ModelTexture;
+import com.brett.datatypes.Texture;
 import com.brett.voxel.world.blocks.Block;
 
 /**
@@ -40,18 +40,18 @@ public class Item {
 	public static Map<Item, Short> inverseItems = new HashMap<Item, Short>();
 	public static Map<Item, Block> itemBlocks = new HashMap<Item, Block>();
 	
-	private ModelTexture texture;
+	private Texture texture;
 	private short id;
 	private int miningLevel = 0;
 	private float miningSpeed = 0.2f;
 	private int maxStackSize = 128;
 	
-	public Item(short id, ModelTexture texture) {
+	public Item(short id, Texture texture) {
 		this.id = id;
 		this.texture = texture;
 	}
 	
-	public ModelTexture getTexture() {
+	public Texture getTexture() {
 		return texture;
 	}
 

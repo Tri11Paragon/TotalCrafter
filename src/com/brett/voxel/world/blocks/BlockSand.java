@@ -1,6 +1,6 @@
 package com.brett.voxel.world.blocks;
 
-import com.brett.renderer.datatypes.ModelTexture;
+import com.brett.datatypes.Texture;
 import com.brett.voxel.world.IWorldProvider;
 
 /**
@@ -14,7 +14,7 @@ public class BlockSand extends Block {
 	// TODO: add in blockfalling class
 	// TODO: improove this:
 	
-	public BlockSand(ModelTexture model) {
+	public BlockSand(Texture model) {
 		super(model, 4);
 	}
 	

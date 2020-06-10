@@ -1,6 +1,6 @@
 package com.brett.voxel.world.items;
 
-import com.brett.renderer.datatypes.ModelTexture;
+import com.brett.datatypes.Texture;
 
 /**
 *
@@ -10,7 +10,7 @@ import com.brett.renderer.datatypes.ModelTexture;
 
 public class ItemCopperPickaxe extends ItemTool {
 
-	public ItemCopperPickaxe(short id, ModelTexture texture) {
+	public ItemCopperPickaxe(short id, Texture texture) {
 		super(id, texture);
 		super.setMiningLevel(2);
 		super.setMiningSpeed(0.45f);

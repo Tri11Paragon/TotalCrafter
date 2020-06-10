@@ -3,7 +3,7 @@ package com.brett.voxel.world.entity;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.DisplayManager;
-import com.brett.renderer.datatypes.TexturedModel;
+import com.brett.datatypes.TexturedModel;
 import com.brett.voxel.world.VoxelWorld;
 
 /**

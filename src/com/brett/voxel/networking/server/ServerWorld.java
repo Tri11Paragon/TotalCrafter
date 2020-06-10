@@ -10,9 +10,9 @@ import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.lwjgl.util.vector.Matrix4f;
 
+import com.brett.datatypes.Tuple;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
-import com.brett.renderer.datatypes.Tuple;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.renderer.COLLISIONTYPE;

@@ -4,7 +4,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 
-import com.brett.renderer.datatypes.GUITexture;
+import com.brett.datatypes.GUITexture;
 
 /**
 *

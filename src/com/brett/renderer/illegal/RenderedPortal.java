@@ -13,9 +13,9 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.cameras.Camera;
+import com.brett.datatypes.ModelVAO;
 import com.brett.renderer.Fbo;
 import com.brett.renderer.MasterRenderer;
-import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.renderer.shaders.RenderedShader;
 import com.brett.tools.Maths;
 

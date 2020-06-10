@@ -13,7 +13,7 @@ import com.brett.console.Console;
 import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.voxel.inventory.recipe.PlayerCrafting;
-import com.brett.voxel.world.LevelLoader;
+import com.brett.voxel.tools.LevelLoader;
 import com.brett.voxel.world.blocks.BlockCrafting;
 import com.brett.voxel.world.items.ItemStack;
 

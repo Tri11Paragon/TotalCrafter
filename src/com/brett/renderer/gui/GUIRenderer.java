@@ -11,9 +11,9 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import com.brett.datatypes.GUITexture;
+import com.brett.datatypes.ModelVAO;
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.GUITexture;
-import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.renderer.shaders.GUIShader;
 import com.brett.tools.Maths;
 

@@ -1,6 +1,6 @@
 package com.brett.voxel.world.items;
 
-import com.brett.renderer.datatypes.ModelTexture;
+import com.brett.datatypes.Texture;
 
 /**
 *
@@ -10,7 +10,7 @@ import com.brett.renderer.datatypes.ModelTexture;
 
 public class ItemWoodenShovel extends ItemTool {
 	
-	public ItemWoodenShovel(short id, ModelTexture texture) {
+	public ItemWoodenShovel(short id, Texture texture) {
 		super(id, texture);
 		super.setMiningLevel(1);
 		super.setMiningSpeed(0.3f);

@@ -3,6 +3,11 @@ package com.brett.console.commands;
 import com.brett.console.Command;
 import com.brett.console.Console;
 
+/**
+ * @author brett
+ * clears the console text buffers.
+ *
+ */
 public class ClearCommand extends Command {
 
 	private Console c;

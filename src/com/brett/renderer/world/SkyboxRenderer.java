@@ -10,8 +10,8 @@ import org.lwjgl.util.vector.Matrix4f;
 
 import com.brett.DisplayManager;
 import com.brett.cameras.ICamera;
+import com.brett.datatypes.ModelVAO;
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.renderer.shaders.SkyboxShader;
 
 public class SkyboxRenderer {

@@ -1,9 +1,11 @@
-package com.brett.renderer.datatypes;
+package com.brett.datatypes;
 
 /**
 *
 * @author brett
 * @date May 16, 2020
+* holds float[]s for the verts and uvs.
+* Very simple data storage type
 */
 
 public class SmallModelData {

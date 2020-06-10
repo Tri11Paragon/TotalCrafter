@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import com.brett.renderer.datatypes.Tuple;
+import com.brett.datatypes.Tuple;
 /**
 *
 * @author brett

@@ -1,4 +1,4 @@
-package com.brett.voxel.world;
+package com.brett.voxel.tools;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -12,6 +12,7 @@ import java.io.IOException;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.voxel.gui.MainMenu;
+import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.player.Player;
 
 /** 
@@ -48,6 +49,9 @@ public class LevelLoader {
 	}
 	
 	public static void saveLevelData(String topLevelWorldLocation) {
+		if (VoxelWorld.isRemote || !MainMenu.ingame) {
+			return;
+		}
 		DataOutputStream os = null;
 		try {
 			os = new DataOutputStream(new BufferedOutputStream(
@@ -55,10 +59,6 @@ public class LevelLoader {
 		} catch (FileNotFoundException e1) {return;}
 		
 		try {
-			if (VoxelWorld.isRemote || !MainMenu.ingame) {
-				os.close();
-				return;
-			}
 			os.writeLong(seed);
 			os.writeFloat(ply.getPosition().x);
 			os.writeFloat(ply.getPosition().y);

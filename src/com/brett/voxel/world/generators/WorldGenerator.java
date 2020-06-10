@@ -2,8 +2,8 @@ package com.brett.voxel.world.generators;
 
 import java.util.Random;
 
+import com.brett.voxel.tools.LevelLoader;
 import com.brett.voxel.world.IWorldProvider;
-import com.brett.voxel.world.LevelLoader;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.generators.noise.DetailNoise;

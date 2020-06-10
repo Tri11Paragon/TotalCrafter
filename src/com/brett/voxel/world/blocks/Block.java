@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import com.brett.renderer.datatypes.ModelTexture;
+import com.brett.datatypes.Texture;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.PlayerInventory;
@@ -53,7 +53,7 @@ public class Block {
 	public static final short FURNACE = 25;
 	public static final short CHEST = 26;
 	
-	public ModelTexture model;
+	public Texture model;
 	public int textureTop, textureBottom, textureLeft, textureRight, textureFront, textureFront2, textureBack;
 	private int[] breakSound = {0};
 	private short droppedBlock = 0;
@@ -67,7 +67,7 @@ public class Block {
 	private float[] specialVerts;
 	private float[] specialTextures;
 	
-	public Block(ModelTexture model, float[] verts, float[] texs, int textureIndex) {
+	public Block(Texture model, float[] verts, float[] texs, int textureIndex) {
 		this.model = model;
 		this.specialVerts = verts;
 		this.specialTextures = texs;
@@ -75,7 +75,7 @@ public class Block {
 		rendermode = RENDERMODE.SPECIAL;
 	}
 	
-	public Block(ModelTexture model, int textureIndex) {
+	public Block(Texture model, int textureIndex) {
 		this.model = model;
 		this.textureTop = textureIndex;
 		this.textureBottom = textureIndex;
@@ -87,7 +87,7 @@ public class Block {
 		rendermode = RENDERMODE.SOLID;
 	}
 	
-	public Block(ModelTexture model) {
+	public Block(Texture model) {
 		this.model = model;
 		this.textureTop = 0;
 		rendermode = RENDERMODE.SOLID;

@@ -1,6 +1,6 @@
 package com.brett.voxel.world.blocks;
 
-import com.brett.renderer.datatypes.ModelTexture;
+import com.brett.datatypes.Texture;
 import com.brett.voxel.world.IWorldProvider;
 
 /**
@@ -11,7 +11,7 @@ import com.brett.voxel.world.IWorldProvider;
 
 public class BlockLeaves extends Block {
 
-	public BlockLeaves(ModelTexture model, int i) {
+	public BlockLeaves(Texture model, int i) {
 		super(model, i);
 	}
 	

@@ -1,11 +1,10 @@
+package com.brett.datatypes;
+
 /** 
 *	Brett Terpstra
 *	Feb 10, 2020
-*	
+*	Holds two types of data as a single data
 */ 
-
-package com.brett.renderer.datatypes;
-
 public class Tuple<X,Y> {
 	
 	private X x;

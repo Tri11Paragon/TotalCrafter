@@ -1,6 +1,6 @@
 package com.brett.voxel.world.blocks;
 
-import com.brett.renderer.datatypes.ModelTexture;
+import com.brett.datatypes.Texture;
 import com.brett.voxel.renderer.RENDERMODE;
 import com.brett.voxel.world.IWorldProvider;
 
@@ -13,7 +13,7 @@ import com.brett.voxel.world.IWorldProvider;
 public class BlockGrass extends Block {
 
 	
-	public BlockGrass(ModelTexture model) {
+	public BlockGrass(Texture model) {
 		super(model, 20);
 		super.textureTop = 0;
 		super.textureBottom = 1;

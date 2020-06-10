@@ -8,8 +8,8 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
+import com.brett.datatypes.ModelVAO;
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.renderer.RENDERMODE;
@@ -517,46 +517,58 @@ public class Chunk {
 		return false;
 	}
 	
+	/**
+	 * Draws this chunk object. <br> 
+	 * This method will load the chunk mesh to the GPU if there is a mesh waiting to be loaded.
+	 * @param shader the shader to load the translation matrix up to
+	 * @param view the matrix that holds the combined view and projection matrices
+	 * @param cx the local chunk x position (in chunk space) relative to the camera
+	 * @param cz the local chunk z position (in chunk space) relative to the camera
+	 */
 	public void render(VoxelShader shader, Matrix4f view, int cx, int cz) {
 		if (waitingForMesh) {
+			// make sure we don't change the mesh while we are loading it to the GPU
 			isMeshing = true;
+			// delete the old VAO off the GPU if it exists
 			if(rawID != null)
 				loader.deleteVAO(rawID);
+			// delete the old transparnt VAO off the GPU if it exists
 			if(rawIDTrans != null)
 				loader.deleteVAO(rawIDTrans);
+			// load the newly defined verts into the GPU
 			rawID = loader.loadToVAO(verts, uvs, 1);
+			// load the transparent vertices if we have transparent objects
 			if (vertsTrans.length > 0 && uvsTrans.length > 0)
 				rawIDTrans = loader.loadToVAO(vertsTrans, uvsTrans, 1);
+			// we are no longer waiting to mesh
 			waitingForMesh = false;
+			// no need to store verts locally as the GPU now has them
 			verts = null;
 			uvs = null;
 			vertsTrans = null;
 			uvsTrans = null;
+			// we are no longer meshing. The mesher can now mesh again.
 			isMeshing = false;
-			// im keeping this here as a point
-			// enabling this increases memory usage
-			// figure that one out
-			// especially when calling gc from my JVM monitor clears most of the memory.
-			/*if (System.currentTimeMillis() - lastGC > 10000) {
-				System.gc();
-				lastGC = System.currentTimeMillis();
-				System.out.println("cleared!"); 
-			}*/
 		}
-		if (blocks == null)
+		// don't render if we don't have blocks or a mesh
+		if (blocks == null || rawID == null)
 			return;
-		
-		if (rawID == null)
-			return;
+		// enable the VAO with the chunk mesh
 		GL30.glBindVertexArray(rawID.getVaoID());
+		// enable the pointers to the data
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
 		
+		// create the transformation matrix based on localized position
 		Matrix4f trans = Maths.createTransformationMatrixCube(x*cx,0,z*cz);
+		// multiplies the matrix here on the CPU instead of doing it per vertex on the GPU
 		Matrix4f.mul(view, trans, trans);
+		// load this to the shader
 		shader.loadTransformationMatrix(trans);
+		// draws all the vertices found in the VBOs
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, rawID.getVertexCount());
 		
+		// disable the VBO and VAO as we no longer are using them
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
 		GL30.glBindVertexArray(0);

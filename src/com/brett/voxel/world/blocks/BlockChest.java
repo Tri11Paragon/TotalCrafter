@@ -1,6 +1,6 @@
 package com.brett.voxel.world.blocks;
 
-import com.brett.renderer.datatypes.ModelTexture;
+import com.brett.datatypes.Texture;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.world.IWorldProvider;
 import com.brett.voxel.world.VoxelWorld;
@@ -14,7 +14,7 @@ import com.brett.voxel.world.tileentity.TileChest;
 
 public class BlockChest extends Block {
 
-	public BlockChest(ModelTexture model) {
+	public BlockChest(Texture model) {
 		super(model);
 		this.textureTop = 36;
 		this.textureFront = 38;

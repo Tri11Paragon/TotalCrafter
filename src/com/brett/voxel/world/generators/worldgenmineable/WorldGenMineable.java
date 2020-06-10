@@ -2,7 +2,7 @@ package com.brett.voxel.world.generators.worldgenmineable;
 
 import java.util.Random;
 
-import com.brett.voxel.world.LevelLoader;
+import com.brett.voxel.tools.LevelLoader;
 import com.brett.voxel.world.chunk.Chunk;
 
 /**

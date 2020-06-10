@@ -17,7 +17,8 @@ import java.util.Random;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
-import com.brett.renderer.datatypes.GUITexture;
+
+import com.brett.datatypes.GUITexture;
 import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.IMenu;
 import com.brett.renderer.gui.UIElement;

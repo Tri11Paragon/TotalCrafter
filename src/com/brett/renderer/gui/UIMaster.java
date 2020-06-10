@@ -7,8 +7,8 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import com.brett.datatypes.GUITexture;
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.GUITexture;
 import com.brett.renderer.font.FontType;
 import com.brett.renderer.font.GUIDynamicText;
 

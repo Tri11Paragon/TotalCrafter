@@ -5,8 +5,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import com.brett.datatypes.ModelVAO;
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.renderer.postprocessing.bloom.CombineFilter;
 import com.brett.renderer.postprocessing.gaussianblur.HorizontalBlur;
 import com.brett.renderer.postprocessing.gaussianblur.VerticalBlur;

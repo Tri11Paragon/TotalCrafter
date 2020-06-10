@@ -1,6 +1,6 @@
 package com.brett.voxel.world.items;
 
-import com.brett.renderer.datatypes.ModelTexture;
+import com.brett.datatypes.Texture;
 
 /**
  *
@@ -10,7 +10,7 @@ import com.brett.renderer.datatypes.ModelTexture;
 
 public class ItemDiamondPickaxe extends ItemTool {
 
-	public ItemDiamondPickaxe(short id, ModelTexture texture) {
+	public ItemDiamondPickaxe(short id, Texture texture) {
 		super(id, texture);
 		super.setMiningLevel(4);
 		super.setMiningSpeed(0.8f);

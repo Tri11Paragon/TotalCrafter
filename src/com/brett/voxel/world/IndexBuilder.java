@@ -1,8 +1,8 @@
 package com.brett.voxel.world;
 
+import com.brett.datatypes.ModelVAO;
+import com.brett.datatypes.SixBoolean;
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.ModelVAO;
-import com.brett.renderer.datatypes.SixBoolean;
 
 /**
 *

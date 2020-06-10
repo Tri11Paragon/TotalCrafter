@@ -59,7 +59,7 @@ public class Console implements IKeyState {
 	private String inputTextBuffer = lineStart + "";
 	
 	// is the console open or not
-	private static boolean isOpen = false;
+	public static boolean isOpen = false;
 	
 	public Console(Loader loader, FontType font,GUIRenderer renderer) {
 		// load up the textures
@@ -67,49 +67,70 @@ public class Console implements IKeyState {
 		this.darkgrey = loader.loadTexture("darkgrey");
 		this.lightgrey = loader.loadTexture("lightgrey");
 		this.renderer = renderer;
+		// add the texts that we will be using for drawing.
 		texts.add(new GUIDynamicText(inputTextBuffer, fontSize, font, new Vector2f(0.007f,0.9f - 0.005f), 0.45f, false, 1));
 		texts.add(new GUIDynamicText(textBuffer, fontSize, font, new Vector2f(0.007f, 0.020f), 0.45f, false));
+		// add a clear command to clear the body.
 		this.registerCommand("clear", new ClearCommand(this));
 	}
 	
 	public void update() {
+		// this makes sure that it only runs once per button press.
 		if (KeyMaster.state) {
+			// only add to the line if the console is open
 			if (isOpen) {
+				// also makes sure that this only responds to button presses.
 				if(Keyboard.getEventKeyState()) {
+					// gets the character that we are currently pressing.
 					char c = Keyboard.getEventCharacter();
-					if (c == 96)
+					// make sure we don't add if we are pressing the console open key.
+					if (c == 96 || c == SettingsLoader.KEY_CONSOLE)
 						return;
+					// this is backspace. we use it to remove text.
 					if (c == 8) {
 						if (inputTextBuffer.length() > 1)
 							inputTextBuffer = inputTextBuffer.substring(0, inputTextBuffer.length() - 1);
+					// enters the command when enter is pressed.
 					} else if (c == 10 || c == 13) {
-						if (texts.get(1).getHeight() < 7.8)
-							enterCommand();
-						else {
+						// clears the body text if it is larger then the console window pane.
+						if (texts.get(1).getHeight() > 7.8) {
 							texts.get(1).changeText(""); 
 							textBuffer = "";
 							texts.get(1).setHeight(0);
 						}
+						// enters the comamnd
+						enterCommand();
+					// we don't want to write anything if we are pressing a key that isn't a character.
 					} else if (c < 32) {
-							
-					} else
-						if (c != SettingsLoader.KEY_CONSOLE)
-							inputTextBuffer += c;
+					// add in the character to the input line
+					} else 
+						inputTextBuffer += c;
+					// change the text
 					texts.get(0).changeText(inputTextBuffer);
 				}
 			}
 		}
+		// render if we are open.
 		if (isOpen) {
+			// enables the shaders
 			renderer.startrender();
+			// renders the menu
 			renderer.render(grey, 5, 10, 400, 700);
+			// stops the shaders.
 			renderer.stoprender();
 		}
 	}
 	
+	/**
+	 * registers a command with the console
+	 */
 	public void registerCommand(String name, Command command) {
 		this.commands.put(name, command);
 	}
 	
+	/**
+	 * registers a command with the console with multiple aliases
+	 */
 	public void registerCommand(String[] alias, Command command) {
 		for (int i = 0; i < alias.length; i++) {
 			this.commands.put(alias[i], command);
@@ -117,43 +138,66 @@ public class Console implements IKeyState {
 	}
 	
 	private void enterCommand() {
+		// default response is that the command isn't found
 		String body = "COMMAND NOT FOUND";
+		// this is the first object entered in the console (ie the command), removing the line start.
 		String term = inputTextBuffer.toLowerCase().substring(1, inputTextBuffer.length()).split(" ")[0];
+		// add what we typed to the body text.
 		textBuffer += inputTextBuffer + '\n';
+		// all the variables.
 		String[] vars = {};
 		try {
+			// create the list of list of variables, adjusting for the first line plus the space between the command and variables.
 			vars = inputTextBuffer.substring(term.length()+2, inputTextBuffer.length()).split(" ");
 		} catch (Exception e) {}
-		if (commands.get(term) != null)
-			body = commands.get(term).run(inputTextBuffer.substring(1, inputTextBuffer.length()), vars);
+		// tries to get the command and if its found then execute it.
+		try {
+			if (commands.get(term) != null)
+				body = commands.get(term).run(inputTextBuffer.substring(1, inputTextBuffer.length()), vars);
+		} catch (Exception e) {}
+		// add the body to the main body text buffer
 		textBuffer += body + '\n';
+		// reset the line to default
 		inputTextBuffer = lineStart;
-		// don't even.
+		// forces text to change.
 		texts.get(1).changeText(textBuffer);
 	}
 	
 	public void clear() {
+		// clears the console body.
 		this.textBuffer = "";
+		// forces the text to change.
 		this.texts.get(1).changeText(textBuffer);
 	}
 	
 	public static boolean getIsOpen() {
+		// returns if the console is open.
 		return isOpen;
 	}
 	
+	/**
+	 * sets the console's open state.
+	 */
 	public void setIsOpen(boolean b) {
 		isOpen = b;
 	}
 	
+	/**
+	 * gets all the texts
+	 */
 	public List<GUIDynamicText> getTexts(){
 		return texts;
 	}
 
 	@Override
 	public void onKeyPressed() {
+		// open the console if we press the console key.
 		if (Keyboard.isKeyDown(SettingsLoader.KEY_CONSOLE)) {
+			// grab the mouse if its open
 			Mouse.setGrabbed(isOpen);
+			// invert the console state
 			isOpen = !isOpen;
+			// enable / disable texts.
 			if(isOpen)
 				for(GUIDynamicText t : texts)
 					t.enableText();

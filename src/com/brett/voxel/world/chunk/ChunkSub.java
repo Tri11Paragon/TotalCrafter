@@ -1,6 +1,6 @@
 package com.brett.voxel.world.chunk;
 
-import com.brett.renderer.datatypes.BlockModelVAO;
+import com.brett.datatypes.BlockModelVAO;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
 

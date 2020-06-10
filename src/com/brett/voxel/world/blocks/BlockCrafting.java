@@ -1,6 +1,6 @@
 package com.brett.voxel.world.blocks;
 
-import com.brett.renderer.datatypes.ModelTexture;
+import com.brett.datatypes.Texture;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.inventory.recipe.TableCrafting;
@@ -17,7 +17,7 @@ public class BlockCrafting extends Block {
 	
 	public static TableCrafting craft;
 	
-	public BlockCrafting(ModelTexture model) {
+	public BlockCrafting(Texture model) {
 		super(model);
 		super.textureTop = 24;
 		super.textureBack = 25;

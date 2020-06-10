@@ -22,9 +22,10 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL42;
 import org.lwjgl.opengl.GLContext;
-import com.brett.renderer.datatypes.BlockModelVAO;
-import com.brett.renderer.datatypes.ModelVAO;
-import com.brett.renderer.datatypes.TextureData;
+
+import com.brett.datatypes.BlockModelVAO;
+import com.brett.datatypes.ModelVAO;
+import com.brett.datatypes.TextureData;
 import com.brett.tools.SettingsLoader;
 import com.brett.tools.obj.ModelData;
 import com.brett.voxel.world.GameRegistry;

@@ -1,9 +1,12 @@
-package com.brett.renderer.datatypes;
+package com.brett.datatypes;
 
 /** 
 *	Brett Terpstra
 *	Feb 10, 2020
-*	
+*	UNUSED CLASS PLEASE IGNORE
+*   I'm only keeping this because its funny.
+*   this entire class could be replaced with a single byte.
+*   (when I was using it and what I was using it for)
 */ 
 
 public class SixBoolean {

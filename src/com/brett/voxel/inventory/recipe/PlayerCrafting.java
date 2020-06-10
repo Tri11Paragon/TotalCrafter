@@ -5,7 +5,7 @@ import org.lwjgl.opengl.Display;
 import com.brett.voxel.inventory.Inventory;
 import com.brett.voxel.inventory.Slot;
 import com.brett.voxel.inventory.SlotChange;
-import com.brett.voxel.world.LevelLoader;
+import com.brett.voxel.tools.LevelLoader;
 import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemStack;
 

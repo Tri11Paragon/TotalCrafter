@@ -1,7 +1,7 @@
 package com.brett.voxel.world.items;
 
 import com.brett.cameras.Camera;
-import com.brett.renderer.datatypes.ModelTexture;
+import com.brett.datatypes.Texture;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
@@ -22,7 +22,7 @@ public class ItemTool extends Item {
 	
 	private int toolType = 0;
 	
-	public ItemTool(short id, ModelTexture texture) {
+	public ItemTool(short id, Texture texture) {
 		super(id, texture);
 	}
 

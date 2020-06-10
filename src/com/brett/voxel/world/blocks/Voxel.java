@@ -1,6 +1,6 @@
 package com.brett.voxel.world.blocks;
 
-import com.brett.renderer.datatypes.ModelVAO;
+import com.brett.datatypes.ModelVAO;
 
 /**
 *

@@ -1,5 +1,9 @@
-package com.brett.renderer.datatypes;
+package com.brett.datatypes;
 
+/**
+ * @author brett
+ * Stores the VAO and the vertex count
+ */
 public class ModelVAO {
 	
 	private int vaoID;

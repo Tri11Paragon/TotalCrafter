@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.brett.renderer.datatypes.BlockModelVAO;
-import com.brett.renderer.datatypes.SixBoolean;
+import com.brett.datatypes.BlockModelVAO;
+import com.brett.datatypes.SixBoolean;
 
 public class MeshStore {
 	

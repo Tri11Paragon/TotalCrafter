@@ -11,7 +11,7 @@ import java.util.List;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.brett.renderer.datatypes.SmallModelData;
+import com.brett.datatypes.SmallModelData;
 
 public class OBJLoader {
 	private static final String RES_LOC = "resources/models/";

@@ -4,8 +4,8 @@ import com.brett.IInventoryDisable;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.Inventory;
 import com.brett.voxel.inventory.PlayerInventory;
+import com.brett.voxel.tools.LevelLoader;
 import com.brett.voxel.world.IWorldProvider;
-import com.brett.voxel.world.LevelLoader;
 import com.brett.voxel.world.tileentity.TileEntity;
 
 /**
