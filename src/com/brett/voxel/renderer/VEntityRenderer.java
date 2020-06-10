@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.renderer.datatypes.Tuple;
 import com.brett.tools.Maths;
 import com.brett.tools.obj.OBJLoader;
@@ -31,7 +31,7 @@ public class VEntityRenderer {
 	private List<VEntity> ents = new ArrayList<VEntity>();
 	private VEntityShader shader;
 	private Camera camera;
-	public RawModel player;
+	public ModelVAO player;
 	public int texture;
 	
 	public VEntityRenderer(VoxelWorld world, MasterRenderer renderer, Camera camera, Loader loader) {

@@ -1,7 +1,7 @@
 package com.brett.voxel.world;
 
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.renderer.datatypes.SixBoolean;
 
 /**
@@ -23,7 +23,7 @@ import com.brett.renderer.datatypes.SixBoolean;
 
 public class IndexBuilder {
 	
-	public static RawModel buildMesh(SixBoolean b, Loader loader) {
+	public static ModelVAO buildMesh(SixBoolean b, Loader loader) {
 		int[] ind = {};
 		float[] verts = {};
 		float[] uvs = {};

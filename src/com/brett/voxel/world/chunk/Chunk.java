@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.tools.Maths;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.renderer.RENDERMODE;
@@ -33,10 +33,10 @@ public class Chunk {
 	
 	private short[][][] blocks = new short[x][y][z];
 	private byte[][][] lightLevel = new byte[x][y][z];
-	private RawModel rawID;
+	private ModelVAO rawID;
 	private float[] verts;
 	private float[] uvs;
-	private RawModel rawIDTrans;
+	private ModelVAO rawIDTrans;
 	private float[] vertsTrans;
 	private float[] uvsTrans;
 	private int xoff,zoff;
@@ -50,7 +50,7 @@ public class Chunk {
 	private static volatile List<Chunk> meshables2 = new ArrayList<Chunk>();
 	private static volatile List<Chunk> meshables3 = new ArrayList<Chunk>();
 	private static volatile List<Chunk> meshables4 = new ArrayList<Chunk>();
-	public static volatile List<RawModel> deleteables = new ArrayList<RawModel>();
+	public static volatile List<ModelVAO> deleteables = new ArrayList<ModelVAO>();
 	
 	public static void init() {
 		new Thread(new Runnable() {

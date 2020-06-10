@@ -5,6 +5,8 @@ import org.lwjgl.input.Mouse;
 import com.brett.world.entities.Entity;
 import com.brett.world.terrain.Terrain;
 
+UNUSED CLASS
+
 public class ThirdPersonCamera extends Camera {
 	
 	private float distanceFromPlayer = 50;

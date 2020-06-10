@@ -1,10 +1,10 @@
+package com.brett.renderer.datatypes;
+
 /** 
 *	Brett Terpstra
 *	Feb 10, 2020
 *	
 */ 
-
-package com.brett.renderer.datatypes;
 
 public class SixBoolean {
 	

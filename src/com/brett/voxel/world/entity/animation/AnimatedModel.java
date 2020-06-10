@@ -3,7 +3,7 @@ package com.brett.voxel.world.entity.animation;
 import org.lwjgl.util.vector.Matrix4f;
 
 import com.brett.renderer.datatypes.ModelTexture;
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.voxel.world.entity.animation.animation.Animation;
 import com.brett.voxel.world.entity.animation.animation.Animator;
 
@@ -22,7 +22,7 @@ import com.brett.voxel.world.entity.animation.animation.Animator;
 public class AnimatedModel {
 
 	// skin
-	private final RawModel model;
+	private final ModelVAO model;
 	private final ModelTexture texture;
 
 	// skeleton
@@ -53,7 +53,7 @@ public class AnimatedModel {
 	 *            this entity.
 	 * 
 	 */
-	public AnimatedModel(RawModel model, ModelTexture texture, Joint rootJoint, int jointCount) {
+	public AnimatedModel(ModelVAO model, ModelTexture texture, Joint rootJoint, int jointCount) {
 		this.model = model;
 		this.texture = texture;
 		this.rootJoint = rootJoint;
@@ -65,7 +65,7 @@ public class AnimatedModel {
 	/**
 	 * @return The VAO containing all the mesh data for this entity.
 	 */
-	public RawModel getModel() {
+	public ModelVAO getModel() {
 		return model;
 	}
 

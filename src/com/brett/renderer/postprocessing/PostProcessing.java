@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.renderer.postprocessing.bloom.CombineFilter;
 import com.brett.renderer.postprocessing.gaussianblur.HorizontalBlur;
 import com.brett.renderer.postprocessing.gaussianblur.VerticalBlur;
@@ -20,7 +20,7 @@ import com.brett.renderer.postprocessing.gaussianblur.VerticalBlur;
 public class PostProcessing {
 	
 	private static final float[] POSITIONS = { -1, 1, -1, -1, 1, 1, 1, -1 };	
-	private static RawModel quad;
+	private static ModelVAO quad;
 	//private static ContrastChanger contrastChanger;
 	private static HorizontalBlur hBlur;
 	private static VerticalBlur vBlur;

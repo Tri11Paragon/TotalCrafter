@@ -13,13 +13,13 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.renderer.Loader;
 import com.brett.renderer.datatypes.GUITexture;
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.renderer.shaders.GUIShader;
 import com.brett.tools.Maths;
 
 public class GUIRenderer {
 	
-	private final RawModel quad;
+	private final ModelVAO quad;
 	private GUIShader shader;
 	private int SWIDTH = 800;
 	private int SHEIGHT = 600;

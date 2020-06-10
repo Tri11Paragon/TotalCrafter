@@ -25,8 +25,8 @@ import org.lwjgl.opengl.GLContext;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
-import com.brett.renderer.datatypes.RawBlockModel;
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.BlockModelVAO;
+import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.renderer.datatypes.TextureData;
 import com.brett.tools.obj.ModelData;
 import com.brett.voxel.world.GameRegistry;
@@ -49,23 +49,23 @@ public class Loader {
 		System.out.println("Texture Map Size: " + textureMap.size());
 	}
 	
-	public RawModel loadToVAO(float[] positions,float[] textureCoords,float[] normals,int[] indices){
+	public ModelVAO loadToVAO(float[] positions,float[] textureCoords,float[] normals,int[] indices){
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0,3,positions);
 		storeDataInAttributeList(1,2,textureCoords);
 		storeDataInAttributeList(2,3,normals);
 		unbindVAO();
-		return new RawModel(vaoID,indices.length);
+		return new ModelVAO(vaoID,indices.length);
 	}
 	
-	public RawModel loadToVAO(float[] positions,float[] textureCoords,int[] indices){
+	public ModelVAO loadToVAO(float[] positions,float[] textureCoords,int[] indices){
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0,3,positions);
 		storeDataInAttributeList(1,2,textureCoords);
 		unbindVAO();
-		return new RawModel(vaoID,indices.length);
+		return new ModelVAO(vaoID,indices.length);
 	}
 	
 	public int loadToVAO(float[] positions,float[] textureCoords){
@@ -76,7 +76,7 @@ public class Loader {
 		return vaoID;
 	}
 	
-	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] tangents, int[] indices) {
+	public ModelVAO loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] tangents, int[] indices) {
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0, 3, positions);
@@ -84,10 +84,10 @@ public class Loader {
 		storeDataInAttributeList(2, 3, normals);
 		storeDataInAttributeList(3, 3, tangents);
 		unbindVAO();
-		return new RawModel(vaoID, indices.length);
+		return new ModelVAO(vaoID, indices.length);
 	}
 	
-	public RawModel loadToVAO(ModelData data) {
+	public ModelVAO loadToVAO(ModelData data) {
 		int vaoID = createVAO();
 		int[] indices = data.getIndices();
 		bindIndicesBuffer(indices);
@@ -95,10 +95,10 @@ public class Loader {
 		storeDataInAttributeList(1,2,data.getTextureCoords());
 		storeDataInAttributeList(2,3,data.getNormals());
 		unbindVAO();
-		return new RawModel(vaoID,indices.length);
+		return new ModelVAO(vaoID,indices.length);
 	}
 	
-	public RawModel loadToVAO(MeshData data) {
+	public ModelVAO loadToVAO(MeshData data) {
 		int vaoID = createVAO();
 		int[] indices = data.getIndices();
 		bindIndicesBuffer(indices);
@@ -108,33 +108,33 @@ public class Loader {
 		storeDataInAttributeList(3,3,data.getJointIds());
 		storeDataInAttributeList(4,3,data.getVertexWeights());
 		unbindVAO();
-		return new RawModel(vaoID,indices.length);
+		return new ModelVAO(vaoID,indices.length);
 	}
 	
-	public RawModel loadToVAO(float[] positions, int dimensions) {
+	public ModelVAO loadToVAO(float[] positions, int dimensions) {
 		int vaoID = createVAO();
 		this.storeDataInAttributeList(0, dimensions, positions);
 		unbindVAO();
-		return new RawModel(vaoID, positions.length/dimensions);
+		return new ModelVAO(vaoID, positions.length/dimensions);
 		
 	}
 	
-	public RawModel loadToVAO(float[] positions, int dimensions, float[] textureCoords) {
+	public ModelVAO loadToVAO(float[] positions, int dimensions, float[] textureCoords) {
 		int vaoID = createVAO();
 		this.storeDataInAttributeList(0, dimensions, positions);
 		this.storeDataInAttributeList(1, 2, textureCoords);
 		unbindVAO();
-		return new RawModel(vaoID, positions.length/dimensions);
+		return new ModelVAO(vaoID, positions.length/dimensions);
 		
 	}
 	
-	public RawModel loadToVAO(float[] positions, float[] textureCoords, boolean b) {
+	public ModelVAO loadToVAO(float[] positions, float[] textureCoords, boolean b) {
 		int vaoID = createVAO();
 		int[] vbos = new int[2];
 		vbos[0] = this.storeDataInAttributeList(0, 1, positions);
 		vbos[1] = this.storeDataInAttributeList(1, 1, textureCoords);
 		unbindVAO();
-		return new RawBlockModel(vaoID, vbos, positions.length);
+		return new BlockModelVAO(vaoID, vbos, positions.length);
 	}
 	
 	public int createEmptyVBO(int floatCount) {
@@ -165,11 +165,11 @@ public class Loader {
 		GL30.glBindVertexArray(0);
 	}
 	
-	public RawModel loadToVAO(float[] positions) {
+	public ModelVAO loadToVAO(float[] positions) {
 		int vaoID = createVAO();
 		this.storeDataInAttributeList(0, 2, positions);
 		unbindVAO();
-		return new RawModel(vaoID, positions.length/2);
+		return new ModelVAO(vaoID, positions.length/2);
 		
 	}
 	
@@ -227,7 +227,7 @@ public class Loader {
 		return texture.getTextureID();
 	}
 	
-	public RawModel deleteVAO(RawModel model) {
+	public ModelVAO deleteVAO(ModelVAO model) {
 		try {
 			for (int i = 0; i < vaos.size(); i++) {
 				if (vaos.get(i) == model.getVaoID()) {
@@ -235,8 +235,8 @@ public class Loader {
 				}
 			}
 			GL30.glDeleteVertexArrays(model.getVaoID());
-			if (model instanceof RawBlockModel) {
-				int[] vbos = ((RawBlockModel) model).getVbos();
+			if (model instanceof BlockModelVAO) {
+				int[] vbos = ((BlockModelVAO) model).getVbos();
 				for (int i = 0; i < vbos.length; i++) {
 					GL15.glDeleteBuffers(vbos[i]);
 					for (int j = 0; j < this.vbos.size(); j++) {

@@ -11,11 +11,11 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.ModelVAO;
 
 public class U_OLD_OBJ_Loader {
 	
-	public static RawModel loadObjModel(String fileName, Loader loader) {
+	public static ModelVAO loadObjModel(String fileName, Loader loader) {
 		FileReader fr = null;
 		try {
 			fr = new FileReader(new File("resources/models/" + fileName + ".obj"));

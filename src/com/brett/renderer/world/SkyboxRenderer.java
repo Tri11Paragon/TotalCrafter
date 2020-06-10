@@ -10,7 +10,7 @@ import org.lwjgl.util.vector.Matrix4f;
 
 import com.brett.DisplayManager;
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.renderer.shaders.SkyboxShader;
 import com.brett.world.cameras.ICamera;
 
@@ -67,7 +67,7 @@ public class SkyboxRenderer {
 	private static float ROTATE_SPEED = 0.1f;
 	private float rotation = 0;
 	
-	private RawModel cube;
+	private ModelVAO cube;
 	private int texture;
 	private int nightTexture;
 	private SkyboxShader shader;

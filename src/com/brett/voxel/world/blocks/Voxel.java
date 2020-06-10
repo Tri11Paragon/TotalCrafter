@@ -1,6 +1,6 @@
 package com.brett.voxel.world.blocks;
 
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.ModelVAO;
 
 /**
 *
@@ -11,9 +11,9 @@ import com.brett.renderer.datatypes.RawModel;
 public class Voxel {
 	
 	public int id = 0;
-	public RawModel model;
+	public ModelVAO model;
 	
-	public Voxel(int id, RawModel model) {
+	public Voxel(int id, ModelVAO model) {
 		this.id = id;
 		this.model = model;
 	}

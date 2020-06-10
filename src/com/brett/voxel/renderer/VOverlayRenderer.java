@@ -7,7 +7,7 @@ import org.lwjgl.opengl.GL30;
 
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.tools.Maths;
 import com.brett.voxel.renderer.shaders.VOverlayShader;
 import com.brett.voxel.world.MeshStore;
@@ -25,7 +25,7 @@ public class VOverlayRenderer {
 	
 	private Camera camera;
 	private VOverlayShader shader;
-	private RawModel model;
+	private ModelVAO model;
 	private int[] textures = new int[11];
 	private int texture;
 	

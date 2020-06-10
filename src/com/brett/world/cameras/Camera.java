@@ -10,7 +10,12 @@ import org.lwjgl.util.vector.Matrix4f;
  * http://www8.cs.umu.se/kurser/5DV051/HT12/lab/plane_extraction.pdf
  * http://www.lighthouse3d.com/tutorials/view-frustum-culling/index/
  * 
+ * ^ the code I made from those papers is now deleted and replaced with some dude's
+ * frustum class, which I also don't use anymore.
+ * 
  * @author brett
+ * 
+ * Camera base class.
  */
 public class Camera extends ICamera {
 
@@ -23,6 +28,9 @@ public class Camera extends ICamera {
 		
 	}
 	
+	/**
+	 * All of this plane stuff is taken from the frustum class.
+	 */
 	public float[][] m_Frustum = new float[6][4];
     public static final int RIGHT = 0;
     public static final int LEFT = 1;
@@ -35,6 +43,9 @@ public class Camera extends ICamera {
     public static final int C = 2;
     public static final int D = 3;
 
+	/**
+	 * All of this plane stuff is taken from the frustum class.
+	 */
     private FloatBuffer projbuff = BufferUtils.createFloatBuffer(16);
     private FloatBuffer modlbuff = BufferUtils.createFloatBuffer(16);
     private FloatBuffer clipbiff = BufferUtils.createFloatBuffer(16);
@@ -42,6 +53,9 @@ public class Camera extends ICamera {
     float[] modl = new float[16];
     float[] clippingPlanes = new float[16];
 
+	/**
+	 * All of this plane stuff is taken from the frustum class.
+	 */
     private void normalizePlane(float[][] frustum, int side) {
             float nm = (float) Math.sqrt(frustum[side][0] * frustum[side][0] + frustum[side][1] * frustum[side][1] + frustum[side][2] * frustum[side][2]);
 
@@ -51,6 +65,10 @@ public class Camera extends ICamera {
             frustum[side][3] /= nm;
     }
 
+	/**
+	 * All of this plane stuff is taken from the frustum class.
+	 * updates the frustum.
+	 */
     public void calculateFrustum(Matrix4f projection, Matrix4f view) {
     		// clear the matrixs and store
             this.projbuff.clear();
@@ -126,6 +144,10 @@ public class Camera extends ICamera {
             normalizePlane(this.m_Frustum, 5);
     }
 
+	/**
+	 * All of this plane stuff is taken from the frustum class.
+	 * finds if the point is in the frustum
+	 */
 	public boolean pointInFrustum(float x, float y, float z) {
 		for (int i = 0; i < 6; i++) {
 			if (this.m_Frustum[i][0] * x + this.m_Frustum[i][1] * y + this.m_Frustum[i][2] * z + this.m_Frustum[i][3] <= 0.0F) {
@@ -136,6 +158,10 @@ public class Camera extends ICamera {
 		return true;
 	}
 
+	/**
+	 * All of this plane stuff is taken from the frustum class.
+	 * finds if the sphere is in the frustum
+	 */
 	public boolean sphereInFrustum(float x, float y, float z, float radius) {
 		for (int i = 0; i < 6; i++) {
 			if (this.m_Frustum[i][0] * x + this.m_Frustum[i][1] * y + this.m_Frustum[i][2] * z + this.m_Frustum[i][3] <= -radius) {
@@ -146,6 +172,10 @@ public class Camera extends ICamera {
 		return true;
 	}
 
+	/**
+	 * All of this plane stuff is taken from the frustum class.
+	 * finds if this cube is in the frustum
+	 */
 	public boolean cubeInFrustum(float x1, float y1, float z1, float x2, float y2, float z2) {
 		for (int i = 0; i < 6; i++) {
 			if ((this.m_Frustum[i][0] * x1 + this.m_Frustum[i][1] * y1 + this.m_Frustum[i][2] * z1 + this.m_Frustum[i][3] <= 0.0F)

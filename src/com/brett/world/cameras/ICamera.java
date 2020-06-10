@@ -6,10 +6,12 @@ import org.lwjgl.util.vector.Vector3f;
 *
 * @author brett
 * @date Mar. 30, 2020
+* The base camera class
 */
 
 public abstract class ICamera {
 	
+	// camera data required for the game to run
 	protected Vector3f position = new Vector3f(0, 0, 0);
 	protected float pitch;
 	protected float yaw;
@@ -19,6 +21,7 @@ public abstract class ICamera {
 	
 	/**
 	 * Getters and Setters below --------------------------
+	 * *They explain themselves*
 	 */
 
 	public Vector3f getPosition() {

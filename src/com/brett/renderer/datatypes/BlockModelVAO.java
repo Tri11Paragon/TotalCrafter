@@ -6,11 +6,11 @@ package com.brett.renderer.datatypes;
 * @date Mar. 3, 2020
 */
 
-public class RawBlockModel extends RawModel {
+public class BlockModelVAO extends ModelVAO {
 	
 	private int[] vbos;
 	
-	public RawBlockModel(int vaoID, int[] vbos, int vertexCount) {
+	public BlockModelVAO(int vaoID, int[] vbos, int vertexCount) {
 		super(vaoID, vertexCount);
 		this.vbos = vbos;
 	}

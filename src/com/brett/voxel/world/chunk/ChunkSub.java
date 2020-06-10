@@ -1,6 +1,6 @@
 package com.brett.voxel.world.chunk;
 
-import com.brett.renderer.datatypes.RawBlockModel;
+import com.brett.renderer.datatypes.BlockModelVAO;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
 
@@ -18,7 +18,7 @@ public class ChunkSub {
 	private VoxelWorld world;
 	private short[][][] blocks = new short[Chunk.x][y][Chunk.z];
 	private byte[][][] lightLevel = new byte[Chunk.x][y][Chunk.z];
-	private RawBlockModel[][][] blocksModels = new RawBlockModel[Chunk.x][y][Chunk.z];
+	private BlockModelVAO[][][] blocksModels = new BlockModelVAO[Chunk.x][y][Chunk.z];
 	@SuppressWarnings("unused")
 	private float xoff, yoff, zoff;
 	
@@ -57,7 +57,7 @@ public class ChunkSub {
 		lightLevel[x][y][z] = level;
 	}
 	
-	public void setBlockModel(int x, int y, int z, RawBlockModel model) {
+	public void setBlockModel(int x, int y, int z, BlockModelVAO model) {
 		blocksModels[x][y][z] = model;
 	}
 	
@@ -69,7 +69,7 @@ public class ChunkSub {
 		return lightLevel[x][y][z];
 	}
 	
-	public RawBlockModel getBlockModel(int x, int y, int z) {
+	public BlockModelVAO getBlockModel(int x, int y, int z) {
 		return blocksModels[x][y][z];
 	}
 	

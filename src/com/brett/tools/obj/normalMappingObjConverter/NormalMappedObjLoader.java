@@ -12,13 +12,13 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.ModelVAO;
 
 public class NormalMappedObjLoader {
 
 	private static final String RES_LOC = "resources/models/";
 
-	public static RawModel loadOBJ(String objFileName, Loader loader) {
+	public static ModelVAO loadOBJ(String objFileName, Loader loader) {
 		FileReader isr = null;
 		File objFile = new File(RES_LOC + objFileName + ".obj");
 		try {

@@ -9,6 +9,12 @@ import org.lwjgl.util.vector.Matrix4f;
 *
 * @author brett
 * @date Mar. 31, 2020
+* 
+* Pretty sure I don't use this anymore due to some errors
+* it was causing. Its not even my class, I stole it from
+* some guy as my attempt at doing this didn't work
+* (turns out I forgot to normalize my planes :/)
+* 
 */
 
 public class Frustum {

@@ -5,20 +5,20 @@ import com.brett.tools.obj.OBJLoader;
 
 public class TexturedModel {
 
-	private RawModel rawModel;
+	private ModelVAO rawModel;
 	private ModelTexture texture;
 
 	
-	public TexturedModel(RawModel model, ModelTexture texture){
+	public TexturedModel(ModelVAO model, ModelTexture texture){
 		this.rawModel = model;
 		this.texture = texture;
 	}
 	
-	public void setRawModel(RawModel model) {
+	public void setRawModel(ModelVAO model) {
 		this.rawModel = model;
 	}
 	
-	public RawModel getRawModel() {
+	public ModelVAO getRawModel() {
 		return rawModel;
 	}
 

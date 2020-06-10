@@ -14,7 +14,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.renderer.Fbo;
 import com.brett.renderer.MasterRenderer;
-import com.brett.renderer.datatypes.RawModel;
+import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.renderer.shaders.RenderedShader;
 import com.brett.tools.Maths;
 import com.brett.world.cameras.Camera;
@@ -61,7 +61,7 @@ public class RenderedPortal {
 	 * @param inpos 
 	 * @param outpos 
 	 */
-	public RenderedPortal(Camera camera, Matrix4f perspective, RawModel model, Vector3f inpos, Vector3f outpos,  
+	public RenderedPortal(Camera camera, Matrix4f perspective, ModelVAO model, Vector3f inpos, Vector3f outpos,  
 			Vector3f inrotation, Vector3f outrotation, Vector3f inscale, Vector3f outscale) {
 		shader = new RenderedShader();
 		shader.start();
