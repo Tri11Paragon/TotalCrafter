@@ -2,9 +2,9 @@ package com.brett.voxel.renderer.shaders;
 
 import org.lwjgl.util.vector.Matrix4f;
 
+import com.brett.cameras.ICamera;
 import com.brett.renderer.shaders.ShaderProgram;
 import com.brett.tools.Maths;
-import com.brett.world.cameras.ICamera;
 
 /**
 *

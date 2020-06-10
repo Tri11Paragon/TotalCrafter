@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL30;
 
 import com.brett.IMouseState;
 import com.brett.KeyMaster;
+import com.brett.cameras.ICamera;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.voxel.VoxelScreenManager;
@@ -23,7 +24,6 @@ import com.brett.voxel.world.items.ItemStack;
 import com.brett.voxel.world.items.ItemTool;
 import com.brett.voxel.world.lighting.LightingEngine;
 import com.brett.voxel.world.player.Player;
-import com.brett.world.cameras.ICamera;
 
 /**
 *

@@ -12,12 +12,12 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import com.brett.cameras.Camera;
 import com.brett.renderer.Fbo;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.renderer.shaders.RenderedShader;
 import com.brett.tools.Maths;
-import com.brett.world.cameras.Camera;
 
 /**
 *
@@ -25,7 +25,8 @@ import com.brett.world.cameras.Camera;
 * @date Feb. 27, 2020
 * 
 * This is currently put on hold.
-* 
+* PLEASE IGNORE THIS CLASS AS IT IS NOT BEING USED.
+* its just me testing some non-euclidean geometry.
 */
 
 public class RenderedPortal {
@@ -51,16 +52,6 @@ public class RenderedPortal {
 	private int vbo;
 	private int vbo2;
 	
-	/**
-	 * @param loader 
-	 * @param camera 
-	 * @param perspective 
-	 * @param model 
-	 * @param rotation 
-	 * @param scale 
-	 * @param inpos 
-	 * @param outpos 
-	 */
 	public RenderedPortal(Camera camera, Matrix4f perspective, ModelVAO model, Vector3f inpos, Vector3f outpos,  
 			Vector3f inrotation, Vector3f outrotation, Vector3f inscale, Vector3f outscale) {
 		shader = new RenderedShader();

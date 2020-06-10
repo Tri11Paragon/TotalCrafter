@@ -5,13 +5,13 @@ import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.lwjgl.Sys;
 
+import com.brett.cameras.Camera;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.renderer.RENDERMODE;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.chunk.ChunkStore;
-import com.brett.world.cameras.Camera;
 
 /**
 *

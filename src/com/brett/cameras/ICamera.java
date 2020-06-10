@@ -1,4 +1,4 @@
-package com.brett.world.cameras;
+package com.brett.cameras;
 
 import org.lwjgl.util.vector.Vector3f;
 

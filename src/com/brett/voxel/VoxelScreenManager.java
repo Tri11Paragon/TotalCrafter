@@ -66,12 +66,6 @@ public class VoxelScreenManager {
 	
 	public static void init() {
 		MeshStore.init();
-		//OBJLoader.printArrays("top");
-		//OBJLoader.printArrays("bottom");
-		//OBJLoader.printArrays("left");
-		//OBJLoader.printArrays("right");
-		//OBJLoader.printArrays("front");
-		//OBJLoader.printArrays("back");
 		SettingsLoader.loadSettings();
 		DisplayManager.createDisplay(false);
 		// audio stuff

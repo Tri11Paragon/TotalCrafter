@@ -1,4 +1,4 @@
-package com.brett.world.cameras;
+package com.brett.cameras;
 
 import java.nio.FloatBuffer;
 

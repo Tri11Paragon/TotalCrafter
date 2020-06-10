@@ -1,3 +1,4 @@
+package com.brett.cameras;
 /*package com.brett.world.cameras;
 
 import org.lwjgl.input.Mouse;

@@ -4,6 +4,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 import com.brett.DisplayManager;
+import com.brett.cameras.Camera;
 import com.brett.renderer.Loader;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.sound.AudioController;
@@ -12,7 +13,6 @@ import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.renderer.COLLISIONTYPE;
 import com.brett.voxel.tools.MouseBlockPicker;
 import com.brett.voxel.world.VoxelWorld;
-import com.brett.world.cameras.Camera;
 
 /**
 *

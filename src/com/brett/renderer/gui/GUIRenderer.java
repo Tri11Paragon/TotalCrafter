@@ -29,7 +29,7 @@ public class GUIRenderer {
 		SWIDTH = Display.getWidth();
 		SHEIGHT = Display.getHeight();
 		float[] positions = {-1, 1, -1, -1, 1, 1, 1, -1};
-		quad = loader.loadToVAO(positions);
+		quad = loader.loadToVAO(positions, 2);
 		shader = new GUIShader();
 		shader.start();
 		shader.connectTextureUnits();

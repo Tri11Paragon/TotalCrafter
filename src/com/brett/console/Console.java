@@ -22,27 +22,47 @@ import com.brett.tools.SettingsLoader;
 * @author brett
 * This is a big mess
 * please don't judge
-*
+* 
+* The developer console class (this class) is used for testing, however
+* users are more then welcome to use it but should be warned it can crash your game
+* <b>WITHOUT</b> saving it.
+* 
+* Console commands are easy to integrate and allow you to do things like
+* teleport the player or give items to them. It may also serve in the future to
+* allow users to chat to each other when connected to multiplayer.
+* 
 */
 @SuppressWarnings("unused")
 public class Console implements IKeyState {
 
+	// what does the line start with?
 	public static String lineStart = ">";
+	// size of the console font.
 	public static float fontSize = 0.8f;
 	
+	// list of the texts that are used to display the console.
 	private List<GUIDynamicText> texts = new ArrayList<GUIDynamicText>(); 
+	// map of the (object) commands and the (String) commands that call them.
 	private HashMap<String, Command> commands = new HashMap<String, Command>();
 	
+	// grey texture
 	private int grey;
+	// dark grey texture
 	private int darkgrey;
+	// light grey texture
 	private int lightgrey;
+	// reference to the GUI renderer.
 	private GUIRenderer renderer;
+	// body text buffer
 	private String textBuffer = "";
+	// input text
 	private String inputTextBuffer = lineStart + "";
 	
+	// is the console open or not
 	private static boolean isOpen = false;
 	
 	public Console(Loader loader, FontType font,GUIRenderer renderer) {
+		// load up the textures
 		this.grey = loader.loadTexture("grey");
 		this.darkgrey = loader.loadTexture("darkgrey");
 		this.lightgrey = loader.loadTexture("lightgrey");

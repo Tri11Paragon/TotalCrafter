@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+
+import com.brett.cameras.Camera;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.datatypes.ModelVAO;
@@ -17,7 +19,6 @@ import com.brett.tools.obj.OBJLoader;
 import com.brett.voxel.renderer.shaders.VEntityShader;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.entity.VEntity;
-import com.brett.world.cameras.Camera;
 
 /**
 *

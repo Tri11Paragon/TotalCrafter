@@ -8,6 +8,7 @@ import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 import com.brett.DisplayManager;
+import com.brett.cameras.Camera;
 import com.brett.tools.Maths;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.renderer.VOverlayRenderer;
@@ -18,7 +19,6 @@ import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemStack;
 import com.brett.voxel.world.items.ItemTool;
 import com.brett.voxel.world.player.Player;
-import com.brett.world.cameras.Camera;
 
 /**
 *

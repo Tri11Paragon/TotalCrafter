@@ -1,11 +1,11 @@
 package com.brett.voxel.renderer;
 
+import com.brett.cameras.Camera;
+import com.brett.cameras.ICamera;
 import com.brett.renderer.DisplaySource;
 import com.brett.renderer.MasterRenderer;
 import com.brett.tools.Maths;
 import com.brett.voxel.world.VoxelWorld;
-import com.brett.world.cameras.Camera;
-import com.brett.world.cameras.ICamera;
 
 /**
 *

@@ -32,6 +32,7 @@ public class SettingsLoader {
 	public static int KEY_CONSOLE = Keyboard.KEY_GRAVE;
 	public static int KEY_CLEAR = Keyboard.KEY_F6;
 	public static int SAMPLES = 4;
+	public static int AF = 4;
 	public static double SENSITIVITY = 0.5d;
 	
 	private static int readLines = 1;
@@ -62,6 +63,8 @@ public class SettingsLoader {
 					SENSITIVITY = Double.parseDouble(name[1]);
 				if (name[0].equals("samples"))
 					SAMPLES = (int) Float.parseFloat(name[1]);
+				if (name[0].equals("anisotropy"))
+					AF = (int) Float.parseFloat(name[1]);
 				try {
 				if (name[0].equals("username"))
 					MainMenu.username = name[1].trim();
@@ -93,6 +96,7 @@ public class SettingsLoader {
 			writeLine(writer, "username: " + MainMenu.username);
 			writeLine(writer, "ip: " + MainMenu.ip);
 			writeLine(writer, "samples: " + SAMPLES);
+			writeLine(writer, "anisotropy: " + AF);
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();

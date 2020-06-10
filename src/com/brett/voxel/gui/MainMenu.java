@@ -10,6 +10,7 @@ import java.util.Random;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
+import com.brett.cameras.Camera;
 import com.brett.renderer.DisplaySource;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
@@ -31,7 +32,6 @@ import com.brett.voxel.renderer.VoxelRenderer;
 import com.brett.voxel.world.LevelLoader;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.chunk.ChunkStore;
-import com.brett.world.cameras.Camera;
 
 /**
 *

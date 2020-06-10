@@ -524,9 +524,9 @@ public class Chunk {
 				loader.deleteVAO(rawID);
 			if(rawIDTrans != null)
 				loader.deleteVAO(rawIDTrans);
-			rawID = loader.loadToVAO(verts, uvs, true);
+			rawID = loader.loadToVAO(verts, uvs, 1);
 			if (vertsTrans.length > 0 && uvsTrans.length > 0)
-				rawIDTrans = loader.loadToVAO(vertsTrans, uvsTrans, true);
+				rawIDTrans = loader.loadToVAO(vertsTrans, uvsTrans, 1);
 			waitingForMesh = false;
 			verts = null;
 			uvs = null;

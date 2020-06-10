@@ -3,9 +3,8 @@ package com.brett.voxel.world.entity;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.DisplayManager;
+import com.brett.renderer.datatypes.TexturedModel;
 import com.brett.voxel.world.VoxelWorld;
-import com.brett.voxel.world.entity.animation.AnimatedModel;
-import com.brett.voxel.world.entity.animation.animation.Animation;
 
 /**
 *
@@ -13,7 +12,7 @@ import com.brett.voxel.world.entity.animation.animation.Animation;
 * @date Mar. 27, 2020
 */
 
-public class VEntity extends AnimatedModel {
+public class VEntity {
 	
 	private Vector3f posision;
 	private Vector3f velocity;
@@ -27,14 +26,13 @@ public class VEntity extends AnimatedModel {
 	private Vector3f drag;
 	private float rot, airResistance, mass;
 	private VoxelWorld world;
-	private Animation animation;
+	private TexturedModel model;
 	
-	public VEntity(Vector3f pos, float rot, AnimatedModel model, Animation animaion) {
-		super(model.getModel(), model.getTexture(), model.getRootJoint(), model.getJointCount());
+	public VEntity(Vector3f pos, float rot, TexturedModel model) {
 		this.posision = pos;
 		this.rot = rot;
 		initVectors();
-		this.animation = animaion;
+		this.model = model;
 	}
 	
 	private void initVectors(){
@@ -46,8 +44,6 @@ public class VEntity extends AnimatedModel {
 	
 	// yes it is wrong but its fine.
 	public void update() {
-		if (animation != null)
-			this.doAnimation(animation);
 		// apply gravity
 		this.acceleration.y -= VoxelWorld.GRAVITY;
 		// apply air resistance
@@ -127,6 +123,10 @@ public class VEntity extends AnimatedModel {
 		this.acceleration.y += y;
 		this.acceleration.z += z;
 		return this;
+	}
+	
+	public TexturedModel getModel() {
+		return this.model;
 	}
 
 	public Vector3f getVelocity() {

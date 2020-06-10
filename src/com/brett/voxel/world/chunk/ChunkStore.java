@@ -9,6 +9,8 @@ import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.lwjgl.util.vector.Matrix4f;
+
+import com.brett.cameras.Camera;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.tools.Maths;
@@ -21,7 +23,6 @@ import com.brett.voxel.world.Region;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.generators.WorldGenerator;
-import com.brett.world.cameras.Camera;
 
 /**
  *

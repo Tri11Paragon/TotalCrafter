@@ -3,8 +3,8 @@ package com.brett.renderer.shaders;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import com.brett.cameras.Camera;
 import com.brett.tools.Maths;
-import com.brett.world.cameras.Camera;
 
 /**
 *

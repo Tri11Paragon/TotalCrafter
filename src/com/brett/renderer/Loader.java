@@ -1,5 +1,6 @@
 package com.brett.renderer;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -19,29 +20,59 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL33;
 import org.lwjgl.opengl.GL42;
 import org.lwjgl.opengl.GLContext;
-import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
-
 import com.brett.renderer.datatypes.BlockModelVAO;
 import com.brett.renderer.datatypes.ModelVAO;
 import com.brett.renderer.datatypes.TextureData;
+import com.brett.tools.SettingsLoader;
 import com.brett.tools.obj.ModelData;
 import com.brett.voxel.world.GameRegistry;
-import com.brett.voxel.world.entity.animation.dataStructures.MeshData;
-
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 
+/**
+ * @author brett
+ * This is one of the first classes made.
+ * 
+ * The loader class handles all loading of models and textures into the GPU.
+ * 
+ * Something to note.
+ *  VAO = Vertex Array Object. VAOs tell OpenGL how to draw things, if by index or by array.
+ *  They hold a list of pointers to objects called VBOs
+ *  VBO = Vertex Buffer Object. VBOs store float[]s for future rendering on the GPU
+ *  
+ *  Generally we use 3 float[]s and one int[] for drawing
+ *  
+ *  the first float array is normally defined in triplets and store position data for the vertex.
+ *  the second float array is normally defined in pairs and store UV coords for the vertex (positions on the texture)
+ *  the third float array is normally the normals and are defined in triplets as well for each vertex.
+ *  
+ *  the int[] is normally the indices used for drawing. Indices are ints that are used as indexs for the arrays.
+ *  This can save storage on the GPU and be faster as instead of having to define multiple of the same position you just use the index.
+ *  In theory you can get savings of upwards of 90%
+ * 
+ *  if drawing doesn't use an int[] that means that OpenGL uses only the float[]s.
+ *  Which means that instead of generating trinagles based on the indexes of the float[]s it will use the entire float[]
+ *  as if it had already been built. 
+ *  This means that all vertices need to be defined to draw the triangles, even if they are repetitive. 
+ *  
+ *  Hope that makes sense.
+ */
 public class Loader {
 	
+	/**
+	 * list of the VBOs, textures and VAOs.
+	 */
 	private List<Integer> vaos = new ArrayList<Integer>();
 	private List<Integer> vbos = new ArrayList<Integer>();
 	private List<Integer> textures = new ArrayList<Integer>();
+	// map of loaded textures.
 	public Map<String, Integer> textureMap = new HashMap<String, Integer>();
 	
+	/**
+	 * prints the sizes of all the maps
+	 */
 	public void printSizes() {
 		System.out.println("VAOs Size: " + vaos.size());
 		System.out.println("VBOs Size: " + vbos.size());
@@ -49,206 +80,113 @@ public class Loader {
 		System.out.println("Texture Map Size: " + textureMap.size());
 	}
 	
-	public ModelVAO loadToVAO(float[] positions,float[] textureCoords,float[] normals,int[] indices){
-		int vaoID = createVAO();
-		bindIndicesBuffer(indices);
-		storeDataInAttributeList(0,3,positions);
-		storeDataInAttributeList(1,2,textureCoords);
-		storeDataInAttributeList(2,3,normals);
-		unbindVAO();
-		return new ModelVAO(vaoID,indices.length);
-	}
-	
+	/**
+	 * load to a VAO using indices
+	 */
 	public ModelVAO loadToVAO(float[] positions,float[] textureCoords,int[] indices){
+		// create a VAO
 		int vaoID = createVAO();
+		// bind the index buffer
 		bindIndicesBuffer(indices);
+		// store the data into vbos
 		storeDataInAttributeList(0,3,positions);
 		storeDataInAttributeList(1,2,textureCoords);
+		// unbind the vbos
 		unbindVAO();
+		// return the model
 		return new ModelVAO(vaoID,indices.length);
 	}
 	
-	public int loadToVAO(float[] positions,float[] textureCoords){
+	/**
+	 * load to VAO containing a position and texture while specifying the size
+	 */
+	public BlockModelVAO loadToVAO(float[] positions,float[] textureCoords, int dimensions){
+		// standard stuff that this point
+		// create VAO
 		int vaoID = createVAO();
-		storeDataInAttributeList(0,2,positions);
-		storeDataInAttributeList(1,2,textureCoords);
-		unbindVAO();
-		return vaoID;
-	}
-	
-	public ModelVAO loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] tangents, int[] indices) {
-		int vaoID = createVAO();
-		bindIndicesBuffer(indices);
-		storeDataInAttributeList(0, 3, positions);
-		storeDataInAttributeList(1, 2, textureCoords);
-		storeDataInAttributeList(2, 3, normals);
-		storeDataInAttributeList(3, 3, tangents);
-		unbindVAO();
-		return new ModelVAO(vaoID, indices.length);
-	}
-	
-	public ModelVAO loadToVAO(ModelData data) {
-		int vaoID = createVAO();
-		int[] indices = data.getIndices();
-		bindIndicesBuffer(indices);
-		storeDataInAttributeList(0,3,data.getVertices());
-		storeDataInAttributeList(1,2,data.getTextureCoords());
-		storeDataInAttributeList(2,3,data.getNormals());
-		unbindVAO();
-		return new ModelVAO(vaoID,indices.length);
-	}
-	
-	public ModelVAO loadToVAO(MeshData data) {
-		int vaoID = createVAO();
-		int[] indices = data.getIndices();
-		bindIndicesBuffer(indices);
-		storeDataInAttributeList(0,3,data.getVertices());
-		storeDataInAttributeList(1,2,data.getTextureCoords());
-		storeDataInAttributeList(2,3,data.getNormals());
-		storeDataInAttributeList(3,3,data.getJointIds());
-		storeDataInAttributeList(4,3,data.getVertexWeights());
-		unbindVAO();
-		return new ModelVAO(vaoID,indices.length);
-	}
-	
-	public ModelVAO loadToVAO(float[] positions, int dimensions) {
-		int vaoID = createVAO();
-		this.storeDataInAttributeList(0, dimensions, positions);
-		unbindVAO();
-		return new ModelVAO(vaoID, positions.length/dimensions);
-		
-	}
-	
-	public ModelVAO loadToVAO(float[] positions, int dimensions, float[] textureCoords) {
-		int vaoID = createVAO();
-		this.storeDataInAttributeList(0, dimensions, positions);
-		this.storeDataInAttributeList(1, 2, textureCoords);
-		unbindVAO();
-		return new ModelVAO(vaoID, positions.length/dimensions);
-		
-	}
-	
-	public ModelVAO loadToVAO(float[] positions, float[] textureCoords, boolean b) {
-		int vaoID = createVAO();
+		// we want to keep reference of vbos for runtime deletion
 		int[] vbos = new int[2];
-		vbos[0] = this.storeDataInAttributeList(0, 1, positions);
-		vbos[1] = this.storeDataInAttributeList(1, 1, textureCoords);
+		// store the data into the vbos
+		vbos[0] = this.storeDataInAttributeList(0, dimensions, positions);
+		vbos[1] = this.storeDataInAttributeList(1, dimensions, textureCoords);
+		// unbind the VAO
 		unbindVAO();
 		return new BlockModelVAO(vaoID, vbos, positions.length);
 	}
 	
-	public int createEmptyVBO(int floatCount) {
-		int vbo = GL15.glGenBuffers();
-		vbos.add(vbo);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, floatCount * 4, GL15.GL_STREAM_DRAW);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		return vbo;
-	}
-	
-	public void updateVBO(int vbo, float[] data, FloatBuffer buffer) {
-		buffer.clear();
-		buffer.put(data);
-		buffer.flip();
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer.capacity() * 4, GL15.GL_STREAM_DRAW);
-		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, buffer);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-	}
-	
-	public void addInstanceAttribute(int vao, int vbo, int attribute, int dataSize, int instanceDataLength, int offset) {
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-		GL30.glBindVertexArray(vao);
-		GL20.glVertexAttribPointer(attribute, dataSize, GL11.GL_FLOAT, false, instanceDataLength * 4, offset * 4);
-		GL33.glVertexAttribDivisor(attribute, 1);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		GL30.glBindVertexArray(0);
-	}
-	
-	public ModelVAO loadToVAO(float[] positions) {
+	/**
+	 * loads to VAO using ModelData
+	 */
+	public ModelVAO loadToVAO(ModelData data) {
+		// create the VAO
 		int vaoID = createVAO();
-		this.storeDataInAttributeList(0, 2, positions);
+		// get the indices
+		int[] indices = data.getIndices();
+		// bind the indices buffer
+		bindIndicesBuffer(indices);
+		/**
+		 * I should note its not actually storing the data itself into the VAO, but a pointer to the VBO
+		 * you still need to enable the VBO when rendering.
+		 */
+		// store data into the vao 
+		storeDataInAttributeList(0,3,data.getVertices());
+		storeDataInAttributeList(1,2,data.getTextureCoords());
+		storeDataInAttributeList(2,3,data.getNormals());
+		// unbind the VAO
 		unbindVAO();
+		// return the model
+		return new ModelVAO(vaoID,indices.length);
+	}
+	
+	/**
+	 * creates a VAO with only position data.
+	 */
+	public ModelVAO loadToVAO(float[] positions, int dimensions) {
+		// create the VAO
+		int vaoID = createVAO();
+		// store data in its first position
+		this.storeDataInAttributeList(0, 2, positions);
+		// unbind the vao
+		unbindVAO();
+		// return this as a ModelVAO object.
 		return new ModelVAO(vaoID, positions.length/2);
 		
 	}
 	
-	public int loadTexture(String filename) {
-		try {
-			if (GLContext.getCapabilities() == null)
-				return 0;
-			return loadTexture(filename, -0.2f);
-		} catch (RuntimeException e) {}
-		return 0;
-	}
-	
-	public int loadTexture(String filename, float bias) {
-		Texture texture = null;
-		if (textureMap.containsKey(filename))
-			return textureMap.get(filename);
-		try {
-			texture = TextureLoader.getTexture("PNG",
-					new FileInputStream("resources/textures/" + filename + ".png"), GL11.GL_NEAREST);
-			//if (SettingsLoader.USEMIPMAP)
-				GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-				//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-				//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-				// this is needed for mipmaping to work.
-				GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-				// changes the level of detail
-				// i don't remember how this works out with it but as the other comment says, lower value = more detail at
-				// longer distances?
-				GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, bias); // -0.4f? negative decrease amount. don't too much or lose preformacne
-			if (GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic) {
-				//float amount = Math.min(SettingsLoader.ASF, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-				float amount = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-				//if (SettingsLoader.ENABLEASF)
-				GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
-			} else {
-				System.out.println("ERROR IN LOADER. NOT SUPPORTED ANISOTROPIC FILTERING");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Tried to load texture " + filename + ".png , didn't work");
-			if (filename.toLowerCase().equals("error")) {
-				//System.exit(-1);
-				return 0;
-			} else {
-				return loadTexture("error");
-			}
-		}
-		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-		
-		textures.add(texture.getTextureID());
-		textureMap.put(filename, texture.getTextureID());
-		return texture.getTextureID();
-	}
-	
+	/**
+	 * deletes an actual model from the graphics card
+	 */
 	public ModelVAO deleteVAO(ModelVAO model) {
 		try {
-			for (int i = 0; i < vaos.size(); i++) {
-				if (vaos.get(i) == model.getVaoID()) {
-					vaos.remove(i);
-				}
-			}
-			GL30.glDeleteVertexArrays(model.getVaoID());
+			// if this is a block then we will delete the VBOs
 			if (model instanceof BlockModelVAO) {
+				// list of all the VBOs for this model
 				int[] vbos = ((BlockModelVAO) model).getVbos();
+				// remove them from the graphics card
 				for (int i = 0; i < vbos.length; i++) {
 					GL15.glDeleteBuffers(vbos[i]);
+					// make sure we remove them from the list.
 					for (int j = 0; j < this.vbos.size(); j++) {
 						if (this.vbos.get(i) == vbos[i])
 							this.vbos.remove(j);
 					}
 				}
 			}
+			// make sure we remove it from the VAO list
+			for (int i = 0; i < vaos.size(); i++) {
+				if (vaos.get(i) == model.getVaoID()) {
+					vaos.remove(i);
+				}
+			}
+			// delete the VAO
+			GL30.glDeleteVertexArrays(model.getVaoID());
 		} catch (Exception e) {}
 		return null;
 	}
 	
+	/**
+	 * deletes all the VAOs, VBOs and Textures from the graphics card.
+	 */
 	public void cleanUp(){
 		for(int vao:vaos){
 			GL30.glDeleteVertexArrays(vao);
@@ -261,131 +199,244 @@ public class Loader {
 		}
 	}
 	
+	/**
+	 * deletes a vao
+	 */
 	public void deleteVAO(int vaoID) {
-		this.vaos.remove(vaoID);
+		// remove it since we already deleted it
+		this.vaos.remove((Integer) vaoID);
+		// deletes the vertex array from the graphics card
 		GL30.glDeleteVertexArrays(vaoID);
 	}
 	
+	/**
+	 * deletes a vbo
+	 */
 	public void deleteVBO(int vboID) {
+		// remove it since we already deleted it
 		this.vbos.remove((Integer) vboID); // needed to make this work
+		// delete it from the graphics card
 		GL15.glDeleteBuffers(vboID);
 	}
 	
+	/**
+	 * creates a VAO
+	 */
 	private int createVAO(){
+		// create the VAO
 		int vaoID = GL30.glGenVertexArrays();
+		// store for later deletion
 		vaos.add(vaoID);
+		// bind it
 		GL30.glBindVertexArray(vaoID);
+		// return
 		return vaoID;
 	}
 	
+	/**
+	 * stores a float[] into a vbo for drawing. This stores on the graphics card.
+	 * @param attributeNumber is the pointer for this float[] to be used inside the shader as the layout position
+	 * the layout position needs to be then defined inside the shader or bound when creating the shader class.
+	 * @param coordinateSize how many floats are to be passed each vertex. 1 is just one float, 2 would be a 2d vector, 3 would be a 3d vector and so on
+	 * @param data float[] the data
+	 */
 	private int storeDataInAttributeList(int attributeNumber, int coordinateSize,float[] data){
+		// creates a VBO
 		int vboID = GL15.glGenBuffers();
+		// add for later deletion
 		vbos.add(vboID);
+		// binds the buffer as just a standard array buffer
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
+		// creates a float buffer from the data
 		FloatBuffer buffer = storeDataInFloatBuffer(data);
+		// puts the data into the VBO
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+		// assign this VBO to the pointer and coordinate size. We are using floats, they are not normalized and start at 0
 		GL20.glVertexAttribPointer(attributeNumber,coordinateSize,GL11.GL_FLOAT,false,0,0);
+		// unbind the VBO
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		// return the VBO
 		return vboID;
 	}
 	
-	private int storeDataInAttributeList(int attributeNumber, int coordinateSize, int[] data){
-		int vboID = GL15.glGenBuffers();
-		vbos.add(vboID);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
-		IntBuffer buffer = storeDataInIntBuffer(data);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
-		GL30.glVertexAttribIPointer(attributeNumber,coordinateSize,GL11.GL_INT,0,0);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		return vboID;
-	}
-	
+	/**
+	 * unbinds any active VAO
+	 */
 	private void unbindVAO(){
 		GL30.glBindVertexArray(0);
 	}
 	
+	/**
+	 * puts the indices into the element buffer for index based drawing.
+	 */
 	private void bindIndicesBuffer(int[] indices){
+		// generate the vbo
 		int vboID = GL15.glGenBuffers();
+		// add it for later deletion
 		vbos.add(vboID);
+		// bind the buffer as the element buffer (used to defined indexes inside the arrays for drawing)
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboID);
+		// create the int buffer
 		IntBuffer buffer = storeDataInIntBuffer(indices);
+		// but the int buffer into the VBO
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 	}
 	
+	/**
+	 * stores the int[] into a int buffer
+	 */
 	private IntBuffer storeDataInIntBuffer(int[] data){
+		// create the int buffer
 		IntBuffer buffer = BufferUtils.createIntBuffer(data.length);
+		// put the data 
 		buffer.put(data);
+		// flip for reading
 		buffer.flip();
 		return buffer;
 	}
 	
+	/**
+	 * stores the float[] into a float buffer
+	 */
 	private FloatBuffer storeDataInFloatBuffer(float[] data){
+		// create a float buffer
 		FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);
+		// put the data
 		buffer.put(data);
+		// flip it for reading.
 		buffer.flip();
 		return buffer;
 	}
 	
+	/**
+	 * loads textures from the specified files and then
+	 * put them into a cubemap and returns.
+	 */
 	public int loadCubeMap(String[] textureFiles) {
+		// generate a texture buffer
 		int texID = GL11.glGenTextures();
+		// enable texture
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		// bind buffer this time as a cube map
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texID);
 		
+		// loop through all files
 		for(int i=0;i<textureFiles.length;i++) {
+			// load the texture from the skybox location
 			TextureData data = decodeTextureFile("resources/textures/terrain/skyboxes/" + textureFiles[i] + ".png");
+			// load the texture into its position in the cube map
 			GL11.glTexImage2D(GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL11.GL_RGBA, data.getWidth(), data.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data.getBuffer());
 		}
+		/**
+		 * Apply texture filters
+		 */
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE); 
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+		// add texture for later deletion.
 		textures.add(texID);
 		return texID;
 	}
 	
 	/**
-	 * This function is the same thing as the main texture loader
-	 * except this can handle non 2^x textures. (This might not be true)
-	 * TODO: replace old function with this.
-	 * it could also be multithreaded
+	 * loads a texture with default settings.
+	 */
+	public int loadTexture(String filename) {
+		try {
+			// load texture with default settings.
+			return loadTexture(filename, -0.2f);
+		} catch (RuntimeException e) {}
+		return 0;
+	}
+	
+	/**
+	 * loads textures with a specified LOD bias.
+	 */
+	public int loadTexture(String filename, float bias) {
+		// this used to be a different function but I have changed it to use the special texture loader
+		// as it appears to be able to handle non 2^x sized images and its just more clean.
+		return loadSpecialTexture(filename, bias, GL11.GL_NEAREST, GL11.GL_LINEAR_MIPMAP_LINEAR);
+	}
+	
+	/**
+	 * this is the same thing as <b>{@code loadTexture(String)}</b>
+	 * loads a texture with default settings.
 	 */
 	public int loadSpecialTexture(String texture) {
+		// default settings.
+		return loadSpecialTexture(texture, -0.2f, GL11.GL_NEAREST, GL11.GL_LINEAR_MIPMAP_LINEAR);
+	}
+	
+	/**
+	 * Loads a texture with specified LOD bias, min/mag filtering and mipmap filtering.
+	 */
+	public int loadSpecialTexture(String texture, float bias, int minmag_filter, int minmag_mipmap) {
+		// return the texture if its already been loaded.
 		if (textureMap.containsKey(texture))
 			return textureMap.get(texture);
 		try {
+			// don't load if we don't have a window with OpenGL (we are the server)
+			if (GLContext.getCapabilities() == null)
+				return 0;
+			// decode some texture data.
 			TextureData d = decodeTextureFile("resources/textures/" + texture + ".png");
+			// generate a new texture buffer
 			int id = GL11.glGenTextures();
 			
+			// enable texture
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
+			// bind the texture buffer
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
-			// don't ask
-			// i don't think it works the way i want
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST); 
-	        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST); 
+			
+			// Min and Mag filter is for when a texture is upscaled or downscaled.
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, minmag_filter); 
+	        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, minmag_filter); 
+			
+	        // put the texture data into the texture buffer.
 			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, d.getWidth(), d.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, d.getBuffer());
+	        
+	        // generates the mipmaps
 			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_NEAREST);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST_MIPMAP_NEAREST);
-			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -0.2f);
-			float amount = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+			// Min and Mag filter is for when a texture is upscaled or downscaled.
+			// im pretty sure i only need to call this ^ but i'd like to make sure that
+			// the mipmaps use the same filters.
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, minmag_mipmap); 
+	        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, minmag_mipmap); 
+	        // this bias is how fast a texture loses detail (LOD = level of detail)
+			// > 0 = less detail
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, bias);
+			// applies anisotropic filtering and makes sure that the graphics card supports this level of AF
+			float amount = Math.min(SettingsLoader.AF, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
 			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
 			
+			// add this texture to the map
 			textureMap.put(texture, id);
+			// add to the textures buffer list (for deletion when the game closes)
 			textures.add(id);
+			// return the buffer.
 			return id;
 		} catch (Exception e) {return 0;}
 	}
 	
+	/**
+	 * loads all the textures defined inside <b>GameRegistry.registerTextures) 
+	 * at as specified width and height
+	 */
 	public int loadSpecialTextureATLAS(int width, int height) {
 		try {
 			//for more detail on array textures
 			//https://www.khronos.org/opengl/wiki/Array_Texture
-			float anisf = Math.min(4f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-			//TextureData d = decodeTextureFile("resources/textures/" + texture + ".png");
+			float anisf = Math.min(SettingsLoader.AF, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+			// map of textures that need to be put into the texture array.
+			// they should be in order from 0 to #
 			HashMap<Integer, String> texs = GameRegistry.registerTextures();
+			// generate a texture id like normal
 			int id = GL11.glGenTextures();
 			
+			// enable texture
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
+			// bind the texture buffer, this time to texture array.
 			GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, id); 
 			
 	        // i really don't like this
@@ -397,18 +448,19 @@ public class Loader {
 			// this is very weird and I think this is in the wrong class.
 	        GL42.glTexStorage3D(GL30.GL_TEXTURE_2D_ARRAY, 4, GL11.GL_RGBA8, width, height, texs.size());
 	        
+	        // loop through all textures.
 	        for (Entry<Integer, String> s : texs.entrySet()) {
 	        	// i don't understand why this is in gl12 but to allocate this is in gl42
 	        	GL12.glTexSubImage3D(GL30.GL_TEXTURE_2D_ARRAY,
 	        			// level
 	        			0, 
-	        			// x,y,z offsets
+	        			// x,y,z offsets using the texture # as the position in the array
 	        			0, 0, s.getKey(),
 	        			// width, height depth
 	        			width, height, 1, 
 	        			// format, format
 	        			GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, 
-	        			// image data
+	        			// decode the image texture
 	        			decodeTextureFile("resources/textures/" + s.getValue() + ".png").getBuffer());
 	        	// AF
 	        	GL11.glTexParameterf(GL30.GL_TEXTURE_2D_ARRAY, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, anisf);
@@ -431,30 +483,44 @@ public class Loader {
 			// > 0 = less detail
 			GL11.glTexParameterf(GL30.GL_TEXTURE_2D_ARRAY, GL14.GL_TEXTURE_LOD_BIAS, 0.2f);
 	        
+			// add texture for later deletion.
 			textures.add(id);
 			return id;
 		} catch (Exception e) {}
 		return 0;
 	}
 	
+	/**
+	 * Decodes texture data from a file
+	 */
 	private TextureData decodeTextureFile(String fileName) {
+		// image data storage.
 		int width = 0;
 		int height = 0;
 		ByteBuffer buffer = null;
 		try {
-			FileInputStream in = new FileInputStream(fileName);
+			// input stream for the texture
+			BufferedInputStream in = new BufferedInputStream(new FileInputStream(fileName));
+			// decoder for the PNG file
 			PNGDecoder decoder = new PNGDecoder(in);
+			// assigns the width and height of the texture data
 			width = decoder.getWidth();
 			height = decoder.getHeight();
+			// assign a bytebuffer for this image.
 			buffer = ByteBuffer.allocateDirect(4 * width * height);
+			// decode the data and put it into the buffer
 			decoder.decode(buffer, width * 4, Format.RGBA);
+			// flip the buffer for reading
 			buffer.flip();
+			// close the input stream.
 			in.close();
 		} catch (Exception e) {
+			// we had issue loading texture. exit the game.
 			e.printStackTrace();
 			System.err.println("Tried to load texture " + fileName + ", didn't work");
 			System.exit(-1);
 		}
+		// return the texture data.
 		return new TextureData(buffer, width, height);
 	}
 	

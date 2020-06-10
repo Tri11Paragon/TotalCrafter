@@ -4,9 +4,9 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 
+import com.brett.cameras.Camera;
+import com.brett.cameras.ICamera;
 import com.brett.renderer.world.SkyboxRenderer;
-import com.brett.world.cameras.Camera;
-import com.brett.world.cameras.ICamera;
 
 public class MasterRenderer {
 

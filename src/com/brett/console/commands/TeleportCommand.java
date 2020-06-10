@@ -1,7 +1,7 @@
 package com.brett.console.commands;
 
+import com.brett.cameras.Camera;
 import com.brett.console.Command;
-import com.brett.world.cameras.Camera;
 
 /** 
 *	Brett Terpstra
