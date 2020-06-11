@@ -8,7 +8,6 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import com.brett.renderer.font.FontType;
-import com.brett.renderer.font.GUIDynamicText;
 import com.brett.renderer.font.GUIText;
 
 public class FontRenderer {
@@ -19,11 +18,17 @@ public class FontRenderer {
 		shader = new FontShader();
 	}
 	
+	/**
+	 * Renders all the texts supplied.
+	 */
 	public void render(Map<FontType, List<GUIText>> texts){
 		prepare();
+		// batched font rendering
 		for(FontType font : texts.keySet()){
+			// bind the texture atlas for this font
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, font.getTextureAtlas());
+			// render all the texts using this texture
 			for(GUIText text : texts.get(font)){
 				renderText(text);
 			}
@@ -42,16 +47,6 @@ public class FontRenderer {
 	 * @param font -> the font to use when rendering the texts.
 	 */
 	public void renderBAD(List<GUIText> texts, FontType font) {
-		prepare();
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, font.getTextureAtlas());
-		for(GUIText text : texts){
-			renderText(text);
-		}
-		endRendering();
-	}
-	
-	public void renderBAD(List<GUIDynamicText> texts, FontType font, boolean d) {
 		prepare();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, font.getTextureAtlas());

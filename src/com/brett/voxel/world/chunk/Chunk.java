@@ -61,7 +61,7 @@ public class Chunk {
 							try {
 								Chunk c = meshables.get(i);
 								if (c != null) {
-									if (c.remeshNo(-1))
+									if (c.remeshNo())
 										continue;
 								}
 								try {
@@ -87,7 +87,7 @@ public class Chunk {
 						for (int i = 0; i < meshables2.size(); i++) {
 							Chunk c = meshables2.get(i);
 							if (c != null) {
-								if (c.remeshNo(-1))
+								if (c.remeshNo())
 									continue;
 							}
 							try {
@@ -112,7 +112,7 @@ public class Chunk {
 						for (int i = 0; i < meshables3.size(); i++) {
 							Chunk c = meshables3.get(i);
 							if (c != null) {
-								if (c.remeshNo(-1))
+								if (c.remeshNo())
 									continue;
 							}
 							try {
@@ -137,7 +137,7 @@ public class Chunk {
 						for (int i = 0; i < meshables4.size(); i++) {
 							Chunk c = meshables4.get(i);
 							if (c != null) {
-								if (c.remeshNo(-1))
+								if (c.remeshNo())
 									continue;
 							}
 							try {
@@ -338,22 +338,22 @@ public class Chunk {
 				if (left) {
 					byte w = s.chunk.getLightLevel(xOff-1, j, zOff);
 					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsLeftComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, w, tLeft));
+					uvs = addArraysUV(uvs, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, w, tLeft));
 				}
 				if (right) {
 					byte w = s.chunk.getLightLevel(xOff+1, j, zOff);
 					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsRightComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, w, tRight));
+					uvs = addArraysUV(uvs, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, w, tRight));
 				}
 				if (front) {
 					byte w = s.chunk.getLightLevel(xOff, j, zOff+1);
 					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsFrontComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, w, tFront));
+					uvs = addArraysUV(uvs, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, w, tFront));
 				}
 				if (back) {
 					byte w = s.chunk.getLightLevel(xOff, j, zOff-1);
 					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBackComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, w, tBack));
+					uvs = addArraysUV(uvs, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, w, tBack));
 				}
 				if (top) {
 					int j1 = j+1;
@@ -361,7 +361,7 @@ public class Chunk {
 						j1 = Chunk.y-1;
 					byte w = lightLevel[i][j1][k];
 					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsTopComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, w, tTop));
+					uvs = addArraysUV(uvs, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, w, tTop));
 				}
 				if (bottom) {
 					int j1 = j-1;
@@ -369,68 +369,60 @@ public class Chunk {
 						j1 = 0;
 					byte w = lightLevel[i][j1][k];
 					verts = addArrays(verts, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBottomComplete, i, j, k));
-					uvs = addArrays(uvs, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, w, tBottom));
+					uvs = addArraysUV(uvs, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, w, tBottom));
 				}
 			} else {
 				if (left) {
 					byte w = s.chunk.getLightLevel(xOff-1, j, zOff);
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsLeftComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, w, tLeft));
+					vertsTrans = addArraysTrans(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsLeftComplete, i, j, k));
+					uvsTrans = addArraysTransUV(uvsTrans, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, w, tLeft));
 				}
 				if (right) {
 					byte w = s.chunk.getLightLevel(xOff+1, j, zOff);
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsRightComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, w, tRight));
+					vertsTrans = addArraysTrans(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsRightComplete, i, j, k));
+					uvsTrans = addArraysTransUV(uvsTrans, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, w, tRight));
 				}
 				if (front) {
 					byte w = s.chunk.getLightLevel(xOff, j, zOff+1);
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsFrontComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, w, tFront));
+					vertsTrans = addArraysTrans(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsFrontComplete, i, j, k));
+					uvsTrans = addArraysTransUV(uvsTrans, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, w, tFront));
 				}
 				if (back) {
 					byte w = s.chunk.getLightLevel(xOff, j, zOff-1);
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBackComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, w, tBack));
+					vertsTrans = addArraysTrans(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBackComplete, i, j, k));
+					uvsTrans = addArraysTransUV(uvsTrans, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, w, tBack));
 				}
 				if (top) {
 					int j1 = j+1;
 					if (j1 >= Chunk.y)
 						j1 = Chunk.y-1;
 					byte w = lightLevel[i][j1][k];
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsTopComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, w, tTop));
+					vertsTrans = addArraysTrans(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsTopComplete, i, j, k));
+					uvsTrans = addArraysTransUV(uvsTrans, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, w, tTop));
 				}
 				if (bottom) {
 					int j1 = j-1;
 					if (j1 < 0)
 						j1 = 0;
 					byte w = lightLevel[i][j1][k];
-					vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBottomComplete, i, j, k));
-					uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, w, tBottom));
+					vertsTrans = addArraysTrans(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(MeshStore.vertsBottomComplete, i, j, k));
+					uvsTrans = addArraysTransUV(uvsTrans, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, w, tBottom));
 				}
 			}
 		} else {
 			byte w = lightLevel[i][j][k];
-			vertsTrans = addArrays(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(b.getSpecialVerts(), i, j, k));
-			uvsTrans = addArrays(uvsTrans, MeshStore.updateCompression(b.getSpecialTextures(), w,b.textureFront));
+			vertsTrans = addArraysTrans(vertsTrans, ChunkBuilder.updateVertexTranslationCompress(b.getSpecialVerts(), i, j, k));
+			uvsTrans = addArraysTransUV(uvsTrans, MeshStore.updateCompression(b.getSpecialTextures(), w,b.textureFront));
 		}
 		return data;
 		//blocksModels[i][j][k] = MeshStore.models.get(VoxelWorld.createSixBooleans(left, right, front, back, top, bottom));
-	}
-	
-	public void remesh() {
-		remesh(1);
 	}
 	
 	public void remeshPRI() {
 		Chunk.meshables4.add(this);
 	}
 	
-	public void remeshNo() {
-		remeshNo(1);
-	}
-	
-	public void remesh(int sideQ) {
+	public void remesh() {
 		if (Chunk.meshables.size() < Chunk.meshables2.size())
 			Chunk.meshables.add(this);
 		else if (Chunk.meshables2.size() < Chunk.meshables3.size())
@@ -439,7 +431,12 @@ public class Chunk {
 			Chunk.meshables3.add(this);
 	}
 	
-	public boolean remeshNo(int sideQ) {
+	// binary literal representation of each direction.
+	private static final byte left = 0b0001;
+	private static final byte right = 0b0010;
+	private static final byte front = 0b0100;
+	private static final byte back = 0b1000;
+	public boolean remeshNo() {
 		if (isMeshing)
 			return true;
 		isMeshing = true;
@@ -447,6 +444,10 @@ public class Chunk {
 		uvs = new float[0];
 		vertsTrans = new float[0];
 		uvsTrans = new float[0];
+		lastIndex = 0;
+		lastIndexUV = 0;
+		lastIndexTransUV = 0;
+		lastIndexTrans = 0;
 		chunkErrors = 0;
 		for (int k = 0; k < z; k++) {
 			for (int i = 0; i < x; i++) {
@@ -455,10 +456,6 @@ public class Chunk {
 				}
 			}
 		}
-		byte left = 0b0001;
-		byte right = 0b0010;
-		byte front = 0b0100;
-		byte back = 0b1000;
 		// this is how you encode a boolean (9 bytes???!?!?!?) 
 		// with only half a byte!
 		// SixBoolean!
@@ -609,6 +606,9 @@ public class Chunk {
 			Block.blocks.get((short) (blocks[xz][yz][zz] & 0xFFF)).onBlockTick(xz + xoff*Chunk.x, yz, zz + zoff*Chunk.z, s);
 	}
 	
+	/**
+	 * deletes this chunk from memory.
+	 */
 	public void nul() {
 		//this.blocksModels = null;
 		//this.rawID = loader.deleteVAO(rawID);
@@ -642,7 +642,7 @@ public class Chunk {
 	 * First 4 bits is sunlight, last 4 bits is torch light.
 	 */
 	public byte getLightLevel(int x, int y, int z) {
-		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
+		if (x >= Chunk.x || y >= (Chunk.y-1) || z >= Chunk.z || y < 0)
 			return 0;
 		if (x < 0)
 			x *= -1;
@@ -652,7 +652,7 @@ public class Chunk {
 	}
 	
 	public byte getLightLevelTorch(int x, int y, int z) {
-		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
+		if (x >= Chunk.x || y >= (Chunk.y-1) || z >= Chunk.z || y < 0)
 			return 0;
 		if (x < 0)
 			x *= -1;
@@ -662,7 +662,7 @@ public class Chunk {
 	}
 	
 	public byte getLightLevelSun(int x, int y, int z) {
-		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z || y < 0)
+		if (x >= Chunk.x || y >= (Chunk.y-1) || z >= Chunk.z || y < 0)
 			return 0;
 		if (x < 0)
 			x *= -1;
@@ -672,7 +672,7 @@ public class Chunk {
 	}
 	
 	public boolean isBlockUnderGround(int x, int y, int z) {
-		if (x >= Chunk.x || y >= Chunk.y || z >= Chunk.z)
+		if (x >= Chunk.x || y >= (Chunk.y-1) || z >= Chunk.z)
 			return false;
 		if (y < 0)
 			return true;
@@ -711,18 +711,6 @@ public class Chunk {
 			}
 		}
 		return 0;
-	}
-	
-	public short[][][] getBlocks(){
-		return blocks;
-	}
-	
-	public int getX() {
-		return xoff;
-	}
-	
-	public int getZ() {
-		return zoff;
 	}
 	
 	/**
@@ -794,8 +782,6 @@ public class Chunk {
 	}
 	
 	public void setBlockRawServer(int x, int y, int z, int rx, int rz, int block) {
-		//if (VoxelWorld.isRemote)
-		//	VoxelWorld.localClient.updateBlock((int)rx, (int)y, (int)rz, (short)block);
 		if (x >= Chunk.x || z >= Chunk.z)
 			return;
 		if (x < 0)
@@ -847,50 +833,15 @@ public class Chunk {
 	}
 	
 	/**
-	 * Returns the height of the chunk at the specified world pos.
-	 * Note: this returns the last block before air. it will not return the first air.
+	 * Returns a nice neat packet of information containing the x and z offsets
+	 * which define this chunk's position in the world.
 	 */
-	public int getChunkHeight(float x, float z) {
-		int px = (int)x%Chunk.x;
-		int pz = (int)z%Chunk.z;
-		for (int i = 0; i < y; i++) {
-			if (blocks[px][i][pz] == 0)
-				return i-1;
-		}
-		return y;
-	}
-	
-	/**
-	 * Returns the height of the chunk at the specified world pos.
-	 * Note: this returns the last block. it will not return the first air. (Except for if the air is 0)
-	 */
-	public int[] getChunkHeightPBlock(float x, float z) {
-		int px = (int)x%Chunk.x;
-		int pz = (int)z%Chunk.z;
-		int[] ys = new int[y];
-		for (int i = 0; i < y; i++) {
-			if (blocks[px][i][pz] == 0) 
-				ys[i] = i-1 > 0 ? i - 1 : 0;
-		}
-		return ys;
-	}
-	
-	/**
-	 * Returns the same as @getChunkHeightPBlock in list form
-	 */
-	public List<Integer> getChunkHeightPBlockL(float x, float z) {
-		int px = (int)x%Chunk.x;
-		int pz = (int)z%Chunk.z;
-		List<Integer> ys = new ArrayList<Integer>();
-		for (int i = 0; i < y; i++) {
-			if (blocks[px][i][pz] == 0) 
-				ys.add(i-1 > 0 ? i - 1 : 0);
-		}
-		return ys;
-	}
-	
 	@Override
 	public String toString() {
+		// when you do String $something = String1 + String2
+		// java calls string builder internally.
+		// so instead of making 5 string builder objects and discarding them
+		// make one string builder and return the string it builds.
 		StringBuilder sb = new StringBuilder();
 		sb.append("Chunk[");
 		sb.append(xoff);
@@ -900,17 +851,114 @@ public class Chunk {
 		return sb.toString();
 	}
 	
-	public float[] addArrays(float[] array1, float[] array2) {
+	// all these addarrays functions are the same
+	// and the only difference is that they are for the different parts of the vertex
+	// these define the last index we where at for each function.
+	// im sure there is a "better" way of doing this but this is fine.
+	private int lastIndex = 0;
+	private int lastIndexUV = 0;
+	private int lastIndexTrans = 0;
+	private int lastIndexTransUV = 0;
+	
+	/**
+	 * Adds array2 to array1 allocating more space only if needed.
+	 * 
+	 * This is to be used for non transparent vertices ONLY.
+	 * Please be sure to clear the lastIndex for each mesh!
+	 */
+	private float[] addArrays(float[] array1, float[] array2) {
+		float[] rtv = array1;
 		
-		float[] rtv = Arrays.copyOf(array1, array1.length + array2.length);
+		// if copying this array goes out of the base array (array1) range, then we need to allocate more
+		// ram to this array. We should allocate some extra space as we will likely be needing it in a few ns
+		// Arrays.copyof uses System.arraycopy which is a <b>native</b> java function
+		if (lastIndex + array2.length >= array1.length)
+			rtv = Arrays.copyOf(array1, (array1.length + array2.length)*3);
 		
-		System.arraycopy(array2, 0, rtv, array1.length, array2.length);
+		// copy the add array (array2) into the base array (array1)
+		System.arraycopy(array2, 0, rtv, lastIndex, array2.length);
+		// increase the last index that was used.
+		lastIndex += array2.length;
+		
+		return rtv;
+	}
+
+	/**
+	 * Adds array2 to array1 allocating more space only if needed.
+	 * 
+	 * This is to be used for non transparent UVs ONLY.
+	 * Please be sure to clear the lastIndexUV for each mesh!
+	 */
+	private float[] addArraysUV(float[] array1, float[] array2) {
+		// see other function. {@code addArrays} It is the same as this except it uses lastIndex.
+		float[] rtv = array1;
+		
+		if (lastIndexUV + array2.length >= array1.length)
+			rtv = Arrays.copyOf(array1, (array1.length + array2.length)*3);
+		
+		System.arraycopy(array2, 0, rtv, lastIndexUV, array2.length);
+		lastIndexUV += array2.length;
+
+		return rtv;
+	}
+	
+	/**
+	 * Adds array2 to array1 allocating more space only if needed.
+	 * 
+	 * This is to be used for transparent vertices ONLY.
+	 * Please be sure to clear the lastIndexTrans for each mesh!
+	 */
+	private float[] addArraysTrans(float[] array1, float[] array2) {
+		// see other function. {@code addArrays} It is the same as this except it uses lastIndex.
+		float[] rtv = array1;
+		
+		if (lastIndexTrans + array2.length >= array1.length)
+			rtv = Arrays.copyOf(array1, (array1.length + array2.length)*3);
+		
+		System.arraycopy(array2, 0, rtv, lastIndexTrans, array2.length);
+		lastIndexTrans += array2.length;
 		
 		return rtv;
 	}
 	
+	/**
+	 * Adds array2 to array1 allocating more space only if needed.
+	 * 
+	 * This is to be used for transparent UVs ONLY.
+	 * Please be sure to clear the lastIndexTransUV for each mesh!
+	 */
+	private float[] addArraysTransUV(float[] array1, float[] array2) {
+		// see other function. {@code addArrays} It is the same as this except it uses lastIndex.
+		float[] rtv = array1;
+		
+		if (lastIndexTransUV + array2.length >= array1.length)
+			rtv = Arrays.copyOf(array1, (array1.length + array2.length)*3);
+		
+		System.arraycopy(array2, 0, rtv, lastIndexTransUV, array2.length);
+		lastIndexTransUV += array2.length;
+		
+		return rtv;
+	}
+	
+	/**
+	 * Some getter and setters below.
+	 */
+	
 	public void setBlocks(short[][][] blocks) {
 		this.blocks = blocks;
+	}
+	
+	
+	public short[][][] getBlocks(){
+		return blocks;
+	}
+	
+	public int getX() {
+		return xoff;
+	}
+	
+	public int getZ() {
+		return zoff;
 	}
 	
 }

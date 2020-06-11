@@ -128,12 +128,13 @@ public class ChunkStore implements IChunkProvider {
 									int rx = cx / Region.x + xoff;
 									int rz = cz / Region.z + zoff;
 									try {
-										Region c = chunks.get(rx, rz);
-										if (c != null) {
-											chunksCopy.put(rx, rz, c);
+										Region r = chunks.get(rx, rz);
+										if (r != null) {
+											chunksCopy.put(rx, rz, r);
 										}
 									} catch (Exception e) {
 										System.err.println("Broken (Region unloaded??)");
+										System.err.println(e.getCause());
 									}
 								}
 							}
@@ -332,7 +333,7 @@ public class ChunkStore implements IChunkProvider {
 						Chunk c = getChunk(cx, cz);
 						if(c == null)
 							continue;
-						c.remeshNo(-1);
+						c.remeshNo();
 					}
 				}
 			}
