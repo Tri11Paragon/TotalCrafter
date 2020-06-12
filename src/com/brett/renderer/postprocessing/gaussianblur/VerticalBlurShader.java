@@ -2,6 +2,12 @@ package com.brett.renderer.postprocessing.gaussianblur;
 
 import com.brett.renderer.shaders.ShaderProgram;
 
+/**
+ * @author brett
+ * These are old classes and im not currently using them
+ * please ignore the post processing class (2020-6-11)
+ *
+ */
 public class VerticalBlurShader extends ShaderProgram{
 
 	private static final String VERTEX_FILE = "yes/verticalBlurVertex.vert";

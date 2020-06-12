@@ -13,7 +13,7 @@ import com.brett.KeyMaster;
 import com.brett.console.commands.ClearCommand;
 import com.brett.renderer.Loader;
 import com.brett.renderer.font.FontType;
-import com.brett.renderer.font.GUIDynamicText;
+import com.brett.renderer.font.UIDynamicText;
 import com.brett.renderer.gui.GUIRenderer;
 import com.brett.tools.SettingsLoader;
 
@@ -41,7 +41,7 @@ public class Console implements IKeyState {
 	public static float fontSize = 0.8f;
 	
 	// list of the texts that are used to display the console.
-	private List<GUIDynamicText> texts = new ArrayList<GUIDynamicText>(); 
+	private List<UIDynamicText> texts = new ArrayList<UIDynamicText>(); 
 	// map of the (object) commands and the (String) commands that call them.
 	private HashMap<String, Command> commands = new HashMap<String, Command>();
 	
@@ -68,8 +68,8 @@ public class Console implements IKeyState {
 		this.lightgrey = loader.loadTexture("lightgrey");
 		this.renderer = renderer;
 		// add the texts that we will be using for drawing.
-		texts.add(new GUIDynamicText(inputTextBuffer, fontSize, font, new Vector2f(0.007f,0.9f - 0.005f), 0.45f, false, 1));
-		texts.add(new GUIDynamicText(textBuffer, fontSize, font, new Vector2f(0.007f, 0.020f), 0.45f, false));
+		texts.add(new UIDynamicText(inputTextBuffer, fontSize, font, new Vector2f(0.007f,0.9f - 0.005f), 0.45f, false, 1));
+		texts.add(new UIDynamicText(textBuffer, fontSize, font, new Vector2f(0.007f, 0.020f), 0.45f, false));
 		// add a clear command to clear the body.
 		this.registerCommand("clear", new ClearCommand(this));
 	}
@@ -185,7 +185,7 @@ public class Console implements IKeyState {
 	/**
 	 * gets all the texts
 	 */
-	public List<GUIDynamicText> getTexts(){
+	public List<UIDynamicText> getTexts(){
 		return texts;
 	}
 
@@ -199,10 +199,10 @@ public class Console implements IKeyState {
 			isOpen = !isOpen;
 			// enable / disable texts.
 			if(isOpen)
-				for(GUIDynamicText t : texts)
+				for(UIDynamicText t : texts)
 					t.enableText();
 			else
-				for(GUIDynamicText t : texts)
+				for(UIDynamicText t : texts)
 					t.disableText();
 		}
 	}

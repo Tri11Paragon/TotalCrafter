@@ -2,6 +2,11 @@ package com.brett.renderer.font;
 
 import java.io.File;
 
+/**
+ * 
+ * font data type
+ * 
+ */
 public class FontType {
 
 	private int textureAtlas;
@@ -16,7 +21,7 @@ public class FontType {
 		return textureAtlas;
 	}
 
-	public TextMeshData loadText(GUIText text) {
+	public TextMeshData loadText(UIText text) {
 		return loader.createTextMesh(text);
 	}
 

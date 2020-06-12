@@ -3,6 +3,10 @@ package com.brett.renderer.font;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * holds a single word.
+ *
+ */
 public class Word {
 	
 	private List<Character> characters = new ArrayList<Character>();

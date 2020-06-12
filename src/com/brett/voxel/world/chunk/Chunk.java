@@ -456,11 +456,6 @@ public class Chunk {
 				}
 			}
 		}
-		// this is how you encode a boolean (9 bytes???!?!?!?) 
-		// with only half a byte!
-		// SixBoolean!
-		// ^ thats a callback to the dark ages
-		
 		// left
 		if ((chunkErrors & left) != left) {
 			Chunk c = s.chunk.getChunk(xoff-1, zoff);
@@ -573,7 +568,8 @@ public class Chunk {
 	}
 	
 	/**
-	 * slowdown at the cost of it looking good.
+	 * This method is the same thing as the regular renderer execpt it doesn't mesh and it
+	 * handles all transparent objects.
 	 */
 	public void renderSpecial(VoxelShader shader, Matrix4f view, int cx, int cz) {
 		if (blocks == null)
@@ -595,13 +591,17 @@ public class Chunk {
 		GL30.glBindVertexArray(0);
 	}
 	
-	// same thing as a tick() function.
+	/**
+	 * Does block updates.
+	 */
 	public void fixedUpdate() {
+		// pick a random block in our chunk
 		int xz = s.random.nextInt(Chunk.x);
 		int yz = s.random.nextInt(Chunk.y);
 		int zz = s.random.nextInt(Chunk.z);
 		if (blocks == null)
 			return;
+		// run the tick function.
 		if (blocks[xz][yz][zz] != 0) // TODO: check if this is right
 			Block.blocks.get((short) (blocks[xz][yz][zz] & 0xFFF)).onBlockTick(xz + xoff*Chunk.x, yz, zz + zoff*Chunk.z, s);
 	}

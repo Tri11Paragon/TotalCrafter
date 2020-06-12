@@ -22,8 +22,8 @@ import com.brett.renderer.DisplaySource;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.font.FontType;
-import com.brett.renderer.font.GUIDynamicText;
-import com.brett.renderer.font.fontRendering.TextMaster;
+import com.brett.renderer.font.UIDynamicText;
+import com.brett.renderer.font.fontRendering.StaticText;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.renderer.shaders.LineShader;
 import com.brett.renderer.shaders.PointShader;
@@ -86,7 +86,7 @@ public class VoxelScreenManager {
 		//TexturedModel circleModel = new TexturedModel(loader.loadToVAO(OBJLoader.loadOBJ("hitmodel")), new ModelTexture(loader.loadTexture("error")));
 		//FirstPersonPlayer player = new FirstPersonPlayer(box_model, new Vector3f(0, 0, 0), new Vector3f(0, 2, 0), 0, 0, 0, 1);
 		//Camera camera = player.getCamera();
-		TextMaster.init(loader);
+		StaticText.init(loader);
 		ui = new UIMaster(loader);
 		monospaced = new FontType(loader.loadTexture("fonts/monospaced-72", 0), new File("resources/textures/fonts/monospaced-72.fnt"));
 		
@@ -241,7 +241,7 @@ public class VoxelScreenManager {
 		// WHY
 		// I HATE YOU SO MUCH
 		// PLEASE DIE IN A HOUSE FIRE @GUI RENDERER
-		GUIDynamicText loadOfCrap = new GUIDynamicText("", 0.9f, VoxelScreenManager.monospaced, new Vector2f(0.0f, 0.0f), 400, false);
+		UIDynamicText loadOfCrap = new UIDynamicText("", 0.9f, VoxelScreenManager.monospaced, new Vector2f(0.0f, 0.0f), 400, false);
 		loadOfCrap.enableText();
 		
 		Chunk.init();
@@ -270,7 +270,7 @@ public class VoxelScreenManager {
 			ui.render();
 			InventoryMaster.render(ui.getRenderer());
 			console.update();
-			TextMaster.render();
+			StaticText.render();
 			
 			//for (int i = 0; i < Chunk.deleteables.size(); i++) {
 			//	loader.deleteVAO(Chunk.deleteables.get(i));
@@ -319,7 +319,7 @@ public class VoxelScreenManager {
 		//PostProcessing.cleanUp();
 		//vworld.cleanup();
 		ui.cleanup();
-		TextMaster.cleanUp();
+		StaticText.cleanUp();
 		ls.cleanUp();
 		world.cleanup();
 		loader.cleanUp();

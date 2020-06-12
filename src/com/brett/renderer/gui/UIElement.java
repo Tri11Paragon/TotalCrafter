@@ -8,7 +8,7 @@ import org.lwjgl.util.vector.Vector3f;
 * @author brett
 *
 *	TODO: maybe switch to an abstract class.
-*
+* UIElement type class
 */
 
 public interface UIElement {

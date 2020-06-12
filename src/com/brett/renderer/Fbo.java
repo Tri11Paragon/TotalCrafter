@@ -13,13 +13,11 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 
-// thanks to karl for making a simple frame buffer object class
-
 /**
 *
 * @author Karl & Brett
 * (if its not commented its made by me)
-*
+* (im not really using this class anymore)
 */
 
 public class Fbo {
@@ -223,6 +221,8 @@ public class Fbo {
 	}
 	
 	private int createMultisampleColorAttachment(int attachemnt) {
+		// yeah I did this
+		// neat eh?
 		int colorBuffer = GL30.glGenRenderbuffers();
 		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, colorBuffer);
 		GL30.glRenderbufferStorageMultisample(GL30.GL_RENDERBUFFER, 8, GL11.GL_RGBA8, width, height); // HAS MULTISAMPLE AMOUNT

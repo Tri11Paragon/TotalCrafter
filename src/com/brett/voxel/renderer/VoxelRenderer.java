@@ -52,7 +52,6 @@ public class VoxelRenderer implements DisplaySource {
 		//System.out.println(Mouse.getX() + " " + Mouse.getY());
 		//world.update();
 		//world.render(camera, sun, true);
-		renderer.renderSkyNone(camera);
 		world.render(camera);
 		world.update();
 		//VoxelScreenManager.ls.render();

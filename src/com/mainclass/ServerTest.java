@@ -1,4 +1,4 @@
-package com.tester;
+package com.mainclass;
 
 import java.io.BufferedReader;
 import java.io.IOException;

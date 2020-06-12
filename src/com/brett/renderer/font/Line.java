@@ -3,6 +3,9 @@ package com.brett.renderer.font;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * line data type
+ */
 public class Line {
 
 	private double maxLength;
@@ -16,9 +19,14 @@ public class Line {
 		this.maxLength = maxLength;
 	}
 
+	/**
+	 * tries to add a word to the line
+	 * returns false if word can't be added
+	 */
 	protected boolean attemptToAddWord(Word word) {
 		double additionalLength = word.getWordWidth();
 		additionalLength += !words.isEmpty() ? spaceSize : 0;
+		// makes sure we don't go above the max length
 		if (currentLineLength + additionalLength <= maxLength) {
 			words.add(word);
 			currentLineLength += additionalLength;

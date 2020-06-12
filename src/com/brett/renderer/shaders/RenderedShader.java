@@ -10,8 +10,9 @@ import com.brett.tools.Maths;
 *
 * @author brett
 * @date Feb. 27, 2020
+* just another standard shader, but like this is for the illegal geometry I was working on
+* This is not used.
 */
-
 public class RenderedShader extends ShaderProgram {
 
 	private static final String VERTEX_FILE = "renderedShader.vert";

@@ -1,5 +1,10 @@
 package com.brett.renderer.font;
 
+/**
+ * 
+ * character datatype
+ *
+ */
 public class Character {
 
 	private int id;

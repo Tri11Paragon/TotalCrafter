@@ -3,7 +3,7 @@ package com.brett.voxel.inventory;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 
-import com.brett.renderer.font.GUIDynamicText;
+import com.brett.renderer.font.UIDynamicText;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.world.items.ItemStack;
 
@@ -16,7 +16,7 @@ import com.brett.voxel.world.items.ItemStack;
 public class PlayerSlot {
 	
 	private static ItemStack itemInHand;
-	public static GUIDynamicText text = new GUIDynamicText("", 0.8f, VoxelScreenManager.monospaced, new Vector2f(Mouse.getX(), Mouse.getY()), 1.0f, false);
+	public static UIDynamicText text = new UIDynamicText("", 0.8f, VoxelScreenManager.monospaced, new Vector2f(Mouse.getX(), Mouse.getY()), 1.0f, false);
 	
 	
 	public static ItemStack getStack() {

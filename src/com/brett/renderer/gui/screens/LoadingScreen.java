@@ -14,6 +14,7 @@ import com.brett.tools.Maths;
 *
 * @author brett
 * @date Mar. 2, 2020
+* This is unused and currently doesn't work.
 */
 
 public class LoadingScreen {

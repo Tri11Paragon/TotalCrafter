@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import com.brett.renderer.font.FontType;
-import com.brett.renderer.font.GUIText;
+import com.brett.renderer.font.UIText;
 
 public class FontRenderer {
 
@@ -21,7 +21,7 @@ public class FontRenderer {
 	/**
 	 * Renders all the texts supplied.
 	 */
-	public void render(Map<FontType, List<GUIText>> texts){
+	public void render(Map<FontType, List<UIText>> texts){
 		prepare();
 		// batched font rendering
 		for(FontType font : texts.keySet()){
@@ -29,29 +29,9 @@ public class FontRenderer {
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, font.getTextureAtlas());
 			// render all the texts using this texture
-			for(GUIText text : texts.get(font)){
+			for(UIText text : texts.get(font)){
 				renderText(text);
 			}
-		}
-		endRendering();
-	}
-	
-	/**
-	 * This should never be used unless you are dynamicly rendering text.
-	 * such as the console where it would be turned off / on
-	 * 
-	 * or you can use it only if one font is being used.
-	 * if you are using more then one font, please use the built-in fontmaster class.
-	 * 
-	 * @param texts -> texts to be rendered
-	 * @param font -> the font to use when rendering the texts.
-	 */
-	public void renderBAD(List<GUIText> texts, FontType font) {
-		prepare();
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, font.getTextureAtlas());
-		for(GUIText text : texts){
-			renderText(text);
 		}
 		endRendering();
 	}
@@ -60,21 +40,37 @@ public class FontRenderer {
 		shader.cleanUp();
 	}
 	
+	/**
+	 * prepares OpenGL for font rendering
+	 */
 	public void prepare(){
+		// enable blending or else font would create blank patches on the screen.
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		// make sure we don't try to do any depth stuff with this. Font is 2d.
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		shader.start();
 	}
 	
-	private void renderText(GUIText text){
+	/**
+	 * pretty standard renderer that takes in a GUIText and renders it
+	 */
+	private void renderText(UIText text){
+		// this stuff should be like standard by now. Not much really changes for how things are rendered
+		// bind the text VAO
 		GL30.glBindVertexArray(text.getMesh());
+		// enable the VBOs
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
+		
 		shader.loadColor(text.getColor());
 		shader.loadColorOutline(text.getColorOutline());
 		shader.loadTranslation(text.getPosition());
+		
+		// draw the text quads
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, text.getVertexCount());
+		
+		// done drawing, disable.
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
 		GL30.glBindVertexArray(0);

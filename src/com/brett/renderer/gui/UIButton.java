@@ -21,6 +21,7 @@ public class UIButton extends GUITexture implements UIElement {
 	protected UIControl event;
 	
 	public UIButton(int texture, int hovertexture, UIControl event, UIMaster master, float x, float y, float width, float height) {
+		// calcVec just changes NDC (Normalized device coords) into pixel coords.
 		super(texture, -1, master.calcVec(x, y), master.calcVec(width, height));
 		this.px = x;
 		this.py = y;
@@ -44,9 +45,15 @@ public class UIButton extends GUITexture implements UIElement {
 		this.event = event;
 	}
 	
+	/**
+	 * updates the button.
+	 */
 	public void update() {
 		if (isButtonSelected()) {
+			// change texture to show that we are hovering
+			// over the button.
 			super.texture2 = ht;
+			// do the button event if the user presses the mouse button.
 			if (Mouse.isButtonDown(0)) {
 				if (event != null)
 					event.event(null);
@@ -56,10 +63,17 @@ public class UIButton extends GUITexture implements UIElement {
 		}
 	}
 	
+	/**
+	 * returns true if the mouse is under this button.
+	 * if you are getting errors make sure you assign the px,py,pw,ph
+	 */
 	public boolean isButtonSelected() {
 		float mx = Mouse.getX();
 		float my = Mouse.getY();
+		// OpenGL/LWJGL like to put its mouseY starting from the bottom right corner
+		// so to put it in a normal coords we take the height and remove the mouse pos.
 		my = Display.getHeight() - my;
+		// just a simple boundaries check.
 		if (mx > px && mx < (px + pw)) {
 			if (my > py && my < (py + ph)) {
 				return true;

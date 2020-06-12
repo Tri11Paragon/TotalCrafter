@@ -2,27 +2,28 @@ package com.brett.renderer.font;
 
 import org.lwjgl.util.vector.Vector2f;
 
-import com.brett.renderer.font.fontRendering.TextMaster;
+import com.brett.renderer.font.fontRendering.StaticText;
 
 /**
 *
 * @author brett
-*
+* just a UIText that can be <b>easily</b> changed.
+* 
 */
 
-public class GUIDynamicText extends GUIText {
+public class UIDynamicText extends UIText {
 	
 	private boolean enabled = false;
 	
-	public GUIDynamicText(String text, float fontSize, FontType font, Vector2f position, float maxLineLength, boolean centered) {
+	public UIDynamicText(String text, float fontSize, FontType font, Vector2f position, float maxLineLength, boolean centered) {
 		super(text, fontSize, font, position, maxLineLength, centered);
 	}
 	
-	public GUIDynamicText(String text, float fontSize, FontType font, Vector2f position, float maxLineLength, boolean centered, int numOflines) {
+	public UIDynamicText(String text, float fontSize, FontType font, Vector2f position, float maxLineLength, boolean centered, int numOflines) {
 		super(text, fontSize, font, position, maxLineLength, centered);
 	}
 	
-	public GUIDynamicText(String text, float fontSizeX, float fontSizeY, FontType font, Vector2f position, float maxLineLength, boolean centered, int maxNumberOfLines) {
+	public UIDynamicText(String text, float fontSizeX, float fontSizeY, FontType font, Vector2f position, float maxLineLength, boolean centered, int maxNumberOfLines) {
 		super(text, fontSizeX, fontSizeY, font, position, maxLineLength, centered, maxNumberOfLines);
 		//TextMaster.loadText(this);
 	}
@@ -38,10 +39,10 @@ public class GUIDynamicText extends GUIText {
 	 */
 	public void changeText(String text) {
 		if (enabled)
-			TextMaster.removeText(this);
+			StaticText.removeText(this);
 		super.textString = text;
 		if (enabled)
-			TextMaster.loadText(this);
+			StaticText.loadText(this);
 	}
 	
 	public void changeTextNoUpdate(String text) {
@@ -50,12 +51,12 @@ public class GUIDynamicText extends GUIText {
 	
 	public void disableText() {
 		enabled = false;
-		TextMaster.removeText(this);
+		StaticText.removeText(this);
 	}
 	
 	public void enableText() {
 		enabled = true;
-		TextMaster.loadText(this);
+		StaticText.loadText(this);
 	}
 	
 	public boolean getEnabled() {

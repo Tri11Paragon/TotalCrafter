@@ -28,10 +28,12 @@ public class GUIRenderer {
 	public GUIRenderer(Loader loader) {
 		SWIDTH = Display.getWidth();
 		SHEIGHT = Display.getHeight();
+		// create the quad every texture uses
 		float[] positions = {-1, 1, -1, -1, 1, 1, 1, -1};
 		quad = loader.loadToVAO(positions, 2);
 		shader = new GUIShader();
 		shader.start();
+		// could use layouts instead but whatever
 		shader.connectTextureUnits();
 		shader.stop();
 	}
@@ -40,6 +42,7 @@ public class GUIRenderer {
 		if (textures == null)
 			return;
 		shader.start();
+		// setup OpenGl for GUI rendering
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL30.glBindVertexArray(quad.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
@@ -176,15 +179,5 @@ public class GUIRenderer {
 	public void cleanup() {
 		shader.cleanUp();
 	}
-	
-	
-	// Thanks to https://en.wikipedia.org/wiki/Orthographic_projection
-	// 2019-12-10 - no longer using projection matrix. using screen space calcualtions
-	/*private void createProjectionMatrix() {
-		pm = new Matrix4f();
-		pm.setIdentity();
-        this.pm.setIdentity();
-        this.pm = Maths.ortho(0, Display.getWidth(), Display.getHeight(), 0, 0.0f, 1.0f);
-	}*/
 	
 }

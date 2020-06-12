@@ -23,7 +23,7 @@ import com.brett.voxel.inventory.Inventory;
 import com.brett.voxel.networking.IReciveEvent;
 import com.brett.voxel.networking.PACKETS;
 import com.brett.voxel.world.chunk.Chunk;
-import com.tester.ServerTest;
+import com.mainclass.ServerTest;
 
 /**
 *

@@ -5,6 +5,12 @@ import org.lwjgl.opengl.GL13;
 
 import com.brett.renderer.postprocessing.ImageRenderer;
 
+/**
+ * @author brett
+ * These are old classes and im not currently using them
+ * please ignore the post processing class (2020-6-11)
+ *
+ */
 public class HorizontalBlur {
 	
 	private ImageRenderer renderer;

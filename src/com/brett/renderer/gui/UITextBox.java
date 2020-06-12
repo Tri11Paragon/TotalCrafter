@@ -11,6 +11,7 @@ import com.brett.tools.SettingsLoader;
 *
 * @author brett
 * @date May 30, 2020
+* allows for text input.
 */
 
 public class UITextBox extends UIButton implements UIElement {
@@ -27,7 +28,6 @@ public class UITextBox extends UIButton implements UIElement {
 		this.pw = width;
 		this.ph = height;
 		this.event = event;
-		createTextBox();
 	}
 	
 	public UITextBox(int texture, int texture2, Vector2f position, Vector2f scale) {
@@ -42,7 +42,6 @@ public class UITextBox extends UIButton implements UIElement {
 		this.ph = height;
 		this.event = event;
 		this.maxLength = maxLength;
-		createTextBox();
 	}
 	
 	public UITextBox(int texture, float x, float y, float width, float height) {
@@ -51,15 +50,11 @@ public class UITextBox extends UIButton implements UIElement {
 		this.py = y;
 		this.pw = width;
 		this.ph = height;
-		createTextBox();
-	}
-	
-	private void createTextBox() {
-		
 	}
 	
 	@Override
 	public void update() {
+		// Determine if we are selected
 		if (Mouse.isButtonDown(0)) {
 			if (isButtonSelected()) {
 				isSelected = true;
@@ -69,6 +64,10 @@ public class UITextBox extends UIButton implements UIElement {
 		}
 		if (isSelected) {
 			if(Keyboard.getEventKeyState() && KeyMaster.state) {
+				// this is the same idea as the console
+				// actually i just copied the code from the console class
+				// the idea is if we are selected and the user has pused a button
+				// then update the text with what was pressed.
 				char c = Keyboard.getEventCharacter();
 				if (c == SettingsLoader.KEY_CONSOLE)
 					return;
@@ -85,7 +84,6 @@ public class UITextBox extends UIButton implements UIElement {
 					inputTextBuffer += c;
 				if (event != null)
 					event.event(inputTextBuffer);
-				//texts.get(0).changeText(inputTextBuffer);
 			}
 		}
 	}

@@ -10,7 +10,7 @@ import com.brett.renderer.Loader;
 /**
 *
 * @author brett
-*
+* currently unused
 */
 
 public class EscapeMenu implements IMenu {

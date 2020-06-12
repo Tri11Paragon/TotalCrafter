@@ -5,7 +5,12 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.renderer.shaders.ShaderProgram;
 
-public class FontShader extends ShaderProgram{
+/**
+ * @author brett
+ * pretty standard shader
+ * please refer to the shader program for information about the functions
+ */
+public class FontShader extends ShaderProgram {
 
 	private static final String VERTEX_FILE = "fontVertex.vert";
 	private static final String FRAGMENT_FILE = "fontFragment.frag";

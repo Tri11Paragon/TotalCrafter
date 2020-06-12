@@ -2,6 +2,13 @@ package com.brett.renderer.postprocessing.bloom;
 
 import com.brett.renderer.shaders.ShaderProgram;
 
+
+/**
+ * @author brett
+ * These are old classes and im not currently using them
+ * please ignore the post processing class (2020-6-11)
+ *
+ */
 public class CombineShader extends ShaderProgram {
 
 	private static final String VERTEX_FILE = "yes/simpleVertex.vert";

@@ -9,6 +9,14 @@ import java.util.Map;
 
 import org.lwjgl.opengl.Display;
 
+/**
+ * 
+ * @author unknown
+ *
+ * I didn't make it, its pretty neat but if I remade mc3 I wouldn't use it. 
+ *
+ */
+
 public class MetaFile {
 
 	private static final int PAD_TOP = 0;

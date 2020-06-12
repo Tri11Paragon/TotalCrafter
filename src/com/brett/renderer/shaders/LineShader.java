@@ -1,9 +1,3 @@
-/** 
-*	Brett Terpstra
-*	Feb 25, 2020
-*	
-*/ 
-
 package com.brett.renderer.shaders;
 
 import java.nio.FloatBuffer;
@@ -27,6 +21,13 @@ import com.brett.renderer.MasterRenderer;
 import com.brett.tools.Maths;
 import com.brett.tools.SettingsLoader;
 
+
+/** 
+*	Brett Terpstra
+*	Feb 25, 2020
+*	THIS IS AN UNUSED CLASS PLEASE IGNORE
+*   I only ever use this if I need visual debugging.
+*/ 
 public class LineShader extends ShaderProgram {
 
 	// TODO: make this a list

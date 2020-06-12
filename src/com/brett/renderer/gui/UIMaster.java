@@ -10,7 +10,7 @@ import org.lwjgl.util.vector.Vector3f;
 import com.brett.datatypes.GUITexture;
 import com.brett.renderer.Loader;
 import com.brett.renderer.font.FontType;
-import com.brett.renderer.font.GUIDynamicText;
+import com.brett.renderer.font.UIDynamicText;
 
 /**
 *
@@ -26,37 +26,44 @@ public class UIMaster {
 	private int SWIDTH = 800;
 	private int SHEIGHT = 600;
 	private GUIRenderer renderer;
+	// static textures
 	private List<UIElement> guitextures = new ArrayList<UIElement>();
+	// menus
 	private List<IMenu> guimenus = new ArrayList<IMenu>();
-	private GUITexture tmpText = new GUITexture(0, new Vector2f(0,0), new Vector2f(0,0));
 	
 	public UIMaster(Loader loader) {
+		// get a local instance of the width and height
 		SWIDTH = Display.getWidth();
 		SHEIGHT = Display.getHeight();
+		// create the rednerer
 		renderer = new GUIRenderer(loader);
 		guimenus.add(new EscapeMenu(this, loader));
+		// load textures we will need.
 		inventoryTexture = loader.loadSpecialTexture("gui/background");
 	}
 	
 	public void render() {
+		// renders all the menus
 		for (int i = 0; i < guimenus.size(); i++) {
+			// get the menu
 			IMenu m = guimenus.get(i);
+			// render the first layer
 			renderer.render(m.render(this));
+			// update it
 			m.update();
+			// render the second layer.
 			renderer.render(m.secondardRender(this));
 		}
+		// render all static textures.
 		renderer.render(guitextures);
 	}
 	
-	/**
-	 * Do not use unless the texture needs to move
-	 * (floats are in pixels)
+	/*
+	 * this is a bad way of doing things but its how we are doing things today.
+	 * I know I go on about optimization, and yes this (and the whole UI system) goes against my stance on optimization.
+	 * Since the UI system is really only used for a small part of the game and doesn't add much load to the system 
+	 * (compared to the chunks, which use lots of ram, cpu and gpu). Its on my TODO list to make this better. 
 	 */
-	public void drender(float x, float y, float width, float height) {
-		renderer.startrender();
-		renderer.render(tmpText, x, y, width, height);
-		renderer.stoprender();
-	}
 	
 	public GUITexture addUITexture(int texture, int texture2, int texture3, float x, float y, float width, float height) {
 		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec(x, y), calcVec(width, height));
@@ -123,16 +130,16 @@ public class UIMaster {
 		return t;
 	}
 	
-	public GUIDynamicText createDynamicText(String text, float size, FontType type, float x, float y, float maxWidth, boolean centered) {
-		return new GUIDynamicText(text, size, type, calcVec(x, y), maxWidth/this.SWIDTH, centered);
+	public UIDynamicText createDynamicText(String text, float size, FontType type, float x, float y, float maxWidth, boolean centered) {
+		return new UIDynamicText(text, size, type, calcVec(x, y), maxWidth/this.SWIDTH, centered);
 	}
 	
-	public GUIDynamicText createDynamicText(String text, float sizeX, float sizeY, FontType type, float x, float y, float maxWidth, boolean centered) {
-		return new GUIDynamicText(text, sizeX, sizeY, type, calcVec(x, y), maxWidth/this.SWIDTH, centered, 1);
+	public UIDynamicText createDynamicText(String text, float sizeX, float sizeY, FontType type, float x, float y, float maxWidth, boolean centered) {
+		return new UIDynamicText(text, sizeX, sizeY, type, calcVec(x, y), maxWidth/this.SWIDTH, centered, 1);
 	}
 	
-	public GUIDynamicText createDynamicText(String text, float sizeX, float sizeY, FontType type, float x, float y, float maxWidth, boolean centered, int maxNumberOfLines) {
-		return new GUIDynamicText(text, sizeX, sizeY, type, calcVec(x, y), maxWidth/this.SWIDTH, centered, maxNumberOfLines);
+	public UIDynamicText createDynamicText(String text, float sizeX, float sizeY, FontType type, float x, float y, float maxWidth, boolean centered, int maxNumberOfLines) {
+		return new UIDynamicText(text, sizeX, sizeY, type, calcVec(x, y), maxWidth/this.SWIDTH, centered, maxNumberOfLines);
 	}
 	
 	public Vector2f calcVec(float x, float y) {

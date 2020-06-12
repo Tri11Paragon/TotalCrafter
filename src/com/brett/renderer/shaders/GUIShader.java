@@ -3,6 +3,12 @@ package com.brett.renderer.shaders;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+/**
+ * @author brett
+ * just a standard shader for rendering UIs
+ * everything kinda just explains itself.
+ * refer to the shader program class for help.
+ */
 public class GUIShader extends ShaderProgram{
     
     private static final String VERTEX_FILE = "guiVertexShader.vert";

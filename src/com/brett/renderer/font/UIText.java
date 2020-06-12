@@ -3,9 +3,15 @@ package com.brett.renderer.font;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.brett.renderer.font.fontRendering.TextMaster;
+import com.brett.renderer.font.fontRendering.StaticText;
 
-public class GUIText {
+/**
+ * 
+ * @author brett
+ * Holds the information about the text
+ *
+ */
+public class UIText {
 
 	protected String textString;
 	private float fontSizeX;
@@ -13,38 +19,26 @@ public class GUIText {
 
 	private int textMeshVao;
 	private int vertexCount;
+	// inner color of the text
 	private Vector3f color = new Vector3f(0f, 0f, 0f);
+	// outline color of the text
 	private Vector3f outlineColor = new Vector3f(1f, 1f, 1f);
 
 	protected Vector2f position;
+	// this should be in some kind of NDC, starting at 0 I think
 	private float lineMaxSize;
 	private int numberOfLines;
 	private float height = 0;
 	
-	public float getHeight() {
-		return height;
-	}
-
-	public void setHeight(float height) {
-		this.height = height;
-	}
-
+	// how many lines will this text allow
 	private int maxNumberOfLines = Integer.MAX_VALUE;
 
 	private FontType font;
 
 	private boolean atMax = false;
-	public boolean isAtMax() {
-		return atMax;
-	}
-
-	public void setAtMax(boolean atMax) {
-		this.atMax = atMax;
-	}
-
 	private boolean centerText = false;
 
-	public GUIText(String text, float fontSize, FontType font, Vector2f position, float maxLineLength, boolean centered) {
+	public UIText(String text, float fontSize, FontType font, Vector2f position, float maxLineLength, boolean centered) {
 		this.textString = text;
 		this.fontSizeX = fontSize;
 		this.fontSizeY = fontSize;
@@ -54,7 +48,7 @@ public class GUIText {
 		this.centerText = centered;
 	}
 	
-	public GUIText(String text, float fontSize, FontType font, Vector2f position, float maxLineLength, boolean centered, int maxNumberOfLines) {
+	public UIText(String text, float fontSize, FontType font, Vector2f position, float maxLineLength, boolean centered, int maxNumberOfLines) {
 		this.textString = text;
 		this.fontSizeX = fontSize;
 		this.fontSizeY = fontSize;
@@ -66,7 +60,7 @@ public class GUIText {
 		//TextMaster.loadText(this);
 	}
 	
-	public GUIText(String text, float fontSizeX, float fontSizeY, FontType font, Vector2f position, float maxLineLength, boolean centered, int maxNumberOfLines) {
+	public UIText(String text, float fontSizeX, float fontSizeY, FontType font, Vector2f position, float maxLineLength, boolean centered, int maxNumberOfLines) {
 		this.textString = text;
 		this.fontSizeX = fontSizeX;
 		this.fontSizeY = fontSizeY;
@@ -78,6 +72,33 @@ public class GUIText {
 		//TextMaster.loadText(this);
 	}
 	
+	/**
+	 * removes the text from the static renderer
+	 */
+	public void remove() {
+		StaticText.removeText(this);
+	}
+
+	/*
+	 * Getters and setters
+	 */
+	
+	public float getHeight() {
+		return height;
+	}
+
+	public void setHeight(float height) {
+		this.height = height;
+	}
+	
+	public boolean isAtMax() {
+		return atMax;
+	}
+
+	public void setAtMax(boolean atMax) {
+		this.atMax = atMax;
+	}
+	
 	public void setText(String text) {
 		this.textString = text;
 	}
@@ -86,15 +107,11 @@ public class GUIText {
 		return this.textString;
 	}
 	
-	public void remove() {
-		TextMaster.removeText(this);
-	}
-
 	public FontType getFont() {
 		return font;
 	}
 
-	public GUIText setColor(float r, float g, float b) {
+	public UIText setColor(float r, float g, float b) {
 		color.set(r, g, b);
 		return this;
 	}
@@ -103,7 +120,7 @@ public class GUIText {
 		return color;
 	}
 	
-	public GUIText setColorOutline(float r, float g, float b) {
+	public UIText setColorOutline(float r, float g, float b) {
 		outlineColor.set(r, g, b);
 		return this;
 	}
@@ -145,7 +162,7 @@ public class GUIText {
 		return fontSizeY;
 	}
 
-	protected GUIText setNumberOfLines(int number) {
+	protected UIText setNumberOfLines(int number) {
 		this.numberOfLines = number;
 		return this;
 	}

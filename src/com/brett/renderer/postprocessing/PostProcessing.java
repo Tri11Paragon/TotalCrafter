@@ -12,11 +12,11 @@ import com.brett.renderer.postprocessing.gaussianblur.HorizontalBlur;
 import com.brett.renderer.postprocessing.gaussianblur.VerticalBlur;
 
 /**
-*
-* @author brett
-*
-*/
-
+ * @author brett
+ * These are old classes and im not currently using them
+ * please ignore the post processing classes (2020-6-11)
+ *
+ */
 public class PostProcessing {
 	
 	private static final float[] POSITIONS = { -1, 1, -1, -1, 1, 1, 1, -1 };	

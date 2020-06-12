@@ -3,7 +3,7 @@ package com.brett.voxel.inventory;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
-import com.brett.renderer.font.GUIDynamicText;
+import com.brett.renderer.font.UIDynamicText;
 import com.brett.renderer.gui.UIButton;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.world.items.Item;
@@ -17,7 +17,7 @@ import com.brett.voxel.world.items.ItemStack;
 public class Slot extends UIButton {
 	
 	public static int texture,hovertexture;
-	protected GUIDynamicText text;
+	protected UIDynamicText text;
 	private String name = "";
 	private SlotChange sc;
 	
@@ -25,12 +25,12 @@ public class Slot extends UIButton {
 	
 	public Slot(float x, float y, float width, float height) {
 		super(texture, hovertexture, null, x, y, width, height);
-		text = new GUIDynamicText("", 0.8f, VoxelScreenManager.monospaced, calcVec(x+width-21, y+height-19), width/Display.getWidth(), false);
+		text = new UIDynamicText("", 0.8f, VoxelScreenManager.monospaced, calcVec(x+width-21, y+height-19), width/Display.getWidth(), false);
 	}
 	
 	public Slot(String name, float x, float y, float width, float height) {
 		super(texture, hovertexture, null, x, y, width, height);
-		text = new GUIDynamicText("", 0.8f, VoxelScreenManager.monospaced, calcVec(x+width-21, y+height-19), width/Display.getWidth(), false);
+		text = new UIDynamicText("", 0.8f, VoxelScreenManager.monospaced, calcVec(x+width-21, y+height-19), width/Display.getWidth(), false);
 		this.name = name;
 	}
 	

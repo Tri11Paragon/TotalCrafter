@@ -1,5 +1,9 @@
 package com.brett.renderer.font;
 
+/**
+ * text mesh data holder
+ *
+ */
 public class TextMeshData {
 	
 	private float[] vertexPositions;

@@ -20,6 +20,9 @@ import com.brett.tools.SettingsLoader;
 *
 * @author brett
 * @date Feb. 25, 2020
+* THIS IS AN UNUSED CLASS PLEASE IGNORE
+* I only ever use this if I need visual debugging.
+* 
 */
 
 public class PointShader extends ShaderProgram {
