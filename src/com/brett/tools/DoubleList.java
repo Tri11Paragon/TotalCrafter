@@ -9,6 +9,10 @@ import com.brett.datatypes.Tuple;
 *
 * @author brett
 * @date Feb. 17, 2020
+* This is a stupid class
+* this is what i was trying before I had multikey maps
+* this is complete trash.
+* ignore this class
 */
 
 public class DoubleList<X, Y> {

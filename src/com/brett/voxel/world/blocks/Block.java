@@ -194,7 +194,7 @@ public class Block {
 	
 	public void playBreakSound(float x, float y, float z) {
 		VoxelScreenManager.staticSource.setPosition(x, y, z);
-		VoxelScreenManager.staticSource.play(breakSound[Maths.randInt(0, breakSound.length-1)]);
+		VoxelScreenManager.staticSource.play(breakSound[Maths.randomInt(0, breakSound.length-1)]);
 		VoxelScreenManager.staticSource.setReferenceDistance(6);
 		VoxelScreenManager.staticSource.setRollOffFactor(5);
 		VoxelScreenManager.staticSource.setMaxDistance(15);

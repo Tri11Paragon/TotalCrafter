@@ -1,5 +1,6 @@
 package com.brett.voxel.inventory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,9 @@ import com.brett.voxel.world.items.ItemStack;
 * @date Mar. 12, 2020
 */
 //TODO: make this a extension of inventory.
-public class PlayerInventory implements IKeyState {
+public class PlayerInventory implements IKeyState, Serializable {
+
+	private static final long serialVersionUID = -629690982706594815L;
 	
 	private Inventory i;
 	private Hotbar h;

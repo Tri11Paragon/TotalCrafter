@@ -1,6 +1,7 @@
 package com.brett.voxel.world.tileentity;
 
 import java.io.File;
+import java.io.Serializable;
 
 import com.brett.IKeyState;
 import com.brett.voxel.nbt.NBTStorage;
@@ -13,7 +14,9 @@ import com.brett.voxel.world.chunk.ChunkStore;
 * @date Apr. 17, 2020
 */
 
-public class TileEntity implements IKeyState {
+public class TileEntity implements IKeyState, Serializable {
+	
+	private static final long serialVersionUID = 142599435776416417L;
 	
 	private int x,y,z;
 	protected IWorldProvider world;

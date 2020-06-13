@@ -1,5 +1,6 @@
 package com.brett.voxel.world;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -19,7 +20,9 @@ import com.brett.voxel.world.tileentity.TileEntity;
 * @date Jun. 1, 2020
 */
 
-public class IWorldProvider {
+public class IWorldProvider implements Serializable {
+	
+	private static final long serialVersionUID = -8582774660228386255L;
 	
 	public List<TileEntity> tents = new ArrayList<TileEntity>();
 	public MultiKeyMap<Integer, TileEntity> tileEntities = new MultiKeyMap<Integer, TileEntity>();

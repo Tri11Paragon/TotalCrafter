@@ -8,18 +8,37 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.cameras.ICamera;
+import com.brett.voxel.world.chunk.Chunk;
 
+/**
+ * @author brett
+ * the maths class
+ * each thing kinda explains itself
+ * but like
+ */
 public class Maths {
 	
+	// callback to my first game using this math class
+	// it was like my grade 11 game but I was working on it in grade 10
+	// it was much worse
 	public static enum colors { NULL, COLOR_RED, COLOR_BLUE, COLOR_GREEN };
 	
-	public static Vector3f rx = new Vector3f(1,0,0);
-	public static Vector3f ry = new Vector3f(0,1,0);
-	public static Vector3f rz = new Vector3f(0,0,1);
+	// axis to do rotation over
+	public static final Vector3f rx = new Vector3f(1,0,0);
+	public static final Vector3f ry = new Vector3f(0,1,0);
+	public static final Vector3f rz = new Vector3f(0,0,1);
 	
 	static Matrix4f mtx = new Matrix4f();
+	
+	// im not even sure how many of these I use.
+	
+	/**
+	 * creates a translation matrix
+	 */
 	public static Matrix4f createTransformationMatrix(Vector3f translation, float rx, float ry, float rz, float scale) {
 		mtx.setIdentity();
+		// these functions explain themselves and are the same for pretty much all the transformation matrix generators
+		// I have many of them because I had many ways of doing things.
 		Matrix4f.translate(translation, mtx, mtx);
 		Matrix4f.rotate((float) Math.toRadians(rx), Maths.rx, mtx, mtx);
 		Matrix4f.rotate((float) Math.toRadians(ry), Maths.ry, mtx, mtx);
@@ -28,6 +47,9 @@ public class Maths {
 		return mtx;
 	}
 	
+	/**
+	 * creates a translation matrix
+	 */
 	public static Matrix4f createTransformationMatrix(Vector3f translation, Vector3f rotation, Vector3f scale) {
 		mtx.setIdentity();
 		Matrix4f.translate(translation, mtx, mtx);
@@ -38,6 +60,9 @@ public class Maths {
 		return mtx;
 	}
 	
+	/**
+	 * creates a translation matrix
+	 */
 	public static Matrix4f createTransformationMatrix(Vector3f translation, Vector3f rotation) {
 		mtx.setIdentity();
 		Matrix4f.translate(translation, mtx, mtx);
@@ -47,6 +72,10 @@ public class Maths {
 		return mtx;
 	}
 	
+	/**
+	 * creates a translation matrix
+	 * input as a rotation float array, first float is over RX, second float is over RY, and third is over RZ
+	 */
 	public static Matrix4f createTransformationMatrix(Vector3f translation, float[] rotation) {
 		mtx.setIdentity();
 		Matrix4f.translate(translation, mtx, mtx);
@@ -57,6 +86,11 @@ public class Maths {
 	}
 	
 	static Vector3f trans = new Vector3f();
+	/**
+	 * creates a translation matrix
+	 * input as a translation float array. first is x, second is y, third is z.
+	 * input as a rotation float array, first float is over RX, second float is over RY, and third is over RZ
+	 */
 	public static Matrix4f createTransformationMatrix(float[] translation, float[] rotation) {
 		mtx.setIdentity();
 		trans.x = translation[0];
@@ -69,6 +103,11 @@ public class Maths {
 		return mtx;
 	}
 	
+	/**
+	 * creates a translation matrix
+	 * input as a float array. first is x, second is y, third is z.
+	 *  fourth float is over RX, fifth float is over RY, and sixth is over RZ
+	 */
 	public static Matrix4f createTransformationMatrix(float[] translationandrotation) {
 		mtx.setIdentity();
 		trans.x = translationandrotation[0];
@@ -81,6 +120,11 @@ public class Maths {
 		return mtx;
 	}
 	
+	/**
+	 * creates a translation matrix
+	 * input as a float array. first is x, second is y, third is z.
+	 * only rotations 
+	 */
 	public static Matrix4f createTransformationMatrixYAW(float[] translationandrotation) {
 		mtx.setIdentity();
 		trans.x = translationandrotation[0];
@@ -94,6 +138,9 @@ public class Maths {
 	}
 	
 	static Matrix4f mrx = new Matrix4f();
+	/**
+	 * creates a translation matrix
+	 */
 	public static Matrix4f createTransformationMatrix(Vector3f translation, float scale) {
 		mrx.setIdentity();
 		Matrix4f.translate(translation, mrx, mrx);
@@ -120,6 +167,7 @@ public class Maths {
 		matrix.setIdentity();
 		// the 0.5 is added to adjust for cube scale.
 		// took way to long to figure out this.
+		// I do the raw matrix math here because I don't want to lose performance due to abstraction
 		matrix.m30 += matrix.m00 * (x+fr) + matrix.m10 * (y+fr) + matrix.m20 * (z+fr);
 		matrix.m31 += matrix.m01 * (x+fr) + matrix.m11 * (y+fr) + matrix.m21 * (z+fr);
 		matrix.m32 += matrix.m02 * (x+fr) + matrix.m12 * (y+fr) + matrix.m22 * (z+fr);
@@ -128,6 +176,9 @@ public class Maths {
 		return matrix;
 	}
 	
+	/**
+	 * creates a translation matrix
+	 */
 	public static Matrix4f createTransformationMatrix(Vector2f translation, Vector2f scale) {
 		Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();
@@ -136,6 +187,9 @@ public class Maths {
 		return matrix;
 	}
 	
+	/**
+	 * creates a translation matrix
+	 */
 	public static Matrix4f createTransformationMatrix(float SWIDTH, float SHEIGHT, float x, float y, float width, float height) {
 		Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();
@@ -145,16 +199,8 @@ public class Maths {
 	}
 	
 	/**
-	 * 
+	 * creates a translation matrix
 	 */
-	public static Matrix4f createTransformationMatrixCenteredSTATIC(float SWIDTH, float SHEIGHT, float width, float height) {
-		Matrix4f matrix = new Matrix4f();
-		matrix.setIdentity();
-		Matrix4f.translate(new Vector2f(SWIDTH/2 - width/2, SHEIGHT/2 - height/2), matrix, matrix);
-		Matrix4f.scale(new Vector3f(width / SWIDTH, height / SHEIGHT, 1f), matrix, matrix);
-		return matrix;
-	}
-	
 	public static Matrix4f createTransformationMatrixCenteredSTATIC(float SWIDTH, float SHEIGHT, float width, float height, float rot) {
 		Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();
@@ -164,6 +210,10 @@ public class Maths {
 		return matrix;
 	}
 	
+	/**
+	 * computes a dot product of two arrays.
+	 * arrays need to be the same length.
+	 */
 	public static double dotProduct(double[] a, double[] b) {
 	    double sum = 0;
 	    for (int i = 0; i < a.length; i++) {
@@ -172,7 +222,7 @@ public class Maths {
 	    return sum;
 	}
 	
-	// Thanks to wikipedia for this
+	// Thanks to wikipedia for help with this
 	// matrix maths is not fun
 	// this took 3 hours to make work. turns out i needed to disable face culling
 	// :(
@@ -189,6 +239,9 @@ public class Maths {
 		return m;
 	}
 	
+	/**
+	 * creates a translation matrix
+	 */
 	public static Matrix4f createTransformationMatrix(Vector3f translation, float rx, float ry,
 			float rz, float sx, float sy, float sz) {
 		Matrix4f matrix = new Matrix4f();
@@ -201,6 +254,9 @@ public class Maths {
 		return matrix;
 	}
 	
+	/**
+	 * creates a translation matrix
+	 */
 	public static Matrix4f createTransformationMatrix(Vector2f translation, Vector2f rotation, Vector2f scale) {
 		Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();
@@ -210,7 +266,14 @@ public class Maths {
 		Matrix4f.rotate((float) Math.toRadians(rotation.y), new Vector3f(0,1,0), matrix, matrix);
 		return matrix;
 	}
+	/**
+	 * "In geometry, the barycentric coordinate system is a coordinate system 
+	 * in which the location of a point of a simplex is specified as the center of mass,
+	 * or barycenter, of usually unequal masses placed at its vertices. 
+	 * Coordinates also extend outside the simplex, where one or more coordinates become negative."
+	 */
 	public static float barryCentric(Vector3f p1, Vector3f p2, Vector3f p3, Vector2f pos) {
+		// I don't use this btw anymore
 		float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
 		float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
 		float l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;
@@ -218,30 +281,50 @@ public class Maths {
 		return l1 * p1.y + l2 * p2.y + l3 * p3.y;
 	}
 	static Matrix4f viewMatrix = new Matrix4f();
+	/**
+	 * creates the view matrix based on the camera.
+	 */
 	public static Matrix4f createViewMatrix(ICamera camera) {
+		// reset the matrix from the last frame
+		// saves on making new objects.
 		viewMatrix.setIdentity();
+		// rotates to the camera
 		Matrix4f.rotate((float) Math.toRadians(camera.getPitch()), new Vector3f(1, 0, 0), viewMatrix, viewMatrix);
 		Matrix4f.rotate((float) Math.toRadians(camera.getYaw()), new Vector3f(0, 1, 0), viewMatrix, viewMatrix);
 		Vector3f cameraPos = camera.getPosition();
+		// make negative.
 		cameraPos.negate();
+		// to make the game look like we are moving, what games to is actually move the world negative
+		// to where the camera is. Pretty neat eh?
 		Matrix4f.translate(cameraPos, viewMatrix, viewMatrix);
+		// reset the camera pos back to normal
 		cameraPos.negate();
 		return viewMatrix;
 	}
 	
 	private static float x=0,z = 0;
+	/**
+	 * used to render chunks relative to the camera pos and not the world pos.
+	 */
 	public static Matrix4f createViewMatrixROT(ICamera camera) {
 		viewMatrix.setIdentity();
 		Matrix4f.rotate((float) Math.toRadians(camera.getPitch()), new Vector3f(1, 0, 0), viewMatrix, viewMatrix);
 		Matrix4f.rotate((float) Math.toRadians(camera.getYaw()), new Vector3f(0, 1, 0), viewMatrix, viewMatrix);
 		Vector3f cameraPos = camera.getPosition();
+		// make sure we are not actually changing the camera pos
+		// (due to objects being passed by reference)
 		x = cameraPos.x;
 		z = cameraPos.z;
-		cameraPos.x %= 16d;
-		cameraPos.z %= 16d;
+		// make sure we can't actually move more then a chunk
+		// this is due to the way im drawing chunk, since im rendering based on the camera chunk pos
+		// this just allows you to move in individual blocks
+		// we modify the actual camera pos because it has a y
+		cameraPos.x %= (double)Chunk.x;
+		cameraPos.z %= (double)Chunk.z;
 		cameraPos.negate();
 		Matrix4f.translate(cameraPos, viewMatrix, viewMatrix);
 		cameraPos.negate();
+		// resets back to the saved pos that we saved ^
 		cameraPos.x = x;
 		cameraPos.z = z;
 		return viewMatrix;
@@ -251,10 +334,16 @@ public class Maths {
 		return createViewMatrix(camera);
 	}
 	
+	/**
+	 * does linear interpolation
+	 */
 	public static float lerp(float point1, float point2, float alpha){
 	    return point1 + alpha * (point2 - point1);
 	}
 	
+	/**
+	 * does linear interpolation
+	 */
 	public static Vector3f lerp(Vector3f point1, Vector3f point2, float alpha){
 		float x = point1.x + alpha * (point2.x - point1.x);
 		float y = point1.y + alpha * (point2.y - point1.y);
@@ -262,18 +351,27 @@ public class Maths {
 	    return new Vector3f(x, y, z);
 	}
 	
+	/**
+	 * does linear interpolation without creating a vector.
+	 */
 	public static void lerpN(Vector3f point1, Vector3f point2, float alpha){
 		point1.x = point1.x + (alpha * (point2.x - point1.x));
 		point1.y = point1.y + (alpha * (point2.y - point1.y));
 		point1.z = point1.z + (alpha * (point2.z - point1.z));
 	}
 	
+	/**
+	 * does linear interpolation using length 3 float[]
+	 */
 	public static void lerpVA3(float[] point1, float[] point2, float alpha){
 		point1[0] = point1[0] + (alpha * (point2[0] - point1[0]));
 		point1[1] = point1[1] + (alpha * (point2[1] - point1[1]));
 		point1[2] = point1[2] + (alpha * (point2[2] - point1[2]));
 	}
 	
+	/**
+	 * does linear interpolation using length 6 float[]
+	 */
 	public static void lerpVA6(float[] point1, float[] point2, float alpha){
 		point1[0] = point1[0] + (alpha * (point2[0] - point1[0]));
 		point1[1] = point1[1] + (alpha * (point2[1] - point1[1]));
@@ -284,6 +382,9 @@ public class Maths {
 		point1[5] = point1[5] + (alpha * (point2[5] - point1[5]));
 	}
 	
+	/**
+	 * does linear interpolation changes the first vector.
+	 */
 	public static Vector3f lerpA(Vector3f point1, Vector3f point2, float alpha){
 		float x = point1.x + alpha * (point2.x - point1.x);
 		float y = point1.y + alpha * (point2.y - point1.y);
@@ -294,45 +395,69 @@ public class Maths {
 		
 	    return new Vector3f(x, y, z);
 	}
+	
+	/**
+	 * calculates distance.
+	 */
 	public static Vector3f distance(Vector3f point1, Vector3f point2) {
 		return new Vector3f(point1.x - point2.x, point1.y - point2.y, point1.z - point2.z);
 	}
+	
+	/**
+	 * calculates distance. Absolute distance.
+	 */
 	public static Vector3f distanceABS(Vector3f point1, Vector3f point2) {
 		return new Vector3f(Math.abs(point1.x - point2.x), Math.abs(point1.y - point2.y), Math.abs(point1.z - point2.z));
 	}
 	
+	/**
+	 * converts RGB255(8bit) into normalized RBG (OpenGL) (0.0-1.0)
+	 */
 	public static Vector3f decodeRGB255(int r, int g, int b) {
 		return new Vector3f(r/255,g/255,b/255);
 	}
 	
+	/**
+	 * convets a single channel of RBG into normalized RGB
+	 */
 	public static float decodeRGB255(int b) {
 		return b / 255;
 	}
 	
+	/**
+	 * rounds to 5 decimal places.
+	 */
 	public static double roundDown5(double d) {
 	    return (long) (d * 1e5) / 1e5;
 	}
+	/**
+	 * rounds to 4 decimal places.
+	 */
 	public static double roundDown4(double d) {
 	    return (long) (d * 1e4) / 1e4;
 	}
+	/**
+	 * rounds to 3 decimal places.
+	 */
 	public static double roundDown3(double d) {
 	    return (long) (d * 1e3) / 1e3;
 	}
+	/**
+	 * rounds to 2 decimal places.
+	 */
 	public static double roundDown2(double d) {
 	    return (long) (d * 1e2) / 1e2;
 	}
-	// Don't use!
-	public static int randInt(int min, int max) {
-	    Random rand = new Random();
-	    int randomNum = rand.nextInt((max - min) + 1) + min;
-	    return randomNum;
-	}
 	
+	/**
+	 * uses the local thread to generate a random int
+	 */
 	public static int randomInt(int min, int max) {
 		int randomNum = ThreadLocalRandom.current().nextInt(min, max + 1);
 		return randomNum;
 	}
 	
+	// from old game. ignore this
 	public static colors getEntityColor(Vector3f color) {
 		if (color.x > color.y && color.x > color.z){
 			return colors.COLOR_RED;
@@ -345,18 +470,31 @@ public class Maths {
 		return colors.NULL;
 	}
 	
+	/**
+	 * calculates distance
+	 */
 	public static Vector3f distance2(Vector3f first, Vector3f last) {
 		return new Vector3f(first.x - last.x, first.y - last.y, first.z - last.z);
 	}
 	
+	/**
+	 * creates a random float between min(inclusive) and max (exclusive I think)
+	 */
 	public static float randomFloat(float min, float max) {
 		return (float) (min + Math.random() * (max - min));
 	}
 	
+	/**
+	 * creates a random float between min(inclusive) and max (exclusive I think),
+	 * using your random
+	 */
 	public static float randomFloat(float min, float max, Random rand) {
 		return (float) (min + rand.nextDouble() * (max - min));
 	}
 	
+	/**
+	 * adds two vectors returning a new vector.
+	 */
 	public static Vector3f addVectors(Vector3f vec1, Vector3f vec2) {
 		return new Vector3f(vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z);
 	}
@@ -372,15 +510,26 @@ public class Maths {
 		return t;
 	}
 	
+	/**
+	 * converts a string into its raw bytes
+	 */
+	public static String convertToBytesString(String s) {
+		String t = "";
+		char[] chars = s.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			t += (int) chars[i];
+		}
+		
+		return t;
+	}
+	
+	/**
+	 * prevents negative numbers. Sets all negatives to 0.
+	 */
 	public static long preventNegs(Long num) {
 		if (num < 0)
 			num = 0l;
 		return num;
 	}
-
-	/*// Or this. Slightly slower, but faster than creating objects. ;)
-	public static double roundDown5(double d) {
-	    return Math.floor(d * 1e5) / 1e5;
-	}*/
 	
 }

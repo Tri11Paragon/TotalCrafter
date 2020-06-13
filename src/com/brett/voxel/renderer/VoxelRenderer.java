@@ -27,6 +27,7 @@ public class VoxelRenderer implements DisplaySource {
 	
 	@Override
 	public void render() {
+		renderer.prepare();
 		camera.move();
 		camera.calculateFrustum(renderer.getProjectionMatrix(), Maths.createViewMatrixOTHER(camera));
 		

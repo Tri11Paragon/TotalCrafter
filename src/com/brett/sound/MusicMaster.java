@@ -72,7 +72,7 @@ public class MusicMaster {
 	// make sure that there wont be music for the first ten minutes after startup this way.
 	private static long lastTime = System.currentTimeMillis();
 	public static void update() {
-		if (musicSystem.playing()) {
+		if (musicSystem.playing() || musics.size() == 0) {
 			return;
 		}
 		// play if random and enough time has past. (5 minutes)

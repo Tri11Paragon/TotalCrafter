@@ -11,6 +11,7 @@ public class Main {
 }
 
 /* TODO List
+ * 694 // 7332108111118101321211111173287105108108326051
  * 
  * make lights when they are inside objects work.
  * Background resource loader

@@ -34,6 +34,8 @@ import com.brett.voxel.world.player.Player;
 
 public class VoxelWorld extends IWorldProvider implements IMouseState {
 	
+	private static final long serialVersionUID = 4794008908629628949L;
+	
 	public static final float GRAVITY = 9.8f;
 	// is this a remote server?
 	public static boolean isRemote = false;

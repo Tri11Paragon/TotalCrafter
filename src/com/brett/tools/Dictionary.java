@@ -32,9 +32,12 @@ public class Dictionary {
 		data.put("kill", "LINUX!");
 		data.put("they", "glasses");
 		data.put("have", "bag");
+		data.put("that", "big chungus");
 	}
 	
 	public String convertString(String string) {
+		// I don't even know what i was doing here
+		// something with trying to replace some words with other words to make a funny
 		String r = "";
 		String[] s = string.split(" ");
 		String d = "";
@@ -57,6 +60,10 @@ public class Dictionary {
 		}
 		
 		return r;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(new Dictionary().convertString("You didn't respond to my heavy or anything so like mr meany"));
 	}
 	
 }

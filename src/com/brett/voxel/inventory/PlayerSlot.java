@@ -1,5 +1,7 @@
 package com.brett.voxel.inventory;
 
+import java.io.Serializable;
+
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -13,7 +15,9 @@ import com.brett.voxel.world.items.ItemStack;
 * @date Mar. 12, 2020
 */
 
-public class PlayerSlot {
+public class PlayerSlot implements Serializable {
+	
+	private static final long serialVersionUID = -4508178413249010682L;
 	
 	private static ItemStack itemInHand;
 	public static UIDynamicText text = new UIDynamicText("", 0.8f, VoxelScreenManager.monospaced, new Vector2f(Mouse.getX(), Mouse.getY()), 1.0f, false);

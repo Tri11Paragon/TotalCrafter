@@ -1,5 +1,7 @@
 package com.brett.voxel.inventory;
 
+import java.io.Serializable;
+
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
@@ -17,7 +19,10 @@ import com.brett.voxel.world.items.ItemStack;
 * @date Mar. 15, 2020
 */
 
-public class Hotbar extends Inventory implements IEventListener, IKeyState {
+public class Hotbar extends Inventory implements IEventListener, IKeyState, Serializable {
+
+	// ever wondered what this is for? its for serialization.
+	private static final long serialVersionUID = 8751794979515722648L;
 
 	public static int hoverTexture = 0;
 	
@@ -32,6 +37,7 @@ public class Hotbar extends Inventory implements IEventListener, IKeyState {
 		this.rend = ui.getRenderer();
 		float sizeX = 64*9;
 		this.x = Display.getWidth()/2 - sizeX/2;
+		// register slot stuff
 		for (int i = 0; i < 9; i++) {
 			super.addSlot(new Slot(x + (i*64), Display.getHeight()-70, 64, 64));
 		}
@@ -51,6 +57,7 @@ public class Hotbar extends Inventory implements IEventListener, IKeyState {
 	@Override
 	public void update() {
 		if (this.isEnabled()) {
+			// renderes are selected texture on the selected slot
 			rend.startrender();
 			rend.render(hoverTexture, x + (selectedSlot*64), Display.getHeight()-70, 64, 64);
 			rend.stoprender();
@@ -59,6 +66,7 @@ public class Hotbar extends Inventory implements IEventListener, IKeyState {
 			super.update();
 		else {
 			float delta = Mouse.getDWheel();
+			// moves the selected slot up and down.
 			if (delta < 0 ) {
 				selectedSlot++;
 				if (selectedSlot >= 9)

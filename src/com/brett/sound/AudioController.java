@@ -35,6 +35,8 @@ public class AudioController {
 	private static FloatBuffer listndata = BufferUtils.createFloatBuffer(6);
 	
 	public static void init() {
+		// the way we assign position and rotation and stuff and what not
+		// weird i know.
 		listndata.put( 0, 0 );
 		listndata.put( 1, 0 );
 		listndata.put( 2, 0 );
@@ -42,6 +44,7 @@ public class AudioController {
 		listndata.put( 4, 1 );
 		listndata.put( 5, 0 );
 		try {
+			// creates OpenAL instance
 			AL.create();
 		} catch (LWJGLException e) {
 			e.printStackTrace();
@@ -53,48 +56,65 @@ public class AudioController {
 	 */
 	public static void setListenerData(float x, float y, float z, float rx, float ry, float rz) {
 		try {
-		AL10.alListener3f(AL10.AL_POSITION, x, y, z);
-		AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
-		listndata.put( 0, rx);
-		listndata.put( 1, ry );
-		listndata.put( 2, rz );
-		AL10.alListener(AL10.AL_ORIENTATION, listndata);
-		} catch (Exception e) {}
+			// sets position. OpenAL has support for stuff like doppler effect.
+			// im not using it.
+			AL10.alListener3f(AL10.AL_POSITION, x, y, z);
+			AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
+			// set the rotation of the camera
+			listndata.put( 0, rx);
+			listndata.put( 1, ry );
+			listndata.put( 2, rz );
+			// apply it to OpenAl
+			AL10.alListener(AL10.AL_ORIENTATION, listndata);
+			} catch (Exception e) {}
 	}
 	
+	/**
+	 * sets position of the listener
+	 */
 	public static void setListenerPosition(Vector3f f, float rx, float ry, float rz) {
 		try {
-		AL10.alListener3f(AL10.AL_POSITION, f.x, f.y, f.z);
-		AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
-		listndata.put( 0, rx);
-		listndata.put( 1, ry );
-		listndata.put( 2, rz );
-		AL10.alListener(AL10.AL_ORIENTATION, listndata);
+			// same thing as ^ but with a vec3
+			AL10.alListener3f(AL10.AL_POSITION, f.x, f.y, f.z);
+			AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
+			listndata.put( 0, rx);
+			listndata.put( 1, ry );
+			listndata.put( 2, rz );
+			AL10.alListener(AL10.AL_ORIENTATION, listndata);
 		} catch (Exception e) {}
 	}
 	
+	/**
+	 * loads an entire folder of sounds. Starts in resources/sound/
+	 */
 	public static int[] loadSoundFolder(String folder) {
 		try {
-		folder = "resources/sound/" + folder;
-		File sfolder = new File(folder);
-		File[] sfiles = sfolder.listFiles();
-		List<Integer> ints = new ArrayList<Integer>();
-		for (int i = 0; i < sfiles.length; i++) {
-			if (sfiles[i].isFile()) {
-				if (sfiles[i].getName().endsWith(".ogg"))
-					ints.add(loadS(sfiles[i].getAbsolutePath()));
+			folder = "resources/sound/" + folder;
+			File sfolder = new File(folder);
+			File[] sfiles = sfolder.listFiles();
+			List<Integer> ints = new ArrayList<Integer>();
+			// goes through all files in a folder
+			// adds them if they are ogg files.
+			for (int i = 0; i < sfiles.length; i++) {
+				if (sfiles[i].isFile()) {
+					if (sfiles[i].getName().endsWith(".ogg"))
+						ints.add(loadS(sfiles[i].getAbsolutePath()));
+				}
 			}
-		}
-		// java for some reason does not have easy object[] to int[] conversion :/
-		int[] is = new int[ints.size()];
-		for (int i = 0; i < is.length; i++)
-			is[i] = ints.get(i);
-		
-		return is;
-		} catch (Exception e) {}
+			// java for some reason does not have easy object[] to int[] conversion :/
+			// or else i'd use list.toArray();
+			int[] is = new int[ints.size()];
+			for (int i = 0; i < is.length; i++)
+				is[i] = ints.get(i);
+			
+			return is;
+			} catch (Exception e) {}
 		return null;
 	}
 	
+	/**
+	 * loads a single sound file. (OGG)
+	 */
 	public static int loadSound(String file) {
 		try {
 			return loadS("resources/sound/" + file);
@@ -102,12 +122,19 @@ public class AudioController {
 		return 0;
 	}
 	
+	/**
+	 * loads a sound from a sound file (ogg)
+	 */
 	public static int loadS(String file) {
+		// make sure we have a window open (not running server)
 		if (GLContext.getCapabilities() == null)
 			return 0;
+		// generate a buffer for this sound
 		int buffer = AL10.alGenBuffers();
+		// for deletion (should know this by now)
 		buffers.add(buffer);
 		try {
+			// convert the ogg
 			buffer = getOgg(new BufferedInputStream(new FileInputStream(file)));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -115,40 +142,9 @@ public class AudioController {
 		return buffer;
 	}
 	
-	public static int loadS(File file) {
-		if (GLContext.getCapabilities() == null)
-			return 0;
-		int buffer = AL10.alGenBuffers();
-		buffers.add(buffer);
-		try {
-			buffer = getOgg(new BufferedInputStream(new FileInputStream(file)));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return buffer;
-	}
-	
-	public static OggData LoadOgg(File f) {
-		OggDecoder decoder = new OggDecoder();
-		try {
-			return decoder.getData(new BufferedInputStream(new FileInputStream(f)));
-		} catch(Exception e) {}
-		return null;
-	}
-	
-	public static int loadS(String file, OggData data) {
-		int buffer = AL10.alGenBuffers();
-		buffers.add(buffer);
-		try {
-			if (data == null)
-				return buffer;
-			buffer = getOgg(file, data);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return buffer;
-	}
-	
+	/**
+	 * deletes all active buffers
+	 */
 	public static void cleanup() {
 		for (int i = 0; i < buffers.size(); i++) {
 			AL10.alDeleteBuffers(buffers.get(i));
@@ -160,6 +156,8 @@ public class AudioController {
 	// but his code doesn't work because im already doing the init inside this class.
 	// so i made it work for here.
 	// TODO: load this myself for faster loading.
+	// (everything below the line I didn't write)
+	// --------------------------------------------
 	
 	public static int getOgg(InputStream in) throws IOException {
 		return getOgg(in.toString(), in);

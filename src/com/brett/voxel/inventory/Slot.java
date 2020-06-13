@@ -1,5 +1,7 @@
 package com.brett.voxel.inventory;
 
+import java.io.Serializable;
+
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
@@ -14,7 +16,9 @@ import com.brett.voxel.world.items.ItemStack;
 * @author brett
 * @date Mar. 12, 2020
 */
-public class Slot extends UIButton {
+public class Slot extends UIButton implements Serializable {
+	
+	private static final long serialVersionUID = -7434485717414603002L;
 	
 	public static int texture,hovertexture;
 	protected UIDynamicText text;
@@ -158,32 +162,34 @@ public class Slot extends UIButton {
 				}
 				if(!prevState2 && Mouse.isButtonDown(1)) {
 					if (stack != null) {
-						if(PlayerSlot.getStack() != null) {
-							if (PlayerSlot.getStack().getItem() == stack.getItem()) {
-								stack.increaseStack(1);
-								PlayerSlot.getStack().decreaseStack(1);
-								if (PlayerSlot.getStack().getAmountInStack() < 1)
+						if (!name.contains("o")) {
+							if(PlayerSlot.getStack() != null) {
+								if (PlayerSlot.getStack().getItem() == stack.getItem()) {
+									stack.increaseStack(1);
+									PlayerSlot.getStack().decreaseStack(1);
+									if (PlayerSlot.getStack().getAmountInStack() < 1)
+										PlayerSlot.changeStack(null);
+									PlayerSlot.change();
+									text.changeText(Integer.toString(stack.getAmountInStack()));
+									if (sc != null)
+										sc.onChange(this);
+								}
+							} else {
+								PlayerSlot.changeStack(new ItemStack(stack.getItem(), stack.getAmountInStack()/2));
+								stack.decreaseStack(stack.getAmountInStack()/2);
+								if ((PlayerSlot.getStack().getAmountInStack()) <= 0)
 									PlayerSlot.changeStack(null);
 								PlayerSlot.change();
-								text.changeText(Integer.toString(stack.getAmountInStack()));
+								if (stack.getAmountInStack() <= 0)
+									stack = null;
+								if (stack != null)
+									text.changeText(Integer.toString(stack.getAmountInStack()));
 								if (sc != null)
 									sc.onChange(this);
 							}
-						} else {
-							PlayerSlot.changeStack(new ItemStack(stack.getItem(), stack.getAmountInStack()/2));
-							stack.decreaseStack(stack.getAmountInStack()/2);
-							if ((PlayerSlot.getStack().getAmountInStack()) <= 0)
-								PlayerSlot.changeStack(null);
-							PlayerSlot.change();
-							if (stack.getAmountInStack() <= 0)
-								stack = null;
-							if (stack != null)
-								text.changeText(Integer.toString(stack.getAmountInStack()));
-							if (sc != null)
-								sc.onChange(this);
 						}
 					} else {
-						if(PlayerSlot.getStack() != null) {
+						if(PlayerSlot.getStack() != null && !name.contains("o")) {
 							stack = new ItemStack(PlayerSlot.getStack().getItem(), 1);
 							PlayerSlot.getStack().decreaseStack(1);
 							if (PlayerSlot.getStack().getAmountInStack() < 1)

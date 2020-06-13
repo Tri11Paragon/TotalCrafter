@@ -29,6 +29,9 @@ public class SettingsLoader {
 	private static final String SETTINGS_LOCATION = "settings.txt";
 	private static final HashMap<Integer, String> comments = new HashMap<Integer, String>();
 	
+	/*
+	 * some static variable definitions for classes that need them.
+	 */
 	public static int KEY_CONSOLE = Keyboard.KEY_GRAVE;
 	public static int KEY_CLEAR = Keyboard.KEY_F6;
 	public static int SAMPLES = 4;
@@ -38,16 +41,23 @@ public class SettingsLoader {
 	private static int readLines = 1;
 	public static void loadSettings() {
 		try {
+			// load the settings file
 			new File(SETTINGS_LOCATION).createNewFile();
 			BufferedReader reader = new BufferedReader(new FileReader(SETTINGS_LOCATION));
 			String line;
 			while((line = reader.readLine()) != null) {
-				if (line.startsWith("#")) {
+				// don't process lines that are commented.
+				// Python, java and Lua comment prefixes.
+				if (line.startsWith("#") || line.startsWith("//") || line.startsWith("--")) {
+					// put the comments in memory so that way when we save settings
+					// it keeps the comments
 					comments.put(readLines, line);
+					// a marker to what line pos we put the comment at.
 					readLines++;
 					continue;
 				}
 				String[] name = line.split(":");
+				// make sure we have a good comparison
 				name[0] = name[0].toLowerCase();
 				if (name[0].equals("fov"))
 					MasterRenderer.FOV = Float.parseFloat(name[1]);
@@ -84,9 +94,11 @@ public class SettingsLoader {
 	
 	public static void saveSettings() {
 		try {
+			// reads file
 			BufferedWriter writer = new BufferedWriter(new FileWriter(SETTINGS_LOCATION));
 			// clears the file
 			writer.write("");
+			// write all the important data that needs saving
 			writeLine(writer, "FOV: " + MasterRenderer.FOV);
 			writeLine(writer, "FPS: " + DisplayManager.FPS_MAX);
 			writeLine(writer, "renderDistance: " + ChunkStore.renderDistance);
@@ -105,14 +117,19 @@ public class SettingsLoader {
 	
 	private static int writeLines = 1;
 	private static void writeLine(BufferedWriter writer, String s) throws IOException {
+		// get the comment for this current line
 		String comment = comments.get(writeLines);
 		if (comment != null) {
+			// write the comment
 			writer.append(comment);
 			writer.newLine();
+			// Increase the line we are writing
 			writeLines++;
+			// try to write the line again
 			writeLine(writer, s);
 			return;
 		}
+		// write this line
 		writer.append(s);
 		writer.newLine();
 		writeLines++;

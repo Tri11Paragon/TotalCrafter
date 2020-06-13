@@ -13,9 +13,18 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.datatypes.SmallModelData;
 
+/**
+ * @author brett & karl
+ * this is a slightly modified version of karl's OBJ loader
+ * I don't really use this that much as the game has mostly static objects like cubes.
+ * the thing this is used for is the player but even that isn't really needed and could be put into code.
+ * OBJ loading is not hard and there have been times were I didn't use this file and just opened the raw
+ * OBJ and used the data inside.
+ */
 public class OBJLoader {
 	private static final String RES_LOC = "resources/models/";
 
+	// karl's function
 	public static ModelData loadOBJ(String objFileName) {
 		FileReader isr = null;
 		File objFile = new File(RES_LOC + objFileName + ".obj");
@@ -81,36 +90,54 @@ public class OBJLoader {
 				furthest, objFileName);
 		return data;
 	}
-	
+	// this is something that i added.
+	/**
+	 * loads a OBJ as arrays instead of as indices
+	 */
 	public static SmallModelData loadAsArrays(String file) {
+		// final list of verts
 		float[] verts = {};
 		float[] uvs = {};
+		// list of all the verts
 		List<float[]> v = new ArrayList<float[]>();
 		List<float[]> u = new ArrayList<float[]>();
+		// reader for the file
 		FileReader fr = null;
 		try {
 			fr = new FileReader(RES_LOC + file + ".obj");
 		} catch (FileNotFoundException e) {System.err.println("File not found in res; don't use any extention");}
 		BufferedReader r = new BufferedReader(fr);
+		// current line being read.
 		String line;
+		
+		// TODO: work in support for object groups.
 		
 		try {
 			while (true) {
 				line = r.readLine();
 				String[] currentLine = line.split(" ");
+				// parses the OBJ file format. Basiclly just karls code copied.
+				// this stuff is not hard.
+				// verts
 				if (line.startsWith("v ")) {
 					v.add(new float[] {Float.parseFloat(currentLine[1]), Float.parseFloat(currentLine[2]), Float.parseFloat(currentLine[3])});
+					// uvs
 				} else if (line.startsWith("vt ")) {
 					u.add(new float[] {Float.parseFloat(currentLine[1]), Float.parseFloat(currentLine[2])});
+					// break if we find a face
 				} else if (line.startsWith("f ")) {
 					break;
 				}
 			}
 			while (line != null && line.startsWith("f ")) {
 				String[] currentLine = line.split(" ");
+				// split the face line
 				String[] vertex1 = currentLine[1].split("/");
 				String[] vertex2 = currentLine[2].split("/");
 				String[] vertex3 = currentLine[3].split("/");
+				// this just converts from indicies into pure arrays.
+				// since the indices are just pointers to positions in the list of verts and uvs
+				// its pretty easy to convert them to pure arrays.
 				verts = addArrays(verts, v.get((int) (Float.parseFloat(vertex1[0])-1)));
 				uvs = addArrays(uvs, u.get((int)(Float.parseFloat(vertex1[1])-1)));
 				
@@ -119,30 +146,41 @@ public class OBJLoader {
 				
 				verts = addArrays(verts, v.get((int) (Float.parseFloat(vertex3[0])-1)));
 				uvs = addArrays(uvs, u.get((int)(Float.parseFloat(vertex3[1])-1)));
+				// read the next line
 				line = r.readLine();
 			}
 		} catch (Exception e) {}
 		return new SmallModelData(verts, uvs);
 	}
 	
+	// this is something that i added.
+	/**
+	 * prints a OBJ file as arrays instead of indices
+	 */
 	public static void printArrays(String file) {
+		// get the model
 		SmallModelData model = OBJLoader.loadAsArrays(file);
 		
+		// get the verts from the model
 		float[] verts = model.getVerts();
 		float[] uvs = model.getUvs();
+		// string to print
 		String v = "VERTS: \n";
 		String u = "UVS: \n";
 		
+		// add in all the verts to the string
 		for (int i = 0; i < verts.length; i+=3) {
 			v += verts[i] + "f,";
 			v += verts[i+1] + "f,";
 			v += verts[i+2] + "f, \n";
 		}
+		// add all the uvs
 		for (int i = 0; i < uvs.length; i+=2) {
 			u += uvs[i] + "f,";
 			u += uvs[i+1] + "f, \n";
 		}
 		
+		// print
 		System.out.println("---------");
 		System.out.println(file);
 		System.out.println("---------");
@@ -150,13 +188,22 @@ public class OBJLoader {
 		System.out.println(u);
 	}
 	
+	/**
+	 * adds arrays
+	 */
 	public static float[] addArrays(float[] array1, float[] array2) {
+		// I made this before i knew about system.arraycopy.
+		// this is only to be used like once at startup
+		// and not during play time
+		// so im fine with it.
 		float[] rtv = new float[array1.length + array2.length];
 		
+		// take old array and add it to new array
 		for (int i = 0; i<array1.length;i++) {
 			rtv[i] = array1[i];
 		}
 		
+		// add in the new array starting at the end of the old array
 		for (int i = 0; i<array2.length; i++) {
 			rtv[i + array1.length] = array2[i];
 		}
@@ -164,6 +211,9 @@ public class OBJLoader {
 		return rtv;
 	}
 	
+	/**
+	 * karl's functions below
+	 */
 	private static void processVertex(String[] vertex, List<Vertex> vertices, List<Integer> indices) {
 		int index = Integer.parseInt(vertex[0]) - 1;
 		Vertex currentVertex = vertices.get(index);

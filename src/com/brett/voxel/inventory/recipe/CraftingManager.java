@@ -54,12 +54,15 @@ public class CraftingManager {
 		HashMap<Integer, Character> chars = new HashMap<Integer, Character>();
 		StringBuilder bild = new StringBuilder();
 		buildCharacters(lines, chars, bild);
+		// I think i only did this to prevent having to create another tuple object
 		long l = 0;
 		l = (long)output;
 		l |= (((long)amount) << 32);
+		// make sure we have a recipe map for this crafting size
 		HashMap<Integer, Tuple<String, Long>> recipes = craftingRecipes.get(lines.length);
 		if (recipes == null)
 			recipes = new HashMap<Integer, Tuple<String, Long>>();
+		// put it
 		recipes.put(output, new Tuple<String, Long>(data, l));
 		craftingRecipes.put(lines.length, recipes);
 	}
@@ -73,14 +76,17 @@ public class CraftingManager {
 		HashMap<Integer, Character> chars = new HashMap<Integer, Character>();
 		StringBuilder bild = new StringBuilder();
 		buildCharacters(lines, chars, bild);
+		// get all the recipes for the size of crafting 
 		HashMap<Integer, Tuple<String, Long>> tup = craftingRecipes.get(lines.length);
 		if (tup == null)
 			return 0;
 		Iterator<java.util.Map.Entry<Integer, Tuple<String, Long>>> itr = tup.entrySet().iterator();
+		// loop through all the recipes
 		while (itr.hasNext()) {
 			Entry<Integer, Tuple<String, Long>> entry = itr.next();
 			Tuple<String, Long> tuple = entry.getValue();
 			String dataToMatch = tuple.getX();
+			// returns the recipe if it is found in the map of recipies
 			if (dataToMatch.contentEquals(data)) {
 				long undecoded = tuple.getY();
 				return undecoded;
@@ -110,7 +116,15 @@ public class CraftingManager {
 			return 0;
 	}
 	
+	/**
+	 * im pretty sure this function is remanence of the first try at crafting and actually doesn't do anything useful
+	 * im not going to remove it just in case
+	 */
 	private static StringBuilder buildCharacters(String[] lines, HashMap<Integer, Character> chars, StringBuilder bild) {
+		/**
+		 * the idea behind this was to use characters and ints to represent data or something
+		 * i was going to try and use regular expressions or something
+		 */
 		int used = 0;
 		for (String s : lines) {
 			String[] id = s.split(",");

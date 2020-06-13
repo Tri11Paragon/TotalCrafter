@@ -8,6 +8,8 @@ import java.io.IOException;
 *
 * @author brett
 * @date Jun. 2, 2020
+* just a debug class I was using to test networking, as I can't have two
+* output consoles open at a time.
 */
 
 public class Debug {

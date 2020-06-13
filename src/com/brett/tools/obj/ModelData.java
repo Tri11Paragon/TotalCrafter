@@ -1,5 +1,8 @@
 package com.brett.tools.obj;
 
+/**
+ * stores data about a model
+ */
 public class ModelData {
 
 	private float[] vertices;

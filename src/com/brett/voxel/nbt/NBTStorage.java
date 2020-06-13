@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +26,9 @@ import java.util.Map.Entry;
 * @date Apr. 17, 2020
 */
 
-public class NBTStorage {
+public class NBTStorage implements Serializable {
+	
+	private static final long serialVersionUID = -4396200782982104061L;
 	
 	private String location;
 	private DataOutputStream os = null;

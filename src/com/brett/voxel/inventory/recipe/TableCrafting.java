@@ -19,6 +19,8 @@ import com.brett.voxel.world.items.ItemStack;
 
 public class TableCrafting extends Inventory implements SlotChange {
 	
+	private static final long serialVersionUID = -7977649778493785209L;
+
 	public TableCrafting() {
 		super((int)LevelLoader.seed);
 		float sizeX = 48*3;
@@ -26,6 +28,7 @@ public class TableCrafting extends Inventory implements SlotChange {
 		float x = Display.getWidth()/2 - sizeX/2;
 		float y = Display.getHeight()/2 - sizeY/2 - 120;
 		
+		// add slots for a 3x recipe.
 		this.addSlot(new Slot(x-48*(3/2), y-48*(3/2), 48, 48).setSc(this));
 		this.addSlot(new Slot(x, y-48*(3/2), 48, 48).setSc(this));
 		this.addSlot(new Slot(x+48*(3/2), y-48*(3/2), 48, 48).setSc(this));
@@ -48,6 +51,8 @@ public class TableCrafting extends Inventory implements SlotChange {
 		for (int i = 0; i < slots.size(); i++) {
 			ids[i] = slots.get(i).getItemID();
 		}
+		// build the recipe as a shaped recipe.
+		// (includes all items)
 		StringBuilder bild = new StringBuilder();
 		for (int i = 0; i < (slots.size()-1); i+=3) {
 			bild.append(ids[i]);
@@ -63,7 +68,9 @@ public class TableCrafting extends Inventory implements SlotChange {
 			String recp = bild.toString();
 			if (recp.toCharArray()[recp.length()-1] == ';')
 				recp = recp.substring(0, recp.length()-1);
+			// gets the recipe from the shaped recipe.
 			long undecoded = CraftingManager.getRecipe(recp);
+			// decode it if it exists.
 			if (undecoded != 0) {
 				// get out the amount by doing the inverse of ^
 				amount = (int) (undecoded >> 32);
@@ -73,6 +80,10 @@ public class TableCrafting extends Inventory implements SlotChange {
 				id = (int) (temp >> 32);
 			} else {
 				bild = new StringBuilder();
+				/**
+				 * this is the crazy stuff I was talking about in player crafting. 
+				 * the idea here is that if there is spaces in things then they get added. 
+				 */
 				if (ids[0] != 0) {
 					bild.append(ids[0]);
 					if (ids[1] != 0 || ids[2] != 0) {
@@ -140,6 +151,7 @@ public class TableCrafting extends Inventory implements SlotChange {
 				}
 				//System.out.println(bild.toString());
 				if (bild.toString().length() > 0) {
+					// check if this recipe exists.
 					recp = bild.toString();
 					if (recp.toCharArray()[recp.length()-1] == ';')
 						recp = recp.substring(0, recp.length()-1);
@@ -156,13 +168,17 @@ public class TableCrafting extends Inventory implements SlotChange {
 			}
 		}
 		if (s.getName() == "o") {
+			// remove item in the slots
 			for (int i = 0; i < slots.size()-1; i++) {
 				slots.get(i).removeItems(1);
 			}
 		}
+		// same thing as player crafting
+		// add items to output if there is items
 		if (id != 0 && amount != 0) {
 			int lowest = Integer.MAX_VALUE-1;
 			int numZero = 0;
+			// makes sure there is items in the crafting table
 			for (int i = 0; i < slots.size()-1; i++) {
 				if (slots.get(i).getItemsAmount() < lowest && slots.get(i).getItemsAmount() > 0) {
 					lowest = slots.get(i).getItemsAmount();
@@ -173,6 +189,7 @@ public class TableCrafting extends Inventory implements SlotChange {
 			}
 			if (numZero == (slots.size()-1))
 				lowest = 0;
+			// add if items exist
 			if (lowest > 0) {
 				slots.get(slots.size()-1).setItemStack(new ItemStack(Item.items.get((short)id), amount));
 				slots.get(slots.size()-1).updateText();
