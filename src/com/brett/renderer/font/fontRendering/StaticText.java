@@ -69,6 +69,8 @@ public class StaticText {
 	@SuppressWarnings("unlikely-arg-type")
 	public static void removeText(UIText text){
 		List<UIText> batch = textMap.get(text.getFont());
+		if (batch == null)
+			return;
 		batch.remove(text);
 		// make sure we don't have empty batchs in the map
 		if(batch.isEmpty()){

@@ -20,6 +20,8 @@ import com.brett.voxel.world.items.ItemStack;
 
 public class TileFurnace extends Container {
 	
+	private static final long serialVersionUID = 399355403172335183L;
+	
 	private int fuel;
 	private int progress;
 	private boolean spawned = false;

@@ -35,7 +35,7 @@ public class UISlider extends UIButton implements UIElement {
 			if (Mouse.isButtonDown(0)) {
 				// if the slider is pressed then we need to change where its slider
 				// position is at. this is what this does.
-				percent = (mx-px) / (pw+10);
+				percent = (mx-px) / (pw);
 				if (event != null)
 					event.event(name + ":" + percent);
 			}
@@ -44,7 +44,8 @@ public class UISlider extends UIButton implements UIElement {
 		// also this class is used like 3 times so it does't really matter rn
 		// TODO: redo the whole UI system.
 		master.getRenderer().startrender();
-		master.getRenderer().render(bartex, (float)(px + (pw*percent)), py, 10, ph);
+		// -10 is to prevent some issues with the thingy going over.
+		master.getRenderer().render(bartex, (float)(px + ((pw-10)*percent)), py, 10, ph);
 		master.getRenderer().stoprender();
 	}
 	

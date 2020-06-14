@@ -565,6 +565,7 @@ public class MainMenu implements DisplaySource {
 		private UIDynamicText senstiv;
 		private UIDynamicText rendd;
 		private UIDynamicText fovv;
+		private UIDynamicText music;
 		
 		public Options(UIMaster master, Loader loader) {
 			this.master = master;
@@ -606,6 +607,14 @@ public class MainMenu implements DisplaySource {
 			buttons.add(fovSlid);
 			elements.add(fovSlid);
 			
+			UISlider musicSlid = new UISlider("music", loader.loadSpecialTexture("gui/slider"), loader.loadSpecialTexture("gui/button"), options, master, 860, 240, 300, 60);
+			musicSlid.setPercent(SettingsLoader.MUSIC);
+			music = master.createDynamicText("Music: " + (int)(SettingsLoader.MUSIC * 100) + "%", 1.5f, VoxelScreenManager.monospaced, (860), 255, 300, true);
+			StaticText.loadText(music);
+			texts.add(music);
+			buttons.add(musicSlid);
+			elements.add(musicSlid);
+			
 		}
 		
 		@Override
@@ -639,6 +648,12 @@ public class MainMenu implements DisplaySource {
 					StaticText.removeText(fovv);
 					fovv.changeTextNoUpdate("FOV: " + MasterRenderer.FOV);
 					StaticText.loadText(fovv);
+				}
+				if (datas[0].contentEquals("music")) {
+					SettingsLoader.MUSIC = percent;
+					StaticText.removeText(music);
+					music.changeTextNoUpdate("Music: " + (int)(SettingsLoader.MUSIC * 100) + "%");
+					StaticText.loadText(music);
 				}
 			}
 		}

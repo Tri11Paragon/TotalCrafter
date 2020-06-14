@@ -37,6 +37,7 @@ public class SettingsLoader {
 	public static int SAMPLES = 4;
 	public static int AF = 4;
 	public static double SENSITIVITY = 0.5d;
+	public static double MUSIC = 0.5d;
 	
 	private static int readLines = 1;
 	public static void loadSettings() {
@@ -75,6 +76,8 @@ public class SettingsLoader {
 					SAMPLES = (int) Float.parseFloat(name[1]);
 				if (name[0].equals("anisotropy"))
 					AF = (int) Float.parseFloat(name[1]);
+				if (name[0].equals("music"))
+					MUSIC = Float.parseFloat(name[1]);
 				try {
 				if (name[0].equals("username"))
 					MainMenu.username = name[1].trim();
@@ -109,6 +112,7 @@ public class SettingsLoader {
 			writeLine(writer, "ip: " + MainMenu.ip);
 			writeLine(writer, "samples: " + SAMPLES);
 			writeLine(writer, "anisotropy: " + AF);
+			writeLine(writer, "music: " + MUSIC);
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();

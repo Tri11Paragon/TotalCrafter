@@ -57,6 +57,9 @@ public class PlayerInventory implements IKeyState, Serializable {
 		ui.addMenu(craft);
 	}
 	
+	/**
+	 * adds an item to the player's inventory
+	 */
 	public void addItemToInventory(ItemStack i) {
 		if (!h.addItemToInventorySimilar(i))
 			if (!this.i.addItemToInventorySimilar(i))

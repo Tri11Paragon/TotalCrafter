@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.brett.tools.SettingsLoader;
+
 import paulscode.sound.SoundSystem;
 import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
@@ -83,7 +85,9 @@ public class MusicMaster {
 			try {
 				// plays the music
 				// on any menu.
+				musicSystem.setVolume(music, (float) SettingsLoader.MUSIC);
 				musicSystem.backgroundMusic(music, new URL("file:resources/sound/music/" + music), music, false);
+				musicSystem.setVolume(music, (float) SettingsLoader.MUSIC);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}

@@ -21,6 +21,8 @@ import com.brett.renderer.font.UIDynamicText;
 
 public class UIMaster {
 	
+	public static EscapeMenu menu;
+	
 	public static int inventoryTexture = 0;
 	
 	private int SWIDTH = 800;
@@ -37,7 +39,8 @@ public class UIMaster {
 		SHEIGHT = Display.getHeight();
 		// create the rednerer
 		renderer = new GUIRenderer(loader);
-		guimenus.add(new EscapeMenu(this, loader));
+		menu = new EscapeMenu(this, loader);
+		guimenus.add(menu);
 		// load textures we will need.
 		inventoryTexture = loader.loadSpecialTexture("gui/background");
 	}

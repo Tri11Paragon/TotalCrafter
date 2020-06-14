@@ -48,6 +48,7 @@ public class UIButton extends GUITexture implements UIElement {
 	/**
 	 * updates the button.
 	 */
+	@Override
 	public void update() {
 		if (isButtonSelected()) {
 			// change texture to show that we are hovering

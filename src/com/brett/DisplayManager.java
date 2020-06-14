@@ -13,6 +13,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
 import org.newdawn.slick.opengl.ImageIOImageData;
 
+import com.brett.renderer.gui.UIMaster;
 import com.brett.tools.SettingsLoader;
 
 public class DisplayManager {
@@ -52,7 +53,7 @@ public class DisplayManager {
 			else
 				Display.create(new PixelFormat(), attribs);
 			// set the window title
-			Display.setTitle("RMS - V0.11A // Майнкрафт³ - V0.42.1A");
+			Display.setTitle("RMS - V0.11A // Майнкрафт³ - V0.42.2A");
 			// enable multisampling (AA)
 			// this needs to be enabled even if you are using FBOs
 			// (as there is a way of doing AA on FBOs)
@@ -81,6 +82,7 @@ public class DisplayManager {
 		if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE) && Keyboard.next()) {
 			if(Keyboard.getEventKeyState()) {
 				Mouse.setGrabbed(!Mouse.isGrabbed());
+				UIMaster.menu.setEnabled(!Mouse.isGrabbed());
 			}
 		}
 		// calculate the amount of time that frame took

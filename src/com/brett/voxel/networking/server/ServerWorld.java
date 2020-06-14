@@ -39,6 +39,8 @@ import com.brett.voxel.world.generators.WorldGenerator;
 
 public class ServerWorld extends IWorldProvider implements IChunkProvider {
 	
+	private static final long serialVersionUID = -7269680346286023585L;
+	
 	public static int renderDistance = 12;
 	public static String worldLocation = "worlds/server/";
 	public static String dimLocation = worldLocation + "DIM";

@@ -116,8 +116,11 @@ public class ChunkStore implements IChunkProvider {
 					if (chunksCopy == null) {
 						try {
 							chunksCopy = new MultiKeyMap<Integer, Region>();
-							for (int i = -renderDistance; i < renderDistance; i++) {
-								for (int k = -renderDistance; k < renderDistance; k++) {
+							// make the unload size double the size of the render distance for good padding
+							// yes I know i should use some kind of static variable instead of *2
+							// but its only ran once per 20 seconds!
+							for (int i = -(renderDistance*2); i < (renderDistance*2); i++) {
+								for (int k = -(renderDistance*2); k < (renderDistance*2); k++) {
 									int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
 									int cz = ((int) (cam.getPosition().z / Chunk.z)) + k;
 									int xoff = 0, zoff = 0;

@@ -87,8 +87,8 @@ public class VoxelScreenManager {
 		//FirstPersonPlayer player = new FirstPersonPlayer(box_model, new Vector3f(0, 0, 0), new Vector3f(0, 2, 0), 0, 0, 0, 1);
 		//Camera camera = player.getCamera();
 		StaticText.init(loader);
-		ui = new UIMaster(loader);
 		monospaced = new FontType(loader.loadTexture("fonts/monospaced-72", 0), new File("resources/textures/fonts/monospaced-72.fnt"));
+		ui = new UIMaster(loader);
 		
 		InventoryMaster.init(loader);
 		GameRegistry.init(loader);

@@ -14,6 +14,8 @@ import com.brett.voxel.world.IWorldProvider;
 
 public class TileChest extends Container {
 	
+	private static final long serialVersionUID = -7199507670111413332L;
+
 	@Override
 	public void spawnTileEntity(int x, int y, int z, IWorldProvider world) {
 		super.spawnTileEntity(x, y, z, world);

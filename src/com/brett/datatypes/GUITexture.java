@@ -203,5 +203,9 @@ public class GUITexture implements UIElement {
 	public float getTextureScaleY() {
 		return textureScaleY;
 	}
+
+	@Override
+	public void update() {
+	}
 	
 }

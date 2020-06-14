@@ -11,3 +11,4 @@ username: brett
 ip: localhost
 samples: 4
 anisotropy: 4
+music: 0.551612913608551

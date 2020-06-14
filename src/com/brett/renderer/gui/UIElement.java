@@ -29,4 +29,6 @@ public interface UIElement {
 	
 	public Vector3f getColor();
 	
+	public void update();
+	
 }
