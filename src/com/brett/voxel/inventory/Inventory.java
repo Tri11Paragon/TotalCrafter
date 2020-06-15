@@ -10,9 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -25,7 +23,6 @@ import com.brett.renderer.gui.IMenu;
 import com.brett.renderer.gui.UIElement;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.voxel.gui.MainMenu;
-import com.brett.voxel.networking.PACKETS;
 import com.brett.voxel.networking.server.Server;
 import com.brett.voxel.networking.server.ServerWorld;
 import com.brett.voxel.world.VoxelWorld;
@@ -61,7 +58,6 @@ public class Inventory implements IMenu, Serializable {
 			NBTID = b.toString();
 			// connect to server
 			VoxelWorld.localClient.inventories.add(this);
-			VoxelWorld.localClient.requestInventory(NBTID);
 		} else
 			NBTID = b.toString();
 	}
@@ -71,7 +67,6 @@ public class Inventory implements IMenu, Serializable {
 			// connect to server
 			this.NBTID = NBTID + MainMenu.username;
 			VoxelWorld.localClient.inventories.add(this);
-			VoxelWorld.localClient.requestInventory(NBTID);
 		} else
 			this.NBTID = NBTID;
 	}
@@ -89,7 +84,6 @@ public class Inventory implements IMenu, Serializable {
 			this.NBTID = b.toString();
 			// connect to server.
 			VoxelWorld.localClient.inventories.add(this);
-			VoxelWorld.localClient.requestInventory(NBTID);
 		} else
 			this.NBTID = b.toString();
 	}
@@ -128,8 +122,6 @@ public class Inventory implements IMenu, Serializable {
 				s.updateText();
 				if (amount == 0) {
 					i = null;
-					if (VoxelWorld.localClient != null)
-						VoxelWorld.localClient.sendInventory(this);
 					// returns true when there is no items left to be added
 					return true;
 				}
@@ -142,8 +134,6 @@ public class Inventory implements IMenu, Serializable {
 			if (s.getItemStack() == null) {
 				s.setItemStack(i);
 				s.updateText();
-				if (VoxelWorld.localClient != null)
-					VoxelWorld.localClient.sendInventory(this);
 				return true;
 			}
 		}
@@ -165,8 +155,6 @@ public class Inventory implements IMenu, Serializable {
 				s.updateText();
 				if (amount == 0) {
 					i = null;
-					if (VoxelWorld.localClient != null)
-						VoxelWorld.localClient.sendInventory(this);
 					return true;
 				}
 				continue;
@@ -224,8 +212,6 @@ public class Inventory implements IMenu, Serializable {
 	
 	public void toggleEnabled() {
 		// toggles the inventory.
-		if (VoxelWorld.localClient != null)
-			VoxelWorld.localClient.requestInventory(NBTID);
 		enabled = !enabled;
 		// enables / disables text.
 		if (enabled) {
@@ -247,8 +233,6 @@ public class Inventory implements IMenu, Serializable {
 	 * Enable the inventory.
 	 */
 	public void enable() {
-		if (VoxelWorld.localClient != null)
-			VoxelWorld.localClient.requestInventory(NBTID);
 		enabled = true;
 		for (Slot s : slots){
 			if (s.text != null)
@@ -260,8 +244,6 @@ public class Inventory implements IMenu, Serializable {
 	 * Disable the inventory.
 	 */
 	public void disable() {
-		if (VoxelWorld.localClient != null)
-			VoxelWorld.localClient.sendInventory(this);
 		enabled = false;
 		for (Slot s : slots) {
 			if (s.text != null)
@@ -353,80 +335,6 @@ public class Inventory implements IMenu, Serializable {
 	
 	public boolean isEnabled() {
 		return enabled;
-	}
-	
-	/**
-	 * saving of client inventory is now done on the client side
-	 * so this stuff is useless.
-	 * you can ignore it for now.
-	 */
-	
-	/**
-	 * DOESN'T WORK / UNUSED / MIGHT WORK
-	 */
-	public byte[] serialize() {
-		byte[] nbtstr = NBTID.getBytes();
-		ByteBuffer buff = ByteBuffer.allocate(6 + 4*slots.size() + 4 * slots.size() + nbtstr.length + 4);
-		buff.put(PACKETS.INVENTORYSEND);
-		if (VoxelWorld.localClient != null)
-			buff.putInt(VoxelWorld.localClient.id);
-		else
-			buff.putInt(0);
-		buff.putInt(slots.size());
-		for (int i = 0; i < slots.size(); i++) {
-			Slot s = slots.get(i);
-			if (s.getItemStack() == null) {
-				buff.putInt(-1);
-				buff.putInt(-1);
-			} else {
-				buff.putInt(s.getItemID());
-				buff.putInt(s.getItemsAmount());
-			}
-		}
-		buff.put(Byte.MIN_VALUE);
-		for (int i = 0; i < nbtstr.length; i++) {
-			buff.put(nbtstr[i]);
-		}
-		return buff.array();
-	}
-	
-	/**
-	 * DOESN'T WORK / UNUSED / MIGHT WORK
-	 */
-	public void deserialize(byte[] bytes) {
-		ByteBuffer buff = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0, 6000));
-		buff.get();
-		buff.getInt();
-		int size = buff.getInt();
-		for (int i = 0; i < size; i++) {
-			int id = buff.getInt();
-			int amount = buff.getInt();
-			if (id > 0) {
-				ItemStack st = new ItemStack(Item.items.get((short)id), amount);
-				slots.get(i).setItemStack(st);
-			}
-		}
-	}
-	
-	/**
-	 * DOESN'T WORK / UNUSED / MIGHT WORK
-	 */
-	public void deserialize(byte[] bytes, boolean b) {
-		ByteBuffer buff = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0, 6000));
-		buff.get();
-		buff.getInt();
-		int size = buff.getInt();
-		for (int i = 0; i < size; i++) {
-			slots.add(new Slot(0,0,0,0));
-		}
-		for (int i = 0; i < size; i++) {
-			int id = buff.getInt();
-			int amount = buff.getInt();
-			if (id > 0) {
-				ItemStack st = new ItemStack(Item.items.get((short)id), amount);
-				slots.get(i).setItemStack(st);
-			}
-		}
 	}
 	
 	/**

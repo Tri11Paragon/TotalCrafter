@@ -222,26 +222,7 @@ public class Server extends Thread {
 					}
 				}
 				break;
-			case PACKETS.INVENTORYSEND:
-				int p = 0;
-				for (int i = 0; i < bt.length; i++) {
-					if (bt[i] == Byte.MIN_VALUE)
-						p = i;
-				}
-				String inv = dataToString(Arrays.copyOfRange(bt, p+1, p + 3000)).toString().trim();
-				boolean found = false;
-				for (int i = 0; i < inventories.size(); i++) {
-					if (inventories.get(i).NBTID.contentEquals(inv)) {
-						inventories.get(i).deserialize(bt);
-						found = true;
-					}
-				}
-				if (!found) {
-					Inventory i = new Inventory(inv);
-					i.deserialize(bt, true);
-					i.loadInventory();
-					inventories.add(i);
-				}
+			case PACKETS.TILEREQ:
 				break;
 			case PACKETS.EXIT:
 				sendDataToAllClients(new byte[] {PACKETS.EXIT, PACKETS.EXIT, PACKETS.EXIT});
@@ -251,17 +232,8 @@ public class Server extends Thread {
 					ServerTest.sc.close();
 				} catch (IOException e) {e.printStackTrace();}
 				break;
-			case PACKETS.INVENTORYREQ:
-				idb = ByteBuffer.wrap(Arrays.copyOfRange(bt, 1, 5));
-				id = idb.getInt();
-				String invid = dataToString(Arrays.copyOfRange(bt, 5, 1000)).toString();
-				for (int i = 0; i < inventories.size(); i++) {
-					if (inventories.get(i).NBTID.contentEquals(invid)) {
-						cl = clientMap.get(id);
-						if (cl != null)
-							cl.sendData(inventories.get(i).serialize());
-					}
-				}
+			case PACKETS.TILESEND:
+				
 				break;
 		}
 	}

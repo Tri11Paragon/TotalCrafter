@@ -24,6 +24,7 @@ import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.font.FontType;
 import com.brett.renderer.font.UIDynamicText;
 import com.brett.renderer.font.fontRendering.StaticText;
+import com.brett.renderer.gui.EscapeMenu;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.renderer.shaders.LineShader;
 import com.brett.renderer.shaders.PointShader;
@@ -61,6 +62,7 @@ public class VoxelScreenManager {
 	public static UIMaster ui;
 	public static MasterRenderer renderer;
 	public static VoxelWorld world;
+	public static MainMenu mainmenu;
 	
 	private static DisplaySource scene;
 	
@@ -220,11 +222,13 @@ public class VoxelScreenManager {
 		console.registerCommand("give", new GiveCommand(player.getInventory()));
 		
 		world = new VoxelWorld(renderer, loader, player);
+		EscapeMenu.world = world;
 		console.registerCommand("exit", new CloseServerCommand());
 		
 		Mouse.setGrabbed(false);
 		
-		scene = new MainMenu(ui, renderer, player, world, loader);
+		mainmenu = new MainMenu(ui, renderer, player, world, loader);
+		scene = mainmenu;
 		//scene = new VoxelRenderer(renderer, camera, world);
 		
 		//System.out.println(MeshStore.models.get(VoxelWorld.createSixBooleans(true, true, true, true, true, true)) == MeshStore.models.get(VoxelWorld.createSixBooleans(true, true, true, true, true, true)));

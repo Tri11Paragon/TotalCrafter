@@ -40,7 +40,10 @@ public class PlayerInventory implements IKeyState, Serializable {
 		float sizeY = 48*7;
 		float x = Display.getWidth()/2 - sizeX/2;
 		float y = Display.getHeight()/2 - sizeY/2 + 100;
+		// crates a ne ivenorty
 		i = new Inventory((int)LevelLoader.seed, "player");
+		// maek some backhtound
+		// not needed and kinda ugly
 		i.setBackground(ui.createCenteredTexture(UIMaster.inventoryTexture, -1, -1, 0, 100, sizeX + 30, sizeY + 30));
 		h = new Hotbar(i, ui);
 		for (int j = 0; j < 15; j++) {
@@ -48,6 +51,7 @@ public class PlayerInventory implements IKeyState, Serializable {
 				i.addSlot(new Slot(x + (j*48),y + (k*48), 48, 48));
 			}
 		}
+		// load some stuff
 		i.loadInventory();
 		ui.addMenu(i);
 		ui.addMenu(h);
@@ -117,8 +121,10 @@ public class PlayerInventory implements IKeyState, Serializable {
 
 	@Override
 	public void onKeyPressed() {
+		// toggles the inventories for the player
 		if (Keyboard.isKeyDown(Keyboard.KEY_E) && !Console.getIsOpen()) {
 			boolean inved = false;
+			// the all disable keystate listeners
 			for (int i = 0; i < disableKeyState.size(); i++) {
 				if (disableKeyState.get(i).disableInventory()) {
 					this.i.disable();
@@ -128,8 +134,11 @@ public class PlayerInventory implements IKeyState, Serializable {
 					continue;
 				}
 			}
+			// closed close from close
 			if (inved)
 				return;
+			// i am sotired
+			//craft time make sure we got the goof dust
 			if (BlockCrafting.craft != null) {
 				if (BlockCrafting.craft.isEnabled()) {
 					BlockCrafting.craft.disable();

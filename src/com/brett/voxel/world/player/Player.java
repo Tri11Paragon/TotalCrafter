@@ -22,9 +22,11 @@ import com.brett.voxel.world.VoxelWorld;
 
 public class Player extends Camera {
 	
-	private static final int RECUR_AMT = 5;
+	private static final int RECUR_AMT = 1;
 	private static final float LOWESTPOINT = -1.75f;
 	private static final float LOWESTPOINTCROUCH = -0.75f;
+	private static final Vector3f MIN = new Vector3f(-0.25f, -1.75f, -0.25f);
+	private static final Vector3f MAX = new Vector3f(0.25f, 0.0f, 0.25f);
 	public static boolean flight = false;
 	
 	private double speed = 5;
@@ -42,17 +44,19 @@ public class Player extends Camera {
 	private Loader loader;
 	private UIMaster ui;
 	
-	private float size = 0.25f;
-	private final Vector3f[] cordsStand = {new Vector3f(-size, LOWESTPOINT, -size), new Vector3f(size, LOWESTPOINT, size), 
-									 new Vector3f(size, LOWESTPOINT, -size), new Vector3f(-size, LOWESTPOINT, size),
+	private final float size = 0.25f;
+	private final Vector3f[] cordsStand = {
+									  new Vector3f(-size, LOWESTPOINT, -size), new Vector3f(size, LOWESTPOINT, size), 
+									  new Vector3f(size, LOWESTPOINT, -size), new Vector3f(-size, LOWESTPOINT, size),
 			
-									 new Vector3f(-size, LOWESTPOINT/2, -size), new Vector3f(size, LOWESTPOINT/2, size), 
-									 new Vector3f(size, LOWESTPOINT/2, -size), new Vector3f(-size, LOWESTPOINT/2, size),
+									  new Vector3f(-size, LOWESTPOINT/2, -size), new Vector3f(size, LOWESTPOINT/2, size), 
+									  new Vector3f(size, LOWESTPOINT/2, -size), new Vector3f(-size, LOWESTPOINT/2, size),
 			
-									 new Vector3f(-size, 0f, -size), new Vector3f(size, 0f, size), 
-									 new Vector3f(size, 0f, -size), new Vector3f(-size, 0f, size)};
+									  new Vector3f(-size, 0f, -size), new Vector3f(size, 0f, size), 
+									  new Vector3f(size, 0f, -size), new Vector3f(-size, 0f, size)};
 	
-	private final Vector3f[] cordsCrouch = {new Vector3f(-size, LOWESTPOINTCROUCH, -size), new Vector3f(size, LOWESTPOINTCROUCH, size), 
+	private final Vector3f[] cordsCrouch = {
+									  new Vector3f(-size, LOWESTPOINTCROUCH, -size), new Vector3f(size, LOWESTPOINTCROUCH, size), 
 									  new Vector3f(size, LOWESTPOINTCROUCH, -size), new Vector3f(-size, LOWESTPOINTCROUCH, size),
 			
 									  new Vector3f(-size, LOWESTPOINTCROUCH/2, -size), new Vector3f(size, LOWESTPOINTCROUCH/2, size), 
@@ -60,7 +64,6 @@ public class Player extends Camera {
 			
 									  new Vector3f(-size, 0f, -size), new Vector3f(size, 0f, size), 
 									  new Vector3f(size, 0f, -size), new Vector3f(-size, 0f, size)};
-	
 	
 	private Vector3f[] cords = cordsStand;
 	
@@ -199,14 +202,12 @@ public class Player extends Camera {
 		double wx = 0, wy = 0, wz = 0;
 		double xb = 0, yb = 0, zb = 0;
 		
-		float bias = 1.24f;
-		
 		y1: for (int d = 0; d < RECUR_AMT; d++) {
 			wy += yStep;
 			if (world.chunk.getBlockCollision(position.x, position.y + ((float)wy), position.z) != COLLISIONTYPE.SOLID) {
 				int amty = 0;
 				for (int i = 0; i < cords.length; i++) {
-					if (world.chunk.getBlockCollision(position.x + cords[i].x, position.y + cords[i].y + ((float)wy * bias), position.z + cords[i].z) != COLLISIONTYPE.SOLID)
+					if (world.chunk.getBlockCollision((position.x + cords[i].x),(position.y + cords[i].y + ((float)wy)),(position.z + cords[i].z)) != COLLISIONTYPE.SOLID)
 						amty++;
 					else
 						break y1;
@@ -226,7 +227,7 @@ public class Player extends Camera {
 			if (world.chunk.getBlockCollision(position.x + ((float)wx), position.y, position.z) != COLLISIONTYPE.SOLID) {
 				int amt = 0;
 				for (int i = 0; i < cords.length; i++) {
-					if (world.chunk.getBlockCollision(position.x + cords[i].x + ((float)wx * bias), position.y + cords[i].y, position.z + cords[i].z) != COLLISIONTYPE.SOLID)
+					if (world.chunk.getBlockCollision(position.x + cords[i].x + ((float)wx), position.y + cords[i].y, position.z + cords[i].z) != COLLISIONTYPE.SOLID)
 						amt++;
 					else
 						break x1;
@@ -242,7 +243,7 @@ public class Player extends Camera {
 			if (world.chunk.getBlockCollision(position.x, position.y, position.z + ((float)wz)) != COLLISIONTYPE.SOLID) {
 				int amt = 0;
 				for (int i = 0; i < cords.length; i++) {
-					if (world.chunk.getBlockCollision(position.x + cords[i].x, position.y + cords[i].y, position.z + cords[i].z + ((float)wz * bias)) != COLLISIONTYPE.SOLID)
+					if (world.chunk.getBlockCollision(position.x + cords[i].x, position.y + cords[i].y, position.z + cords[i].z + ((float)wz)) != COLLISIONTYPE.SOLID)
 						amt++;
 					else
 						break z1;
@@ -270,15 +271,72 @@ public class Player extends Camera {
 		 */
 		if (VoxelWorld.isRemote) {
 			long current = System.currentTimeMillis();
-			if (xb > 0 || yb > 0 || zb > 0 || current - last > 100) {
+			if (dx > 0 || dy > 0 || dz > 0 || current - last > 100) {
 				if (current - last > 50) {
 					VoxelWorld.localClient.updatePosition(this);
 					last = current;
 				}
 			}
 		}
-			
+		
 		AudioController.setListenerPosition(this.position, MouseBlockPicker.currentRay.x, MouseBlockPicker.currentRay.y, MouseBlockPicker.currentRay.z);
+	}
+	
+	/**
+	 * returns true if there is an intersection between a box and this player
+	 * @param bx - box minimum x
+	 * @param by - box minimum y
+	 * @param bz - box minimum z
+	 * @param bxm - box maximum x
+	 * @param bym - box maximum y
+	 * @param bzm - box maximum z
+	 */
+	private boolean checkCollision(float bx, float by, float bz, float bxm, float bym, float bzm) {
+		return ((MAX.x + this.position.x) > bx) && ((MIN.x + this.position.x) < bxm) && 
+				((MAX.y + this.position.y) > by) && ((MIN.y + this.position.y) < bym) &&
+				((MAX.z + this.position.z) > bz) && ((MIN.z + this.position.z) < bzm);
+	}
+	
+	/**
+	 * checks collision with blocks around the player.
+	 * returns true if they collided with any block.
+	 */
+	public boolean checkCollisionWithBlocksAroundPlayer() {
+		int mx = (int)this.position.x;
+		int my = (int)this.position.y;
+		int mz = (int)this.position.z;
+		boolean b = false;
+		
+		// check base collision
+		if (checkCollision(mx, my, mz, mx+1, my+1, mz+1))
+			b = true;
+		for (int i = -1; i <= 1; i++) {
+			for (int j = -1; j <= 1; j++) {
+				for (int k = -1; k <= 1; k++) {
+					if (checkCollision(mx, my, mz, mx + i, my + j, mz + k));
+						b = true;
+					if (checkCollision(mx + i, my + j, mz + k, mx, my, mz))
+						b = true;
+				}
+			}
+		}
+		
+		return b;
+	}
+	
+	/**
+	 * returns true if there is any solid voxels in an area.
+	 */
+	public boolean solidVoxelsInArea(int minx, int miny, int minz, int maxx, int maxy, int maxz) {
+		for (int i = minx; i <= maxx; i++) {
+			for (int j = miny; j <= maxy; j++) {
+				for (int k = minz; k <= maxz; k++) {
+					if (world.chunk.getBlockCollision(i, j, k) == COLLISIONTYPE.SOLID)
+						return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	public void updateCrouching() {

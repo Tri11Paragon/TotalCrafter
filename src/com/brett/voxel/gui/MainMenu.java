@@ -266,7 +266,7 @@ public class MainMenu implements DisplaySource {
 			elements.add(b);
 			
 			UIButton bw1 = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new StartWorld(vrenderer, "w1/"), master, width-200, 85, 400, 60);
-			UIButton bw1d = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new DeleteWorld("w1/"), master, width+230, 90, 50, 50);
+			UIButton bw1d = new UIButton(loader.loadSpecialTexture("gui/garbage"), loader.loadSpecialTexture("gui/garbagesel"), new DeleteWorld("w1/"), master, width+230, 90, 50, 50);
 			UIText bbtw1 = master.createDynamicText("World 1 - " + folderFormat("worlds/w1"), 1.5f, VoxelScreenManager.monospaced, width-200, 100, 400, true);
 			StaticText.loadText(bbtw1);
 			texts.add(bbtw1);
@@ -276,7 +276,7 @@ public class MainMenu implements DisplaySource {
 			elements.add(bw1d);
 			
 			UIButton bw2 = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new StartWorld(vrenderer, "w2/"), master, width-200, 85 + 75, 400, 60);
-			UIButton bw2d = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new DeleteWorld("w2/"), master, width+230, 85+75+5, 50, 50);
+			UIButton bw2d = new UIButton(loader.loadSpecialTexture("gui/garbage"), loader.loadSpecialTexture("gui/garbagesel"), new DeleteWorld("w2/"), master, width+230, 85+75+5, 50, 50);
 			UIText bbtw2 = master.createDynamicText("World 2 - " + folderFormat("worlds/w2"), 1.5f, VoxelScreenManager.monospaced, width-200, 175, 400, true);
 			StaticText.loadText(bbtw2);
 			texts.add(bbtw2);
@@ -286,7 +286,7 @@ public class MainMenu implements DisplaySource {
 			elements.add(bw2d);
 			
 			UIButton bw3 = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new StartWorld(vrenderer, "w3/"), master, width-200, 235, 400, 60);
-			UIButton bw3d = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new DeleteWorld("w3/"), master, width+230, 240, 50, 50);
+			UIButton bw3d = new UIButton(loader.loadSpecialTexture("gui/garbage"), loader.loadSpecialTexture("gui/garbagesel"), new DeleteWorld("w3/"), master, width+230, 240, 50, 50);
 			UIText bbtw3 = master.createDynamicText("World 3 - " + folderFormat("worlds/w3"), 1.5f, VoxelScreenManager.monospaced, width-200, 250, 400, true);
 			StaticText.loadText(bbtw3);
 			texts.add(bbtw3);
@@ -296,7 +296,7 @@ public class MainMenu implements DisplaySource {
 			elements.add(bw3d);
 			
 			UIButton bw4 = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new StartWorld(vrenderer, "w4/"), master, width-200, 385, 400, 60);
-			UIButton bw4d = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new DeleteWorld("w4/"), master, width+230, 390, 50, 50);
+			UIButton bw4d = new UIButton(loader.loadSpecialTexture("gui/garbage"), loader.loadSpecialTexture("gui/garbagesel"), new DeleteWorld("w4/"), master, width+230, 390, 50, 50);
 			UIText bbtw4 = master.createDynamicText("World 4 - " + folderFormat("worlds/w4"), 1.5f, VoxelScreenManager.monospaced, width-200, 400, 400, true);
 			StaticText.loadText(bbtw4);
 			texts.add(bbtw4);
@@ -306,7 +306,7 @@ public class MainMenu implements DisplaySource {
 			elements.add(bw4d);
 			
 			UIButton bw5 = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new StartWorld(vrenderer, "w5/"), master, width-200, 460, 400, 60);
-			UIButton bw5d = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new DeleteWorld("w5/"), master, width+230, 465, 50, 50);
+			UIButton bw5d = new UIButton(loader.loadSpecialTexture("gui/garbage"), loader.loadSpecialTexture("gui/garbagesel"), new DeleteWorld("w5/"), master, width+230, 465, 50, 50);
 			UIText bbtw5 = master.createDynamicText("World 5 - " + folderFormat("worlds/w5"), 1.5f, VoxelScreenManager.monospaced, width-200, 475, 400, true);
 			StaticText.loadText(bbtw5);
 			texts.add(bbtw5);
@@ -316,7 +316,7 @@ public class MainMenu implements DisplaySource {
 			elements.add(bw5d);
 			
 			UIButton bw6 = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new StartWorld(vrenderer, "w6/"), master, width-200, 535, 400, 60);
-			UIButton bw6d = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new DeleteWorld("w6/"), master, width+230, 540, 50, 50);
+			UIButton bw6d = new UIButton(loader.loadSpecialTexture("gui/garbage"), loader.loadSpecialTexture("gui/garbagesel"), new DeleteWorld("w6/"), master, width+230, 540, 50, 50);
 			UIText bbtw6 = master.createDynamicText("World 6 - " + folderFormat("worlds/w6"), 1.5f, VoxelScreenManager.monospaced, width-200, 550, 400, true);
 			StaticText.loadText(bbtw6);
 			texts.add(bbtw6);

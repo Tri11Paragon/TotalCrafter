@@ -51,6 +51,8 @@ public class ChunkStore implements IChunkProvider {
 	private Loader loader;
 	private WorldGenerator gen;
 	private VoxelWorld world;
+	// prevents unloading while we are still trying to determin what needs to be unloaded.
+	private volatile boolean unloading = false;
 
 	public ChunkStore(Camera cam, Loader loader, VoxelWorld world) {
 		this.cam = cam;
@@ -115,10 +117,19 @@ public class ChunkStore implements IChunkProvider {
 					
 					if (chunksCopy == null) {
 						try {
+							unloading = true;
 							chunksCopy = new MultiKeyMap<Integer, Region>();
 							// make the unload size double the size of the render distance for good padding
 							// yes I know i should use some kind of static variable instead of *2
 							// but its only ran once per 20 seconds!
+							/*
+							 * What the chunk-copy system does is every 20 or so seconds it loops through all the visible chunks and puts them into a copy map
+							 * the original map gets purged and then this map gets copied into the original map.
+							 * 
+							 * That removes all unloaded chunks and keep the loaded ones!
+							 * Im sure there is a better way? I thought this was a neat idea so
+							 * I haven't really bothered trying to innovate it.
+							 */
 							for (int i = -(renderDistance*2); i < (renderDistance*2); i++) {
 								for (int k = -(renderDistance*2); k < (renderDistance*2); k++) {
 									int cx = ((int) (cam.getPosition().x / Chunk.x)) + i;
@@ -136,11 +147,12 @@ public class ChunkStore implements IChunkProvider {
 											chunksCopy.put(rx, rz, r);
 										}
 									} catch (Exception e) {
-										System.err.println("Broken (Region unloaded??)");
+										System.err.println("Broken Game! (Region unloaded??)");
 										System.err.println(e.getCause());
 									}
 								}
 							}
+							unloading = false;
 						} catch (NullPointerException e) {System.err.println("Somehow something that isn't null is null. Possible race condition detected!");}
 					}
 					//System.gc();
@@ -232,21 +244,33 @@ public class ChunkStore implements IChunkProvider {
 	long last = 0;
 	private boolean lastTransparent = true;
 	public void renderChunks(VoxelShader shader, Matrix4f project) {
-		if (chunksCopy != null) {
+		if (chunksCopy != null && !unloading) {
+			// this is the other half of the chunk-copy system
 			MapIterator<MultiKey<? extends Integer>, Region> rg = chunksCopy.mapIterator();
+			// remove all the regions that are still loaded
 			while (rg.hasNext()) {
 				try {
 					MultiKey<? extends Integer> r = rg.next();
 					chunks.remove(r);
 				} catch (Exception e) {}
 			}
+			// copy map
 			MultiKeyMap<Integer, Region> rgs = new MultiKeyMap<Integer, Region>();
+			// put all the not loaded regions into the copy map
 			rgs.putAll(chunks);
+			// save them
 			queSave(rgs);
+			// clear the original map
 			chunks.clear();
+			// put the loaded regions into the map
 			chunks.putAll(chunksCopy);
+			// debug that will never be removed.
 			System.out.println("Chunking size: " + chunks.size());
+			// null the memory taken by chunks copy as we don't need it.
 			chunksCopy = null;
+			// normally now would be a good time to call the GC
+			// but with the settings I have it on right now it should be fine
+			// and calling the GC now would cause a lag spike.
 		}
 		if (VoxelWorld.isRemote && unsentChunkRequests.size() > 0) {
 			long current = System.currentTimeMillis();

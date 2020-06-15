@@ -189,7 +189,7 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 		if (shader != null)
 			shader.cleanUp();
 	}
-
+	
 	@Override
 	public void onMouseReleased() {
 	}
