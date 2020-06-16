@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,8 +18,9 @@ import org.lwjgl.opengl.Display;
  *
  */
 
-public class MetaFile {
+public class MetaFile implements Serializable {
 
+	private static final long serialVersionUID = 6665808717225762107L;
 	private static final int PAD_TOP = 0;
 	private static final int PAD_LEFT = 1;
 	private static final int PAD_BOTTOM = 2;
@@ -40,7 +42,7 @@ public class MetaFile {
 
 	private Map<Integer, Character> metaData = new HashMap<Integer, Character>();
 
-	private BufferedReader reader;
+	private transient BufferedReader reader;
 	private Map<String, String> values = new HashMap<String, String>();
 	
 	protected MetaFile(File file) {

@@ -1,6 +1,7 @@
 package com.brett.renderer.font;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +15,9 @@ import java.util.List;
  *
  */
 
-public class TextMeshCreator {
+public class TextMeshCreator implements Serializable {
 
+	private static final long serialVersionUID = -5932038607638905246L;
 	protected static final double LINE_HEIGHT = 0.03f;
 	protected static final int SPACE_ASCII = 32;
 

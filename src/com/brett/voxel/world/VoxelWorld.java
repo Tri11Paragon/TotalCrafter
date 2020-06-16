@@ -25,6 +25,7 @@ import com.brett.voxel.world.items.ItemStack;
 import com.brett.voxel.world.items.ItemTool;
 import com.brett.voxel.world.lighting.LightingEngine;
 import com.brett.voxel.world.player.Player;
+import com.brett.voxel.world.tileentity.TileEntity;
 
 /**
 *
@@ -139,6 +140,20 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 				//}
 			}
 		}*/
+	}
+	
+	/**
+	 * adds a tile entity into the world. if the tile already exists then
+	 * the tile entity will be updated.
+	 */
+	public void addTileEntity(TileEntity e) {
+		for (int i = 0; i < tents.size(); i++) {
+			if (tents.get(i).isSame(e)) {
+				tents.set(i, e);
+				return;
+			}
+		}
+		tents.add(e);
 	}
 
 	@Override

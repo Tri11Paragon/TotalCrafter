@@ -26,6 +26,7 @@ import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.chunk.IChunkProvider;
 import com.brett.voxel.world.chunk.NulChunk;
 import com.brett.voxel.world.generators.WorldGenerator;
+import com.brett.voxel.world.tileentity.TileEntity;
 
 /**
 *
@@ -33,7 +34,7 @@ import com.brett.voxel.world.generators.WorldGenerator;
 * @date Jun. 1, 2020
 * 
 * IMPORTANT NOTE:
-* im not re documenting the chunk stuff. if you want documentation goto the chunk store class.
+* im not re documenting the chunk stuff. if you want documentation goto the chunkstore class.
 * its the same code.
 */
 
@@ -86,7 +87,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 					} catch (ConcurrentModificationException e) {}
 					long end = System.currentTimeMillis();
 					long delta = Maths.preventNegs(32 - (end - start));
-					if (end - last > 20) {
+					if (end - last > 10) {
 						if (unsentChunks.size() > 0) {
 							Tuple<Chunk, ConnectedClient> c = unsentChunks.get(0);
 							Server.server.sendCompressedChunk(c.getX(), c.getY());
@@ -100,6 +101,20 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 				} 
 			}
 		}).start();
+	}
+	
+	/**
+	 * adds a tile entity into the world. if the tile already exists then
+	 * the tile entity will be updated.
+	 */
+	public void addTileEntity(TileEntity e) {
+		for (int i = 0; i < tents.size(); i++) {
+			if (tents.get(i).isSame(e)) {
+				tents.set(i, e);
+				return;
+			}
+		}
+		tents.add(e);
 	}
 	
 	public Chunk generateChunk(int x, int z) {

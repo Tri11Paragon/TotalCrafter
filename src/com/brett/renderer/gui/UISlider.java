@@ -1,5 +1,7 @@
 package com.brett.renderer.gui;
 
+import java.io.Serializable;
+
 import org.lwjgl.input.Mouse;
 
 /**
@@ -9,8 +11,9 @@ import org.lwjgl.input.Mouse;
 * Just a special button class (its a slider)
 */
 
-public class UISlider extends UIButton implements UIElement {
+public class UISlider extends UIButton implements UIElement, Serializable {
 
+	private static final long serialVersionUID = 916279185766483552L;
 	private int bartex;
 	private double percent = 0;
 	private UIMaster master;

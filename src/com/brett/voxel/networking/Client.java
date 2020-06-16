@@ -29,6 +29,7 @@ import com.brett.voxel.networking.server.Server;
 import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.player.Player;
+import com.brett.voxel.world.tileentity.TileEntity;
 
 /**
 *
@@ -235,9 +236,13 @@ public class Client extends Thread {
 				
 				break;
 			case PACKETS.TILESEND:
-				
+				world.addTileEntity(Deserializer.bytesToTile(bt, world));
 				break;
 		}
+	}
+	
+	public void sendTileEntity(TileEntity e) {
+		sendData(Deserializer.tileToBytes(e, id));
 	}
 	
 	public void updateBlock(int x, int y, int z, short blk) {

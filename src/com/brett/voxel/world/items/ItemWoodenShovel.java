@@ -10,6 +10,11 @@ import com.brett.datatypes.Texture;
 
 public class ItemWoodenShovel extends ItemTool {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2970948253836861385L;
+
 	public ItemWoodenShovel(short id, Texture texture) {
 		super(id, texture);
 		super.setMiningLevel(1);

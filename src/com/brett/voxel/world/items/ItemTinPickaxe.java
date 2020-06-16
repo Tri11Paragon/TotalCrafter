@@ -10,6 +10,11 @@ import com.brett.datatypes.Texture;
 
 public class ItemTinPickaxe extends ItemTool {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8961441547674106081L;
+
 	public ItemTinPickaxe(short id, Texture texture) {
 		super(id, texture);
 		super.setMiningLevel(2);

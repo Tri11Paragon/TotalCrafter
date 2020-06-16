@@ -1,16 +1,18 @@
 package com.brett.renderer.font;
 
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * 
  * font data type
  * 
  */
-public class FontType {
+public class FontType implements Serializable {
 
+	private static final long serialVersionUID = 4910588667907555697L;
 	private int textureAtlas;
-	private TextMeshCreator loader;
+	private transient TextMeshCreator loader;
 
 	public FontType(int textureAtlas, File fontFile) {
 		this.textureAtlas = textureAtlas;

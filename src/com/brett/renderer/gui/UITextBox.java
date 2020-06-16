@@ -1,5 +1,7 @@
 package com.brett.renderer.gui;
 
+import java.io.Serializable;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
@@ -14,8 +16,10 @@ import com.brett.tools.SettingsLoader;
 * allows for text input.
 */
 
-public class UITextBox extends UIButton implements UIElement {
-	
+public class UITextBox extends UIButton implements UIElement,Serializable {
+
+	private static final long serialVersionUID = 6980355171144122220L;
+
 	protected boolean isSelected = false;
 	
 	public String inputTextBuffer = "";

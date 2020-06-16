@@ -1,5 +1,7 @@
 package com.brett.renderer.font;
 
+import java.io.Serializable;
+
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -11,8 +13,9 @@ import com.brett.renderer.font.fontRendering.StaticText;
  * Holds the information about the text
  *
  */
-public class UIText {
+public class UIText implements Serializable {
 
+	private static final long serialVersionUID = 463395900565370628L;
 	protected String textString;
 	private float fontSizeX;
 	private float fontSizeY;

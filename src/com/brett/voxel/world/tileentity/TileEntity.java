@@ -6,6 +6,7 @@ import java.io.Serializable;
 import com.brett.IKeyState;
 import com.brett.voxel.nbt.NBTStorage;
 import com.brett.voxel.world.IWorldProvider;
+import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.chunk.ChunkStore;
 
 /**
@@ -19,9 +20,10 @@ public class TileEntity implements IKeyState, Serializable {
 	private static final long serialVersionUID = 142599435776416417L;
 	
 	private int x,y,z;
-	protected IWorldProvider world;
+	protected transient IWorldProvider world;
 	private NBTStorage nbt;
 	private String location = "";
+	protected boolean hasChanged = false;
 	
 	public void spawnTileEntity(int x, int y, int z, IWorldProvider world) {
 		this.x = x;
@@ -33,6 +35,7 @@ public class TileEntity implements IKeyState, Serializable {
 		new File(this.location).mkdirs();
 		nbt = new NBTStorage(location+"nbt-"+x+"_"+y+"_"+z);
 		this.load();
+		hasChanged = true;
 	}
 	
 	/**
@@ -53,14 +56,33 @@ public class TileEntity implements IKeyState, Serializable {
 	 * ran in main thread. not timer safe.
 	 */
 	public void renderUpdate() {
-		
+		if (this.getTileChanged()) {
+			sendUpdates();
+		}
+	}
+	
+	public void sendUpdates() {
+		if (VoxelWorld.isRemote) {
+			VoxelWorld.localClient.sendTileEntity(this);
+		}
+	}
+	
+	/**
+	 * returns true if the tile entitiy has changed in some way
+	 */
+	public boolean getTileChanged() {
+		if (hasChanged) {
+			hasChanged = false;
+			return true;
+		}
+		return hasChanged;
 	}
 	
 	/**
 	 * ran 20 times per second. # here is > 0, and is the number of (updates) ticks skiped since last called
 	 */
 	public void tick(long skiped) {
-		
+
 	}
 	
 	public void destroy() {
@@ -87,6 +109,10 @@ public class TileEntity implements IKeyState, Serializable {
 	public int getZ() {
 		return z;
 	}
+	
+	public boolean isSame(TileEntity e) {
+		return e.x == x && e.y == y && e.z == z;
+	}
 
 	public IWorldProvider getWorld() {
 		return world;
@@ -100,6 +126,10 @@ public class TileEntity implements IKeyState, Serializable {
 	@Override
 	public void onKeyReleased() {
 		
+	}
+	
+	public void setWorld(IWorldProvider world) {
+		this.world = world;
 	}
 	
 }

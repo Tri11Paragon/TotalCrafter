@@ -1,5 +1,7 @@
 package com.brett.renderer.gui;
 
+import java.io.Serializable;
+
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
@@ -14,8 +16,9 @@ import com.brett.datatypes.GUITexture;
 *
 */
 
-public class UIButton extends GUITexture implements UIElement {
+public class UIButton extends GUITexture implements UIElement, Serializable {
 	
+	private static final long serialVersionUID = -1474191867250041395L;
 	protected float px, py, pw, ph;
 	protected int ht;
 	protected UIControl event;

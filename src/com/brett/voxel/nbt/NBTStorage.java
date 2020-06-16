@@ -31,7 +31,7 @@ public class NBTStorage implements Serializable {
 	private static final long serialVersionUID = -4396200782982104061L;
 	
 	private String location;
-	private DataOutputStream os = null;
+	private transient DataOutputStream os = null;
 	
 	private HashMap<String, String> nbtData = new HashMap<String, String>();
 	private HashMap<String, String> saveData = new HashMap<String, String>();

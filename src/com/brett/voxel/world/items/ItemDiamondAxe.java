@@ -10,6 +10,11 @@ import com.brett.datatypes.Texture;
 
 public class ItemDiamondAxe extends ItemTool {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8527942462931876878L;
+
 	public ItemDiamondAxe(short id, Texture texture) {
 		super(id, texture);
 		super.setMiningLevel(3);

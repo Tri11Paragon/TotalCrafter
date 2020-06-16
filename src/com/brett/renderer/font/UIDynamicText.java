@@ -13,6 +13,7 @@ import com.brett.renderer.font.fontRendering.StaticText;
 
 public class UIDynamicText extends UIText {
 	
+	private static final long serialVersionUID = -2880878816922707464L;
 	private boolean enabled = false;
 	
 	public UIDynamicText(String text, float fontSize, FontType font, Vector2f position, float maxLineLength, boolean centered) {

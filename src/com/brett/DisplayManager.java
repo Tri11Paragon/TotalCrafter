@@ -53,7 +53,7 @@ public class DisplayManager {
 			else
 				Display.create(new PixelFormat(), attribs);
 			// set the window title
-			Display.setTitle("RMS - V0.11A // Майнкрафт³ - V0.42.2A");
+			Display.setTitle("RMS - V0.11A // Майнкрафт³ - V0.42.3A");
 			// enable multisampling (AA)
 			// this needs to be enabled even if you are using FBOs
 			// (as there is a way of doing AA on FBOs)

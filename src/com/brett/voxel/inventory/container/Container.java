@@ -52,6 +52,18 @@ public class Container extends TileEntity implements Serializable, IInventoryDis
 	}
 	
 	@Override
+	public void renderUpdate() {
+		if (this.getTileChanged()) {
+			sendUpdates();
+		}
+	}
+	
+	@Override
+	public boolean getTileChanged() {
+		return i.hasChanged() | super.getTileChanged();
+	}
+	
+	@Override
 	public void save() {
 		super.save();
 		i.saveInventory();

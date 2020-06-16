@@ -1,13 +1,16 @@
 package com.brett.datatypes;
 
+import java.io.Serializable;
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.renderer.gui.UIElement;
 
-public class GUITexture implements UIElement {
+public class GUITexture implements UIElement, Serializable {
 	
+	private static final long serialVersionUID = 6775818719925566719L;
 	protected int texture;
 	protected int texture2 = -1;
 	protected int texture3 = -1;

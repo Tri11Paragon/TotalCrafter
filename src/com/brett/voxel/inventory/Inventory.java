@@ -45,6 +45,7 @@ public class Inventory implements IMenu, Serializable {
 	private List<UIElement> slotAsElements = new ArrayList<UIElement>();
 	private boolean enabled = false;
 	public final String NBTID;
+	private boolean inventoryChanged = false;
 	
 	public Inventory(int seed) {
 		StringBuilder b = new StringBuilder();
@@ -112,6 +113,7 @@ public class Inventory implements IMenu, Serializable {
 	 * it will return false. Returns true when item has been added.
 	 */
 	public boolean addItemToInventory(ItemStack i) {
+		inventoryChanged = true;
 		// adds and item into the inventory.
 		for (Slot s : slots) {
 			// adds item if they are similar.
@@ -148,6 +150,7 @@ public class Inventory implements IMenu, Serializable {
 		// save as above but only does similar. I don't know why I thought
 		// this was a good idea or if anything uses it but
 		// whatever *sniff*
+		inventoryChanged = true;
 		for (Slot s : slots) {
 			if (s.getItem() == i.getItem()) {
 				int amount = s.getItemStack().increaseStack(i.getAmountInStack());
@@ -177,6 +180,8 @@ public class Inventory implements IMenu, Serializable {
 			GUIRenderer rend = ui.getRenderer();
 			rend.startrender();
 			for (Slot s : slots) {
+				if (s.getSlotChanged())
+					inventoryChanged = true;
 				if (s.getItem() != null) {
 					// render the item textures as secondary objects on top
 					Vector2f size = adjustScale(s.getSc());
@@ -187,6 +192,21 @@ public class Inventory implements IMenu, Serializable {
 			rend.stoprender();
 		}
 		return null;
+	}
+	
+	/**
+	 * stupid method for stupid things
+	 */
+	public void inventoryChanged() {
+		inventoryChanged = true;
+	}
+	
+	public boolean hasChanged() {
+		if (inventoryChanged) {
+			inventoryChanged = false;
+			return true;
+		}
+		return false;
 	}
 	
 	private Vector2f adjustPos(Vector2f pos, Vector2f scale) {
@@ -292,6 +312,9 @@ public class Inventory implements IMenu, Serializable {
 		System.out.println("Inventory Saved.");
 	}
 	
+	/**
+	 * loads the inventory from disk
+	 */
 	public void loadInventory() {
 		DataInputStream is = null;
 		try {
@@ -336,20 +359,5 @@ public class Inventory implements IMenu, Serializable {
 	public boolean isEnabled() {
 		return enabled;
 	}
-	
-	/**
-	 * DOESN'T WORK / UNUSED / MIGHT WORK
-	 */
-    public static StringBuilder dataToString(byte[] a) { 
-        if (a == null) 
-            return null; 
-        StringBuilder ret = new StringBuilder(); 
-        for (int i = 0; i < a.length; i++) {
-        	if (a[i] == 0)
-        		break;
-            ret.append((char) a[i]); 
-        } 
-        return ret; 
-    } 
 	
 }

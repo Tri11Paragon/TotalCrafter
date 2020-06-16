@@ -21,9 +21,10 @@ public class Slot extends UIButton implements Serializable {
 	private static final long serialVersionUID = -7434485717414603002L;
 	
 	public static int texture,hovertexture;
-	protected UIDynamicText text;
+	protected transient UIDynamicText text;
 	private String name = "";
-	private SlotChange sc;
+	private transient SlotChange sc;
+	private boolean slotChanged = false;
 	
 	private ItemStack stack;
 	
@@ -39,12 +40,14 @@ public class Slot extends UIButton implements Serializable {
 	}
 	
 	public ItemStack changeItem(ItemStack stack) {
+		slotChanged = true;
 		ItemStack old = this.stack;
 		this.stack = stack;
 		return old;
 	}
 	
 	public int addItems(int i) {
+		slotChanged = true;
 		int amt = stack.increaseStack(i);
 		text.changeTextNoUpdate(Integer.toString(stack.getAmountInStack()));
 		return amt;
@@ -53,6 +56,7 @@ public class Slot extends UIButton implements Serializable {
 	public int removeItems(int i) {
 		if (stack == null)
 			return 0;
+		slotChanged = true;
 		int amt = stack.decreaseStack(i);
 		text.changeText(Integer.toString(stack.getAmountInStack()));
 		if (stack.getAmountInStack() <= 0) {
@@ -111,6 +115,7 @@ public class Slot extends UIButton implements Serializable {
 							stack = PlayerSlot.getStack();
 							PlayerSlot.changeStack(null);
 							text.changeText(Integer.toString(stack.getAmountInStack()));
+							slotChanged = true;
 							if (sc != null)
 								sc.onChange(this);
 						}
@@ -119,6 +124,7 @@ public class Slot extends UIButton implements Serializable {
 							PlayerSlot.changeStack(stack);
 							stack = null;
 							text.changeText("");
+							slotChanged = true;
 							if (sc != null)
 								sc.onChange(this);
 						} else {
@@ -137,6 +143,7 @@ public class Slot extends UIButton implements Serializable {
 										//if (sc != null)
 											//sc.onChange(this);
 									}
+									slotChanged = true;
 								}
 							} else {
 								if (PlayerSlot.getStack().getItem() == stack.getItem()) {
@@ -156,6 +163,7 @@ public class Slot extends UIButton implements Serializable {
 									if (sc != null)
 										sc.onChange(this);
 								}
+								slotChanged  = true;
 							}
 						}
 					}
@@ -171,6 +179,7 @@ public class Slot extends UIButton implements Serializable {
 										PlayerSlot.changeStack(null);
 									PlayerSlot.change();
 									text.changeText(Integer.toString(stack.getAmountInStack()));
+									slotChanged = true;
 									if (sc != null)
 										sc.onChange(this);
 								}
@@ -184,6 +193,7 @@ public class Slot extends UIButton implements Serializable {
 									stack = null;
 								if (stack != null)
 									text.changeText(Integer.toString(stack.getAmountInStack()));
+								slotChanged = true;
 								if (sc != null)
 									sc.onChange(this);
 							}
@@ -196,6 +206,7 @@ public class Slot extends UIButton implements Serializable {
 								PlayerSlot.changeStack(null);
 							PlayerSlot.change();
 							text.changeText(Integer.toString(stack.getAmountInStack()));
+							slotChanged = true;
 							if (sc != null)
 								sc.onChange(this);
 						}
@@ -209,6 +220,14 @@ public class Slot extends UIButton implements Serializable {
 		} else {
 			super.texture2 = -1;
 		}
+	}
+	
+	public boolean getSlotChanged() {
+		if(slotChanged) {
+			slotChanged = false;
+			return true;
+		}
+		return false;
 	}
 
 	public Slot setSc(SlotChange sc) {
