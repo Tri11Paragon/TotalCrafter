@@ -19,36 +19,51 @@ public abstract class BlockNoise {
 	public BlockNoise(long seed) {
 		this.seed = seed;
 		this.random = new Random();
-		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[i]; }
+		Random temprand = new Random(seed);
+		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[temprand.nextInt(permutation.length)]; }
 	}
 	
 	public BlockNoise(long seed, float amplitude, int octaves, double roughness) {
 		this.seed = seed;
 		this.random = new Random();
+		Random temprand = new Random(seed);
+		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[temprand.nextInt(permutation.length)]; }
 		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[i]; }
 		this.AMPLITUDE = amplitude;
 		this.OCTAVES = octaves;
 		this.ROUGHNESS = roughness;
+		/*Random temprand = new Random(seed);
+        for(int i = 0; i < 256; i++) {
+            int from = temprand.nextInt(p.length);
+            int to = temprand.nextInt(p.length);
+           
+            int temp = p[from];
+            p[from] = p[to];
+            p[to] = temp;
+        }*/
 	}
 	
 	public BlockNoise(long seed, float amplitude) {
 		this.seed = seed;
 		this.random = new Random();
-		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[i]; }
+		Random temprand = new Random(seed);
+		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[temprand.nextInt(permutation.length)]; }
 		this.AMPLITUDE = amplitude;
 	}
 	
 	public BlockNoise(long seed, double roughness) {
 		this.seed = seed;
 		this.random = new Random();
-		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[i]; }
+		Random temprand = new Random(seed);
+		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[temprand.nextInt(permutation.length)]; }
 		this.ROUGHNESS = roughness;
 	}
 	
 	public BlockNoise(long seed, int octaves) {
 		this.seed = seed;
 		this.random = new Random();
-		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[i]; }
+		Random temprand = new Random(seed);
+		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[temprand.nextInt(permutation.length)]; }
 		this.OCTAVES = octaves;
 	}
 	
@@ -110,7 +125,9 @@ public abstract class BlockNoise {
         return random.nextFloat() * 2f - 1f;
     }
 	
-	
+	/**
+	 * Ken Perlin's noise
+	 */
 	public double perlinNoise(double x, double y, double z) {
 		int X = (int) Math.floor(x) & 255, // FIND UNIT CUBE THAT
 				Y = (int) Math.floor(y) & 255, // CONTAINS POINT.

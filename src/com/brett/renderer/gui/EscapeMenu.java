@@ -87,6 +87,7 @@ public class EscapeMenu implements IMenu {
 			public void event(String data) {
 				// cleans up the world / saves
 				// also makes sure that stuff works nicely without too many issues
+				setEnabled(false);
 				VoxelScreenManager.mainmenu.init();
 				MainMenu.ingame = false;
 				VoxelScreenManager.changeDisplaySource(VoxelScreenManager.mainmenu);
@@ -95,7 +96,6 @@ public class EscapeMenu implements IMenu {
 				BlockCrafting.craft.saveInventory();
 				world.cleanup();
 				world.ply.cleanup();
-				setEnabled(false);
 			}
 		}, master, width-250, height+115, 500, 60);
 		UIDynamicText rtrntMenu = master.createDynamicText("Save and quit to main menu", 1.5f, VoxelScreenManager.monospaced, width-250, height+126, 500, true);

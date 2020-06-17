@@ -13,8 +13,10 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
 import org.newdawn.slick.opengl.ImageIOImageData;
 
+import com.brett.console.Console;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.tools.SettingsLoader;
+import com.brett.voxel.inventory.PlayerInventory;
 
 public class DisplayManager {
 
@@ -79,7 +81,7 @@ public class DisplayManager {
 		// updates the current frame buffer with what we have drawn over the last frame.
 		Display.update();
 		// allows you to use the mouse if you want (not really needed TODO: replace with a menu)
-		if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE) && Keyboard.next()) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE) && Keyboard.next() && !Console.getIsOpen() && !PlayerInventory.isOpen) {
 			if(Keyboard.getEventKeyState()) {
 				Mouse.setGrabbed(!Mouse.isGrabbed());
 				UIMaster.menu.setEnabled(!Mouse.isGrabbed());

@@ -4,9 +4,7 @@ import java.io.Serializable;
 
 import com.brett.IInventoryDisable;
 import com.brett.voxel.VoxelScreenManager;
-import com.brett.voxel.inventory.Inventory;
 import com.brett.voxel.inventory.PlayerInventory;
-import com.brett.voxel.tools.LevelLoader;
 import com.brett.voxel.world.IWorldProvider;
 import com.brett.voxel.world.tileentity.TileEntity;
 
@@ -20,18 +18,14 @@ public class Container extends TileEntity implements Serializable, IInventoryDis
 	
 	private static final long serialVersionUID = 7893074616663499692L;
 	
-	// inventory for this container
-	protected Inventory i;
-	
 	@Override
 	public void spawnTileEntity(int x, int y, int z, IWorldProvider world) {
 		super.spawnTileEntity(x, y, z, world);
-		// loads inventory
-		i = new Inventory((int)LevelLoader.seed, "tile/inv_" + x + "_" + y + "_" + z + "_");
 		// register this entity.
 		PlayerInventory.registerDisableState(this);
 		if (VoxelScreenManager.ui != null)
 			VoxelScreenManager.ui.addMenu(i);
+		hasChanged = true;
 	}
 	
 	public void openInventory() {
@@ -53,9 +47,7 @@ public class Container extends TileEntity implements Serializable, IInventoryDis
 	
 	@Override
 	public void renderUpdate() {
-		if (this.getTileChanged()) {
-			sendUpdates();
-		}
+		
 	}
 	
 	@Override

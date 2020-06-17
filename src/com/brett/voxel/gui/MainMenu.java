@@ -161,6 +161,11 @@ public class MainMenu implements DisplaySource {
 			buttons.add(b);
 			elements.add(b);
 			
+			UIText warning = master.createDynamicText("!! Multiplayer is in very early alpha, and as a result may be buggy \n "
+					+ "or not have features available implimented yet. !!", 1.0f, VoxelScreenManager.monospaced, 0, 50, width*2, true);
+			texts.add(warning);
+			StaticText.loadText(warning);
+			
 			UIText textIP = master.createDynamicText("Enter IP address below:", 1.0f, VoxelScreenManager.monospaced, width-205, height/2+65, 400, false);
 			UIText tbt = master.createDynamicText("", 1.0f, VoxelScreenManager.monospaced, width-190, height/2+120, 400, false);
 			UITextBox tb = new UITextBox(loader.loadSpecialTexture("gui/slider"), new UIControl() {

@@ -38,6 +38,7 @@ public class TileFurnace extends Container {
 		super.i.addSlot(new Slot(xz + 100,yz - 300, 48, 48));
 		super.i.loadInventory();
 		spawned = true;
+		hasChanged = true;
 	}
 	
 	@Override

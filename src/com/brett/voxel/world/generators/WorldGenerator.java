@@ -106,85 +106,89 @@ public class WorldGenerator {
 		for (int i = 0; i < Chunk.x; i++) {
 			for (int k = 0; k < Chunk.z; k++) {
 
+				// reference numbers
 				int cax = i + cx;
 				int caz = k + cz;
 				
 				int ref = (int) getBiomeMix(cax, caz, 1);
+				int realref = ref;
+				int amount = 28;
 				
-				if (ref <= 1) {
-					blks[i][1][k] = Block.GRASS;
-					blks[i][0][k] = Block.WILL;
-					continue;
-				}
-				
-				if (ref >= Chunk.y)
-					ref = Chunk.y-1;
-				
-				if (getDesertAmount(cax, caz) < (5.7767467)) {
-					int tree = rnd.nextInt((int) (800 / getForestAmount(cax, caz)));
-					if (tree == 5 && ref < 100 && ref > 30) {
-						int height = rnd.nextInt(3) + 4;
-						for (int lx = -2; lx < 3; lx++) {
-							for (int lz = -2; lz < 3; lz++) {
-								int lxp = i + lx;
-								int lzp = k + lz;
-								for (int hh = 0; hh <= 2; hh++) {
-									if (lxp < 0 || lxp > (Chunk.x - 1) || lzp < 0 || lzp > (Chunk.z - 1)) {
-										world.chunk.setBlock(lxp + cx, ref + height + hh - 2, lzp + cz, Block.LEAVES);
-									} else
-										blks[lxp][ref + height + hh - 2][lzp] = Block.LEAVES;
+				for (int j = Chunk.y-6; j > 0; j--) {
+					if (ref > 80 && j > 80)
+						amount = 20;
+					double reference = (lf.perlinNoise(cax/128.05234d, j/16.234, caz/128.312394d)*64) + amount;
+					if (reference > 0 && j < ref) {
+						int j1 = j+1;
+						if (blks[i][j1][k] == 0) {
+							// assigns the highest grass block in the chunk to be the 'real' reference point
+							// this allows for some nice trees.
+							if (realref == ref)
+								realref = j;
+							if (j < 42) {
+								blks[i][j][k] = Block.STONE;
+							} else if (j < 52) {
+								blks[i][j][k] = Block.SAND;
+							} else
+								blks[i][j][k] = Block.GRASS;
+							// generate some flowers and terrain detail
+							if (j1 > 52) {
+								if (rnd.nextInt(150) == 5) {
+									blks[i][j1][k] = Block.REDFLOWER;
+								}
+								if (rnd.nextInt(100) == 5) {
+									blks[i][j1][k] = Block.YELLOWFLOWER;
+								}
+								if (rnd.nextInt(20) == 5 && realref < 80) {
+									blks[i][j1][k] = Block.TALLGRASS;
 								}
 							}
-						}
-						for (int lx = -1; lx < 2; lx++) {
-							for (int lz = -1; lz < 2; lz++) {
-								int lxp = i + lx;
-								int lzp = k + lz;
-								if (lxp < 0 || lxp > (Chunk.x - 1) || lzp < 0 || lzp > (Chunk.z - 1)) {
-									world.chunk.setBlock(lxp + cx, ref + height + 1, lzp + cz, Block.LEAVES);
-								} else
-									blks[lxp][ref + height + 1][lzp] = Block.LEAVES;
-							}
-						}
-						blks[i][ref + height + 2][k] = Block.LEAVES;
-						for (int t = ref; t <= ref + height; t++) {
-							blks[i][t][k] = Block.LOG;
-						}
-					}
-					if (ref > 40) {
-						if (rnd.nextInt(150) == 5) {
-							if (ref + 1 < Chunk.y)
-								blks[i][ref + 1][k] = Block.REDFLOWER;
-						}
-						if (rnd.nextInt(100) == 5) {
-							if (ref + 1 < Chunk.y)
-								blks[i][ref + 1][k] = Block.YELLOWFLOWER;
-						}
-						if (rnd.nextInt(20) == 5 && ref < 80) {
-							if (ref + 1 < Chunk.y)
-								blks[i][ref + 1][k] = Block.TALLGRASS;
-						}
-					}
-					for (int j = 0; j <= ref; j++) {
-						if (j == ref)
-							blks[i][j][k] = Block.GRASS;
-						if (j < ref && j > ref - 4)
-							blks[i][j][k] = Block.DIRT;
-						if (j < ref - 3)
+						// generate a layer of dirt or sand about 4 blocks thick
+						} else if(blks[i][j+2][k] == 0 || blks[i][j+3][k] == 0 || blks[i][j+4][k] == 0 || blks[i][j+5][k] == 0) {
+							if (j < 42)
+								blks[i][j][k] = Block.STONE;
+							else if (j < 52) {
+								blks[i][j][k] = Block.SAND;
+							} else
+								blks[i][j][k] = Block.DIRT;
+						} else
 							blks[i][j][k] = Block.STONE;
-						if (j == 0)
-							blks[i][j][k] = Block.WILL;
-					}
-				} else {
-					for (int j = 0; j <= ref; j++) {
-						if (j <= ref && j > ref - 4)
-							blks[i][j][k] = Block.SAND;
-						if (j < ref - 3)
-							blks[i][j][k] = Block.STONE;
-						if (j == 0)
-							blks[i][j][k] = Block.WILL;
 					}
 				}
+				// make sure we can't mine outside the world.
+				blks[i][0][k] = Block.WILL;
+				
+				int tree = rnd.nextInt((int) (800 / getForestAmount(cax, caz)));
+				if (tree == 5 && realref < 100 && realref > 52) {
+					int height = rnd.nextInt(3) + 4;
+					for (int lx = -2; lx < 3; lx++) {
+						for (int lz = -2; lz < 3; lz++) {
+							int lxp = i + lx;
+							int lzp = k + lz;
+							for (int hh = 0; hh <= 2; hh++) {
+								if (lxp < 0 || lxp > (Chunk.x - 1) || lzp < 0 || lzp > (Chunk.z - 1)) {
+									world.chunk.setBlock(lxp + cx, realref + height + hh - 2, lzp + cz, Block.LEAVES);
+								} else
+									blks[lxp][realref + height + hh - 2][lzp] = Block.LEAVES;
+							}
+						}
+					}
+					for (int lx = -1; lx < 2; lx++) {
+						for (int lz = -1; lz < 2; lz++) {
+							int lxp = i + lx;
+							int lzp = k + lz;
+							if (lxp < 0 || lxp > (Chunk.x - 1) || lzp < 0 || lzp > (Chunk.z - 1)) {
+								world.chunk.setBlock(lxp + cx, realref + height + 1, lzp + cz, Block.LEAVES);
+							} else
+								blks[lxp][realref + height + 1][lzp] = Block.LEAVES;
+						}
+					}
+					blks[i][realref + height + 2][k] = Block.LEAVES;
+					for (int t = realref; t <= realref + height; t++) {
+						blks[i][t][k] = Block.LOG;
+					}
+				}
+				
 			}
 		}
 		ores.generateOres(blks);
@@ -193,7 +197,7 @@ public class WorldGenerator {
 	
 	public float getBiomeMix(float x, float z, float scale) {
 		float height = (float) (((lf.perlinNoise(x/128f + (345345/LevelLoader.seed), LevelLoader.seed/128f, z/128f + (53485834/LevelLoader.seed)) + 
-				((df.perlinNoise(x/24f + (34595/LevelLoader.seed), LevelLoader.seed/128f, z/24f)*rf.perlinNoise(x/72f, LevelLoader.seed/32f, z/72f + (345992/LevelLoader.seed)))))/scale)*48 + 72);
+				((df.perlinNoise(x/24f + (34595/LevelLoader.seed), LevelLoader.seed/128f, z/24f)*rf.perlinNoise(x/72f, LevelLoader.seed/32f, z/72f + (345992/LevelLoader.seed)))))/scale)*32 + 80);
 		
 		return height;
 	}

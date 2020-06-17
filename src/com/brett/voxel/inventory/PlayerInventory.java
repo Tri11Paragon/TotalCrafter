@@ -33,9 +33,12 @@ public class PlayerInventory implements IKeyState, Serializable {
 	@SuppressWarnings("unused")
 	private GUIRenderer rend;
 	private PlayerCrafting craft;
+	private UIMaster ui;
 	private static List<IInventoryDisable> disableKeyState = new ArrayList<IInventoryDisable>();
+	public static boolean isOpen = false;
 	
 	public PlayerInventory(UIMaster ui) {
+		this.ui = ui;
 		float sizeX = 48*15;
 		float sizeY = 48*7;
 		float x = Display.getWidth()/2 - sizeX/2;
@@ -95,6 +98,7 @@ public class PlayerInventory implements IKeyState, Serializable {
 	public void enable() {
 		i.enable();
 		craft.enable();
+		isOpen = true;
 	}
 	
 	public void enableIOnly() {
@@ -104,10 +108,7 @@ public class PlayerInventory implements IKeyState, Serializable {
 	public void disable() {
 		i.disable();
 		craft.disable();
-	}
-	
-	public void disableIOnly() {
-		i.disable();
+		isOpen = false;
 	}
 	
 	public void toggleEnabled() {
@@ -122,15 +123,17 @@ public class PlayerInventory implements IKeyState, Serializable {
 	@Override
 	public void onKeyPressed() {
 		// toggles the inventories for the player
-		if (Keyboard.isKeyDown(Keyboard.KEY_E) && !Console.getIsOpen()) {
+		if ((Keyboard.isKeyDown(Keyboard.KEY_E)) && !Console.getIsOpen()) {
 			boolean inved = false;
 			// the all disable keystate listeners
 			for (int i = 0; i < disableKeyState.size(); i++) {
 				if (disableKeyState.get(i).disableInventory()) {
+					// disable the player if the inventory we called to be disable is disabled.
 					this.i.disable();
 					this.craft.disable();
 					inved = true;
 					Mouse.setGrabbed(true);
+					isOpen = false;
 					continue;
 				}
 			}
@@ -144,14 +147,17 @@ public class PlayerInventory implements IKeyState, Serializable {
 					BlockCrafting.craft.disable();
 					this.i.disable();
 					this.craft.disable();
+					isOpen = false;
 					Mouse.setGrabbed(true);
 				} else {
 					this.i.toggleEnabled();
 					this.craft.toggleEnabled();
+					isOpen = i.isEnabled();
 				}
 			} else {
 				this.i.toggleEnabled();
 				this.craft.toggleEnabled();
+				isOpen = i.isEnabled();
 			}
 		}
 	}
@@ -169,6 +175,10 @@ public class PlayerInventory implements IKeyState, Serializable {
 	}
 	
 	public void cleanup() {
+		h.disable();
+		i.disable();
+		ui.removeMenu(h);
+		ui.removeMenu(i);
 		h.saveInventory();
 		i.saveInventory();
 		craft.saveInventory();

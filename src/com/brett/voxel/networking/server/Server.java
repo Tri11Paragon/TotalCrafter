@@ -20,7 +20,6 @@ import com.brett.renderer.MasterRenderer;
 import com.brett.tools.Debug;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.Inventory;
-import com.brett.voxel.networking.Deserializer;
 import com.brett.voxel.networking.IReciveEvent;
 import com.brett.voxel.networking.PACKETS;
 import com.brett.voxel.world.chunk.Chunk;
@@ -128,13 +127,6 @@ public class Server extends Thread {
 				
 				cn.sendData(idb.array());
 				
-				for (int i = 0; i < sworld.tents.size(); i++) {
-					cn.sendData(Deserializer.tileToBytes(sworld.tents.get(i), id));
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {}
-				}
-				
 				for (int i = 0; i < clients.size(); i++) {
 					if (clients.get(i).id == lastID)
 						continue;
@@ -231,8 +223,6 @@ public class Server extends Thread {
 					}
 				}
 				break;
-			case PACKETS.TILEREQ:
-				break;
 			case PACKETS.EXIT:
 				sendDataToAllClients(new byte[] {PACKETS.EXIT, PACKETS.EXIT, PACKETS.EXIT});
 				ServerTest.line = "exit";
@@ -240,24 +230,6 @@ public class Server extends Thread {
 				try {
 					ServerTest.sc.close();
 				} catch (IOException e) {e.printStackTrace();}
-				break;
-			case PACKETS.TILESEND:
-				System.out.println("got some data");
-				id = ByteBuffer.wrap(Arrays.copyOfRange(bt, 1, 5)).getInt();
-				sworld.addTileEntity(Deserializer.bytesToTile(bt, sworld));
-				byte[] cpy = bt;
-				// stupid that this has to be done
-				for (int i = bt.length-1; i > 0; i--) {
-					if (bt[i] == PACKETS.TILESEND) {
-						cpy = Arrays.copyOfRange(bt, 0, i+1);
-						break;
-					}
-				}
-				for (int i = 0; i < clients.size(); i++) {
-					if (clients.get(i).id != id)
-						clients.get(i).sendData(cpy);
-				}
-				System.out.println("hey we got some new data");
 				break;
 		}
 	}

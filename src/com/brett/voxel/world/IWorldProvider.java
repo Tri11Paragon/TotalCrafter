@@ -30,20 +30,30 @@ public class IWorldProvider implements Serializable {
 	public volatile IChunkProvider chunk;
 	public Player ply;
 	
+	/**
+	 * spawns the title entity at a position
+	 */
 	public void spawnTileEntity(TileEntity e, int x, int y, int z) {
 		tents.add(e);
 		tileEntities.put(x, y, z, e);
 		e.spawnTileEntity(x, y, z, this);
 	}
 	
+	/**
+	 * gets the tile entity at a cord
+	 */
 	public TileEntity getTileEntity(int x, int y, int z) {
 		return tileEntities.get(x, y, z);
 	}
 	
+	/**
+	 * destroys the tile entity
+	 */
 	public void destoryTileEntity(TileEntity e) {
 		if (e == null)
 			return;
 		e.destroy();
+		// remove from the map
 		if (tents.contains(e))
 			tents.remove(e);
 		MapIterator<MultiKey<? extends Integer>,TileEntity> ents = tileEntities.mapIterator();
@@ -57,6 +67,9 @@ public class IWorldProvider implements Serializable {
 		} catch (Exception edd) {}
 	}
 	
+	/**
+	 * updates the blocks around a position
+	 */
 	public void updateBlocksAround(int x, int y, int z) {
 		Block.blocks.get(this.chunk.getBlockBIAS(x, y + 1, z)).onBlockUpdated(x, y + 1, z, this);
 		Block.blocks.get(this.chunk.getBlockBIAS(x, y - 1, z)).onBlockUpdated(x, y - 1, z, this);

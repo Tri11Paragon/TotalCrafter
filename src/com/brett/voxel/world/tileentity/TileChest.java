@@ -29,6 +29,7 @@ public class TileChest extends Container {
 			}
 		}
 		super.i.loadInventory();
+		hasChanged = true;
 	}
 	
 }

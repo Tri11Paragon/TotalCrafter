@@ -4,9 +4,10 @@ import java.io.File;
 import java.io.Serializable;
 
 import com.brett.IKeyState;
+import com.brett.voxel.inventory.Inventory;
 import com.brett.voxel.nbt.NBTStorage;
+import com.brett.voxel.tools.LevelLoader;
 import com.brett.voxel.world.IWorldProvider;
-import com.brett.voxel.world.VoxelWorld;
 import com.brett.voxel.world.chunk.ChunkStore;
 
 /**
@@ -24,6 +25,8 @@ public class TileEntity implements IKeyState, Serializable {
 	private NBTStorage nbt;
 	private String location = "";
 	protected boolean hasChanged = false;
+	// inventory for this entity
+	public Inventory i;
 	
 	public void spawnTileEntity(int x, int y, int z, IWorldProvider world) {
 		this.x = x;
@@ -31,6 +34,9 @@ public class TileEntity implements IKeyState, Serializable {
 		this.z = z;
 		this.world = world;
 		location = ChunkStore.worldLocation + "tile/";
+		// loads inventory
+		if (i == null)
+			i = new Inventory((int)LevelLoader.seed, "tile/inv_" + x + "_" + y + "_" + z + "_");
 		// make sure the file location exists.
 		new File(this.location).mkdirs();
 		nbt = new NBTStorage(location+"nbt-"+x+"_"+y+"_"+z);
@@ -56,15 +62,7 @@ public class TileEntity implements IKeyState, Serializable {
 	 * ran in main thread. not timer safe.
 	 */
 	public void renderUpdate() {
-		if (this.getTileChanged()) {
-			sendUpdates();
-		}
-	}
-	
-	public void sendUpdates() {
-		if (VoxelWorld.isRemote) {
-			VoxelWorld.localClient.sendTileEntity(this);
-		}
+		
 	}
 	
 	/**

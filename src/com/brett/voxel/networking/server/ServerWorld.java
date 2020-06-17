@@ -26,7 +26,6 @@ import com.brett.voxel.world.chunk.Chunk;
 import com.brett.voxel.world.chunk.IChunkProvider;
 import com.brett.voxel.world.chunk.NulChunk;
 import com.brett.voxel.world.generators.WorldGenerator;
-import com.brett.voxel.world.tileentity.TileEntity;
 
 /**
 *
@@ -101,20 +100,6 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 				} 
 			}
 		}).start();
-	}
-	
-	/**
-	 * adds a tile entity into the world. if the tile already exists then
-	 * the tile entity will be updated.
-	 */
-	public void addTileEntity(TileEntity e) {
-		for (int i = 0; i < tents.size(); i++) {
-			if (tents.get(i).isSame(e)) {
-				tents.set(i, e);
-				return;
-			}
-		}
-		tents.add(e);
 	}
 	
 	public Chunk generateChunk(int x, int z) {
