@@ -10,6 +10,7 @@ import com.brett.tools.Maths;
 *
 * @author brett
 * @date Apr. 14, 2020
+* Overlay shader for blocks. Also pretty standard shader.
 */
 
 public class VOverlayShader extends ShaderProgram {

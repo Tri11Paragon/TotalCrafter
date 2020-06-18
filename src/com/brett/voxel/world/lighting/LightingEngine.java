@@ -17,6 +17,11 @@ import com.brett.voxel.world.chunk.ChunkStore;
 *
 * @author brett
 * @date Mar. 31, 2020
+* CURRENTLY UNUSED AND BROKEN
+* PLEASE IGNORE.
+* 
+* Only reason I still have this in code is because
+* I don't want to remove all references to it.
 */
 
 public class LightingEngine {

@@ -26,6 +26,7 @@ public class BlockFurnace extends Block {
 	
 	@Override
 	public boolean onBlockInteract(int x, int y, int z, VoxelWorld world, PlayerInventory i) {
+		// get the tile entitiy for this pos and opens its inventory.
 		TileFurnace te = (TileFurnace) world.getTileEntity(x, y, z);
 		if (te != null) {
 			te.openInventory();
@@ -37,6 +38,7 @@ public class BlockFurnace extends Block {
 	@Override
 	public void onBlockPlaced(int x, int y, int z, IWorldProvider world) {
 		super.onBlockPlaced(x, y, z, world);
+		// places the tile entity and makes sure its placed in the correct direction
 		TileFurnace ent = new TileFurnace();
 		world.spawnTileEntity(ent, x, y, z);
 		if (world.ply == null)
@@ -56,6 +58,7 @@ public class BlockFurnace extends Block {
 	@Override
 	public void onBlockBreaked(int x, int y, int z, IWorldProvider world) {
 		super.onBlockBreaked(x, y, z, world);
+		// remove the tile entity
 		world.destoryTileEntity(world.getTileEntity(x, y, z));
 	}
 	

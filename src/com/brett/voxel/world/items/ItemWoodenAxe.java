@@ -10,11 +10,6 @@ import com.brett.datatypes.Texture;
 
 public class ItemWoodenAxe extends ItemTool {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5437624229375977557L;
-
 	public ItemWoodenAxe(short id, Texture texture) {
 		super(id, texture);
 		super.setMiningLevel(1);

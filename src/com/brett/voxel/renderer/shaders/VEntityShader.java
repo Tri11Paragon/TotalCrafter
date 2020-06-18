@@ -10,6 +10,7 @@ import com.brett.tools.Maths;
 *
 * @author brett
 * @date Apr. 10, 2020
+* pretty standard shader.
 */
 
 public class VEntityShader extends ShaderProgram {
@@ -34,6 +35,7 @@ public class VEntityShader extends ShaderProgram {
 
 	@Override
 	protected void bindAttributes() {
+		// normal setups
 		super.bindAttribute(0, "position");
 		super.bindAttribute(1, "textureCoords");
 		super.bindAttribute(2, "normal");

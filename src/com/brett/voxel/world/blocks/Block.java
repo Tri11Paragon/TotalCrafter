@@ -17,14 +17,18 @@ import com.brett.voxel.world.lighting.LightingEngine;
 /**
 *
 * @author brett
-*
+* The block class!
+* to thing this started as something that had objects 
+* per every block in the world
 */
 
 public class Block {
 	
+	// define the block maps
 	public static final HashMap<Short, Block> blocks = new HashMap<Short, Block>();
 	public static final HashMap<Block, Short> inverseBlocks = new HashMap<Block, Short>();
 	
+	// define all the block ids
 	public static final short AIR = 0;
 	public static final short STONE = 1;
 	public static final short DIRT = 2;
@@ -93,22 +97,34 @@ public class Block {
 		rendermode = RENDERMODE.SOLID;
 	}
 	
+	/**
+	 * called when the block gets placed
+	 */
 	public void onBlockPlaced(int x, int y, int z, IWorldProvider world) {
 		//onBlockUpdated(x, y, z, world);
 		if (this.lightLevel > 0)
 			LightingEngine.addLightSource(x, y, z, this.lightLevel);
 	}
 	
+	/**
+	 * called when the block is destroyed.
+	 */
 	public void onBlockBreaked(int x, int y, int z, IWorldProvider world) {
 		//onBlockUpdated(x, y, z, world);
 		if(this.lightLevel > 0)
 			LightingEngine.removeLightSource(x, y, z, this.lightLevel);
 	}
 	
+	/**
+	 * called as a random block update
+	 */
 	public void onBlockUpdated(int x, int y, int z, IWorldProvider world) {
 		
 	}
 	
+	/**
+	 * unused.
+	 */
 	public void onBlockTick(int x, int y, int z, IWorldProvider world) {
 		
 	}
@@ -192,6 +208,9 @@ public class Block {
 		return this;
 	}
 	
+	/**
+	 * plays this blocks break sound
+	 */
 	public void playBreakSound(float x, float y, float z) {
 		VoxelScreenManager.staticSource.setPosition(x, y, z);
 		VoxelScreenManager.staticSource.play(breakSound[Maths.randomInt(0, breakSound.length-1)]);

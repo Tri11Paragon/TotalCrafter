@@ -5,6 +5,11 @@ import com.brett.renderer.shaders.ShaderProgram;
 
 // maybe add some comments?
 
+/**
+ * @author brett
+ * One of the first voxel class. early feb? jan? idk
+ * Also a pretty standard shader
+ */
 public class VoxelShader extends ShaderProgram {
 
 	private static final String VERTEX_FILE = "voxelVertexShader.vert";

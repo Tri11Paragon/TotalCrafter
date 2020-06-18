@@ -13,6 +13,7 @@ import com.brett.voxel.world.items.ItemStack;
 *
 * @author brett
 * @date Mar. 12, 2020
+* Slot for what's in the players hand
 */
 
 public class PlayerSlot implements Serializable {
@@ -27,20 +28,28 @@ public class PlayerSlot implements Serializable {
 		return itemInHand;
 	}
 	
+	/**
+	 * changes the text around the mouse indicating the size of the stack
+	 */
 	public static void change() {
 		if (itemInHand != null)
 			text.changeText(Integer.toString(itemInHand.getAmountInStack()));
 	}
 	
+	/**
+	 * changes the item stack in hand.
+	 */
 	public static void changeStack(ItemStack s) {
 		if (s == null) {
 			text.disableText();
 			itemInHand = null;
 			return;
 		}
+		// update the text
 		text.changeText(Integer.toString(s.getAmountInStack()));
 		if (!text.getEnabled())
 			text.enableText();
+		// change the item
 		itemInHand = s;
 	}
 	

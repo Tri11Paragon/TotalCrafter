@@ -34,6 +34,7 @@ public class BlockCrafting extends Block {
 	
 	@Override
 	public boolean onBlockInteract(int x, int y, int z, VoxelWorld world, PlayerInventory i) {
+		// open the crafting table when interacting with one
 		craft.toggleEnabled();
 		i.toggleEnabledIOnly();
 		return true;
@@ -42,6 +43,7 @@ public class BlockCrafting extends Block {
 	@Override
 	public void onBlockPlaced(int x, int y, int z, IWorldProvider world) {
 		super.onBlockPlaced(x, y, z, world);
+		// just makes sure that the block is placed in the correct direction.
 		if (world.ply == null)
 			return;
 		float yaw = world.ply.getYaw();

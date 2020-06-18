@@ -117,6 +117,7 @@ public class WorldGenerator {
 				for (int j = Chunk.y-6; j > 0; j--) {
 					if (ref > 80 && j > 80)
 						amount = 20;
+					// this should change with seed if I changed the perlin noise correctly.
 					double reference = (lf.perlinNoise(cax/128.05234d, j/16.234, caz/128.312394d)*64) + amount;
 					if (reference > 0 && j < ref) {
 						int j1 = j+1;

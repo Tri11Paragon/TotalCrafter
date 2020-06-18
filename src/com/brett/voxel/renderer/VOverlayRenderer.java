@@ -37,6 +37,7 @@ public class VOverlayRenderer {
 		this.shader.stop();
 		Loader loader = world.getLoader();
 		this.model = loader.loadToVAO(MeshStore.vertsBig, MeshStore.uv, MeshStore.indicies);
+		// loads all the textures for breaking
 		textures[0] = loader.loadTexture("outline");
 		textures[1] = loader.loadTexture("break0");
 		textures[2] = loader.loadTexture("break1");
@@ -78,6 +79,9 @@ public class VOverlayRenderer {
 		this.shader.stop();
 	}
 	
+	/**
+	 * changes the overlay progress
+	 */
 	public void changeOverlayProgress(float q, float mq) {
 		if (q == mq)
 			this.texture = textures[10];

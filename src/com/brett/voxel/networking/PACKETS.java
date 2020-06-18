@@ -8,6 +8,7 @@ package com.brett.voxel.networking;
 
 public class PACKETS {
 	
+	// here are all the packet IDs that can be send or received.
 	public static final byte LOGIN = 0x1;
 	public static final byte ID = 0x2;
 	public static final byte CHUNKREQ = 0x3;

@@ -19,6 +19,7 @@ public class TileChest extends Container {
 	@Override
 	public void spawnTileEntity(int x, int y, int z, IWorldProvider world) {
 		super.spawnTileEntity(x, y, z, world);
+		// add all the slots to the inventory for the chest
 		float sizeX = 48*12;
 		float sizeY = 48*4;
 		float xz = Display.getWidth()/2 - sizeX/2;
@@ -28,6 +29,7 @@ public class TileChest extends Container {
 				i.addSlot(new Slot(xz + (j*48),yz + (k*48), 48, 48));
 			}
 		}
+		// load it
 		super.i.loadInventory();
 		hasChanged = true;
 	}

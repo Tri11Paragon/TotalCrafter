@@ -1,7 +1,6 @@
 package com.brett.sound;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ public class MusicMaster {
 	// list of all the musics
 	public static List<String> musics = new ArrayList<String>();
 	// music system reference
-	protected static SoundSystem musicSystem;
+	public static SoundSystem musicSystem;
 	// random number generator
 	private static Random rand = new Random(694 + System.currentTimeMillis());
 	
@@ -85,10 +84,10 @@ public class MusicMaster {
 			try {
 				// plays the music
 				// on any menu.
-				musicSystem.setVolume(music, (float) SettingsLoader.MUSIC);
-				musicSystem.backgroundMusic(music, new URL("file:resources/sound/music/" + music), music, false);
-				musicSystem.setVolume(music, (float) SettingsLoader.MUSIC);
-			} catch (MalformedURLException e) {
+				musicSystem.setVolume("MUSICPLAYER", (float) SettingsLoader.MUSIC);
+				musicSystem.backgroundMusic("MUSICPLAYER", new URL("file:resources/sound/music/" + music), music, false);
+				musicSystem.setVolume("MUSICPLAYER", (float) SettingsLoader.MUSIC);
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			// keep reference to the last time we played music.

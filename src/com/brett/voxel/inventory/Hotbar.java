@@ -57,7 +57,7 @@ public class Hotbar extends Inventory implements IEventListener, IKeyState, Seri
 	@Override
 	public void update() {
 		if (this.isEnabled()) {
-			// renderes are selected texture on the selected slot
+			// Renders are selected texture on the selected slot
 			rend.startrender();
 			rend.render(hoverTexture, x + (selectedSlot*64), Display.getHeight()-70, 64, 64);
 			rend.stoprender();

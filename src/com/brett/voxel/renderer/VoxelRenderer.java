@@ -11,6 +11,7 @@ import com.brett.voxel.world.VoxelWorld;
 *
 * @author brett
 * @date Mar. 9, 2020
+* does render stuff
 */
 
 public class VoxelRenderer implements DisplaySource {
@@ -28,6 +29,7 @@ public class VoxelRenderer implements DisplaySource {
 	@Override
 	public void render() {
 		renderer.prepare();
+		// update the camera
 		camera.move();
 		camera.calculateFrustum(renderer.getProjectionMatrix(), Maths.createViewMatrixOTHER(camera));
 		
@@ -53,6 +55,7 @@ public class VoxelRenderer implements DisplaySource {
 		//System.out.println(Mouse.getX() + " " + Mouse.getY());
 		//world.update();
 		//world.render(camera, sun, true);
+		// render the world
 		world.render(camera);
 		world.update();
 		//VoxelScreenManager.ls.render();

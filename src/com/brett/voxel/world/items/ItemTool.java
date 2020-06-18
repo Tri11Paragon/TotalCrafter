@@ -14,10 +14,6 @@ import com.brett.voxel.world.blocks.Block;
 
 public class ItemTool extends Item {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2757649503689276221L;
 	public static final int TOOL_HAND = 0;
 	public static final int TOOL_PICKAXE = 1;
 	public static final int TOOL_SHOVEL = 2;

@@ -10,6 +10,7 @@ import java.net.SocketException;
 *
 * @author brett
 * @date May 31, 2020
+* client data type for sending data to clients!
 */
 
 public class ConnectedClient {
@@ -34,6 +35,9 @@ public class ConnectedClient {
 		}
 	}
 	
+	/**
+	 * send a byte[] to the client
+	 */
 	public void sendData(byte[] buff) {
 		DatagramPacket sp = new DatagramPacket(buff, buff.length, ipadd, port);
 		try {

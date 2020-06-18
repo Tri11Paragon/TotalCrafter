@@ -1,16 +1,13 @@
 package com.brett.voxel.world.items;
 
-import java.io.Serializable;
-
 /**
 *
 * @author brett
 * @date Mar. 11, 2020
 */
 
-public class ItemStack implements Serializable {
-
-	private static final long serialVersionUID = 7108870299184595594L;
+public class ItemStack  {
+	
 	private int amountInStack;
 	private Item item;
 	

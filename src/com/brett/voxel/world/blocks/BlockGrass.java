@@ -23,6 +23,13 @@ public class BlockGrass extends Block {
 	
 	@Override
 	public void onBlockTick(int x, int y, int z, IWorldProvider world) {
+		/**
+		 * this just spreads the grass to nearby dirt blocks
+		 * im not sure if it works though.
+		 * nothing should be stopping it from working but it really doesn't seem to work
+		 */
+		// this one just removes the grass to dirt if there is a block above it
+		// again not sure if it works. it should but I haven't really seen it in game.
 		if (Block.blocks.get(world.chunk.getBlockBIAS(x, y+1, z)).getRendermode() == RENDERMODE.SOLID) {
 			world.chunk.setBlockBIAS(x, y, z, DIRT);
 			return;

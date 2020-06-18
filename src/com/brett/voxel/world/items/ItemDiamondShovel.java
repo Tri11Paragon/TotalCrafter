@@ -9,11 +9,6 @@ import com.brett.datatypes.Texture;
 */
 
 public class ItemDiamondShovel extends ItemTool {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5678461857929659699L;
 
 	public ItemDiamondShovel(short id, Texture texture) {
 		super(id, texture);

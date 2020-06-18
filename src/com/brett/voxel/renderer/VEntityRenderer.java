@@ -67,6 +67,7 @@ public class VEntityRenderer {
 			GL20.glDisableVertexAttribArray(2);
 			GL30.glBindVertexArray(0);
 		}*/
+		// render all the players
 		GL30.glBindVertexArray(player.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
@@ -82,13 +83,16 @@ public class VEntityRenderer {
 		long current = System.currentTimeMillis();
 		long timeSinceLast = current - last;
 		
+		// loop and draw all players
 		while (plyIt.hasNext()) {
 			Tuple<float[], float[]> vecs = plyIt.next().getValue();
 			if (timeSinceLast <= 12) {
+				// interpolate the player to its new position
 				Maths.lerpVA3(vecs.getX(), vecs.getY(), timeSinceLast/12);
 			} else {
 				vecs.setX(vecs.getY());
 			}
+			// standard triangle draw call
 			shader.loadTranslationMatrix(Maths.createTransformationMatrixYAW(vecs.getX()));
 			GL11.glDrawElements(0x4, player.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 		}

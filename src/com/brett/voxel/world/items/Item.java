@@ -1,6 +1,5 @@
 package com.brett.voxel.world.items;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,11 +10,12 @@ import com.brett.voxel.world.blocks.Block;
 *
 * @author brett
 * @date Mar. 10, 2020
+* Item class!
 */
 
-public class Item implements Serializable {
+public class Item {
 	
-	private static final long serialVersionUID = -3987952204794599468L;
+	// item ids. Start a 1024 because they are shared with blocks.
 	public static final short WILLPICK = 1024;
 	public static final short WOODPICK = 1025;
 	public static final short STONEPICK = 1026;
@@ -38,6 +38,7 @@ public class Item implements Serializable {
 	public static final short IRONSHOVEL = 1043;
 	public static final short DIAMONDSHOVEL = 1044;
 	
+	// maps
 	public static Map<Short, Item> items = new HashMap<Short, Item>();
 	public static Map<Item, Short> inverseItems = new HashMap<Item, Short>();
 	public static Map<Item, Block> itemBlocks = new HashMap<Item, Block>();
@@ -45,6 +46,7 @@ public class Item implements Serializable {
 	private transient Texture texture;
 	private short id;
 	private int miningLevel = 0;
+	// default item speed
 	private float miningSpeed = 0.2f;
 	private int maxStackSize = 128;
 	

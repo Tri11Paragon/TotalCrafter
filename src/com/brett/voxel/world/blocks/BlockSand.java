@@ -12,7 +12,7 @@ import com.brett.voxel.world.IWorldProvider;
 public class BlockSand extends Block {
 
 	// TODO: add in blockfalling class
-	// TODO: improove this:
+	// TODO: improve this:
 	
 	public BlockSand(Texture model) {
 		super(model, 4);
@@ -31,7 +31,7 @@ public class BlockSand extends Block {
 		 * howeever biasing this works out Soooooooo
 		 * this is what we are doing
 		 */
-		// please don't remove marks for this
+		// moves the block down by 1
 		if (world.chunk.getBlockBIAS(x, y - 1, z) == 0) {
 			world.chunk.setBlockBIAS(x, y, z, 0);
 			world.chunk.setBlockBIAS(x, y - 1, z, Block.SAND);

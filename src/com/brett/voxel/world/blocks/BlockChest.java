@@ -26,6 +26,7 @@ public class BlockChest extends Block {
 	
 	@Override
 	public boolean onBlockInteract(int x, int y, int z, VoxelWorld world, PlayerInventory i) {
+		// get the tile entity and open its inventory.
 		TileChest te = (TileChest) world.getTileEntity(x, y, z);
 		if (te != null) {
 			te.openInventory();
@@ -37,6 +38,7 @@ public class BlockChest extends Block {
 	@Override
 	public void onBlockPlaced(int x, int y, int z, IWorldProvider world) {
 		super.onBlockPlaced(x, y, z, world);
+		// create the tile entity. Also places in the correct direction.
 		TileChest ent = new TileChest();
 		world.spawnTileEntity(ent, x, y, z);
 		if (world.ply == null)
@@ -44,6 +46,7 @@ public class BlockChest extends Block {
 		float yaw = world.ply.getYaw();
 		if (yaw < 0)
 			yaw = 360 - (-yaw);
+		// correct dirction maker
 		if (yaw > 45 && yaw <= 135) {
 			world.chunk.setBlockStateBIAS(x, y, z, (byte)1);
 		} else if (yaw > 135 && yaw <= 225) {
@@ -55,6 +58,7 @@ public class BlockChest extends Block {
 	
 	@Override
 	public void onBlockBreaked(int x, int y, int z, IWorldProvider world) {
+		// destory the tile entitiy.
 		super.onBlockBreaked(x, y, z, world);
 		world.destoryTileEntity(world.getTileEntity(x, y, z));
 	}

@@ -6,14 +6,11 @@ import com.brett.datatypes.Texture;
 *
 * @author brett
 * @date Apr. 16, 2020
+* yeah I do have classes for things that don't current exist
+* its fine and doesn't really matter.
 */
 
 public class ItemCopperPickaxe extends ItemTool {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2937874819124687074L;
 
 	public ItemCopperPickaxe(short id, Texture texture) {
 		super(id, texture);

@@ -9,11 +9,6 @@ import com.brett.datatypes.Texture;
 */
 
 public class ItemStonePickaxe extends ItemTool {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -128177351631665131L;
 
 	public ItemStonePickaxe(short id, Texture texture) {
 		super(id, texture);

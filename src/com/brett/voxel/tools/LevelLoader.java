@@ -26,39 +26,47 @@ public class LevelLoader {
 	public static Player ply;
 	public static Vector3f pos;
 	
+	/**
+	 * loads data about the level
+	 */
 	public static void loadLevelData(String topLevelWorldLocation) {
 		DataInputStream is = null;
-		try {
-			is = new DataInputStream(new BufferedInputStream(new FileInputStream(topLevelWorldLocation + "level.dat")));
-		} catch (FileNotFoundException e) {return;}
 		
 		try {
+			is = new DataInputStream(new BufferedInputStream(new FileInputStream(topLevelWorldLocation + "level.dat")));
+			// load the seed
 			seed = is.readLong();
 			if (ply == null || VoxelWorld.isRemote) {
 				is.close();
 				return;
 			}
+			// load position
 			ply.setPosition(new Vector3f(is.readFloat(), is.readFloat(), is.readFloat()));
+			// load rotation
 			ply.setPitch(is.readFloat());
 			ply.setYaw(is.readFloat());
-		} catch (IOException e1) {}
-			
-		try {
 			is.close();
-		} catch (IOException e) {}
+		} catch (Exception e1) {return;}
 	}
 	
+	/**
+	 * saves the level data
+	 */
 	public static void saveLevelData(String topLevelWorldLocation) {
 		if (VoxelWorld.isRemote || !MainMenu.ingame) {
 			return;
 		}
 		DataOutputStream os = null;
 		try {
+			// I don't use text for my files
+			// thats stupid
+			// I write raw binary to my files as it is most efficient on space.
 			os = new DataOutputStream(new BufferedOutputStream(
 					new FileOutputStream(topLevelWorldLocation + "level.dat")));
 		} catch (FileNotFoundException e1) {return;}
 		
 		try {
+			// write all the important data about this level.
 			os.writeLong(seed);
 			os.writeFloat(ply.getPosition().x);
 			os.writeFloat(ply.getPosition().y);
