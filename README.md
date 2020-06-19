@@ -2,7 +2,7 @@
 Майнкрафт³ (Minecraft3) doesn’t have a goal to it. It is just like early versions of Minecraft in which you can well mine and craft blocks. There is no final boss for you to defeat and your only ‘goal’ is to have fun! Through the use of console commands (see wiki) you are able to give yourself items if you don’t want to mine for them. Build what you’d like as the only limitation is your imagination!<br>
 <br>
 ## Controls
-Currently there is no way change the controls currently but the basic controls are as follows; w for forward movement, s for backwards movement, a for left movement, d for right movement, space to jump, and control to crouch. To open the console you can press grave or tilde on your keyboard.<br>
+Currently there is no way change the controls currently but the basic controls are as follows; **W** for forward movement, **S** for backwards movement, **A** for left movement, **D** for right movement, **space** to jump, and **control** to crouch. To open the console you can press **grave** or **tilde** on your keyboard.<br>
 <br>
 Moving your mouse allows you to look around, left click is to mine blocks, and right click is to interact with blocks or place blocks. Whether you are holding a block or not the game will also try to interact with a block first and if there is no block to interact with it will place a block. Pressing the middle mouse button 4 times within 5 seconds will create an explosion at your player position. WARNING: if you do this inside or within about 7 blocks of your build you will destroy it and NOT get the blocks back. **Explosions do not drop any blocks.**<br>
 <br>
