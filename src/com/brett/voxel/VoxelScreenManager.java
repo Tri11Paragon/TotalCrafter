@@ -129,7 +129,7 @@ public class VoxelScreenManager {
 		Console console = new Console(loader, monospaced, ui.getRenderer());
 		KeyMaster.registerKeyRequester(console);
 		console.registerCommand(new String[] {"tp", "teleport"}, new TeleportCommand(player));
-		console.registerCommand(new String[] {"flight", "fly", "f", "toggle_flight", "togglecollision"}, new FlightCommand());
+		console.registerCommand(new String[] {"flight", "fly", "f", "toggle_flight", "toggleflight"}, new FlightCommand());
 		console.registerCommand(new String[] {"collision", "col", "c", "toggle_collision", "togglecollision"}, new CollisionCommand());
 		//new GUIText("Hello" + '\n' + "There!", 3, monospaced, new Vector2f(0, 0), 0.5f, false, 0);
 		
@@ -245,59 +245,66 @@ public class VoxelScreenManager {
 		
 		System.gc();
 		while (!Display.isCloseRequested()) {
-			double startTime = Sys.getTime() * 1000 / Sys.getTimerResolution();
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-			scene.render();
-			KeyMaster.update();
-			
-			if (Mouse.isButtonDown(2)) {
+			try {
+				double startTime = Sys.getTime() * 1000 / Sys.getTimerResolution();
+				GL11.glEnable(GL11.GL_DEPTH_TEST);
+				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+				scene.render();
+				KeyMaster.update();
 				
-			}
-			
-			//System.out.println(camera.getPosition());
-			//sun.update();
-			
-			/**
-			 * Everything below here must be rendered
-			 */
-			player.update();
-			ui.render();
-			InventoryMaster.render(ui.getRenderer());
-			console.update();
-			StaticText.render();
-			
-			//for (int i = 0; i < Chunk.deleteables.size(); i++) {
-			//	loader.deleteVAO(Chunk.deleteables.get(i));
-			//}
-			
-			MusicMaster.update();
-			DisplayManager.updateDisplay();
-			double lastFrame = Sys.getTime() * 1000 / Sys.getTimerResolution();
-			deltaTime += lastFrame - startTime;
-			frames++;
-			if(deltaTime > 1000) {
-				frameRate = (double)frames*0.5d + frameRate*0.5d;
-				averageFrameTimeMilliseconds  = 1000.0/(frameRate==0?0.001:frameRate);
-				StringBuilder sb = new StringBuilder();
-				sb.append("FPS: ");
-				sb.append((int)frameRate);
-				sb.append(" + FT-MS: ");
-				sb.append(averageFrameTimeMilliseconds);
-				sb.append(" + YAW: ");
-				sb.append(player.getYaw());
-				sb.append(" + POS: [");
-				Vector3f pos = player.getPosition();
-				sb.append(pos.x);
-				sb.append(", ");
-				sb.append(pos.y);
-				sb.append(", ");
-				sb.append(pos.z);
-				sb.append("]");
-				badjava.changeText(sb.toString());
-				//System.out.println(sb.toString());
-				frames = 0;
-				deltaTime = 0;
+				if (Mouse.isButtonDown(2)) {
+					
+				}
+				
+				//System.out.println(camera.getPosition());
+				//sun.update();
+				
+				/**
+				 * Everything below here must be rendered
+				 */
+				player.update();
+				ui.render();
+				InventoryMaster.render(ui.getRenderer());
+				console.update();
+				StaticText.render();
+				
+				//for (int i = 0; i < Chunk.deleteables.size(); i++) {
+				//	loader.deleteVAO(Chunk.deleteables.get(i));
+				//}
+				
+				MusicMaster.update();
+				DisplayManager.updateDisplay();
+				double lastFrame = Sys.getTime() * 1000 / Sys.getTimerResolution();
+				deltaTime += lastFrame - startTime;
+				frames++;
+				if(deltaTime > 1000) {
+					frameRate = (double)frames*0.5d + frameRate*0.5d;
+					averageFrameTimeMilliseconds  = 1000.0/(frameRate==0?0.001:frameRate);
+					StringBuilder sb = new StringBuilder();
+					sb.append("FPS: ");
+					sb.append((int)frameRate);
+					sb.append(" + FT-MS: ");
+					sb.append(averageFrameTimeMilliseconds);
+					sb.append(" + YAW: ");
+					sb.append(player.getYaw());
+					sb.append(" + POS: [");
+					Vector3f pos = player.getPosition();
+					sb.append(pos.x);
+					sb.append(", ");
+					sb.append(pos.y);
+					sb.append(", ");
+					sb.append(pos.z);
+					sb.append("]");
+					badjava.changeText(sb.toString());
+					//System.out.println(sb.toString());
+					frames = 0;
+					deltaTime = 0;
+				}
+			} catch (Exception e) {
+				// TODO: Crash reporter
+				System.err.println("There has been a runtime error that has been prevented.");
+				System.err.println("Please report the following error on github.");
+				e.printStackTrace();
 			}
 		}
 		if (VoxelWorld.isRemote)

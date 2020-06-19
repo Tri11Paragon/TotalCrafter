@@ -37,6 +37,8 @@ public class Chunk {
 	 * It also takes more time to create an object then it does to set a single short in an array.
 	 */
 	private short[][][] blocks = new short[x][y][z];
+	// not currently using this but lighting is ready to be used
+	// it just need to have a good flood fill algorithm and it will work.
 	private byte[][][] lightLevel = new byte[x][y][z];
 
 	private ModelVAO rawIDTrans;
@@ -636,8 +638,11 @@ public class Chunk {
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
 		
+		int czx = x*cx;
+		int czz = z*cz;
+		
 		// create the transformation matrix based on localized position
-		Matrix4f trans = Maths.createTransformationMatrixCube(x*cx,0,z*cz);
+		Matrix4f trans = Maths.createTransformationMatrixCube(czx,0,czz);
 		// multiplies the matrix here on the CPU instead of doing it per vertex on the GPU
 		Matrix4f.mul(view, trans, trans);
 		// load this to the shader
@@ -668,7 +673,10 @@ public class Chunk {
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
 		
-		Matrix4f trans = Maths.createTransformationMatrixCube(x*cx,0,z*cz);
+		int czx = x*cx;
+		int czz = z*cz;
+		
+		Matrix4f trans = Maths.createTransformationMatrixCube(czx,0,czz);
 		Matrix4f.mul(view, trans, trans);
 		shader.loadTransformationMatrix(trans);
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, rawIDTrans.getVertexCount());

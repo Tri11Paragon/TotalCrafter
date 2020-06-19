@@ -37,10 +37,10 @@ public class ChunkStore implements IChunkProvider {
 	// actually the best way of storing chunk data.
 	// however will need to add a way of moving between active and non active
 	// chunks.
-	// this actually might not be the best, espcially with integers truncating towards 0
+	// this actually might not be the best, especially with integers truncating towards 0
 	// however this is likely the best way without doing a bunch of crazy transformations or data structures.
 	private volatile MultiKeyMap<Integer, Region> regions = new MultiKeyMap<Integer, Region>();
-	// ungenerated block data
+	// ungenerated block data (stored in chunks)
 	private volatile MultiKeyMap<Integer, NulChunk> ungenChunkData = new MultiKeyMap<Integer, NulChunk>();
 	private volatile MultiKeyMap<Integer, Region> chunksCopy = null;
 	// ungenerated chunks

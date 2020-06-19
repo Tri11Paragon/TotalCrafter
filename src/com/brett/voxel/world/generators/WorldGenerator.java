@@ -26,7 +26,7 @@ public class WorldGenerator {
 	private WorldGenMineable ores;
 	private Random rnd;
 	private IWorldProvider world;
-		
+	
 	public WorldGenerator(IWorldProvider world) {
 		rnd = new Random(LevelLoader.seed);
 		lf = new LevelNoise(LevelLoader.seed);
@@ -34,13 +34,13 @@ public class WorldGenerator {
 		rf = new RoughnessNoise(LevelLoader.seed);
 		
 		ores = new WorldGenMineable(
-				new MineData(Block.IRON, 32, 60, 0.0, 60, 1),
-				new MineData(Block.COAL, 40, 70, 0.0),
-				new MineData(Block.COPPER, 15, 70, 0.0),
-				new MineData(Block.GOLD, 10, 32, 0.0, 32, 1),
-				new MineData(Block.REDSTONE, 30, 48, 0.0, 24, 1),
-				new MineData(Block.EMERALD, 2, 8, 0.0),
-				new MineData(Block.DIAMOND, 5, 20, 0.0, 24, 1)
+				new MineData(Block.IRONORE, 22, 60, 0.0, 60, 1),
+				new MineData(Block.COALORE, 30, 70, 0.0),
+				new MineData(Block.COPPER, 5, 70, 0.0),
+				new MineData(Block.GOLDORE, 8, 32, 0.0, 32, 1),
+				new MineData(Block.REDSTONEORE, 20, 48, 0.0, 24, 1),
+				new MineData(Block.EMERALDORE, 2, 8, 0.0),
+				new MineData(Block.DIAMONDORE, 5, 20, 0.0, 24, 1)
 				);
 		this.world = world;		
 		//long start = 0;

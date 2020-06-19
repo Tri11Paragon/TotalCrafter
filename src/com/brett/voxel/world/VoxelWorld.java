@@ -79,8 +79,12 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 		KeyMaster.registerMouseRequester(this);
 		if (localClient != null)
 			localClient.world = this;
+		shader.start();
+		shader.loadProjectionMatrix(renderer.getProjectionMatrix());
+		shader.stop();
 	}
 	
+	private long startTime = 0;
 	public void render(ICamera camera) {
 		// enable stuff we need for rendering
 		MasterRenderer.enableCulling();
@@ -94,6 +98,11 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 		shader.stop();
 		MasterRenderer.disableCulling();
 		MasterRenderer.disableTransparentcy();
+		if (times > 0) {
+			// reset the amount of times after 5 seconds
+			if (System.currentTimeMillis() - startTime > 5000)
+				times = 0;
+		}
 	}
 	
 	/**
@@ -156,6 +165,7 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 		}*/
 	}
 
+	private int times = 0;
 	@Override
 	public void onMousePressed() {
 		if (Mouse.getEventButton() == 1) {
@@ -195,7 +205,15 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 			}
 		}
 		if (Mouse.getEventButton() == 2) {
-			//new Explosion(ply.getPosition().x, ply.getPosition().y, ply.getPosition().z, 3, this).explode();
+			// set the timer for reset
+			if (times == 0)
+				startTime = System.currentTimeMillis();
+			times++;
+			if (times > 3) {
+				// don't want the user exploding their house by accident.
+				new Explosion(ply.getPosition().x, ply.getPosition().y, ply.getPosition().z, 4, this).explode();
+				times = 0;
+			}
 		}
 	}
 	

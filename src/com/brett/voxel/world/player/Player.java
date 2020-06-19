@@ -34,7 +34,7 @@ public class Player extends Camera {
 	private double moveAtX = 0;
 	private double moveAtY = 0;
 	private double moveatZ = 0;
-	private double target = 0;
+	private double targetY = 0;
 	private boolean onGround = false;
 	public volatile boolean crouching = false;
 	
@@ -91,7 +91,7 @@ public class Player extends Camera {
 				// start crouching if we are not crouching before
 				if (!crouching) {
 					crouching = true;
-					target = 0;
+					targetY = 0;
 					updateCrouching();
 				}
 			} else {
@@ -104,7 +104,7 @@ public class Player extends Camera {
 					}
 					// only un crouch if we can
 					if (passed == cords.length) {
-						this.target = 1.0f;
+						this.targetY = 1.0f;
 						crouching = false;
 						updateCrouching();
 					}
@@ -118,7 +118,7 @@ public class Player extends Camera {
 				speed = normalSpeed;
 			
 			// can't move if we are getting up
-			if (target > 0)
+			if (targetY > 0)
 				speed = 0;
 			
 			// change where we are moving based on what keys are pressed.
@@ -188,10 +188,10 @@ public class Player extends Camera {
 		}
 		
 		// increase our position to the target.
-		if (target > 0) {
+		if (targetY > 0) {
 			double amount = (VoxelWorld.GRAVITY) * DisplayManager.getFrameTimeSeconds();
 			this.position.y += amount;
-			this.target -= amount;
+			this.targetY -= amount;
 		}
 		
 		// make sure we can't go more then completely vertical or down
@@ -295,7 +295,7 @@ public class Player extends Camera {
 			position.y += dy;
 			position.z += dz;
 		}
-			
+
 		/**
 		 * Sends the server an update of the position of this player
 		 * if they have changed positions and if it has been greater then 50 milliseconds
