@@ -1,17 +1,9 @@
-/*package com.brett.tools;
+package com.brett.tools;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
-
-import com.brett.world.cameras.Camera;
 
 public class MousePicker {
 
-	// im not going to say i made all of this.
+	/*// im not going to say i made all of this.
 	// http://antongerdelan.net/opengl/raycasting.html
 	
 	// amount of times the binary search can run
@@ -138,6 +130,6 @@ public class MousePicker {
 		// return terrains[x][y]
 		pos.set(worldX, 0, worldZ);
 		return terrain.get(pos);
-	}
+	}*/
 	
-}*/
+}

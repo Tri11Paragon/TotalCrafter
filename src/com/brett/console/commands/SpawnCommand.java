@@ -1,19 +1,9 @@
-/*package com.brett.console.commands;
+package com.brett.console.commands;
 
-import java.io.File;
 
-import org.lwjgl.util.vector.Vector3f;
+public class SpawnCommand {
 
-import com.brett.console.Command;
-import com.brett.renderer.Loader;
-import com.brett.renderer.datatypes.TexturedModel;
-import com.brett.tools.MousePicker;
-import com.brett.world.World;
-import com.brett.world.entities.Entity;
-
-public class SpawnCommand extends Command {
-
-	private MousePicker pick;
+	/*private MousePicker pick;
 	private World world;
 	private Loader loader;
 	
@@ -68,5 +58,5 @@ public class SpawnCommand extends Command {
 		}
 		return "Spawn Failed";
 	}
-	
-}*/
+ */	
+}

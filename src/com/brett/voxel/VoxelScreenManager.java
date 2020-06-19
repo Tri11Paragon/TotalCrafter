@@ -53,6 +53,7 @@ import com.sun.management.OperatingSystemMXBean;
 */
 public class VoxelScreenManager {
 	
+	// static references to objects.
 	public static double frameRate = 120;
 	public static double  averageFrameTimeMilliseconds = 8;
 	public static OperatingSystemMXBean os;
@@ -68,6 +69,14 @@ public class VoxelScreenManager {
 	
 	private static DisplaySource scene;
 	
+	/**
+	 * this class is filled with code from some of the first versions of the engine
+	 * im not going to remove it
+	 */
+	
+	/**
+	 * Initialize the game
+	 */
 	public static void init() {
 		MeshStore.init();
 		SettingsLoader.loadSettings();
@@ -80,7 +89,7 @@ public class VoxelScreenManager {
 		staticSource.setPosition(0, 0, 0);
 		
 		os = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-		// MAIN STUFF (REQUIRED FOR GAME TO RUN)
+		// MAIN STUFF
 		Loader loader = new Loader();
 		AtlasHelper.init();
 		//CreativeFirstPersonCamera camera = new CreativeFirstPersonCamera(new Vector3f(0, 90, 0));
@@ -246,6 +255,7 @@ public class VoxelScreenManager {
 		System.gc();
 		while (!Display.isCloseRequested()) {
 			try {
+				// do required OpenGL clearings
 				double startTime = Sys.getTime() * 1000 / Sys.getTimerResolution();
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
@@ -274,6 +284,7 @@ public class VoxelScreenManager {
 				
 				MusicMaster.update();
 				DisplayManager.updateDisplay();
+				// calculate the fps and put it on the screen.
 				double lastFrame = Sys.getTime() * 1000 / Sys.getTimerResolution();
 				deltaTime += lastFrame - startTime;
 				frames++;
@@ -331,6 +342,9 @@ public class VoxelScreenManager {
 		//System.exit(0);
 	}
 	
+	/**
+	 * changes the display source used for rendering.
+	 */
 	public static void changeDisplaySource(DisplaySource s) {
 		VoxelScreenManager.scene = s;
 	}

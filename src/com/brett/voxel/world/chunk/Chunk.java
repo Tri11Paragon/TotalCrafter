@@ -35,6 +35,12 @@ public class Chunk {
 	 * why store as a short and not a block object???
 	 * well its because if you use block objects then you waste ram.
 	 * It also takes more time to create an object then it does to set a single short in an array.
+	 * 
+	 * Then why are you using block objects?
+	 * well each short in this array points to the block object with the correct texture
+	 * 
+	 * having a single block object allows for data universal to the block be used by the block
+	 * and the internal block functions can handle most individual tasks.
 	 */
 	private short[][][] blocks = new short[x][y][z];
 	// not currently using this but lighting is ready to be used
@@ -514,6 +520,9 @@ public class Chunk {
 	private static final byte right = 0b0010;
 	private static final byte front = 0b0100;
 	private static final byte back = 0b1000;
+	/**
+	 * remesh the chunk without spawning a thread
+	 */
 	public boolean remeshNo() {
 		// make sure we don't remesh when meshing
 		if (isMeshing)

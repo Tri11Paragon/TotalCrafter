@@ -1,16 +1,9 @@
 package com.brett.cameras;
-/*package com.brett.world.cameras;
 
-import org.lwjgl.input.Mouse;
-
-import com.brett.world.entities.Entity;
-import com.brett.world.terrain.Terrain;
-
-UNUSED CLASS
 
 public class ThirdPersonCamera extends Camera {
 	
-	private float distanceFromPlayer = 50;
+	/*private float distanceFromPlayer = 50;
 	private float angleAroundPlayer = 0;
 	private float heightOffset = 6;
 	private float minDistanceFromPlayer = 3;
@@ -69,5 +62,5 @@ public class ThirdPersonCamera extends Camera {
 			super.pitch += 1;
 		}
 	}
-	
-}*/
+	*/
+}

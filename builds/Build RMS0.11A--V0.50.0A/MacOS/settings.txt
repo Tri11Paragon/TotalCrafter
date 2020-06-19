@@ -1,0 +1,13 @@
+#Field of view. 
+#Max FPS
+FOV: 70.0
+FPS: 120
+renderDistance: 12
+key_console: 41
+key_clear: 64
+sensitivity: 0.5032258033752441
+username: 
+ip: 
+samples: 4
+anisotropy: 4
+music: 0.551612913608551

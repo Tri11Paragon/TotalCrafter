@@ -128,7 +128,6 @@ public class Player extends Camera {
 				moveAtX = speed * DisplayManager.getFrameTimeSeconds();
 			else {
 				moveAtX = 0;
-				
 			}
 			
 			// change the move ats based on what keys are pressed

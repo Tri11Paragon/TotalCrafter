@@ -79,9 +79,9 @@ public class MainMenu implements DisplaySource {
 		elements.add(master.createUITexture(loader.loadSpecialTexture("gui/banner"), -1, -1, localWidth-640/2, 100, 640, 360/2));
 		// add all the buttons and their text.
 		UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new SinglePlayer(), master, localWidth-200, 320, 400, 60);
-		UIText t = master.createDynamicText("Single Player", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 335, 400, true);
+		UIText t = master.createDynamicText("Singleplayer", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 335, 400, true);
 		UIButton bm = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new MultiPlayer(), master, localWidth-200, 390, 400, 60);
-		UIText tm = master.createDynamicText("Multi Player", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 405, 400, true);
+		UIText tm = master.createDynamicText("Multiplayer", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 405, 400, true);
 		UIButton op = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), options, localWidth-200, 460, 400, 60);
 		UIText opt = master.createDynamicText("Options", 1.5f, VoxelScreenManager.monospaced, localWidth-200, 475, 400, true);
 		UIButton opc = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Credits(), localWidth-200,460 + 70, 400, 60);
@@ -145,7 +145,9 @@ public class MainMenu implements DisplaySource {
 					+ "\n"
 					+ "Annoying Guy: Daniel D.\n"
 					+ "\n"
-					+ "Idea Man(Sometimes): Josiah McMillian";
+					+ "Idea Man(Sometimes): Josiah McMillian\n"
+					+ "\n"
+					+ "Helpful Internet Guy: Karl";
 			
 			UIText btextmax = master.createDynamicText(text, 1.5f, VoxelScreenManager.monospaced, 0, 150, width*2, true);
 			StaticText.loadText(btextmax);
@@ -349,7 +351,9 @@ public class MainMenu implements DisplaySource {
 			buttons.add(bw5d);
 			elements.add(bw5d);
 			
-			UIButton bw6 = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new StartWorld(vrenderer, "w6/"), master, width-200, 535, 400, 60);
+			// this was causing issues and I don't have time to fix it
+			// this is friday today/
+			/*UIButton bw6 = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new StartWorld(vrenderer, "w6/"), master, width-200, 535, 400, 60);
 			UIButton bw6d = new UIButton(loader.loadSpecialTexture("gui/garbage"), loader.loadSpecialTexture("gui/garbagesel"), new DeleteWorld("w6/"), master, width+230, 540, 50, 50);
 			UIText bbtw6 = master.createDynamicText("World 6 - " + folderFormat("worlds/w6"), 1.5f, VoxelScreenManager.monospaced, width-200, 550, 400, true);
 			StaticText.loadText(bbtw6);
@@ -357,7 +361,7 @@ public class MainMenu implements DisplaySource {
 			buttons.add(bw6);
 			elements.add(bw6);
 			buttons.add(bw6d);
-			elements.add(bw6d);
+			elements.add(bw6d);*/
 		}
 		
 		/**
