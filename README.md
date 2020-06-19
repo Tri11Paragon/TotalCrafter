@@ -25,7 +25,7 @@ First you will need a server. You can download the server file from the release 
 * Random Ore Generation
 * Random Tree Generation
 * Flowers
-<br>
+
 # Technical Features
 * Custom 2D Renderer
   * UI Buttons
@@ -35,15 +35,16 @@ First you will need a server. You can download the server file from the release 
   * Menus
 * Custom 3D Renderer
     * Voxel Renderer
-    * Chunk builder
-    * Compression on chunk meshes
-    * 1023 possible blocks
-    * 16 block light states and 16 sun light states
-    * 16 block states 
+      * Chunk builder
+      * Compression on chunk meshes
+      * 1023 possible blocks
+      * 16 block light states and 16 sun light states
+      * 16 block states 
   * Player Renderer
-   * Basic linear interpolation
+     * Basic linear interpolation
 * Explosions
 * UDP Based Server
+* Plus other things probably I'm forgetting
 
 # Bugs
 Please report any bugs by submitting an issue through github. https://github.com/Tri11Paragon/Grade-12-Java-Library/issues
