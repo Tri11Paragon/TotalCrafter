@@ -16,6 +16,8 @@ import com.brett.DisplayManager;
 import com.brett.KeyMaster;
 import com.brett.console.Console;
 import com.brett.console.commands.CloseServerCommand;
+import com.brett.console.commands.CollisionCommand;
+import com.brett.console.commands.FlightCommand;
 import com.brett.console.commands.GiveCommand;
 import com.brett.console.commands.TeleportCommand;
 import com.brett.renderer.DisplaySource;
@@ -127,6 +129,8 @@ public class VoxelScreenManager {
 		Console console = new Console(loader, monospaced, ui.getRenderer());
 		KeyMaster.registerKeyRequester(console);
 		console.registerCommand(new String[] {"tp", "teleport"}, new TeleportCommand(player));
+		console.registerCommand(new String[] {"flight", "fly", "f", "toggle_flight", "togglecollision"}, new FlightCommand());
+		console.registerCommand(new String[] {"collision", "col", "c", "toggle_collision", "togglecollision"}, new CollisionCommand());
 		//new GUIText("Hello" + '\n' + "There!", 3, monospaced, new Vector2f(0, 0), 0.5f, false, 0);
 		
 		// ENTITY MODELS
@@ -232,21 +236,8 @@ public class VoxelScreenManager {
 		//scene = new VoxelRenderer(renderer, camera, world);
 		
 		//System.out.println(MeshStore.models.get(VoxelWorld.createSixBooleans(true, true, true, true, true, true)) == MeshStore.models.get(VoxelWorld.createSixBooleans(true, true, true, true, true, true)));
-		// WHY
-		// WHY
-		// WHY
-		// WHY DOES THIS WORK BUT USING THE OTHER RAW DYNAMIC TEXT NOT WORK????
-		// THIS IS A LOAD OF CRAP
-		// BUT THIS ONE WORKS
-		// WHY
-		// WHY
-		// WHY
-		// THERE IS NO DIFFERENCE
-		// WHY
-		// I HATE YOU SO MUCH
-		// PLEASE DIE IN A HOUSE FIRE @GUI RENDERER
-		UIDynamicText loadOfCrap = new UIDynamicText("", 0.9f, VoxelScreenManager.monospaced, new Vector2f(0.0f, 0.0f), 400, false);
-		loadOfCrap.enableText();
+		UIDynamicText badjava = new UIDynamicText("", 0.9f, VoxelScreenManager.monospaced, new Vector2f(0.0f, 0.0f), 400, false);
+		badjava.enableText();
 		
 		Chunk.init();
 
@@ -303,7 +294,7 @@ public class VoxelScreenManager {
 				sb.append(", ");
 				sb.append(pos.z);
 				sb.append("]");
-				loadOfCrap.changeText(sb.toString());
+				badjava.changeText(sb.toString());
 				//System.out.println(sb.toString());
 				frames = 0;
 				deltaTime = 0;

@@ -8,9 +8,9 @@ import com.brett.renderer.Loader;
 *
 * @author brett
 * @date Mar. 29, 2020
-* lol this is actually the big brain stuff here
+* this is actually the big brain stuff here
 * 
-* bigger lol. despite REDUCDING the amount of data stored in each
+* despite REDUCDING the amount of data stored in each
 * VAO, this causes a lot of lag.
 * ignore this class
 * 

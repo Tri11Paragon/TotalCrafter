@@ -185,9 +185,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				GameRegistry.preSaveEvent();
 				saveChunks();
-				GameRegistry.postSaveEvent();
 			}
 		}).start();
 	}

@@ -35,8 +35,9 @@ public class BlockSand extends Block {
 		if (world.chunk.getBlockBIAS(x, y - 1, z) == 0) {
 			world.chunk.setBlockBIAS(x, y, z, 0);
 			world.chunk.setBlockBIAS(x, y - 1, z, Block.SAND);
-			world.updateBlocksAround(x, y, z);
-			world.updateBlocksAround(x, y - 1, z);
+			// this was creating stack overflows
+			//world.updateBlocksAround(x, y, z);
+			//world.updateBlocksAround(x, y - 1, z);
 		}
 	}
 

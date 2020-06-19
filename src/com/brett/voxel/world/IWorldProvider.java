@@ -18,12 +18,14 @@ import com.brett.voxel.world.tileentity.TileEntity;
 *
 * @author brett
 * @date Jun. 1, 2020
+* World base class
 */
 
 public class IWorldProvider implements Serializable {
 	
 	private static final long serialVersionUID = -8582774660228386255L;
 	
+	// tile entity storage
 	public List<TileEntity> tents = new ArrayList<TileEntity>();
 	public MultiKeyMap<Integer, TileEntity> tileEntities = new MultiKeyMap<Integer, TileEntity>();
 	public Random random = new Random();
@@ -59,6 +61,7 @@ public class IWorldProvider implements Serializable {
 		MapIterator<MultiKey<? extends Integer>,TileEntity> ents = tileEntities.mapIterator();
 		try {
 			while (ents.hasNext()) {
+				// just make sure we delete all references.
 				MultiKey<? extends Integer> kes = ents.next();
 				if (tileEntities.containsKey(kes.getKey(0), kes.getKey(1), kes.getKey(2))) {
 					tileEntities.removeMultiKey(kes.getKey(0), kes.getKey(1), kes.getKey(2));

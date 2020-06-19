@@ -10,6 +10,7 @@ import com.brett.voxel.world.VoxelWorld;
 *
 * @author brett
 * @date Mar. 27, 2020
+* This is an unused class at this point.
 */
 
 public class VEntity {

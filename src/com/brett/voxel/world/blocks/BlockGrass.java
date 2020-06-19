@@ -30,6 +30,7 @@ public class BlockGrass extends Block {
 		 */
 		// this one just removes the grass to dirt if there is a block above it
 		// again not sure if it works. it should but I haven't really seen it in game.
+		// side note I think I just seen this happen
 		if (Block.blocks.get(world.chunk.getBlockBIAS(x, y+1, z)).getRendermode() == RENDERMODE.SOLID) {
 			world.chunk.setBlockBIAS(x, y, z, DIRT);
 			return;

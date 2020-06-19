@@ -9,6 +9,7 @@ import com.brett.voxel.renderer.shaders.VoxelShader;
 *
 * @author brett
 * @date Jun. 1, 2020
+* World base class
 */
 
 public interface IChunkProvider {

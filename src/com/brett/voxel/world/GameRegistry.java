@@ -1,11 +1,7 @@
 package com.brett.voxel.world;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
 import com.brett.datatypes.Texture;
-import com.brett.datatypes.SaveEvent;
 import com.brett.renderer.Loader;
 import com.brett.sound.AudioController;
 import com.brett.voxel.inventory.recipe.CraftingManager;
@@ -41,12 +37,13 @@ import com.brett.voxel.world.items.ItemWoodenShovel;
 *
 * @author brett
 * @date Mar. 13, 2020
+* Registers stuff for the game
 */
 
 public class GameRegistry {
 	
+	// highest item id
 	private static short highestID = 0;
-	private static List<SaveEvent> saveEvents = new ArrayList<SaveEvent>();
 	private static HashMap<Integer, String> textures = new HashMap<Integer, String>();
 	/**
 	 * stores fuel times for various items
@@ -56,17 +53,24 @@ public class GameRegistry {
 	private static HashMap<Integer, Integer> fuelTimes = new HashMap<Integer, Integer>();
 	
 	public static void init(Loader loader) {
+		// register blocks
 		registerBlocks(loader);
 		registerItems(loader);
+		// register fuels
 		registerFuel(Item.COAL, 800);
 		registerFuel(Block.PLANKS, 150);
 		registerFuel(Block.LOG, 150);
 		registerFuel(Block.LEAVES, 50);
 		registerFuel(Item.STICK, 50);
+		
+		// register smelting
+		
 		CraftingManager.registerSmeltingRecipe(Block.IRON, Item.IRONINGOT, 100);
 		CraftingManager.registerSmeltingRecipe(Block.COBBLE, Block.STONE, 100);
 		CraftingManager.registerSmeltingRecipe(Block.SAND, Block.GLASS, 100);
 		CraftingManager.registerSmeltingRecipe(Block.GOLD, Item.GOLDINGOT, 100);
+		
+		// register crafting
 		
 		CraftingManager.registerCrafting(Block.LOG + "", Block.PLANKS, 4);
 		CraftingManager.registerCrafting(Block.PLANKS + ";" + Block.PLANKS, Item.STICK, 16);
@@ -97,6 +101,7 @@ public class GameRegistry {
 	
 	private static void registerBlocks(Loader loader) {
 		//TODO: maybe move into their own class
+		// register blocks
 		registerBlock(Block.AIR, new BlockAir());
 		
 		registerBlock(Block.STONE, new Block(new Texture(loader.loadTexture("stone")), 2
@@ -186,6 +191,7 @@ public class GameRegistry {
 	}
 	
 	private static void registerItems(Loader loader) {
+		//register items
 		registerItem(new ItemWillPickaxe(Item.WILLPICK, new Texture(loader.loadTexture("willpick"))));
 		registerItem(new ItemCopperPickaxe(Item.COPPERPICK, new Texture(loader.loadTexture("copperpick"))));
 		registerItem(new ItemDiamondPickaxe(Item.DIAMONDPICK, new Texture(loader.loadTexture("diamondpick"))));
@@ -210,6 +216,13 @@ public class GameRegistry {
 	}
 	
 	public static HashMap<Integer, String> registerTextures() {
+		// register textures
+		/*
+		 * Textures need to be defined in order, starting at 0.
+		 * Why not use a list then?
+		 * because I wanted to be able to just look here
+		 * and know the texture id.
+		 */
 		textures.put(0, "grass");
 		textures.put(1, "dirt");
 		textures.put(2, "stone");
@@ -252,35 +265,26 @@ public class GameRegistry {
 		return textures;
 	}
 	
-	public static void preSaveEvent() {
-		for (int i = 0; i < saveEvents.size(); i++) 
-			saveEvents.get(i).preSaveEvent();
-	}
-	
-	public static void postSaveEvent() {
-		for (int i = 0; i < saveEvents.size(); i++) 
-			saveEvents.get(i).postSaveEvent();
-	}
-	
-	public static void registerSaveEvent(SaveEvent e) {
-		saveEvents.add(e);
-	}
-	
-	public static void removeSaveEvent(SaveEvent e) {
-		saveEvents.remove(e);
-	}
-	
+	/**
+	 * registers an item
+	 */
 	protected static void registerItem(short id, Texture texture) {
 		Item i = new Item(id, texture);
 		Item.items.put(id, i);
 		Item.inverseItems.put(i, id);
 	}
 	
+	/**
+	 * registers item
+	 */
 	protected static void registerItem(Item i) {
 		Item.items.put(i.getId(), i);
 		Item.inverseItems.put(i, i.getId());
 	}
 	
+	/**
+	 * registers a block as an item.
+	 */
 	private static Item registerItemBlock(short id) {
 		Item i = new Item(id, Block.blocks.get(id).model);
 		Item.itemBlocks.put(i, Block.blocks.get(id));
@@ -289,6 +293,9 @@ public class GameRegistry {
 		return i;
 	}
 	
+	/**
+	 * registers a block, also registers the block as an item of the same id.
+	 */
 	private static void registerBlock(short id, Block b) {
 		if (id > highestID)
 			highestID = id;
@@ -297,6 +304,9 @@ public class GameRegistry {
 		Block.inverseBlocks.put(b, id);
 	}
 	
+	/**
+	 * returns the fuel of the item.
+	 */
 	public static int getItemFuel(int input) {
 		if (fuelTimes.containsKey(input))
 			return fuelTimes.get(input);
@@ -304,10 +314,16 @@ public class GameRegistry {
 			return 0;
 	}
 	
+	/**
+	 * registers a fuel
+	 */
 	public static void registerFuel(int input, int time) {
 		fuelTimes.put(input, time);
 	}
 	
+	/*
+	 * returns the block id from the block.
+	 */
 	public static short getIdByBlock(Block b) {
 		return Block.inverseBlocks.get(b);
 	}

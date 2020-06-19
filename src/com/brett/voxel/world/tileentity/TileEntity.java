@@ -87,8 +87,10 @@ public class TileEntity implements IKeyState, Serializable {
 	 * destroys the tile entity
 	 */
 	public void destroy() {
-		nbt.destory();
-		nbt = null;
+		try {
+			nbt.destory();
+			nbt = null;
+		} catch (Exception e) {}
 	}
 	
 	public String getLocation() {

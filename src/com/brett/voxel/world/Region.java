@@ -25,12 +25,12 @@ import net.jpountz.lz4.LZ4Factory;
 * @date Mar. 4, 2020
 * 
 * Region class for saving and loading chunks
-* TODO: use GZIP or make my own compression to compress world files.
-* Each chunk has a size of about 64kb.
-* Regions should have about 64mb.
 * 
 * Help may be on my github.
 * if it is not and want help submit an issue.
+* 
+* I am currently using LZ4 compression because it is super
+* speedy. Its a little more file size but more speed. (then gzip)
 * 
 */
 
@@ -72,6 +72,7 @@ public class Region {
 				try {
 					// byte flag
 					byte b = 0;
+					// run until out of chunks
 					while (b != -2) {
 						int posX = is.readInt();
 						int posZ = is.readInt();
@@ -125,21 +126,25 @@ public class Region {
 				MapIterator<MultiKey<? extends Integer>, Chunk> chunkIt = chunks.mapIterator();
 				DataOutputStream os = null;
 				try {
+					// open the file.
 					os = new DataOutputStream(new LZ4BlockOutputStream(
 							new FileOutputStream(worldLocation + "DIM/" + xpos + "_" + zpos + ".region"), 1 << 16, factory.fastCompressor()));
 				} catch (IOException e1) {return;}
 				int chunkCount = 0;
+				// loop through all the chunks.
 				while (chunkIt.hasNext()) {
 					MultiKey<? extends Integer> ke = chunkIt.next();
 					try {
 						Chunk c = chunks.get(ke);
 						if (c == null)
 							continue;
+						// write the chunk pos
 						os.writeInt(ke.getKey(0));
 						os.writeInt(ke.getKey(1));
 						short[][][] ch = c.getBlocks();
 						if (ch == null)
 							continue;
+						// write the chunk
 						for (int i = 0; i < ch.length; i++) {
 							for (int j = 0; j < ch[i].length; j++) {
 								for (int k = 0; k < ch[i][j].length; k++) {
@@ -157,6 +162,7 @@ public class Region {
 						if (!new File(worldLocation).mkdirs())
 							saveRegion(worldLocation, game);
 					}
+					// slow down the saver because the game really doesn't like it saving
 					if (game) {
 						try {
 							Thread.sleep(16);
@@ -169,6 +175,7 @@ public class Region {
 				System.gc();
 			}
 		}).start(); 
+		// clear the memory.
 		System.gc();
 	}
 	

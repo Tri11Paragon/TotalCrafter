@@ -28,6 +28,7 @@ public class EscapeMenu implements IMenu {
 	private boolean enabled = false;
 	public static VoxelWorld world;
 	
+	@SuppressWarnings("unused")
 	public EscapeMenu(UIMaster master, Loader loader) {
 		//elements.add(master.createCenteredTexture(-1, -1, -1, 0, 0, 200, 200, new Vector3f(0,0,0)));
 		elements.add(master.createUITexture(loader.loadTexture("gui/opac"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight()));
@@ -99,8 +100,8 @@ public class EscapeMenu implements IMenu {
 			}
 		}, master, width-250, height+115, 500, 60);
 		UIDynamicText rtrntMenu = master.createDynamicText("Save and quit to main menu", 1.5f, VoxelScreenManager.monospaced, width-250, height+126, 500, true);
-		texts.add(rtrntMenu);
-		elements.add(rtrnmenu);
+		//texts.add(rtrntMenu);
+		//elements.add(rtrnmenu);
 	}
 	
 	@Override

@@ -97,26 +97,32 @@ public class WorldGenerator {
 			xp = -x;
 		if (z < 0)
 			zp = -z;
+		// generate a random seed for this chunk
 		rnd.setSeed(((xp * LevelLoader.seed * 4923492) + (zp * LevelLoader.seed * 59234)) + LevelLoader.seed);
+		// make a new block array
 		short[][][] blks = new short[Chunk.x][Chunk.y][Chunk.z];
 		
+		// make reference to chunk pos
 		int cx = x*Chunk.x;
 		int cz = z*Chunk.z;
 		
 		for (int i = 0; i < Chunk.x; i++) {
 			for (int k = 0; k < Chunk.z; k++) {
 
-				// reference numbers
+				// reference numbers 
 				int cax = i + cx;
 				int caz = k + cz;
 				
+				// get the reference height
 				int ref = (int) getBiomeMix(cax, caz, 1);
+				// the highest height with air block above it.
 				int realref = ref;
-				int amount = 28;
+				int amount = 30;
 				
+				// loop through all the y
 				for (int j = Chunk.y-6; j > 0; j--) {
-					if (ref > 80 && j > 80)
-						amount = 20;
+					if (ref > 80 && j > 85)
+						amount = 22;
 					// this should change with seed if I changed the perlin noise correctly.
 					double reference = (lf.perlinNoise(cax/128.05234d, j/16.234, caz/128.312394d)*64) + amount;
 					if (reference > 0 && j < ref) {
@@ -159,13 +165,17 @@ public class WorldGenerator {
 				// make sure we can't mine outside the world.
 				blks[i][0][k] = Block.WILL;
 				
+				// get a random int for the trees
 				int tree = rnd.nextInt((int) (800 / getForestAmount(cax, caz)));
+				// check if we generate a tree here and that it is in range
 				if (tree == 5 && realref < 100 && realref > 52) {
 					int height = rnd.nextInt(3) + 4;
+					// generate the tree canopy
 					for (int lx = -2; lx < 3; lx++) {
 						for (int lz = -2; lz < 3; lz++) {
 							int lxp = i + lx;
 							int lzp = k + lz;
+							// generate the height for this canopy
 							for (int hh = 0; hh <= 2; hh++) {
 								if (lxp < 0 || lxp > (Chunk.x - 1) || lzp < 0 || lzp > (Chunk.z - 1)) {
 									world.chunk.setBlock(lxp + cx, realref + height + hh - 2, lzp + cz, Block.LEAVES);
@@ -174,6 +184,7 @@ public class WorldGenerator {
 							}
 						}
 					}
+					// generate a smaller canopy above the first
 					for (int lx = -1; lx < 2; lx++) {
 						for (int lz = -1; lz < 2; lz++) {
 							int lxp = i + lx;
@@ -184,6 +195,7 @@ public class WorldGenerator {
 								blks[lxp][realref + height + 1][lzp] = Block.LEAVES;
 						}
 					}
+					// generate the logs
 					blks[i][realref + height + 2][k] = Block.LEAVES;
 					for (int t = realref; t <= realref + height; t++) {
 						blks[i][t][k] = Block.LOG;
@@ -196,6 +208,9 @@ public class WorldGenerator {
 		return blks;
 	}
 	
+	/**
+	 * gets the height of a block at a point
+	 */
 	public float getBiomeMix(float x, float z, float scale) {
 		float height = (float) (((lf.perlinNoise(x/128f + (345345/LevelLoader.seed), LevelLoader.seed/128f, z/128f + (53485834/LevelLoader.seed)) + 
 				((df.perlinNoise(x/24f + (34595/LevelLoader.seed), LevelLoader.seed/128f, z/24f)*rf.perlinNoise(x/72f, LevelLoader.seed/32f, z/72f + (345992/LevelLoader.seed)))))/scale)*32 + 80);
@@ -203,10 +218,16 @@ public class WorldGenerator {
 		return height;
 	}
 	
+	/**
+	 * gets the forest amount at a point
+	 */
 	public float getForestAmount(float x, float z) {
 		return (float) Math.abs(lf.perlinNoise(x/512f + (1/LevelLoader.seed), LevelLoader.seed/78f, z/512f + (1/LevelLoader.seed))) * 10;
 	}
 	
+	/**
+	 * gets the desert amount at a point
+	 */
 	public float getDesertAmount(float x, float z) {
 		return (float) Math.abs(lf.perlinNoise(x/136f + (1/LevelLoader.seed), LevelLoader.seed/256f, z/128f + (1/LevelLoader.seed))) * 10;
 	}

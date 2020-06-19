@@ -31,6 +31,7 @@ public class NulChunk {
 		for (int i = 0; i < this.blocks.length; i++) {
 			for(int j = 0; j < this.blocks.length; j++) {
 				for (int k = 0; k < this.blocks.length; k++) {
+					// replace only air blocks
 					if (this.blocks[i][j][k] == 0) {
 						this.blocks[i][j][k] = genBlocks[i][j][k];
 					}
@@ -40,7 +41,11 @@ public class NulChunk {
 		return this.blocks;
 	}
 	
+	/**
+	 * sets a block in this null chunk
+	 */
 	public void setBlock(int x, int y, int z, int rx, int rz, int block) {
+		// make sure we are in bounds
 		if (x >= Chunk.x || z >= Chunk.z)
 			return;
 		if (x < 0)
@@ -56,6 +61,7 @@ public class NulChunk {
 			if (b != null)
 				b.onBlockPlaced(rx, y, rz, s);
 		}
+		// set the block
 		blocks[x][y][z] = (short)block;
 	}
 	

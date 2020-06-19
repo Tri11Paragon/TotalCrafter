@@ -19,6 +19,7 @@ public abstract class BlockNoise {
 	public BlockNoise(long seed) {
 		this.seed = seed;
 		this.random = new Random();
+		// generate some randomness
 		Random temprand = new Random(seed);
 		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[temprand.nextInt(permutation.length)]; }
 	}
@@ -27,6 +28,7 @@ public abstract class BlockNoise {
 		this.seed = seed;
 		this.random = new Random();
 		Random temprand = new Random(seed);
+		// generate some randomness
 		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[temprand.nextInt(permutation.length)]; }
 		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[i]; }
 		this.AMPLITUDE = amplitude;
@@ -47,6 +49,7 @@ public abstract class BlockNoise {
 		this.seed = seed;
 		this.random = new Random();
 		Random temprand = new Random(seed);
+		// generate some randomness
 		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[temprand.nextInt(permutation.length)]; }
 		this.AMPLITUDE = amplitude;
 	}
@@ -55,6 +58,7 @@ public abstract class BlockNoise {
 		this.seed = seed;
 		this.random = new Random();
 		Random temprand = new Random(seed);
+		// generate some randomness
 		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[temprand.nextInt(permutation.length)]; }
 		this.ROUGHNESS = roughness;
 	}
@@ -63,18 +67,27 @@ public abstract class BlockNoise {
 		this.seed = seed;
 		this.random = new Random();
 		Random temprand = new Random(seed);
+		// generate some randomness
 		for (int i=0; i < 256 ; i++) {p[256+i] = p[i] = permutation[temprand.nextInt(permutation.length)]; }
 		this.OCTAVES = octaves;
 	}
 	
 	public abstract int getBlockHeight(float x, float z);
 	
+	/**
+	 * returns simplex noise
+	 * This is a very slow function
+	 */
 	public float simplexNoise(float x, float z) {
 		x = x < 0 ? -x : x;
     	z = z < 0 ? -z : z;
         float total = 0;
+        // this is just a java implementation of the simplex noise algorithm
+        // it is very slow.
         float d = (float) Math.pow(2, OCTAVES-1);
+        // add octaves to the noise
         for(int i=0;i<OCTAVES;i++){
+        	// generates height based on simplex octaves
             float freq = (float) (Math.pow(2, i) / d);
             float amp = (float) Math.pow(ROUGHNESS, i) * AMPLITUDE;
             total += generateHeight((x)*freq, (z)*freq) * amp;
@@ -82,6 +95,9 @@ public abstract class BlockNoise {
         return (float) total;
 	}
 	
+	/**
+	 * Generates semi smooth noise
+	 */
 	public float fastNoise(float x, float z) {
 		if (x < 0)
 			x = -x;
@@ -95,31 +111,46 @@ public abstract class BlockNoise {
 		int intZ = (int) z;
 		float fracX = x - intX;
 		float fracZ = z - intZ;
-
+		
+		// get noise from area around this point
 		float v1 = getSmoothNoise(intX, intZ);
 		float v2 = getSmoothNoise(intX + 1, intZ);
 		float v3 = getSmoothNoise(intX, intZ + 1);
 		float v4 = getSmoothNoise(intX + 1, intZ + 1);
+		// interpolate it
 		float i1 = interpolate(v1, v2, fracX);
 		float i2 = interpolate(v3, v4, fracX);
 		return interpolate(i1, i2, fracZ);
     }
      
+    /**
+     * simple interpolate function using cos
+     */
     public static float interpolate(float a, float b, float blend){
         double theta = blend * Math.PI;
         float f = (float)(1f - Math.cos(theta)) * 0.5f;
         return a * (1f - f) + b * f;
     }
  
+    /**
+     * gets noise from the area around the point in an attempt to smooth it.
+     */
     private float getSmoothNoise(int x, int z) {
+    	// get the sides.
+    	// divide by constant as sides are less valuable then center points.
         float corners = (getNoise(x - 1, z - 1) + getNoise(x + 1, z - 1) + getNoise(x - 1, z + 1)
                 + getNoise(x + 1, z + 1)) / 16f;
         float sides = (getNoise(x - 1, z) + getNoise(x + 1, z) + getNoise(x, z - 1)
                 + getNoise(x, z + 1)) / 8f;
+        // get the center
         float center = getNoise(x, z) / 4f;
+        // add them all together
         return corners + sides + center;
     }
  
+    /**
+     * gets noise at a point.
+     */
     private float getNoise(int x, int z) {
         random.setSeed(x * 231 + z * 4322 + seed);
         return random.nextFloat() * 2f - 1f;
@@ -150,14 +181,23 @@ public abstract class BlockNoise {
 						lerp(u, grad(p[AB + 1], x, y - 1, z - 1), grad(p[BB + 1], x - 1, y - 1, z - 1))));
 	}
 
+	/**
+	 * From Ken Perlin
+	 */
 	private double fade(double t) {
 		return t * t * t * (t * (t * 6 - 15) + 10);
 	}
 
+	/**
+	 * From Ken Perlin
+	 */
 	private double lerp(double t, double a, double b) {
 		return a + t * (b - a);
 	}
 
+	/**
+	 * From Ken Perlin
+	 */
 	private double grad(int hash, double x, double y, double z) {
 		int h = hash & 15; // CONVERT LO 4 BITS OF HASH CODE
 		double u = h < 8 ? x : y, // INTO 12 GRADIENT DIRECTIONS.
@@ -165,6 +205,9 @@ public abstract class BlockNoise {
 		return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
 	}
 
+	/**
+	 * From Ken Perlin
+	 */
 	final int p[] = new int[512], permutation[] = { 151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7,
 			225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23, 190, 6, 148, 247, 120, 234, 75, 0, 26, 197, 62,
 			94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88, 237, 149, 56, 87, 174, 20, 125, 136, 171, 168, 68, 175,

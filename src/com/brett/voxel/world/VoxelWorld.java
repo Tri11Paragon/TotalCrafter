@@ -60,11 +60,13 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 	}
 	
 	public void init() {
+		// create all the stuff we need for the game.
 		shader = new VoxelShader();
 		ply.assignWorld(this);
 		ply.init();
 		KeyMaster.registerKeyRequester(ply.getInventory());
 		chunk = new ChunkStore(ply, loader, this);
+		// setup the seed
 		random.setSeed(LevelLoader.seed);
 		LightingEngine.init(this, ply);
 		this.textureAtlas = loader.loadSpecialTextureATLAS(16, 16);
@@ -72,6 +74,7 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 		picker = new MouseBlockPicker(ply, renderer.getProjectionMatrix(), this, ply, this.voverlayrenderer);
 		if (!isRemote)
 			tickTileEnts();
+		// screen shot is f2
 		KeyMaster.registerKeyRequester(new ScreenShot());
 		KeyMaster.registerMouseRequester(this);
 		if (localClient != null)
@@ -79,11 +82,13 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 	}
 	
 	public void render(ICamera camera) {
+		// enable stuff we need for rendering
 		MasterRenderer.enableCulling();
 		MasterRenderer.enableTransparentcy();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		vrend.render();
 		shader.start();
+			// 2d array because we are using 3d textures
 			GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureAtlas);
 			chunk.renderChunks(shader, renderer.getProjectionMatrix());
 		shader.stop();
@@ -91,11 +96,15 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 		MasterRenderer.disableTransparentcy();
 	}
 	
+	/**
+	 * creates an explosion at a position with a size.
+	 */
 	public void createExplosion(float x, float y, float z, float size) {
 		new Explosion(x, y, z, size, this).explode();
 	}
 	
 	public void tickTileEnts() {
+		// update tile entities in another thread
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -103,6 +112,8 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 				long end = 0;
 				long ticksSkiped = 1;
 				while (VoxelScreenManager.isOpen) {
+					// calculate the amount of time required
+					// to skip as there has been some lag since last update
 					start = System.currentTimeMillis();
 					long time = start - end;
 					if (time > 50) {
@@ -110,11 +121,14 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 						if (ticksSkiped < 1)
 							ticksSkiped = 1;
 					}
+					// tick all entities
 					for (int i = 0; i < tents.size(); i++) {
 						tents.get(i).tick(ticksSkiped);
 					}
+					// update the chunks
 					chunk.updateChunks();
 					end = System.currentTimeMillis();
+					// sleep to only run at a certain amount of updates per second
 					if (start - end < 50) {
 						try {
 							Thread.sleep(50 - (start-end));
@@ -128,6 +142,7 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 	
 	public void update() {
 		picker.update();		
+		// update some tile entities
 		for (int i = 0; i < tents.size(); i++) {
 			tents.get(i).renderUpdate();
 		}
@@ -146,32 +161,41 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 		if (Mouse.getEventButton() == 1) {
 			PlayerInventory i = ply.getInventory();
 			ItemStack st = i.getItemInSelectedSlot();
+			// make sure there is an item in our hand.
 			if (st != null) {
+				// try to place the block
 				if (picker.placeBlock(Item.inverseItems.get(st.getItem()))) {
 					i.getSelectedSlot().removeItems(1);
 					i.getSelectedSlot().updateText();
 				}
+				// try to right click with item
 				if (st.getItem() instanceof ItemTool) {
 					int[] c = picker.getCurrentBlockPoF();
+					// do the right click
 					((ItemTool) st.getItem()).onRightClick(c[0], c[1], c[2], this, ply, i);
 				}
 					
 			} else {
+				// im not sure why this was here so I disabled it.
+				// turns out this is so that way blocks get interacted with.
 				picker.placeBlock((short) 0);
 			}
 		}
 		if (Mouse.getEventButton() == 0) {
+			// make sure the item we are holding knows that we have pressed the mouse button
 			PlayerInventory i = ply.getInventory();
 			ItemStack st = i.getItemInSelectedSlot();
 			if (st != null) {
 				if (st.getItem() instanceof ItemTool) {
+					// hey i found it again!
+					// do the left click
 					int[] c = picker.getCurrentBlockPoF();
 					((ItemTool) st.getItem()).onLeftClick(c[0], c[1], c[2], this, ply, i);
 				}
 			}
 		}
 		if (Mouse.getEventButton() == 2) {
-			new Explosion(ply.getPosition().x, ply.getPosition().y, ply.getPosition().z, 3, this).explode();
+			//new Explosion(ply.getPosition().x, ply.getPosition().y, ply.getPosition().z, 3, this).explode();
 		}
 	}
 	
@@ -179,13 +203,18 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 		return loader;
 	}
 	
+	/**
+	 * cleans all resources
+	 */
 	public void cleanup() {
+		// save some data
 		if (chunk != null)
 			chunk.cleanup();
 		for (int i = 0; i < tents.size(); i++) {
 			tents.get(i).save();
 		}
 		LevelLoader.saveLevelData(ChunkStore.worldLocation);
+		// destroy some shaders
 		if (shader != null)
 			shader.cleanUp();
 	}

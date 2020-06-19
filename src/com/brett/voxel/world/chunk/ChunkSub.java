@@ -8,6 +8,8 @@ import com.brett.voxel.world.blocks.Block;
 *
 * @author brett
 * @date Apr. 8, 2020
+* This is an unused class and I was testing cubic chunks
+* this will be in mc4
 */
 
 public class ChunkSub {

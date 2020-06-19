@@ -4,6 +4,8 @@ package com.brett.voxel.world.chunk;
 *
 * @author brett
 * @date Apr. 22, 2020
+* This is an unused class. Please ignore.
+* This was made before I switched to 2d arrays
 */
 
 public class AtlasHelper {
