@@ -1,7 +1,8 @@
 package com.brett.engine.shaders;
 
-import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Matrix4f;
+import org.joml.Matrix4f;
+
+import com.brett.engine.managers.DisplayManager;
 
 /**
 * @author Brett
@@ -18,17 +19,18 @@ public class ProjectionMatrix {
 	
 	public static void updateProjectionMatrix(){
     	projectionMatrix = new Matrix4f();
-		float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
+    	// TODO: this
+		float aspectRatio = (float) DisplayManager.WIDTH / (float) DisplayManager.HEIGHT;
 		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))));
 		float x_scale = y_scale / aspectRatio;
 		float frustum_length = FAR_PLANE - NEAR_PLANE;
 		
-		projectionMatrix.m00 = x_scale;
-		projectionMatrix.m11 = y_scale;
-		projectionMatrix.m22 = -((FAR_PLANE + NEAR_PLANE) / frustum_length);
-		projectionMatrix.m23 = -1;
-		projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
-		projectionMatrix.m33 = 0;
+		projectionMatrix.m00(x_scale);
+		projectionMatrix.m11(y_scale);
+		projectionMatrix.m22(-((FAR_PLANE + NEAR_PLANE) / frustum_length));
+		projectionMatrix.m23(-1);
+		projectionMatrix.m32(-((2 * NEAR_PLANE * FAR_PLANE) / frustum_length));
+		projectionMatrix.m33(0);
     }
 	
 }

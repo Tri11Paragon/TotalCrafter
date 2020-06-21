@@ -6,6 +6,7 @@ import java.util.List;
 import com.brett.engine.Loader;
 import com.brett.engine.ui.GUIRenderer;
 import com.brett.engine.ui.Screen;
+import com.brett.engine.ui.UIElement;
 
 /**
 * @author Brett
@@ -31,6 +32,11 @@ public class ScreenManager {
 	}
 	
 	public static void update() {
+		if (activeScreen != null) {
+			List<UIElement> elements = activeScreen.render();
+			if (elements != null)
+				uiRenderer.render(elements);
+		}
 		if (activeScreen != null)
 			activeScreen.update();
 	}

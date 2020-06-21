@@ -2,72 +2,118 @@ package com.brett.engine.managers;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 import javax.imageio.ImageIO;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.Sys;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.ContextAttribs;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.Version;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWImage;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.PixelFormat;
+import org.lwjgl.system.MemoryStack;
+
+import com.brett.engine.InputMaster;
 import com.brett.engine.shaders.ProjectionMatrix;
 import com.brett.engine.tools.ImageToBuffer;
 
+import static org.lwjgl.glfw.Callbacks.*;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.system.MemoryStack.*;
+import static org.lwjgl.system.MemoryUtil.*;
+
 public class DisplayManager {
 	    
-	public static final int WIDTH = 1280;
-	public static final int HEIGHT = 720;
+	public static int WIDTH = 1280;
+	public static int HEIGHT = 720;
 	public static int FPS_MAX = 120;
 
+	public static long window;
+	
 	private static long lastFrameTime;
 	private static float delta;
 
 	public static void createDisplay(boolean isUsingFBOs) {
-		ContextAttribs attribs = new ContextAttribs(3, 3).withForwardCompatible(true).withProfileCore(true);
+		System.out.println("Hello " + Version.getVersion() + "!");
+		
+		GLFWErrorCallback.createPrint(System.err).set();
+		
+		if ( !glfwInit() )
+			throw new IllegalStateException("Unable to initialize GLFW");
+		
+		glfwDefaultWindowHints(); 
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); 
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+		
+		window = glfwCreateWindow(WIDTH, HEIGHT, "RMS - V0.1A", NULL, NULL);
+		if ( window == NULL )
+			throw new RuntimeException("Failed to create the GLFW window");
+		
+		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
+				glfwSetInputMode(window, GLFW_CURSOR, glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+			if ( action == GLFW_PRESS )
+				InputMaster.keyPressed(key);
+			if ( action == GLFW_RELEASE )
+				InputMaster.keyReleased(key);
+		});
+		
+		glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
+			if ( action == GLFW_PRESS )
+				InputMaster.mousePressed(button);
+			if ( action == GLFW_RELEASE )
+				InputMaster.mouseReleased(button);
+		});
+		
+		glfwSetWindowSizeCallback(window, (window, x, y) -> {
+			DisplayManager.WIDTH = x;
+			DisplayManager.HEIGHT = y;
+			GL11.glViewport(0, 0, x, y); ProjectionMatrix.updateProjectionMatrix();
+		});
+		
+		try ( MemoryStack stack = stackPush() ) {
+			IntBuffer pWidth = stack.mallocInt(1);
+			IntBuffer pHeight = stack.mallocInt(1);
 
-		try {
-			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
-			Display.setResizable(true);
+			glfwGetWindowSize(window, pWidth, pHeight);
 
-			if (!isUsingFBOs)
-				Display.create(new PixelFormat().withSamples(4), attribs);
-			else
-				Display.create(new PixelFormat(), attribs);
-			Display.setTitle("RMS - V0.1A");
+			GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-			GL11.glEnable(GL13.GL_MULTISAMPLE);
-		} catch (LWJGLException e) {
-			e.printStackTrace();
+			glfwSetWindowPos(
+				window,
+				(vidmode.width() - pWidth.get(0)) / 2,
+				(vidmode.height() - pHeight.get(0)) / 2
+			);
 		}
-		GL11.glViewport(0, 0, WIDTH, HEIGHT);
-		lastFrameTime = getCurrentTime();
+		
+		glfwMakeContextCurrent(window);
+		// Enable v-sync
+		glfwSwapInterval(1);
+
+		glfwShowWindow(window);
+		
+		GL.createCapabilities();
+		
+		glfwWindowHint(GLFW_SAMPLES, 4);
+		GL11.glEnable(GL13.GL_MULTISAMPLE);
+		
+		/*
 
 		ByteBuffer[] list = new ByteBuffer[2];
 		try {
 			list[0] = ImageToBuffer.convet(ImageIO.read(new File("resources/textures/icon/icon16.png")));
 			list[1] = ImageToBuffer.convet(ImageIO.read(new File("resources/textures/icon/icon32.png")));
 		} catch (IOException e) {e.printStackTrace();}
-		Display.setIcon(list);
+		Display.setIcon(list);*/
 		ProjectionMatrix.updateProjectionMatrix();
 	}
 
 	public static void updateDisplay() {
-		if (Display.wasResized()) { GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight()); ProjectionMatrix.updateProjectionMatrix(); }
 		
-		Display.sync(FPS_MAX);
-		Display.update();
-		
-		if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE) && Keyboard.next()) {
-			if (Keyboard.getEventKeyState()) {
-				Mouse.setGrabbed(!Mouse.isGrabbed());
-			}
-		}
+		glfwSwapBuffers(window);
+		glfwPollEvents();
 		
 		long currentFrameTime = getCurrentTime();
 		delta = currentFrameTime - lastFrameTime;
@@ -75,11 +121,15 @@ public class DisplayManager {
 	}
 
 	public static void closeDisplay() {
-		Display.destroy();
+		glfwFreeCallbacks(window);
+		glfwDestroyWindow(window);
+		
+		glfwTerminate();
+		glfwSetErrorCallback(null);
 	}
 
 	private static long getCurrentTime() {
-		return Sys.getTime() * 1000 / Sys.getTimerResolution();
+		return System.currentTimeMillis();
 	}
 
 	public static float getFrameTimeMilis() {

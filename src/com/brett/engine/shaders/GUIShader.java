@@ -1,7 +1,7 @@
 package com.brett.engine.shaders;
 
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 /**
 * @author Brett

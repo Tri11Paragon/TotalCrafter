@@ -3,9 +3,9 @@ package com.brett.engine.tools;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import com.brett.engine.cameras.ICamera;
 
@@ -36,15 +36,15 @@ public class Maths {
 	 * creates a translation matrix
 	 */
 	public static Matrix4f createTransformationMatrix(Vector3f translation, float rx, float ry, float rz, float scale) {
-		mtx.setIdentity();
+		mtx.identity();
 		// these functions explain themselves and are the same for pretty much all the
 		// transformation matrix generators
 		// I have many of them because I had many ways of doing things.
-		Matrix4f.translate(translation, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(rx), Maths.rx, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(ry), Maths.ry, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(rz), Maths.rz, mtx, mtx);
-		Matrix4f.scale(new Vector3f(scale, scale, scale), mtx, mtx);
+		mtx.translate(translation);
+		mtx.rotate((float) Math.toRadians(rx), Maths.rx);
+		mtx.rotate((float) Math.toRadians(ry), Maths.ry);
+		mtx.rotate((float) Math.toRadians(rz), Maths.rz);
+		mtx.scale(new Vector3f(scale, scale, scale));
 		return mtx;
 	}
 
@@ -52,116 +52,16 @@ public class Maths {
 	 * creates a translation matrix
 	 */
 	public static Matrix4f createTransformationMatrix(Vector3f translation, Vector3f rotation, Vector3f scale) {
-		mtx.setIdentity();
-		Matrix4f.translate(translation, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(rotation.x), Maths.rx, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(rotation.y), Maths.ry, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(rotation.z), Maths.rz, mtx, mtx);
-		Matrix4f.scale(scale, mtx, mtx);
-		return mtx;
-	}
-
-	/**
-	 * creates a translation matrix
-	 */
-	public static Matrix4f createTransformationMatrix(Vector3f translation, Vector3f rotation) {
-		mtx.setIdentity();
-		Matrix4f.translate(translation, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(rotation.x), Maths.rx, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(rotation.y), Maths.ry, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(rotation.z), Maths.rz, mtx, mtx);
-		return mtx;
-	}
-
-	/**
-	 * creates a translation matrix input as a rotation float array, first float is
-	 * over RX, second float is over RY, and third is over RZ
-	 */
-	public static Matrix4f createTransformationMatrix(Vector3f translation, float[] rotation) {
-		mtx.setIdentity();
-		Matrix4f.translate(translation, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(rotation[0]), Maths.rx, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(rotation[1]), Maths.ry, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(rotation[2]), Maths.rz, mtx, mtx);
-		return mtx;
-	}
-
-	static Vector3f trans = new Vector3f();
-
-	/**
-	 * creates a translation matrix input as a translation float array. first is x,
-	 * second is y, third is z. input as a rotation float array, first float is over
-	 * RX, second float is over RY, and third is over RZ
-	 */
-	public static Matrix4f createTransformationMatrix(float[] translation, float[] rotation) {
-		mtx.setIdentity();
-		trans.x = translation[0];
-		trans.y = translation[1];
-		trans.z = translation[2];
-		Matrix4f.translate(trans, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(rotation[0]), Maths.rx, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(rotation[1]), Maths.ry, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(rotation[2]), Maths.rz, mtx, mtx);
-		return mtx;
-	}
-
-	/**
-	 * creates a translation matrix input as a float array. first is x, second is y,
-	 * third is z. fourth float is over RX, fifth float is over RY, and sixth is
-	 * over RZ
-	 */
-	public static Matrix4f createTransformationMatrix(float[] translationandrotation) {
-		mtx.setIdentity();
-		trans.x = translationandrotation[0];
-		trans.y = translationandrotation[1];
-		trans.z = translationandrotation[2];
-		Matrix4f.translate(trans, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(translationandrotation[3]), Maths.rx, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(translationandrotation[4]), Maths.ry, mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(translationandrotation[5]), Maths.rz, mtx, mtx);
-		return mtx;
-	}
-
-	/**
-	 * creates a translation matrix input as a float array. first is x, second is y,
-	 * third is z. only rotations
-	 */
-	public static Matrix4f createTransformationMatrixYAW(float[] translationandrotation) {
-		mtx.setIdentity();
-		trans.x = translationandrotation[0];
-		trans.y = translationandrotation[1];
-		trans.z = translationandrotation[2];
-		Matrix4f.translate(trans, mtx, mtx);
-		// Matrix4f.rotate((float) Math.toRadians(translationandrotation[3]), Maths.rx,
-		// mtx, mtx);
-		Matrix4f.rotate((float) Math.toRadians(-translationandrotation[4]), Maths.ry, mtx, mtx);
-		// Matrix4f.rotate((float) Math.toRadians(translationandrotation[5]), Maths.rz,
-		// mtx, mtx);
+		mtx.identity();
+		mtx.translate(translation);
+		mtx.rotate((float) Math.toRadians(rotation.x), Maths.rx);
+		mtx.rotate((float) Math.toRadians(rotation.y), Maths.ry);
+		mtx.rotate((float) Math.toRadians(rotation.z), Maths.rz);
+		mtx.scale(scale);
 		return mtx;
 	}
 
 	static Matrix4f mrx = new Matrix4f();
-
-	/**
-	 * creates a translation matrix
-	 */
-	public static Matrix4f createTransformationMatrix(Vector3f translation, float scale) {
-		mrx.setIdentity();
-		Matrix4f.translate(translation, mrx, mrx);
-		Matrix4f.scale(new Vector3f(scale, scale, scale), mrx, mrx);
-		return mrx;
-	}
-
-	// i use different matrix for each function to make sure that
-	// there is no concurrent modification errors.
-	// i know it won't happen but just in case
-	static Matrix4f mrxx = new Matrix4f();
-
-	public static Matrix4f createTransformationMatrix(Vector3f translation) {
-		mrxx.setIdentity();
-		Matrix4f.translate(translation, mrxx, mrxx);
-		return mrxx;
-	}
 
 	static Matrix4f matrix = new Matrix4f();
 	static float fr = 0.5f;
@@ -171,15 +71,15 @@ public class Maths {
 	 * world.
 	 */
 	public static Matrix4f createTransformationMatrixCube(int x, int y, int z) {
-		matrix.setIdentity();
+		matrix.identity();
 		// the 0.5 is added to adjust for cube scale.
 		// took way to long to figure out this.
 		// I do the raw matrix math here because I don't want to lose performance due to
 		// abstraction
-		matrix.m30 += matrix.m00 * (x + fr) + matrix.m10 * (y + fr) + matrix.m20 * (z + fr);
-		matrix.m31 += matrix.m01 * (x + fr) + matrix.m11 * (y + fr) + matrix.m21 * (z + fr);
-		matrix.m32 += matrix.m02 * (x + fr) + matrix.m12 * (y + fr) + matrix.m22 * (z + fr);
-		matrix.m33 += matrix.m03 * (x + fr) + matrix.m13 * (y + fr) + matrix.m23 * (z + fr);
+		matrix.m30(matrix.m30() + matrix.m00() * (x + fr) + matrix.m10() * (y + fr) + matrix.m20() * (z + fr));
+		matrix.m31(matrix.m31() + matrix.m01() * (x + fr) + matrix.m11() * (y + fr) + matrix.m21() * (z + fr));
+		matrix.m32(matrix.m32() + matrix.m02() * (x + fr) + matrix.m12() * (y + fr) + matrix.m22() * (z + fr));
+		matrix.m33(matrix.m33() + matrix.m03() * (x + fr) + matrix.m13() * (y + fr) + matrix.m23() * (z + fr));
 
 		return matrix;
 	}
@@ -188,22 +88,20 @@ public class Maths {
 	 * creates a translation matrix
 	 */
 	public static Matrix4f createTransformationMatrix(Vector2f translation, Vector2f scale) {
-		Matrix4f matrix = new Matrix4f();
-		matrix.setIdentity();
-		Matrix4f.translate(translation, matrix, matrix);
-		Matrix4f.scale(new Vector3f(scale.x, scale.y, 1f), matrix, matrix);
+		matrix.identity();
+		matrix.translate(translation.x, translation.y, 0);
+		matrix.scale(new Vector3f(scale.x, scale.y, 1f));
 		return matrix;
 	}
-
+	
 	/**
 	 * creates a translation matrix
 	 */
 	public static Matrix4f createTransformationMatrix(float SWIDTH, float SHEIGHT, float x, float y, float width,
 			float height) {
-		Matrix4f matrix = new Matrix4f();
-		matrix.setIdentity();
-		Matrix4f.translate(new Vector2f(x / SWIDTH, y / SHEIGHT), matrix, matrix);
-		Matrix4f.scale(new Vector3f(width / SWIDTH, height / SHEIGHT, 1f), matrix, matrix);
+		matrix.identity();
+		matrix.translate(x / SWIDTH, y / SHEIGHT, 0);
+		matrix.scale(width / SWIDTH, height / SHEIGHT, 1f);
 		return matrix;
 	}
 
@@ -212,11 +110,10 @@ public class Maths {
 	 */
 	public static Matrix4f createTransformationMatrixCenteredSTATIC(float SWIDTH, float SHEIGHT, float width,
 			float height, float rot) {
-		Matrix4f matrix = new Matrix4f();
-		matrix.setIdentity();
-		Matrix4f.translate(new Vector2f(SWIDTH / 2 - width / 2, SHEIGHT / 2 - height / 2), matrix, matrix);
-		Matrix4f.rotate(rot, rx, matrix, matrix);
-		Matrix4f.scale(new Vector3f(width / SWIDTH, height / SHEIGHT, 1f), matrix, matrix);
+		matrix.identity();
+		matrix.translate(SWIDTH / 2 - width / 2, SHEIGHT / 2 - height / 2, 0);
+		matrix.rotate(rot, rx);
+		matrix.scale(width / SWIDTH, height / SHEIGHT, 1f);
 		return matrix;
 	}
 
@@ -238,12 +135,12 @@ public class Maths {
 	public static Matrix4f ortho(float left, float right, float bottom, float top, float zNear, float zFar) {
 		Matrix4f m = new Matrix4f();
 
-		m.m00 = 2 / (right - left);
-		m.m11 = 2 / (top - bottom);
-		m.m22 = -2 / (zFar - zNear);
-		m.m30 = -(right + left) / (right - left);
-		m.m31 = -(top + bottom) / (top - bottom);
-		m.m32 = -(zFar + zNear) / (zFar - zNear);
+		m.m00( 2 / (right - left));
+		m.m11(2 / (top - bottom));
+		m.m22(-2 / (zFar - zNear));
+		m.m30(-(right + left) / (right - left));
+		m.m31(-(top + bottom) / (top - bottom));
+		m.m32(-(zFar + zNear) / (zFar - zNear));
 
 		return m;
 	}
@@ -251,28 +148,12 @@ public class Maths {
 	/**
 	 * creates a translation matrix
 	 */
-	public static Matrix4f createTransformationMatrix(Vector3f translation, float rx, float ry, float rz, float sx,
-			float sy, float sz) {
-		Matrix4f matrix = new Matrix4f();
-		matrix.setIdentity();
-		Matrix4f.translate(translation, matrix, matrix);
-		Matrix4f.rotate((float) Math.toRadians(rx), new Vector3f(1, 0, 0), matrix, matrix);
-		Matrix4f.rotate((float) Math.toRadians(ry), new Vector3f(0, 1, 0), matrix, matrix);
-		Matrix4f.rotate((float) Math.toRadians(rz), new Vector3f(0, 0, 1), matrix, matrix);
-		Matrix4f.scale(new Vector3f(sx, sy, sz), matrix, matrix);
-		return matrix;
-	}
-
-	/**
-	 * creates a translation matrix
-	 */
 	public static Matrix4f createTransformationMatrix(Vector2f translation, Vector2f rotation, Vector2f scale) {
-		Matrix4f matrix = new Matrix4f();
-		matrix.setIdentity();
-		Matrix4f.translate(translation, matrix, matrix);
-		Matrix4f.scale(new Vector3f(scale.x, scale.y, 1f), matrix, matrix);
-		Matrix4f.rotate((float) Math.toRadians(rotation.x), new Vector3f(1, 0, 0), matrix, matrix);
-		Matrix4f.rotate((float) Math.toRadians(rotation.y), new Vector3f(0, 1, 0), matrix, matrix);
+		matrix.identity();
+		matrix.translate(translation.x, translation.y, 0);
+		matrix.scale(scale.x, scale.y, 1f);
+		matrix.rotate((float) Math.toRadians(rotation.x), rx);
+		matrix.rotate((float) Math.toRadians(rotation.y), ry);
 		return matrix;
 	}
 
@@ -300,17 +181,17 @@ public class Maths {
 	public static Matrix4f createViewMatrix(ICamera camera) {
 		// reset the matrix from the last frame
 		// saves on making new objects.
-		viewMatrix.setIdentity();
+		viewMatrix.identity();
 		// rotates to the camera
-		Matrix4f.rotate((float) Math.toRadians(camera.getPitch()), new Vector3f(1, 0, 0), viewMatrix, viewMatrix);
-		Matrix4f.rotate((float) Math.toRadians(camera.getYaw()), new Vector3f(0, 1, 0), viewMatrix, viewMatrix);
+		viewMatrix.rotate((float) Math.toRadians(camera.getPitch()), rx);
+		viewMatrix.rotate((float) Math.toRadians(camera.getYaw()), ry);
 		Vector3f cameraPos = camera.getPosition();
 		// make negative.
 		cameraPos.negate();
 		// to make the game look like we are moving, what games to is actually move the
 		// world negative
 		// to where the camera is. Pretty neat eh?
-		Matrix4f.translate(cameraPos, viewMatrix, viewMatrix);
+		viewMatrix.translate(cameraPos);
 		// reset the camera pos back to normal
 		cameraPos.negate();
 		return viewMatrix;
@@ -322,9 +203,9 @@ public class Maths {
 	 * used to render chunks relative to the camera pos and not the world pos.
 	 */
 	public static Matrix4f createViewMatrixROT(ICamera camera) {
-		viewMatrix.setIdentity();
-		Matrix4f.rotate((float) Math.toRadians(camera.getPitch()), new Vector3f(1, 0, 0), viewMatrix, viewMatrix);
-		Matrix4f.rotate((float) Math.toRadians(camera.getYaw()), new Vector3f(0, 1, 0), viewMatrix, viewMatrix);
+		viewMatrix.identity();
+		viewMatrix.rotate((float) Math.toRadians(camera.getPitch()), rx);
+		viewMatrix.rotate((float) Math.toRadians(camera.getYaw()), ry);
 		Vector3f cameraPos = camera.getPosition();
 		// make sure we are not actually changing the camera pos
 		// (due to objects being passed by reference)
@@ -338,7 +219,7 @@ public class Maths {
 		cameraPos.x %= (double) 16;
 		cameraPos.z %= (double) 16;
 		cameraPos.negate();
-		Matrix4f.translate(cameraPos, viewMatrix, viewMatrix);
+		viewMatrix.translate(cameraPos);
 		cameraPos.negate();
 		// resets back to the saved pos that we saved ^
 		cameraPos.x = x;

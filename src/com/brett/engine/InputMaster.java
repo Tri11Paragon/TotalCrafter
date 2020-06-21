@@ -3,9 +3,6 @@ package com.brett.engine;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
 import com.brett.engine.data.IKeyState;
 import com.brett.engine.data.IMouseState;
 
@@ -17,7 +14,7 @@ public class InputMaster {
 	public static boolean mouseState;
 
 	public static void update() {
-		state = Keyboard.next();
+		/*state = Keyboard.next();
 		if (state) {
 			if (Keyboard.getEventKeyState()) {
 				for (int i = 0; i < keyboard.size(); i++)
@@ -37,7 +34,27 @@ public class InputMaster {
 				for (int i = 0; i < mouse.size(); i++)
 					mouse.get(i).onMouseReleased();
 			}
-		}
+		}*/
+	}
+	
+	public static void keyPressed(int key) {
+		for (int i = 0; i < keyboard.size(); i++)
+			keyboard.get(i).onKeyPressed(key);
+	}
+	
+	public static void keyReleased(int key) {
+		for (int i = 0; i < keyboard.size(); i++)
+			keyboard.get(i).onKeyReleased(key);
+	}
+	
+	public static void mousePressed(int button) {
+		for (int i = 0; i < mouse.size(); i++)
+			mouse.get(i).onMousePressed(button);
+	}
+	
+	public static void mouseReleased(int button) {
+		for (int i = 0; i < mouse.size(); i++)
+			mouse.get(i).onMouseReleased(button);
 	}
 	
 }

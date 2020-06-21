@@ -2,17 +2,16 @@ package com.brett.engine.ui;
 
 import java.util.List;
 
-import org.lwjgl.opengl.Display;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
-
 import com.brett.engine.Loader;
 import com.brett.engine.data.VAO;
+import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.shaders.GUIShader;
 import com.brett.engine.tools.Maths;
 
@@ -30,8 +29,9 @@ public class GUIRenderer {
 	private Vector3f nullvec = new Vector3f(-1, 0, 0);
 	
 	public GUIRenderer(Loader loader) {
-		SWIDTH = Display.getWidth();
-		SHEIGHT = Display.getHeight();
+		// TODO THIS
+		SWIDTH = DisplayManager.WIDTH;
+		SHEIGHT = DisplayManager.HEIGHT;
 		// create the quad every texture uses
 		float[] positions = {-1, 1, -1, -1, 1, 1, 1, -1};
 		quad = loader.loadToVAO(positions, 2);

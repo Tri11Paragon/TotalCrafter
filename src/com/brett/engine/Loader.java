@@ -19,7 +19,6 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GLContext;
 
 import com.brett.engine.data.ModelData;
 import com.brett.engine.data.TextureData;
@@ -344,8 +343,8 @@ public class Loader {
 			return textureMap.get(texture);
 		try {
 			// don't load if we don't have a window with OpenGL (we are the server)
-			if (GLContext.getCapabilities() == null)
-				return 0;
+			//if (GLContext.getCapabilities() == null)
+			//	return 0;
 			// decode some texture data.
 			TextureData d = decodeTextureFile("resources/textures/" + texture + ".png");
 			// generate a new texture buffer
