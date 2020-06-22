@@ -17,6 +17,7 @@ public class Main {
 	public static void main(String[] args) {
 		ScreenManager.pre_init();
 		ScreenManager.init();
+		ScreenManager.post_init();
 		
 		while (isOpen) {
 			isOpen = !GLFW.glfwWindowShouldClose(DisplayManager.window);
@@ -34,6 +35,7 @@ public class Main {
 				break;
 			}
 			
+			//SyncSave.Sync.sync(Settings.FPS);
 			DisplayManager.updateDisplay();
 		}
 		

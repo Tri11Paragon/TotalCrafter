@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import com.brett.engine.Loader;
-import com.brett.engine.data.VAO;
+import com.brett.engine.data.datatypes.VAO;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.shaders.GUIShader;
 import com.brett.engine.tools.Maths;

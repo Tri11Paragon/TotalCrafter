@@ -1,4 +1,4 @@
-package com.brett.engine.data;
+package com.brett.engine.data.datatypes;
 
 import java.nio.ByteBuffer;
 

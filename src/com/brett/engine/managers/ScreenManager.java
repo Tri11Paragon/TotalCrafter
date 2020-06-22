@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.brett.engine.Loader;
+import com.brett.engine.shaders.ProjectionMatrix;
+import com.brett.engine.tools.Settings;
 import com.brett.engine.ui.GUIRenderer;
-import com.brett.engine.ui.Screen;
 import com.brett.engine.ui.UIElement;
+import com.brett.engine.ui.screen.Screen;
 
 /**
 * @author Brett
@@ -22,6 +24,7 @@ public class ScreenManager {
 	private static Screen activeScreen;
 	
 	public static void pre_init() {
+		Settings.load();
 		DisplayManager.createDisplay(false);
 		loader = new Loader();
 		uiRenderer = new GUIRenderer(loader);
@@ -29,6 +32,10 @@ public class ScreenManager {
 	
 	public static void init() {
 		
+	}
+	
+	public static void post_init() {
+		ProjectionMatrix.updateProjectionMatrix();
 	}
 	
 	public static void update() {
@@ -47,6 +54,7 @@ public class ScreenManager {
 			screens.get(i).onLeave();
 		}
 		DisplayManager.closeDisplay();
+		Settings.save();
 	}
 	
 }

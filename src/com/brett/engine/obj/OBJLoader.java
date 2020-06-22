@@ -11,9 +11,9 @@ import java.util.List;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import com.brett.engine.data.ModelData;
-import com.brett.engine.data.SmallModelData;
-import com.brett.engine.data.Vertex;
+import com.brett.engine.data.datatypes.ModelData;
+import com.brett.engine.data.datatypes.SmallModelData;
+import com.brett.engine.data.datatypes.Vertex;
 
 /**
 * @author Brett

@@ -1,14 +1,9 @@
 package com.brett.engine.managers;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.IntBuffer;
-
-import javax.imageio.ImageIO;
 
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
@@ -17,7 +12,8 @@ import org.lwjgl.system.MemoryStack;
 
 import com.brett.engine.InputMaster;
 import com.brett.engine.shaders.ProjectionMatrix;
-import com.brett.engine.tools.ImageToBuffer;
+import com.brett.engine.tools.GLIcon;
+import com.brett.engine.tools.Settings;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -25,18 +21,20 @@ import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 public class DisplayManager {
-	    
+	
+	public static final String version = "0.1A";
+	
 	public static int WIDTH = 1280;
 	public static int HEIGHT = 720;
-	public static int FPS_MAX = 120;
 
 	public static long window;
 	
 	private static long lastFrameTime;
-	private static float delta;
+	private static double delta;
 
 	public static void createDisplay(boolean isUsingFBOs) {
-		System.out.println("Hello " + Version.getVersion() + "!");
+		System.out.println("LWJGL Version: " + Version.getVersion() + "!");
+		System.out.println("Game Version: " + version);
 		
 		GLFWErrorCallback.createPrint(System.err).set();
 		
@@ -47,7 +45,7 @@ public class DisplayManager {
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); 
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		
-		window = glfwCreateWindow(WIDTH, HEIGHT, "RMS - V0.1A", NULL, NULL);
+		window = glfwCreateWindow(WIDTH, HEIGHT, "RMS - V" + version, NULL, NULL);
 		if ( window == NULL )
 			throw new RuntimeException("Failed to create the GLFW window");
 		
@@ -90,7 +88,7 @@ public class DisplayManager {
 		
 		glfwMakeContextCurrent(window);
 		// Enable v-sync
-		glfwSwapInterval(1);
+		glfwSwapInterval(Settings.VSYNC);
 
 		glfwShowWindow(window);
 		
@@ -99,15 +97,9 @@ public class DisplayManager {
 		glfwWindowHint(GLFW_SAMPLES, 4);
 		GL11.glEnable(GL13.GL_MULTISAMPLE);
 		
-		/*
-
-		ByteBuffer[] list = new ByteBuffer[2];
-		try {
-			list[0] = ImageToBuffer.convet(ImageIO.read(new File("resources/textures/icon/icon16.png")));
-			list[1] = ImageToBuffer.convet(ImageIO.read(new File("resources/textures/icon/icon32.png")));
-		} catch (IOException e) {e.printStackTrace();}
-		Display.setIcon(list);*/
-		ProjectionMatrix.updateProjectionMatrix();
+		GLIcon gli = new GLIcon("resources/textures/icon/icon16.png", "resources/textures/icon/icon32.png");
+		glfwSetWindowIcon(window, gli.getBuffer());
+		
 	}
 
 	public static void updateDisplay() {
@@ -129,15 +121,19 @@ public class DisplayManager {
 	}
 
 	private static long getCurrentTime() {
-		return System.currentTimeMillis();
+		return System.nanoTime();
 	}
 
-	public static float getFrameTimeMilis() {
-		return delta;
+	public static double getFrameTimeMilis() {
+		return delta / 1000000d;
 	}
 
-	public static float getFrameTimeSeconds() {
-		return delta / 1000;
+	public static double getFrameTimeSeconds() {
+		return delta / 1000000000d;
+	}
+	
+	public static double getFPS() {
+		return 1000000000d / delta;
 	}
 	
 	public static void enableCulling() {

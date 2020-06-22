@@ -20,9 +20,9 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import com.brett.engine.data.ModelData;
-import com.brett.engine.data.TextureData;
-import com.brett.engine.data.VAO;
+import com.brett.engine.data.datatypes.ModelData;
+import com.brett.engine.data.datatypes.TextureData;
+import com.brett.engine.data.datatypes.VAO;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
