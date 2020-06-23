@@ -1,4 +1,4 @@
-package com.brett.engine;
+package com.brett.engine.managers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +13,16 @@ public class InputMaster {
 	public static boolean state;
 	public static boolean mouseState;
 	
+	public static final boolean[] keyDown = new boolean[1023];
+	
 	public static void keyPressed(int key) {
+		keyDown[key] = true;
 		for (int i = 0; i < keyboard.size(); i++)
 			keyboard.get(i).onKeyPressed(key);
 	}
 	
 	public static void keyReleased(int key) {
+		keyDown[key] = false;
 		for (int i = 0; i < keyboard.size(); i++)
 			keyboard.get(i).onKeyReleased(key);
 	}

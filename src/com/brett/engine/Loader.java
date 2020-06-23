@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
@@ -19,10 +20,12 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL42;
 
 import com.brett.engine.data.datatypes.ModelData;
 import com.brett.engine.data.datatypes.TextureData;
 import com.brett.engine.data.datatypes.VAO;
+import com.brett.world.GameRegistry;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
@@ -389,7 +392,7 @@ public class Loader {
 	 * loads all the textures defined inside <b>GameRegistry.registerTextures) 
 	 * at as specified width and height
 	 */
-	/*public int loadSpecialTextureATLAS(int width, int height) {
+	public int loadSpecialTextureATLAS(int width, int height) {
 		try {
 			//for more detail on array textures
 			//https://www.khronos.org/opengl/wiki/Array_Texture
@@ -449,7 +452,7 @@ public class Loader {
 			return id;
 		} catch (Exception e) {}
 		return 0;
-	}*/
+	}
 	
 	/**
 	 * Decodes texture data from a file

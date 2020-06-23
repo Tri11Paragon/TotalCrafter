@@ -38,6 +38,14 @@ public class ScreenManager {
 		ProjectionMatrix.updateProjectionMatrix();
 	}
 	
+	public static Screen switchScreen(Screen s) {
+		Screen old = activeScreen;
+		activeScreen.onLeave();
+		activeScreen = s;
+		activeScreen.onSwitch();
+		return old;
+	}
+	
 	public static void update() {
 		if (activeScreen != null) {
 			List<UIElement> elements = activeScreen.render();

@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.ScreenManager;
+import com.brett.engine.ui.screen.SinglePlayer;
 
 public class Main {
 
@@ -19,6 +20,8 @@ public class Main {
 		ScreenManager.init();
 		ScreenManager.post_init();
 		
+		ScreenManager.switchScreen(new SinglePlayer());
+		
 		while (isOpen) {
 			isOpen = !GLFW.glfwWindowShouldClose(DisplayManager.window);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -28,14 +31,12 @@ public class Main {
 			try {
 				ScreenManager.update();
 			} catch (Exception e) {
-				//Mouse.setGrabbed(false);
 				GLFW.glfwSetInputMode(DisplayManager.window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
 				ScreenManager.close();
 				isOpen = false;
 				break;
 			}
 			
-			//SyncSave.Sync.sync(Settings.FPS);
 			DisplayManager.updateDisplay();
 		}
 		

@@ -28,4 +28,6 @@ public interface UIElement {
 	
 	public void update();
 	
+	public void destroy();
+	
 }

@@ -10,10 +10,10 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.system.MemoryStack;
 
-import com.brett.engine.InputMaster;
 import com.brett.engine.shaders.ProjectionMatrix;
 import com.brett.engine.tools.GLIcon;
 import com.brett.engine.tools.Settings;
+import com.brett.engine.ui.UITexture;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -26,11 +26,15 @@ public class DisplayManager {
 	
 	public static int WIDTH = 1280;
 	public static int HEIGHT = 720;
+	
+	public static boolean isMouseGrabbed = false;
 
 	public static long window;
 	
 	private static long lastFrameTime;
 	private static double delta;
+	
+	public static double mouseX,mouseY;
 
 	public static void createDisplay(boolean isUsingFBOs) {
 		System.out.println("LWJGL Version: " + Version.getVersion() + "!");
@@ -50,8 +54,10 @@ public class DisplayManager {
 			throw new RuntimeException("Failed to create the GLFW window");
 		
 		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
+			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE ) {
 				glfwSetInputMode(window, GLFW_CURSOR, glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+				isMouseGrabbed = !isMouseGrabbed;
+			}
 			if ( action == GLFW_PRESS )
 				InputMaster.keyPressed(key);
 			if ( action == GLFW_RELEASE )
@@ -69,6 +75,12 @@ public class DisplayManager {
 			DisplayManager.WIDTH = x;
 			DisplayManager.HEIGHT = y;
 			GL11.glViewport(0, 0, x, y); ProjectionMatrix.updateProjectionMatrix();
+			UITexture.screenSizeChange();
+		});
+		
+		glfwSetCursorPosCallback(window, (window, x, y) -> {
+			DisplayManager.mouseX = x;
+			DisplayManager.mouseY = y;
 		});
 		
 		try ( MemoryStack stack = stackPush() ) {
@@ -102,7 +114,20 @@ public class DisplayManager {
 		
 	}
 
+	public static double getDX() {
+		return mouseX - lx;
+	}
+	
+	public static double getDY() {
+		return mouseY - ly;
+	}
+	
+	private static double lx, ly;
+	
 	public static void updateDisplay() {
+		
+		lx = mouseX;
+		ly = mouseY;
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
