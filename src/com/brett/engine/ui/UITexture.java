@@ -1,12 +1,7 @@
 package com.brett.engine.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-
-import com.brett.engine.managers.DisplayManager;
 
 /**
 * @author Brett
@@ -15,14 +10,12 @@ import com.brett.engine.managers.DisplayManager;
 
 public class UITexture implements UIElement {
 	
-	public static List<UITexture> textures = new ArrayList<UITexture>();
-	
 	protected float x,y,width,height;
-	public float sx, sy;
-	public int t1,t2,t3;
-	private Vector2f pos = new Vector2f();
-	private Vector2f scale = new Vector2f();
-	public Vector3f color = new Vector3f();
+	public float sx = 1, sy = 1;
+	public int t1,t2,t3, z;
+	private Vector3f pos = new Vector3f();
+	private Vector2f scale = new Vector2f(1,1);
+	public Vector3f color = new Vector3f(-1,0,0);
 	
 	public UITexture(int t1, int t2, int t3, float x, float y, float w, float h) {
 		this.x = x;
@@ -34,7 +27,7 @@ public class UITexture implements UIElement {
 		this.t3 = t3;
 		recalculateVectors();
 	}
-	
+
 	public UITexture(int t1, int t2, int t3, float textureScaleX, float textureScaleY, float x, float y, float w, float h) {
 		this.x = x;
 		this.y = y;
@@ -58,6 +51,16 @@ public class UITexture implements UIElement {
 		return sy;
 	}
 
+	public UITexture setTextureScaleX(float sx) {
+		this.sx = sx;
+		return this;
+	}
+
+	public UITexture setTextureScaleY(float sy) {
+		this.sy = sy;
+		return this;
+	}
+	
 	@Override
 	public int getTexture() {
 		return t1;
@@ -74,7 +77,7 @@ public class UITexture implements UIElement {
 	}
 
 	@Override
-	public Vector2f getPosition() {
+	public Vector3f getPosition() {
 		return pos;
 	}
 
@@ -93,49 +96,40 @@ public class UITexture implements UIElement {
 	}
 	
 	public void recalculateVectors() {
-		calculateVector(pos, x, y);
-		calculateVector(scale, width, height);
-	}
-	
-	public Vector2f calculateVector(Vector2f vecs, float x, float y) {
-		vecs.x = x / DisplayManager.WIDTH;
-		vecs.y = y / DisplayManager.HEIGHT;
-		return vecs;
+		pos.z = z;
+		pos.x = x;
+		pos.y = y;
+		scale.x = width;
+		scale.y = height;
 	}
 
 	public void setX(float x) {
 		this.x = x;
-		calculateVector(pos, x, y);
+		pos.x = x;
 	}
 
 	public void setY(float y) {
 		this.y = y;
-		calculateVector(pos, x, y);
+		pos.y = y;
+	}
+	
+	public void setZ(float z) {
+		this.z = (int) z;
+		pos.z = z;
 	}
 
 	public void setWidth(float width) {
 		this.width = width;
-		calculateVector(scale, width, height);
+		scale.x = width;
 	}
 
 	public void setHeight(float height) {
 		this.height = height;
-		calculateVector(scale, width, height);
+		scale.y = height;
 	}
 
 	@Override
 	public void destroy() {
-		for (int i = 0; i < textures.size(); i++) {
-			if (textures.get(i) == this) {
-				textures.remove(i);
-				return;
-			}
-		}
-	}
-	
-	public static void screenSizeChange() {
-		for (int i = 0; i < textures.size(); i++)
-			textures.get(i).recalculateVectors();
 	}
 	
 }

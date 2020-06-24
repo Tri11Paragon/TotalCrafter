@@ -4,10 +4,12 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import com.brett.engine.cameras.ICamera;
+import com.brett.engine.managers.DisplayManager;
 
 /**
  * @author Brett
@@ -23,6 +25,8 @@ public class Maths {
 		NULL, COLOR_RED, COLOR_BLUE, COLOR_GREEN
 	};
 
+	final static double Epsilon = Math.pow(10, -5);
+	
 	// axis to do rotation over
 	public static final Vector3f rx = new Vector3f(1, 0, 0);
 	public static final Vector3f ry = new Vector3f(0, 1, 0);
@@ -83,6 +87,34 @@ public class Maths {
 
 		return matrix;
 	}
+	
+	public static double Clamp(double value, double min, double max) {
+        // Clamps a value into a given range
+        return Math.max(min, Math.min(max, value));
+    }
+	
+	public static double SmoothDamp(double current, double target, Vector2d refCurrent, double smoothTime, double maxSpeed, double deltaTime) {
+        smoothTime = Math.max(Epsilon, smoothTime);
+
+        double num1 = 2f / smoothTime;
+        double num2 = num1 * deltaTime;
+        double num3 = 1 / (1 + num2 + 0.48 * num2 * num2 + 0.235 * num2 * num2 * num2);
+        double num4 = current - target;
+        double num5 = target;
+        double num6 = maxSpeed * smoothTime;
+        num4 = Clamp(num4, -num6, num6);
+        target = current - num4;
+        double num7 = (refCurrent.x + num1 * num4) * deltaTime;
+        refCurrent.x = (refCurrent.x - num1 * num7) * num3;
+        double num8 = target + (num4 + num7) * num3;
+
+        if (num5 - current > 0 == num8 > num5) {
+            num8 = num5;
+            refCurrent.x = (num8 - num5) / deltaTime;
+        }
+        return num8;
+
+    }
 
 	/**
 	 * creates a translation matrix
@@ -90,6 +122,13 @@ public class Maths {
 	public static Matrix4f createTransformationMatrix(Vector2f translation, Vector2f scale) {
 		matrix.identity();
 		matrix.translate(translation.x, translation.y, 0);
+		matrix.scale(new Vector3f(scale.x, scale.y, 1f));
+		return matrix;
+	}
+	
+	public static Matrix4f createTransformationMatrix(Vector3f translation, Vector2f scale) {
+		matrix.identity();
+		matrix.translate(translation.x, translation.y, translation.z);
 		matrix.scale(new Vector3f(scale.x, scale.y, 1f));
 		return matrix;
 	}
@@ -132,15 +171,18 @@ public class Maths {
 	// matrix maths is not fun
 	// this took 3 hours to make work. turns out i needed to disable face culling
 	// :(
-	public static Matrix4f ortho(float left, float right, float bottom, float top, float zNear, float zFar) {
+	public static Matrix4f ortho() {
 		Matrix4f m = new Matrix4f();
-
-		m.m00( 2 / (right - left));
-		m.m11(2 / (top - bottom));
-		m.m22(-2 / (zFar - zNear));
-		m.m30(-(right + left) / (right - left));
-		m.m31(-(top + bottom) / (top - bottom));
-		m.m32(-(zFar + zNear) / (zFar - zNear));
+		
+		m.identity();
+		//m.m00( 2 / (right - left));
+		//m.m11(2 / (top - bottom));
+		//m.m22(-2 / (zFar - zNear));
+		//m.m30(-(right + left) / (right - left));
+		//m.m31(-(top + bottom) / (top - bottom));
+		//m.m32(-(zFar + zNear) / (zFar - zNear));
+		//m.m33(1);
+		m.setOrtho2D(0, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0);
 
 		return m;
 	}

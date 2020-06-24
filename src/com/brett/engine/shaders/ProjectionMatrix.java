@@ -7,6 +7,9 @@ import java.util.Map.Entry;
 import org.joml.Matrix4f;
 
 import com.brett.engine.managers.DisplayManager;
+import com.brett.engine.managers.ScreenManager;
+import com.brett.engine.tools.Maths;
+import com.brett.engine.ui.font.fontRendering.FontShader;
 
 /**
 * @author Brett
@@ -20,6 +23,7 @@ public class ProjectionMatrix {
 	public static final float FAR_PLANE = 1000;
 	
 	public static Matrix4f projectionMatrix;
+	public static Matrix4f projectionMatrixOrtho;
 	
 	public static HashMap<Integer, WorldShader> shaders = new HashMap<Integer, WorldShader>();
 	private static int lastIndex = 0;
@@ -47,6 +51,18 @@ public class ProjectionMatrix {
 			localShader.loadProjectionMatrox(projectionMatrix);
 			localShader.stop();
 		}
+		
+		projectionMatrixOrtho = Maths.ortho();
+		
+		GUIShader guishader = ScreenManager.uiRenderer.shader;
+		guishader.start();
+		guishader.loadProjectionMatrix(projectionMatrixOrtho);
+		guishader.stop();
+		
+		FontShader fontshader = ScreenManager.fontrenderer.shader;
+		fontshader.start();
+		fontshader.loadProjectionMatrix(projectionMatrixOrtho);
+		fontshader.stop();
 		
     }
 	

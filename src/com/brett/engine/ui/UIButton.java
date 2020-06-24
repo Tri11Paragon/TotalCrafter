@@ -12,9 +12,11 @@ import com.brett.engine.managers.InputMaster;
 public class UIButton extends UITexture implements IMouseState {
 
 	public ButtonEvent event;
+	public int ht;
 	
-	public UIButton(int t1, int t2, int t3, float x, float y, float w, float h) {
-		super(t1, t2, t3, x, y, w, h);
+	public UIButton(int t1, int ht, float x, float y, float w, float h) {
+		super(t1, -1, -1, x, y, w, h);
+		this.ht = ht;
 		InputMaster.mouse.add(this);
 	}
 	
@@ -26,9 +28,9 @@ public class UIButton extends UITexture implements IMouseState {
 	@Override
 	public void update() {
 		super.update();
-		if (isButtonSelected()) {
-			
-		} else
+		if (isButtonSelected())
+			t2 = ht;
+		else
 			t2 = -1;
 	}
 
@@ -62,7 +64,8 @@ public class UIButton extends UITexture implements IMouseState {
 	@Override
 	public void onMouseReleased(int button) {
 		if (isButtonSelected())
-			event.event("button");
+			if (event != null)
+				event.event("button");
 	}
 
 }

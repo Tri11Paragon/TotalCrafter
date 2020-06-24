@@ -9,7 +9,6 @@ public class VoxelShader extends WorldShader {
 
 	public VoxelShader() {
 		super("voxel.vert", "voxel.frag");
-		ProjectionMatrix.addShader(this);
 	}
 
 	@Override

@@ -1,12 +1,13 @@
-#version 430
+#version 330
 
 in vec2 textureCoords;
 
 out vec4 out_Color;
 
-layout(location = 0) uniform sampler2D guiTexture;
-layout(location = 1) uniform sampler2D guiTexture2;
-layout(location = 2) uniform sampler2D guiTexture3;
+uniform sampler2D guiTexture;
+uniform sampler2D guiTexture2;
+uniform sampler2D guiTexture3;
+
 uniform int using_textures;
 uniform vec3 color;
 

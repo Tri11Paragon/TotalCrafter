@@ -14,6 +14,7 @@ public class GUIShader extends ShaderProgram {
     private static final String FRAGMENT_FILE = "guiFragmentShader.frag";
      
     private int location_transformationMatrix;
+    private int location_projectionMatrix;
     private int location_color;
     private int location_using_textures;
     private int location_textureScaleX;
@@ -28,6 +29,10 @@ public class GUIShader extends ShaderProgram {
      
     public void loadTransformation(Matrix4f matrix){
         super.loadMatrix(location_transformationMatrix, matrix);
+    }
+    
+    public void loadProjectionMatrix(Matrix4f matrix) {
+    	super.loadMatrix(location_projectionMatrix, matrix);
     }
     
     public void loadColor(Vector3f color) {
@@ -52,6 +57,7 @@ public class GUIShader extends ShaderProgram {
     @Override
     protected void getAllUniformLocations() {
         location_transformationMatrix = super.getUniformLocation("transformationMatrix");
+        location_projectionMatrix = super.getUniformLocation("projectionMatrix");
         location_color = super.getUniformLocation("color");
         location_using_textures = super.getUniformLocation("using_textures");
         location_textureScaleX = super.getUniformLocation("textureScaleX");

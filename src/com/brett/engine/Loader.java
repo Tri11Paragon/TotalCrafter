@@ -28,7 +28,6 @@ import com.brett.engine.data.datatypes.VAO;
 import com.brett.world.GameRegistry;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
-import de.matthiasmann.twl.utils.PNGDecoder.Format;
 
 public class Loader {
 	
@@ -473,7 +472,7 @@ public class Loader {
 			// assign a bytebuffer for this image.
 			buffer = ByteBuffer.allocateDirect(4 * width * height);
 			// decode the data and put it into the buffer
-			decoder.decode(buffer, width * 4, Format.RGBA);
+			decoder.decode(buffer, width * 4, PNGDecoder.Format.RGBA);
 			// flip the buffer for reading
 			buffer.flip();
 			// close the input stream.

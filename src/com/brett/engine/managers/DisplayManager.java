@@ -13,8 +13,6 @@ import org.lwjgl.system.MemoryStack;
 import com.brett.engine.shaders.ProjectionMatrix;
 import com.brett.engine.tools.GLIcon;
 import com.brett.engine.tools.Settings;
-import com.brett.engine.ui.UITexture;
-
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryStack.*;
@@ -56,7 +54,7 @@ public class DisplayManager {
 		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
 			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE ) {
 				glfwSetInputMode(window, GLFW_CURSOR, glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-				isMouseGrabbed = !isMouseGrabbed;
+				isMouseGrabbed = glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED ? true : false;
 			}
 			if ( action == GLFW_PRESS )
 				InputMaster.keyPressed(key);
@@ -75,7 +73,9 @@ public class DisplayManager {
 			DisplayManager.WIDTH = x;
 			DisplayManager.HEIGHT = y;
 			GL11.glViewport(0, 0, x, y); ProjectionMatrix.updateProjectionMatrix();
-			UITexture.screenSizeChange();
+			//ScreenManager.monospaced = new FontType(ScreenManager.loader.loadTexture("fonts/monospaced-72", 0), new File("resources/textures/fonts/monospaced-72.fnt"));
+			//ScreenManager.fonts.remove("mono");
+			//ScreenManager.fonts.put("mono", ScreenManager.monospaced);
 		});
 		
 		glfwSetCursorPosCallback(window, (window, x, y) -> {

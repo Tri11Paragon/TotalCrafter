@@ -15,6 +15,7 @@ public class WorldShader extends ShaderProgram {
 	
 	public WorldShader(String vertexFile, String fragmentFile) {
 		super(vertexFile, fragmentFile);
+		ProjectionMatrix.addShader(this);
 	}
 
 	@Override

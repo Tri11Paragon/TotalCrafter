@@ -23,7 +23,7 @@ import com.brett.engine.tools.Maths;
 public class GUIRenderer {
 	
 	private final VAO quad;
-	private GUIShader shader;
+	public GUIShader shader;
 	private int SWIDTH = 800;
 	private int SHEIGHT = 600;
 	private Vector3f nullvec = new Vector3f(-1, 0, 0);
@@ -33,7 +33,7 @@ public class GUIRenderer {
 		SWIDTH = DisplayManager.WIDTH;
 		SHEIGHT = DisplayManager.HEIGHT;
 		// create the quad every texture uses
-		float[] positions = {-1, 1, -1, -1, 1, 1, 1, -1};
+		float[] positions = {0, 1, 0, 0, 1, 1, 1, 0};
 		quad = loader.loadToVAO(positions, 2);
 		shader = new GUIShader();
 		shader.start();

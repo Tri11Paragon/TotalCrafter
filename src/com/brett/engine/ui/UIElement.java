@@ -20,7 +20,7 @@ public interface UIElement {
 	
 	public int getTexture3();
 	
-	public Vector2f getPosition();
+	public Vector3f getPosition();
 	
 	public Vector2f getScale();
 	
