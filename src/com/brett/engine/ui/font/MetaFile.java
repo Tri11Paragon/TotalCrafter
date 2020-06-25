@@ -39,6 +39,7 @@ public class MetaFile implements Serializable {
 	private int[] padding;
 	private int paddingWidth;
 	private int paddingHeight;
+	public double spaceRealWidth;
 
 	private Map<Integer, Character> metaData = new HashMap<Integer, Character>();
 
@@ -140,7 +141,8 @@ public class MetaFile implements Serializable {
 	private Character loadCharacter(int imageSize) {
 		int id = getValueOfVariable("id");
 		if (id == TextMeshCreator.SPACE_ASCII) {
-			this.spaceWidth = (getValueOfVariable("xadvance") - paddingWidth) * horizontalPerPixelSize;
+			spaceRealWidth = getValueOfVariable("xadvance");
+			this.spaceWidth = (spaceRealWidth - paddingWidth) * horizontalPerPixelSize;
 			return null;
 		}
 		double xTex = ((double) getValueOfVariable("x") + (padding[PAD_LEFT] - DESIRED_PADDING)) / imageSize;

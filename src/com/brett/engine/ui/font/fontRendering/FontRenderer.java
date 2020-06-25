@@ -3,7 +3,6 @@ package com.brett.engine.ui.font.fontRendering;
 import java.util.List;
 import java.util.Map;
 
-import org.joml.Vector2f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -49,6 +48,7 @@ public class FontRenderer {
 	 * prepares OpenGL for font rendering
 	 */
 	public void prepare(){
+		GL11.glDisable(GL11.GL_CULL_FACE);
 		// enable blending or else font would create blank patches on the screen.
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -70,7 +70,7 @@ public class FontRenderer {
 		
 		shader.loadColor(text.getColor());
 		shader.loadColorOutline(text.getColorOutline());
-		shader.loadTranslationMatrix(Maths.createTransformationMatrix(text.getPosition(), new Vector2f(1.0f, 1.0f)));
+		shader.loadTranslationMatrix(Maths.createTransformationMatrix(text.rx, text.ry, text.sx, text.sy));
 		
 		// draw the text quads
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, text.getVertexCount());
@@ -85,6 +85,7 @@ public class FontRenderer {
 		shader.stop();
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glEnable(GL11.GL_CULL_FACE);
 	}
 
 }

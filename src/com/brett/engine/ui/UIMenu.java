@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.ui.font.UIText;
 
 /**
@@ -23,8 +23,14 @@ public class UIMenu {
 		if (enabled) {
 			for (int i = 0; i < elements.size(); i++)
 				elements.get(i).update();
-			ScreenManager.fontrenderer.render(textMap);
 			return elements;
+		} else
+			return null;
+	}
+	
+	public Map<String, List<UIText>> renderText(){
+		if (enabled) {
+			return textMap;
 		} else
 			return null;
 	}
@@ -44,6 +50,9 @@ public class UIMenu {
 	public void destroy() {
 		for (int i = 0; i < elements.size(); i++)
 			elements.get(i).destroy();
+		for (Entry<String, List<UIText>> texts : textMap.entrySet())
+			for (int i = 0; i < texts.getValue().size(); i++)
+				texts.getValue().get(i).destroy();
 		textMap.clear();
 		elements.clear();
 	}

@@ -33,8 +33,7 @@ public class TextMeshCreator implements Serializable {
 		return data;
 	}
 
-	@SuppressWarnings("unused")
-	private double totalWidth = 0;
+	private double totalWidth = 0, maxWidth = 0;
 	private float maxHeight = 0;
 	
 	private List<Line> createStructure(UIText text) {
@@ -52,13 +51,19 @@ public class TextMeshCreator implements Serializable {
 					currentLine = new Line(metaData.getSpaceWidth(), text.getFontSizeX(), text.getFontSizeY(), text.getMaxLineSize()); 
 					text.setHeight(text.getHeight() +  maxHeight);
 					maxHeight = 0;
+					maxWidth = 0;
+					totalWidth = 0;
 					currentWord = new Word(text.getFontSizeX());
 				} else
 					text.setAtMax(true);
 			}
 			if (metaData.getCharacter(ascii) != null) {
 				totalWidth += metaData.getCharacter(ascii).getActualWidth();
+				maxWidth = Math.max(totalWidth, maxWidth);
 				maxHeight = (float) Math.max(maxHeight, metaData.getCharacter(ascii).getSizeY());
+			} else {
+				totalWidth += metaData.spaceRealWidth;
+				maxWidth = Math.max(totalWidth, maxWidth);
 			}
 			if (ascii == SPACE_ASCII) {
 				boolean added = currentLine.attemptToAddWord(currentWord);
@@ -69,6 +74,8 @@ public class TextMeshCreator implements Serializable {
 						currentLine = new Line(metaData.getSpaceWidth(), text.getFontSizeX(), text.getFontSizeY(), text.getMaxLineSize());
 						text.setHeight(text.getHeight() +  maxHeight);
 						maxHeight = 0;
+						maxWidth = 0;
+						totalWidth = 0;
 						currentLine.attemptToAddWord(currentWord);
 					} else
 						text.setAtMax(true);
@@ -100,6 +107,7 @@ public class TextMeshCreator implements Serializable {
 		List<Float> vertices = new ArrayList<Float>();
 		List<Float> textureCoords = new ArrayList<Float>();
 		for (Line line : lines) {
+			totalWidth = 0;
 			if (text.isCentered()) {
 				curserX = (line.getMaxLength() - line.getLineLength()) / 2;
 			}
@@ -115,7 +123,7 @@ public class TextMeshCreator implements Serializable {
 			curserX = 0;
 			curserY += LINE_HEIGHT * text.getFontSizeY();
 		}		
-		return new TextMeshData(listToArray(vertices), listToArray(textureCoords));
+		return new TextMeshData(listToArray(vertices), listToArray(textureCoords), maxWidth, maxHeight);
 	}
 	
 	private void addVerticesForCharacter(double curserX, double curserY, Character character, double fontSizeX, double fontSizeY,

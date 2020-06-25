@@ -10,10 +10,13 @@ public class TextMeshData {
 	private float[] textureCoords;
 	private float x_size;
 	private float y_size;
+	public double totalWidth, maxHeight;
 	
-	protected TextMeshData(float[] vertexPositions, float[] textureCoords){
+	protected TextMeshData(float[] vertexPositions, float[] textureCoords, double totalWidth, double maxHeight){
 		this.vertexPositions = vertexPositions;
 		this.textureCoords = textureCoords;
+		this.totalWidth = totalWidth;
+		this.maxHeight = maxHeight;
 	}
 
 	public float[] getVertexPositions() {

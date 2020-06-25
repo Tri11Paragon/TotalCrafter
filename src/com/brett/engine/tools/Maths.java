@@ -126,6 +126,13 @@ public class Maths {
 		return matrix;
 	}
 	
+	public static Matrix4f createTransformationMatrix(float x, float y, float sx, float sy) {
+		matrix.identity();
+		matrix.translate(x, y, 0);
+		matrix.scale(new Vector3f(sx, sy, 1f));
+		return matrix;
+	}
+	
 	public static Matrix4f createTransformationMatrix(Vector3f translation, Vector2f scale) {
 		matrix.identity();
 		matrix.translate(translation.x, translation.y, translation.z);

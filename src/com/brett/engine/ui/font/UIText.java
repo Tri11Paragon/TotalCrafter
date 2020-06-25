@@ -1,10 +1,12 @@
 package com.brett.engine.ui.font;
 
 import java.io.Serializable;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.ScreenManager;
+import com.brett.engine.ui.AnchorPoint;
+import com.brett.engine.ui.RescaleEvent;
 
 /**
  * 
@@ -12,12 +14,12 @@ import com.brett.engine.managers.ScreenManager;
  * Holds the information about the text
  *
  */
-public class UIText implements Serializable {
+public class UIText implements Serializable, RescaleEvent {
 
 	private static final long serialVersionUID = 463395900565370628L;
 	protected String textString;
-	private float fontSizeX;
-	private float fontSizeY;
+	public float fontSizeX;
+	public float fontSizeY;
 
 	private int textMeshVao;
 	private int vertexCount;
@@ -26,52 +28,126 @@ public class UIText implements Serializable {
 	// outline color of the text
 	private Vector3f outlineColor = new Vector3f(1f, 1f, 1f);
 
-	protected Vector2f position;
 	// this should be in some kind of NDC, starting at 0 I think
 	private float lineMaxSize;
 	private int numberOfLines;
 	private float height = 0;
+	public double maxWidth, maxHeight;
 	
 	// how many lines will this text allow
 	private int maxNumberOfLines = Integer.MAX_VALUE;
 
 	private String font;
 
+	private float x,y;
+	public float rx, ry, sx, sy;
+	
 	private boolean atMax = false;
 	private boolean centerText = false;
 
-	public UIText(String text, float fontSize, String font, Vector2f position, float maxLineLength, boolean centered) {
+	public AnchorPoint anchorPoint = AnchorPoint.TOPLEFT;
+	
+	public UIText(String text, float fontSize, String font, float x, float y, float maxLineLength) {
 		this.textString = text;
 		this.fontSizeX = fontSize;
 		this.fontSizeY = fontSize;
 		this.font = font;
-		this.position = position;
 		this.lineMaxSize = maxLineLength;
-		this.centerText = centered;
+		this.centerText = false;
+		this.x = x;
+		this.y = y;
+		this.rx = x;
+		this.ry = y;
+		this.sx = 1.5f;
+		this.sy = 1.0f;
 	}
 	
-	public UIText(String text, float fontSize, String font, Vector2f position, float maxLineLength, boolean centered, int maxNumberOfLines) {
+	public UIText(String text, float fontSize, String font, float x, float y, float maxLineLength, int maxNumberOfLines) {
 		this.textString = text;
 		this.fontSizeX = fontSize;
 		this.fontSizeY = fontSize;
 		this.font = font;
-		this.position = position;
 		this.lineMaxSize = maxLineLength;
-		this.centerText = centered;
+		this.centerText = false;
 		this.maxNumberOfLines = maxNumberOfLines;
-		//TextMaster.loadText(this);
+		this.x = x;
+		this.y = y;
+		this.rx = x;
+		this.ry = y;
+		this.sx = 1.5f;
+		this.sy = 1.0f;
 	}
 	
-	public UIText(String text, float fontSizeX, float fontSizeY, String font, Vector2f position, float maxLineLength, boolean centered, int maxNumberOfLines) {
+	public UIText(String text, float fontSize, String font, float x, float y, float sx, float sy, float maxLineLength, int maxNumberOfLines) {
 		this.textString = text;
-		this.fontSizeX = fontSizeX;
-		this.fontSizeY = fontSizeY;
+		this.fontSizeX = fontSize;
+		this.fontSizeY = fontSize;
 		this.font = font;
-		this.position = position;
 		this.lineMaxSize = maxLineLength;
-		this.centerText = centered;
+		this.centerText = false;
 		this.maxNumberOfLines = maxNumberOfLines;
-		//TextMaster.loadText(this);
+		this.x = x;
+		this.y = y;
+		this.rx = x;
+		this.ry = y;
+		this.sx = sx;
+		this.sy = sy;
+	}
+	
+	public UIText(String text, float fontSize, String font, float x, float y, float maxLineLength, AnchorPoint anchorPoint) {
+		this.textString = text;
+		this.fontSizeX = fontSize;
+		this.fontSizeY = fontSize;
+		this.font = font;
+		this.lineMaxSize = maxLineLength;
+		this.centerText = false;
+		this.x = x;
+		this.y = y;
+		this.rx = x;
+		this.ry = y;
+		this.sx = 1.5f;
+		this.sy = 1.0f;
+		this.anchorPoint = anchorPoint;
+		DisplayManager.rescales.add(this);
+		rescale();
+	}
+	
+	public UIText(String text, float fontSize, String font, float x, float y, float maxLineLength, int maxNumberOfLines, AnchorPoint anchorPoint) {
+		this.textString = text;
+		this.fontSizeX = fontSize;
+		this.fontSizeY = fontSize;
+		this.font = font;
+		this.lineMaxSize = maxLineLength;
+		this.centerText = false;
+		this.maxNumberOfLines = maxNumberOfLines;
+		this.x = x;
+		this.y = y;
+		this.rx = x;
+		this.ry = y;
+		this.sx = 1.5f;
+		this.sy = 1.0f;
+		this.anchorPoint = anchorPoint;
+		DisplayManager.rescales.add(this);
+		rescale();
+	}
+	
+	public UIText(String text, float fontSize, String font, float x, float y, float sx, float sy, float maxLineLength, int maxNumberOfLines, AnchorPoint anchorPoint) {
+		this.textString = text;
+		this.fontSizeX = fontSize;
+		this.fontSizeY = fontSize;
+		this.font = font;
+		this.lineMaxSize = maxLineLength;
+		this.centerText = false;
+		this.maxNumberOfLines = maxNumberOfLines;
+		this.x = x;
+		this.y = y;
+		this.rx = x;
+		this.ry = y;
+		this.sx = sx;
+		this.sy = sy;
+		this.anchorPoint = anchorPoint;
+		DisplayManager.rescales.add(this);
+		rescale();
 	}
 
 	/*
@@ -132,9 +208,6 @@ public class UIText implements Serializable {
 		return numberOfLines;
 	}
 
-	public Vector2f getPosition() {
-		return position;
-	}
 
 	public int getMesh() {
 		return textMeshVao;
@@ -174,6 +247,16 @@ public class UIText implements Serializable {
 		return textString;
 	}
 	
+	public void changeText(String text) {
+		this.textString = text;
+		updateTextMesh(this);
+	}
+	
+	public void destroy() {
+		if (anchorPoint != AnchorPoint.TOPLEFT)
+			DisplayManager.rescales.remove(this);
+	}
+	
 	public static UIText updateTextMesh(UIText text){
 		// load the text data
 		TextMeshData data = ScreenManager.fonts.get(text.font).loadText(text);
@@ -181,7 +264,49 @@ public class UIText implements Serializable {
 		int vao = ScreenManager.loader.loadToVAO(data.getVertexPositions(), data.getTextureCoords(), 2).getVaoID();
 		// update the text with the mesh
 		text.setMeshInfo(vao, data.getVertexCount());
+		
+		text.maxHeight = data.maxHeight;
+		text.maxWidth = data.totalWidth;
+		
 		return text;
+	}
+
+	@Override
+	public void rescale() {
+		switch (anchorPoint) {
+			case CENTER:
+				rx = DisplayManager.WIDTH/2-sx/2 + x;
+				ry = DisplayManager.HEIGHT/2-sy/2 + y;
+				break;
+			case BOTTOMCENTER:
+				rx = DisplayManager.WIDTH/2-sx/2 + x;
+				ry = DisplayManager.HEIGHT-sy + y;
+				break;
+			case TOPCENTER:
+				rx = DisplayManager.WIDTH/2-sx/2 + x;
+				ry = y;
+				break;
+			case LEFTCENTER:
+				rx = x;
+				ry = DisplayManager.HEIGHT/2-sy/2 + y;
+				break;
+			case RIGHTCENTER:
+				rx = DisplayManager.WIDTH-sx + x;
+				ry = DisplayManager.HEIGHT/2-sy/2 + y;
+				break;
+			case TOPRIGHT:
+				rx = DisplayManager.WIDTH-sx + x;
+				break;
+			case BOTTOMLEFT:
+				ry = DisplayManager.HEIGHT-sy + y;
+				break;
+			case BOTTOMRIGHT:
+				rx = DisplayManager.WIDTH-sx + x;
+				ry = DisplayManager.HEIGHT-sy + y;
+				break;
+			default:
+				break;
+		}
 	}
 
 }

@@ -30,7 +30,6 @@ public class ProjectionMatrix {
 	
 	public static void updateProjectionMatrix(){
     	projectionMatrix = new Matrix4f();
-    	// TODO: this
 		float aspectRatio = (float) DisplayManager.WIDTH / (float) DisplayManager.HEIGHT;
 		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))));
 		float x_scale = y_scale / aspectRatio;
@@ -66,9 +65,10 @@ public class ProjectionMatrix {
 		
     }
 	
-	public static void addShader(WorldShader shader) {
+	public static int addShader(WorldShader shader) {
 		shaders.put(lastIndex, shader);
 		lastIndex++;
+		return lastIndex-1;
 	}
 	
 }

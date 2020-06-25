@@ -20,6 +20,12 @@ public class UIButton extends UITexture implements IMouseState {
 		InputMaster.mouse.add(this);
 	}
 	
+	public UIButton(int t1, int ht, float x, float y, float w, float h, AnchorPoint an) {
+		super(t1, -1, -1, x, y, w, h, an);
+		this.ht = ht;
+		InputMaster.mouse.add(this);
+	}
+	
 	public UIButton setEvent(ButtonEvent e) {
 		event = e;
 		return this;

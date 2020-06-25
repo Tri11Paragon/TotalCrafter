@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.ui.UIElement;
@@ -33,8 +34,13 @@ public class Screen {
 			ScreenManager.uiRenderer.render(menus.get(i).render());
 		for (int i = 0; i < elements.size(); i++)
 			elements.get(i).update();
-		ScreenManager.fontrenderer.render(textMap);
 		return elements;
+	}
+	
+	public Map<String, List<UIText>> renderText(){
+		for (int i = 0; i < menus.size(); i++)
+			ScreenManager.fontrenderer.render(menus.get(i).renderText());
+		return textMap;
 	}
 	
 	public void update() {
@@ -49,6 +55,9 @@ public class Screen {
 			menus.get(i).destroy();
 		for (int i = 0; i < elements.size(); i++)
 			elements.get(i).destroy();
+		for (Entry<String, List<UIText>> texts : textMap.entrySet())
+			for (int i = 0; i < texts.getValue().size(); i++)
+				texts.getValue().get(i).destroy();
 		menus.clear();
 		elements.clear();
 	}

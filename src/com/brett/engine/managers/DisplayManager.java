@@ -1,6 +1,8 @@
 package com.brett.engine.managers;
 
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -13,6 +15,8 @@ import org.lwjgl.system.MemoryStack;
 import com.brett.engine.shaders.ProjectionMatrix;
 import com.brett.engine.tools.GLIcon;
 import com.brett.engine.tools.Settings;
+import com.brett.engine.ui.RescaleEvent;
+
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryStack.*;
@@ -33,6 +37,8 @@ public class DisplayManager {
 	private static double delta;
 	
 	public static double mouseX,mouseY;
+	
+	public static List<RescaleEvent> rescales = new ArrayList<RescaleEvent>();
 
 	public static void createDisplay(boolean isUsingFBOs) {
 		System.out.println("LWJGL Version: " + Version.getVersion() + "!");
@@ -73,6 +79,8 @@ public class DisplayManager {
 			DisplayManager.WIDTH = x;
 			DisplayManager.HEIGHT = y;
 			GL11.glViewport(0, 0, x, y); ProjectionMatrix.updateProjectionMatrix();
+			for (int i = 0; i < rescales.size(); i++)
+				rescales.get(i).rescale();
 			//ScreenManager.monospaced = new FontType(ScreenManager.loader.loadTexture("fonts/monospaced-72", 0), new File("resources/textures/fonts/monospaced-72.fnt"));
 			//ScreenManager.fonts.remove("mono");
 			//ScreenManager.fonts.put("mono", ScreenManager.monospaced);

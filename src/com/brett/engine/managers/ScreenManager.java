@@ -65,6 +65,7 @@ public class ScreenManager {
 			List<UIElement> elements = activeScreen.render();
 			if (elements != null)
 				uiRenderer.render(elements);
+			ScreenManager.fontrenderer.render(activeScreen.renderText());
 			activeScreen.update();
 		}
 	}
