@@ -26,6 +26,14 @@ public interface UIElement {
 	
 	public Vector3f getColor();
 	
+	public float getMinX();
+	
+	public float getMaxX();
+	
+	public float getMinY();
+	
+	public float getMaxY();
+	
 	public void update();
 	
 	public void destroy();

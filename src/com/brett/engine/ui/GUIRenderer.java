@@ -77,6 +77,7 @@ public class GUIRenderer {
 			shader.loadTextureAmount(amount);
 			shader.loadTextureScale(texture.getTextureScaleX(), texture.getTextureScaleY());
 			shader.loadTransformation(Maths.createTransformationMatrix(texture.getPosition(), texture.getScale()));
+			shader.loadPos(texture.getMinX(), texture.getMinY(), texture.getMaxX(), texture.getMaxY());
 			Vector3f color = texture.getColor();
 			if (color != null)
 				shader.loadColor(color);
@@ -133,7 +134,7 @@ public class GUIRenderer {
 		// load shader information
 		shader.loadTextureAmount(amount);
 		shader.loadTextureScale(textures.getTextureScaleX(), textures.getTextureScaleY());
-		shader.loadTransformation(Maths.createTransformationMatrix(calcVec(x, y), calcVec(width, height)));
+		shader.loadTransformation(Maths.createTransformationMatrix(x,y,width,height));
 		// draw them
 		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
 	}
@@ -151,7 +152,7 @@ public class GUIRenderer {
 		shader.loadTextureScale(1, 1);
 		// convert screen coords into pixel coords
 		// its not NDC because there center is not 0,0 but the top left is
-		shader.loadTransformation(Maths.createTransformationMatrix(calcVec(x + width/2, y + height/2), calcVec(width/2, height/2)));
+		shader.loadTransformation(Maths.createTransformationMatrix(x,y,width,height));
 		// draw
 		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
 	}

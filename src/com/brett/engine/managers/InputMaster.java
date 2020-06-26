@@ -14,6 +14,7 @@ public class InputMaster {
 	public static boolean mouseState;
 	
 	public static final boolean[] keyDown = new boolean[1023];
+	public static final boolean[] mouseDown = new boolean[3];
 	
 	public static void keyPressed(int key) {
 		keyDown[key] = true;
@@ -28,11 +29,13 @@ public class InputMaster {
 	}
 	
 	public static void mousePressed(int button) {
+		mouseDown[button] = true;
 		for (int i = 0; i < mouse.size(); i++)
 			mouse.get(i).onMousePressed(button);
 	}
 	
 	public static void mouseReleased(int button) {
+		mouseDown[button] = false;
 		for (int i = 0; i < mouse.size(); i++)
 			mouse.get(i).onMouseReleased(button);
 	}

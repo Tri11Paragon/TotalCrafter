@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import com.brett.engine.managers.ScreenManager;
+import com.brett.engine.shaders.FontShader;
 import com.brett.engine.tools.Maths;
 import com.brett.engine.ui.font.UIText;
 
@@ -24,6 +25,8 @@ public class FontRenderer {
 	 * Renders all the texts supplied.
 	 */
 	public void render(Map<String, List<UIText>> texts){
+		if (texts == null)
+			return;
 		prepare();
 		// batched font rendering
 		for(String font : texts.keySet()){
@@ -71,6 +74,7 @@ public class FontRenderer {
 		shader.loadColor(text.getColor());
 		shader.loadColorOutline(text.getColorOutline());
 		shader.loadTranslationMatrix(Maths.createTransformationMatrix(text.rx, text.ry, text.sx, text.sy));
+		shader.loadPos(text.minx, text.miny, text.maxx, text.maxy);
 		
 		// draw the text quads
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, text.getVertexCount());

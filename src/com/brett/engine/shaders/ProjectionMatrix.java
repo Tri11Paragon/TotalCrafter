@@ -9,7 +9,6 @@ import org.joml.Matrix4f;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.tools.Maths;
-import com.brett.engine.ui.font.fontRendering.FontShader;
 
 /**
 * @author Brett
@@ -56,11 +55,13 @@ public class ProjectionMatrix {
 		GUIShader guishader = ScreenManager.uiRenderer.shader;
 		guishader.start();
 		guishader.loadProjectionMatrix(projectionMatrixOrtho);
+		guishader.loadScreenHeight(DisplayManager.HEIGHT);
 		guishader.stop();
 		
 		FontShader fontshader = ScreenManager.fontrenderer.shader;
 		fontshader.start();
 		fontshader.loadProjectionMatrix(projectionMatrixOrtho);
+		fontshader.loadScreenHeight(DisplayManager.HEIGHT);
 		fontshader.stop();
 		
     }

@@ -24,9 +24,9 @@ public class UIText implements Serializable, RescaleEvent {
 	private int textMeshVao;
 	private int vertexCount;
 	// inner color of the text
-	private Vector3f color = new Vector3f(0f, 0f, 0f);
+	public Vector3f color = new Vector3f(0f, 0f, 0f);
 	// outline color of the text
-	private Vector3f outlineColor = new Vector3f(1f, 1f, 1f);
+	public Vector3f outlineColor = new Vector3f(1f, 1f, 1f);
 
 	// this should be in some kind of NDC, starting at 0 I think
 	private float lineMaxSize;
@@ -41,6 +41,7 @@ public class UIText implements Serializable, RescaleEvent {
 
 	private float x,y;
 	public float rx, ry, sx, sy;
+	public float minx,miny,maxx,maxy;
 	
 	private boolean atMax = false;
 	private boolean centerText = false;
@@ -148,6 +149,14 @@ public class UIText implements Serializable, RescaleEvent {
 		this.anchorPoint = anchorPoint;
 		DisplayManager.rescales.add(this);
 		rescale();
+	}
+	
+	public UIText setBoundingBox(float minx, float miny, float maxx, float maxy) {
+		this.minx = minx;
+		this.miny = miny;
+		this.maxx = maxx;
+		this.maxy = maxy;
+		return this;
 	}
 
 	/*

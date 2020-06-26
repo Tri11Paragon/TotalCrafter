@@ -13,9 +13,11 @@ import com.brett.engine.managers.DisplayManager;
 public class UITexture implements UIElement, RescaleEvent {
 	
 	protected float x,y,width,height;
+	public float minx,miny,maxx,maxy;
+	private float rminx, rminy, rmaxx, rmaxy;
 	public float sx = 1, sy = 1;
 	public int t1,t2,t3, z;
-	private Vector3f pos = new Vector3f();
+	protected Vector3f pos = new Vector3f();
 	private Vector2f scale = new Vector2f(1,1);
 	public Vector3f color = new Vector3f(-1,0,0);
 	public AnchorPoint anchorPoint = AnchorPoint.TOPLEFT;
@@ -55,6 +57,19 @@ public class UITexture implements UIElement, RescaleEvent {
 		this.anchorPoint = anchor;
 		DisplayManager.rescales.add(this);
 		recalculateVectors();
+	}
+	
+	public UIElement setBoundingBox(float minx, float miny, float maxx, float maxy) {
+		this.minx = minx;
+		this.miny = miny;
+		this.maxx = maxx;
+		this.maxy = maxy;
+		this.rminx = minx;
+		this.rminy = miny;
+		this.rmaxx = maxx;
+		this.rmaxy = maxy;
+		rescale();
+		return this;
 	}
 	
 	@Override
@@ -159,24 +174,30 @@ public class UITexture implements UIElement, RescaleEvent {
 	public void rescale() {
 		switch (anchorPoint) {
 			case CENTER:
-				pos.x = DisplayManager.WIDTH/2-width/2 + x;
-				pos.y = DisplayManager.HEIGHT/2-height/2 + y;
+				pos.x = DisplayManager.WIDTH/2 + x;
+				pos.y = DisplayManager.HEIGHT/2 + y;
+				if (minx == 0 && maxx == 0)
+					return;
+				rminx = DisplayManager.WIDTH/2 - minx;
+				rminy = DisplayManager.HEIGHT/2 - miny;
+				rmaxx = DisplayManager.WIDTH/2 + maxx;
+				rmaxy = DisplayManager.HEIGHT/2 + maxy;
 				break;
 			case BOTTOMCENTER:
-				pos.x = DisplayManager.WIDTH/2-width/2 + x;
+				pos.x = DisplayManager.WIDTH/2 + x;
 				pos.y = DisplayManager.HEIGHT-height + y;
 				break;
 			case TOPCENTER:
-				pos.x = DisplayManager.WIDTH/2-width/2 + x;
+				pos.x = DisplayManager.WIDTH/2 + x;
 				pos.y = y;
 				break;
 			case LEFTCENTER:
 				pos.x = x;
-				pos.y = DisplayManager.HEIGHT/2-height/2 + y;
+				pos.y = DisplayManager.HEIGHT/2 + y;
 				break;
 			case RIGHTCENTER:
 				pos.x = DisplayManager.WIDTH-width + x;
-				pos.y = DisplayManager.HEIGHT/2-height/2 + y;
+				pos.y = DisplayManager.HEIGHT/2 + y;
 				break;
 			case TOPRIGHT:
 				pos.x = DisplayManager.WIDTH-width + x;
@@ -191,6 +212,26 @@ public class UITexture implements UIElement, RescaleEvent {
 			default:
 				break;
 		}
+	}
+
+	@Override
+	public float getMinX() {
+		return rminx;
+	}
+
+	@Override
+	public float getMaxX() {
+		return rmaxx;
+	}
+
+	@Override
+	public float getMinY() {
+		return rminy;
+	}
+
+	@Override
+	public float getMaxY() {
+		return rmaxy;
 	}
 	
 }

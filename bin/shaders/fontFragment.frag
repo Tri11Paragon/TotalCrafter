@@ -16,17 +16,40 @@ const float borderEdge = 0.1f;
 
 const vec2 offset = vec2(0.0, 0.0); // 0.003, 0.006
 
+uniform vec2 minpos;
+uniform vec2 maxpos;
+uniform float screenHeight;
+
 void main(void){
 	
-	float distance = 1 - texture(fontAtlas, pass_textureCoords).a;
-	float alpha = 1 - smoothstep(width, width + edge, distance);
+	if (maxpos.x > 0 && maxpos.y > 0){
+		if (gl_FragCoord.x > minpos.x && (screenHeight - gl_FragCoord.y) > minpos.y){
+			if (gl_FragCoord.x < maxpos.x && (screenHeight - gl_FragCoord.y) < maxpos.y){
+				float distance = 1 - texture(fontAtlas, pass_textureCoords).a;
+				float alpha = 1 - smoothstep(width, width + edge, distance);
+				
+				float distance2 = 1 - texture(fontAtlas, pass_textureCoords + offset).a;
+				float outlineAlpha = 1 - smoothstep(borderWidth, borderWidth + borderEdge, distance2);
+				
+				float overallAlpha = alpha + (1.0 - alpha) * outlineAlpha;
+				vec3 overallColor = mix(outlineColor, color, alpha / overallAlpha);
+				
+				out_color = vec4(overallColor, overallAlpha);
+			}
+		}
+	} else {
 	
-	float distance2 = 1 - texture(fontAtlas, pass_textureCoords + offset).a;
-	float outlineAlpha = 1 - smoothstep(borderWidth, borderWidth + borderEdge, distance2);
-	
-	float overallAlpha = alpha + (1.0 - alpha) * outlineAlpha;
-	vec3 overallColor = mix(outlineColor, color, alpha / overallAlpha);
-	
-	out_color = vec4(overallColor, overallAlpha);
+		float distance = 1 - texture(fontAtlas, pass_textureCoords).a;
+		float alpha = 1 - smoothstep(width, width + edge, distance);
+		
+		float distance2 = 1 - texture(fontAtlas, pass_textureCoords + offset).a;
+		float outlineAlpha = 1 - smoothstep(borderWidth, borderWidth + borderEdge, distance2);
+		
+		float overallAlpha = alpha + (1.0 - alpha) * outlineAlpha;
+		vec3 overallColor = mix(outlineColor, color, alpha / overallAlpha);
+		
+		out_color = vec4(overallColor, overallAlpha);
+		
+	}
 
 }

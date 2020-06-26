@@ -22,6 +22,9 @@ public class GUIShader extends ShaderProgram {
     private int location_texture1;
     private int location_texture2;
     private int location_texture3;
+    private int location_minpos;
+    private int location_maxpos;
+    private int location_screenHeight;
  
     public GUIShader() {
         super(VERTEX_FILE, FRAGMENT_FILE);
@@ -65,8 +68,20 @@ public class GUIShader extends ShaderProgram {
         location_texture1 = super.getUniformLocation("guiTexture");
         location_texture2 = super.getUniformLocation("guiTexture2");
         location_texture3 = super.getUniformLocation("guiTexture3");
+        location_minpos = super.getUniformLocation("minpos");
+        location_maxpos = super.getUniformLocation("maxpos");
+        location_screenHeight = super.getUniformLocation("screenHeight");
     }
-  
+    
+    public void loadPos(float minx, float miny, float maxx, float maxy) {
+    	super.load2DVector(location_minpos, minx, miny);
+    	super.load2DVector(location_maxpos, maxx, maxy);
+    }
+    
+    public void loadScreenHeight(float height) {
+    	super.loadFloat(location_screenHeight, height);
+    }
+    
  
     @Override
     protected void bindAttributes() {
