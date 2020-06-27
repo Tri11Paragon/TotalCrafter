@@ -7,6 +7,6 @@ package com.brett.engine.ui;
 
 public interface ButtonEvent {
 	
-	public void event(String data);
+	public boolean event(String data);
 	
 }

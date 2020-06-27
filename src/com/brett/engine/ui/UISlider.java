@@ -1,6 +1,6 @@
 package com.brett.engine.ui;
 
-import com.brett.engine.Stats;
+import com.brett.engine.Info;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.InputMaster;
 
@@ -27,7 +27,8 @@ public class UISlider extends UIButton {
 		pos.y = pos.y;	
 	}
 
-	public UIButton setEvent(ButtonEvent e) {
+	@Override
+	public UISlider setEvent(ButtonEvent e) {
 		event = e;
 		return this;
 	}
@@ -36,15 +37,15 @@ public class UISlider extends UIButton {
 	public void update() {
 		if (InputMaster.mouseDown[0]) {
 			if (isButtonSelected(1,0)) {
-				if (!Stats.isSelected) {
-					Stats.isSelected = true;
+				if (!Info.isSelected) {
+					Info.isSelected = true;
 					selected = true;
 				}
 			}
 		} else {
 			if (selected) {
 				selected = false;
-				Stats.isSelected = false;
+				Info.isSelected = false;
 			}
 		}
 		if (selected) {

@@ -15,6 +15,12 @@ public class Main {
 	
 	public static boolean isOpen = true;
 	
+	/**
+	 * Josiah doesn't get credit
+	 * 
+	 * ThinMatrix gets credit? (loader)
+	 */
+	
 	public static void main(String[] args) {
 		ScreenManager.pre_init();
 		ScreenManager.init();
@@ -34,6 +40,7 @@ public class Main {
 				GLFW.glfwSetInputMode(DisplayManager.window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
 				ScreenManager.close();
 				isOpen = false;
+				e.printStackTrace();
 				break;
 			}
 			

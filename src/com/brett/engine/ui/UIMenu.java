@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.ui.font.UIText;
 
 /**
@@ -13,11 +14,15 @@ import com.brett.engine.ui.font.UIText;
 * @date Jun. 22, 2020
 */
 
-public class UIMenu {
+public class UIMenu implements RescaleEvent {
 	
 	protected List<UIElement> elements = new ArrayList<UIElement>();
 	protected static Map<String, List<UIText>> textMap = new HashMap<String, List<UIText>>();
 	private boolean enabled = false;
+	
+	public UIMenu() {
+		DisplayManager.rescales.add(this);
+	}
 	
 	public List<UIElement> render() {
 		if (enabled) {
@@ -55,6 +60,7 @@ public class UIMenu {
 				texts.getValue().get(i).destroy();
 		textMap.clear();
 		elements.clear();
+		DisplayManager.rescales.remove(this);
 	}
 	
 	public void toggle() {
@@ -68,6 +74,11 @@ public class UIMenu {
 		if (!textMap.containsKey(text.getFont()))
 			textMap.put(text.getFont(), new ArrayList<UIText>());
 		textMap.get(text.getFont()).add(text);
+	}
+
+	@Override
+	public void rescale() {
+		
 	}
 	
 }
