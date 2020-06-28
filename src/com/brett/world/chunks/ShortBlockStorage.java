@@ -5,9 +5,9 @@ package com.brett.world.chunks;
 * @date Jun. 27, 2020
 */
 
-public class BlockStorage {
+public class ShortBlockStorage {
 	
-	public static final int SIZE = 128;
+	public static final int SIZE = 16;
 	
 	public short[] blocks = new short[SIZE*SIZE*SIZE];
 	
