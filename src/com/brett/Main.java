@@ -41,14 +41,14 @@ public class Main {
 		
 		for (int i = 0; i < 128; i++) {
 			for (int j = 0; j < 128; j++) {
-				int reference = (int) (Noise.noise((double)i / 174.4d, (double)j/174.3d)*20)+64;
+				int reference = (int) (Noise.noise((double)i / 174.4d, (double)j/174.3d)*64)+64;
 				for (int k = 0; k < reference; k++) {
-					if (k == reference)
-						storage.set(i, 0, j, 3);
-					else if (k < reference && k > reference-4)
-						storage.set(i, 0, j, 2);
+					if (k == reference-1)
+						storage.set(i, k, j, 3);
+					else if (k < reference-1 && k > reference-4)
+						storage.set(i, k, j, 2);
 					else if (k < reference-4)
-						storage.set(i, 0, j, 1);
+						storage.set(i, k, j, 1);
 				}
 				
 			}
@@ -57,6 +57,8 @@ public class Main {
 		short[] loler = storage.blocks;
 		
 		System.out.println("Uncompressed array: " + loler.length + " : OLD 2097152");
+		
+		long gzipStart = System.currentTimeMillis();
 		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try {
@@ -70,10 +72,15 @@ public class Main {
 			e1.printStackTrace();
 		}
 		
+		System.out.println("GZIP COMPRESS TIME: " + (System.currentTimeMillis() - gzipStart)); 
+		
+		long encodeStart = System.currentTimeMillis();
 		short[] rle = RunLengthEncoding.encodeDouble(loler);
+		System.out.println("RLE COMPRESS TIME: " + (System.currentTimeMillis() - encodeStart));
 		
 		System.out.println("RLE: " + rle.length);
 		
+		long zipedStart = System.currentTimeMillis();
 		ByteArrayOutputStream bosd = new ByteArrayOutputStream();
 		try {
 			DataOutputStream dao = new DataOutputStream(new GZIPOutputStream(bosd));
@@ -85,6 +92,8 @@ public class Main {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+		System.out.println("GZIP COMPRESS RLE TIME: " + (System.currentTimeMillis() - zipedStart));
+		System.out.println("GZIP COMPRESS + RLE ENCODE TIME: " + (System.currentTimeMillis() - encodeStart));
 		
 		System.out.println("RLE Data: ");
 		try {

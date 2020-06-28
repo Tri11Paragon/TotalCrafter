@@ -84,10 +84,10 @@ public class RunLengthEncoding {
 				int index8 = s+7;
 				if (doubled[index1] == doubled[index5] && doubled[index2] == doubled[index6] && doubled[index2] * 2 <= Short.MAX_VALUE) {
 					shorts.add(doubled[index1]);
-					shorts.add((short)(doubled[index2]*2));
+					shorts.add((short)((doubled[index2]*2) | 0x8000));
 					if (doubled[index3] == doubled[index7] && doubled[index4] == doubled[index8] && doubled[index4] * 2 <= Short.MAX_VALUE) {
 						shorts.add(doubled[index3]);
-						shorts.add((short)(doubled[index4]*2));
+						shorts.add((short)((doubled[index4]*2) | 0x8000));
 					} else {
 						shorts.add(doubled[index3]);
 						shorts.add(doubled[index4]);
