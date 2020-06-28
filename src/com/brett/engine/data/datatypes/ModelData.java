@@ -11,17 +11,21 @@ public class ModelData {
 	private float[] textureCoords;
 	private float[] normals;
 	private int[] indices;
-	private float furthestPoint;
-	private String modelName;
+	private Material material;
 
-	public ModelData(float[] vertices, float[] textureCoords, float[] normals, int[] indices,
-			float furthestPoint, String modelName) {
+	public ModelData(float[] vertices, float[] textureCoords, float[] normals, int[] indices) {
 		this.vertices = vertices;
 		this.textureCoords = textureCoords;
 		this.normals = normals;
 		this.indices = indices;
-		this.furthestPoint = furthestPoint;
-		this.modelName = modelName;
+	}
+
+	public Material getMaterial() {
+		return material;
+	}
+
+	public void setMaterial(Material material) {
+		this.material = material;
 	}
 
 	public float[] getVertices() {
@@ -40,12 +44,5 @@ public class ModelData {
 		return indices;
 	}
 
-	public float getFurthestPoint() {
-		return furthestPoint;
-	}
-	
-	public String getModelName() {
-		return modelName;
-	}
 	
 }

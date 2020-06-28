@@ -1,4 +1,4 @@
-package com.brett.engine.obj;
+package com.brett.engine.models;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -83,11 +83,9 @@ public class OBJLoader {
 		float[] verticesArray = new float[vertices.size() * 3];
 		float[] texturesArray = new float[vertices.size() * 2];
 		float[] normalsArray = new float[vertices.size() * 3];
-		float furthest = convertDataToArrays(vertices, textures, normals, verticesArray,
-				texturesArray, normalsArray);
+		convertDataToArrays(vertices, textures, normals, verticesArray,texturesArray, normalsArray);
 		int[] indicesArray = convertIndicesListToArray(indices);
-		ModelData data = new ModelData(verticesArray, texturesArray, normalsArray, indicesArray,
-				furthest, objFileName);
+		ModelData data = new ModelData(verticesArray, texturesArray, normalsArray, indicesArray);
 		return data;
 	}
 	// this is something that i added.

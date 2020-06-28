@@ -1,6 +1,6 @@
 package com.brett.engine.ui;
 
-import com.brett.engine.Info;
+import com.brett.engine.Utils;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.InputMaster;
 
@@ -37,15 +37,15 @@ public class UISlider extends UIButton {
 	public void update() {
 		if (InputMaster.mouseDown[0]) {
 			if (isButtonSelected(1,0)) {
-				if (!Info.isSelected) {
-					Info.isSelected = true;
+				if (!Utils.isSelected) {
+					Utils.isSelected = true;
 					selected = true;
 				}
 			}
 		} else {
 			if (selected) {
 				selected = false;
-				Info.isSelected = false;
+				Utils.isSelected = false;
 			}
 		}
 		if (selected) {

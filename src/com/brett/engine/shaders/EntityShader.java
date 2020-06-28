@@ -15,7 +15,7 @@ public class EntityShader extends WorldShader {
 	protected void bindAttributes() {
 		bindAttribute(0, "position");
 		bindAttribute(1, "uvs");
-		bindAttribute(2, "normals");
+		bindAttribute(2, "normal");
 	}
 
 }

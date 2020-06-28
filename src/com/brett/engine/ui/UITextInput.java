@@ -2,7 +2,7 @@ package com.brett.engine.ui;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.brett.engine.Info;
+import com.brett.engine.Utils;
 import com.brett.engine.data.IKeyState;
 import com.brett.engine.managers.InputMaster;
 import com.brett.engine.ui.font.UIText;
@@ -123,8 +123,8 @@ public class UITextInput extends UIButton implements IKeyState {
 				}
 				if (keys < 30 || keys > 100)
 					return;
-				for (int i = 0; i < Info.illegalCharacters.size(); i++){
-					if (keys == Info.illegalCharacters.get(i))
+				for (int i = 0; i < Utils.illegalCharacters.size(); i++){
+					if (keys == Utils.illegalCharacters.get(i))
 						return;
 				}
 				if (textBuffer.toCharArray()[textBuffer.length()-1] == '_')

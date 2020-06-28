@@ -9,18 +9,18 @@ import java.util.HashMap;
 
 public class GameRegistry {
 	
-	public static HashMap<Integer, String> textures = new HashMap<Integer, String>();
-	public static HashMap<String, Integer> textureIDs = new HashMap<String, Integer>();
+	public static HashMap<Integer, String> blockTextures = new HashMap<Integer, String>();
+	public static HashMap<String, Integer> blockTextureIDs = new HashMap<String, Integer>();
 	
 	public static HashMap<Integer, String> registerTextures() {
 		registerTexture(0, "stone");
 		registerTexture(1, "dirt");
-		return textures;
+		return blockTextures;
 	}
 	
 	public static void registerTexture(int id, String texture) {
-		textures.put(id, texture);
-		textureIDs.put(texture, id);
+		blockTextures.put(id, texture);
+		blockTextureIDs.put(texture, id);
 	}
 	
 }
