@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public class NdHashMap<K, V> {
 	
-	private HashMap<K, HashMap<K, HashMap<K, V>>> hm = new HashMap<K, HashMap<K, HashMap<K, V>>>();
+	public HashMap<K, HashMap<K, HashMap<K, V>>> hm = new HashMap<K, HashMap<K, HashMap<K, V>>>();
 	
 	public V set(K k1, K k2, K k3, V v) {
 		HashMap<K, HashMap<K, V>> bl = hm.get(k1);

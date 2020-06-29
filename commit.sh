@@ -5,6 +5,6 @@ git add *
 if [ -n "$1" ]; then
 	git commit -m $1
 else
-	git commit -m $((1 + RANDOM % 100000))
+	git commit -m $((9956 + RANDOM % 100000))
 fi
 git push -u origin master
