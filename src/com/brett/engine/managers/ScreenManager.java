@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.lwjgl.opengl.GL11;
+
 import com.brett.engine.Loader;
 import com.brett.engine.shaders.ProjectionMatrix;
 import com.brett.engine.tools.ScreenShot;
@@ -76,6 +78,24 @@ public class ScreenManager {
 		}
 		DisplayManager.closeDisplay();
 		Settings.save();
+	}
+	
+	public static void enableCulling() {
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
+	}
+	
+	public static void enableTransparentcy() {
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+	}
+	
+	public static void disableTransparentcy() {
+		GL11.glDisable(GL11.GL_BLEND);
+	}
+	
+	public static void disableCulling() {
+		GL11.glDisable(GL11.GL_CULL_FACE);
 	}
 	
 }

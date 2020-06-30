@@ -80,10 +80,11 @@ public class Maths {
 		// took way to long to figure out this.
 		// I do the raw matrix math here because I don't want to lose performance due to
 		// abstraction
-		matrix.m30(matrix.m30() + matrix.m00() * (x + fr) + matrix.m10() * (y + fr) + matrix.m20() * (z + fr));
-		matrix.m31(matrix.m31() + matrix.m01() * (x + fr) + matrix.m11() * (y + fr) + matrix.m21() * (z + fr));
-		matrix.m32(matrix.m32() + matrix.m02() * (x + fr) + matrix.m12() * (y + fr) + matrix.m22() * (z + fr));
-		matrix.m33(matrix.m33() + matrix.m03() * (x + fr) + matrix.m13() * (y + fr) + matrix.m23() * (z + fr));
+		matrix.translate(x, y, z);
+		//matrix.m30(matrix.m30() + matrix.m00() * (x + fr) + matrix.m10() * (y + fr) + matrix.m20() * (z + fr));
+		//matrix.m31(matrix.m31() + matrix.m01() * (x + fr) + matrix.m11() * (y + fr) + matrix.m21() * (z + fr));
+		//matrix.m32(matrix.m32() + matrix.m02() * (x + fr) + matrix.m12() * (y + fr) + matrix.m22() * (z + fr));
+		//matrix.m33(matrix.m33() + matrix.m03() * (x + fr) + matrix.m13() * (y + fr) + matrix.m23() * (z + fr));
 
 		return matrix;
 	}

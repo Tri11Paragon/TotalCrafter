@@ -23,11 +23,18 @@ public class World {
 	}
 	
 	public RenderMode getRenderMode(int x, int y, int z) {
-		return GameRegistry.getBlock(getBlock(x, y, z)).getRenderMode();
+		Chunk c = getChunkWorld(x, y, z);
+		if (c == null)
+			return GameRegistry.getBlock((short)0).getRenderMode();
+		short block = c.blocks.getWorld(x, y, z);
+		return GameRegistry.getBlock(block).getRenderMode();
 	}
 	
 	public RenderMode getRenderModeNull(int x, int y, int z) {
-		short block = getBlock(x, y, z);
+		Chunk c = getChunkWorld(x, y, z);
+		if (c == null)
+			return null;
+		short block = c.blocks.getWorld(x, y, z);
 		Block b = Block.blocks.get(block);
 		if (b == null)
 			return null;
@@ -58,6 +65,10 @@ public class World {
 	
 	public void setChunkWorld(int x, int y, int z, Chunk c) {
 		chunks.set(x >> 4, y >> 4, z >> 4, c);
+	}
+	
+	public void save() {
+		
 	}
 	
 }

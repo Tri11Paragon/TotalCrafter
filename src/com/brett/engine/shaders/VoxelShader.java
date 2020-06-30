@@ -13,9 +13,13 @@ public class VoxelShader extends WorldShader {
 
 	@Override
 	protected void bindAttributes() {
-		super.bindAttributes();
 		bindAttribute(0, "position");
 		bindAttribute(1, "data");
 	}
-	
+
+	@Override
+	protected void getAllUniformLocations() {
+		super.getAllUniformLocations();
+	}
+
 }

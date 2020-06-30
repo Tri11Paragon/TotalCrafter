@@ -50,7 +50,7 @@ public class Chunk {
 	
 	public World world;
 
-	public Chunk(World world, short[] blocks, byte[] lightLevel, byte[] lights, int x_pos, int y_pos, int z_pos) {
+	public Chunk(World world, short[][][] blocks, byte[] lightLevel, byte[] lights, int x_pos, int y_pos, int z_pos) {
 		this.blocks.blocks = blocks;
 		this.lightLevel.blocks = lightLevel;
 		this.lights.blocks = lights;
@@ -70,7 +70,7 @@ public class Chunk {
 		this.world = world;
 	}
 
-	public void meshChunk(ShortBlockStorage blocks, ByteBlockStorage lightlevels) {
+	public void meshChunk() {
 		if (isMeshing)
 			return;
 		
@@ -78,8 +78,8 @@ public class Chunk {
 		lastIndex = 0;
 		lastIndexData = 0;
 		chunkInfo = 0;
-		positions = new float[4096];
-		data = new float[4096];
+		positions = new float[0];
+		data = new float[0];
 
 		for (int i = 0; i < ShortBlockStorage.SIZE; i++) {
 			for (int j = 0; j < ShortBlockStorage.SIZE; j++) {
@@ -101,12 +101,12 @@ public class Chunk {
 					RenderMode backR = world.getRenderModeNull(wx, wy, wz - 1);
 					RenderMode topR = world.getRenderModeNull(wx, wy + 1, wz);
 					RenderMode bottomR = world.getRenderModeNull(wx, wy - 1, wz);
-
+					
 					if (leftR == null) {
 						chunkInfo |= LEFT;
 					} else {
 						if (leftR != RenderMode.SOLID) {
-							positions = addArray(positions, updateVertexTranslationCompress(MeshStore.vertsLeftComplete, i, j, k));
+							positions = addArray(positions, updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
 							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, (byte)15, b.textureLeft));
 						}
 					}
@@ -115,7 +115,7 @@ public class Chunk {
 						chunkInfo |= RIGHT;
 					} else {
 						if (rightR != RenderMode.SOLID) {
-							positions = addArray(positions, updateVertexTranslationCompress(MeshStore.vertsRightComplete, i, j, k));
+							positions = addArray(positions, updateVertexTranslation(MeshStore.vertsRightComplete, i, j, k));
 							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, (byte)15, b.textureRight));
 						}
 					}
@@ -124,7 +124,7 @@ public class Chunk {
 						chunkInfo |= FRONT;
 					} else {
 						if (frontR != RenderMode.SOLID) {
-							positions = addArray(positions, updateVertexTranslationCompress(MeshStore.vertsFrontComplete, i, j, k));
+							positions = addArray(positions, updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
 							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, (byte)15, b.textureFront));
 						}
 					}
@@ -133,7 +133,7 @@ public class Chunk {
 						chunkInfo |= BACK;
 					} else {
 						if (backR != RenderMode.SOLID) {
-							positions = addArray(positions, updateVertexTranslationCompress(MeshStore.vertsBackComplete, i, j, k));
+							positions = addArray(positions, updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
 							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, (byte)15, b.textureBack));
 						}
 					}
@@ -142,7 +142,7 @@ public class Chunk {
 						chunkInfo |= TOP;
 					} else {
 						if (topR != RenderMode.SOLID) {
-							positions = addArray(positions, updateVertexTranslationCompress(MeshStore.vertsTopComplete, i, j, k));
+							positions = addArray(positions, updateVertexTranslation(MeshStore.vertsTopComplete, i, j, k));
 							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, (byte)15, b.textureTop));
 						}
 					}
@@ -151,7 +151,7 @@ public class Chunk {
 						chunkInfo |= BOTTOM;
 					} else {
 						if (bottomR != RenderMode.SOLID) {
-							positions = addArray(positions, updateVertexTranslationCompress(MeshStore.vertsBottomComplete, i, j, k));
+							positions = addArray(positions, updateVertexTranslation(MeshStore.vertsBottomComplete, i, j, k));
 							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, (byte)15, b.textureBottom));
 						}
 					}
@@ -196,7 +196,7 @@ public class Chunk {
 		}
 	}
 	
-	public static float[] updateVertexTranslationCompress(float[] verts, int xTrans, int yTrans, int zTrans) {
+	public static float[] updateVertexTranslation(float[] verts, int xTrans, int yTrans, int zTrans) {
 		float[] newVerts = new float[verts.length];
 		for (int i = 0; i < verts.length; i+=3) {
 			newVerts[i] = verts[i] + xTrans;
@@ -224,7 +224,7 @@ public class Chunk {
 		if (lastIndexData + array2.length >= array1.length)
 			rtv = Arrays.copyOf(array1, (array1.length + array2.length) * 2);
 
-		System.arraycopy(array2, 0, rtv, lastIndex, array2.length);
+		System.arraycopy(array2, 0, rtv, lastIndexData, array2.length);
 		lastIndexData += array2.length;
 
 		return rtv;

@@ -22,7 +22,7 @@ public class Block {
 	public int textureTop, textureBottom, textureLeft, textureRight, textureFront, textureFront2, textureBack;
 	public short id;
 	
-	public RenderMode renderMode;
+	public RenderMode renderMode = RenderMode.SOLID;
 	
 	public Block(short id, int texture) {
 		this.id = id;

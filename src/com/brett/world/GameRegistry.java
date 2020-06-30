@@ -3,6 +3,7 @@ package com.brett.world;
 import java.util.HashMap;
 
 import com.brett.world.block.Block;
+import com.brett.world.block.BlockAir;
 import com.brett.world.item.Item;
 
 /**
@@ -24,7 +25,7 @@ public class GameRegistry {
 	}
 	
 	public static void registerBlocks() {
-		registerBlock(new Block(Block.AIR, 0));
+		registerBlock(new BlockAir());
 		registerBlock(new Block(Block.STONE, getTexture("stone")));
 		registerBlock(new Block(Block.DIRT, getTexture("dirt")));
 	}

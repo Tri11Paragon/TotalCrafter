@@ -6,7 +6,7 @@ in float lightLevel;
 
 out vec4 out_Color;
 
-uniform sampler2D te;
+uniform sampler2DArray te;
 
 void main(void){
 	vec4 color = texture(te, vec3(textureCoords.x,textureCoords.y,layerF));

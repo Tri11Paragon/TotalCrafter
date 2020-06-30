@@ -20,7 +20,7 @@ public class CreativeCamera extends Camera {
 
 	// speed of char
 	private float speed = 40f;
-	private float turnSpeed = 5.0f;
+	private float turnSpeed = 3.0f;
 
 	// vars used to determine where to move
 	private double moveAtX = 0;
@@ -71,7 +71,7 @@ public class CreativeCamera extends Camera {
 		}
 
 		if (DisplayManager.isMouseGrabbed) {
-			pitch += -DisplayManager.getDY() * turnSpeed / 100;
+			pitch += DisplayManager.getDY() * turnSpeed / 100;
 			yaw += DisplayManager.getDX() * turnSpeed / 100;
 		}
 
@@ -97,7 +97,7 @@ public class CreativeCamera extends Camera {
 		float dx = (float) (Math.round((((-((moveAtX) * Math.round(Math.sin(Math.toRadians(yaw)) * prez) / prez)) + -((moveatZ) * Math.round(Math.cos(Math.toRadians(yaw)) * prez) / prez))) * prez) / prez);
 		float dy = (float) ((((moveAtX * (Math.sin(Math.toRadians(roll)))) + moveAtY)));
 		float dz = (float) (Math.round((((moveAtX) * Math.round(Math.cos(Math.toRadians(yaw)) * prez) / prez) + -((moveatZ) * Math.round(Math.sin(Math.toRadians(yaw)) * prez) / prez)) * prez) / prez);
-
+		
 		position.x += dx;
 
 		position.y += dy;

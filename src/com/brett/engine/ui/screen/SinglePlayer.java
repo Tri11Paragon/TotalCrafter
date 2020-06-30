@@ -5,23 +5,20 @@ import java.util.Map;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL30;
 
 import com.brett.engine.cameras.CreativeCamera;
 import com.brett.engine.managers.ScreenManager;
+import com.brett.engine.shaders.ProjectionMatrix;
 import com.brett.engine.shaders.VoxelShader;
 import com.brett.engine.tools.Maths;
-import com.brett.engine.ui.AnchorPoint;
-import com.brett.engine.ui.UIButton;
 import com.brett.engine.ui.UIElement;
-import com.brett.engine.ui.UISlider;
-import com.brett.engine.ui.UITextInput;
-import com.brett.engine.ui.UITexture;
 import com.brett.engine.ui.font.UIText;
 import com.brett.world.GameRegistry;
 import com.brett.world.World;
-import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
-import com.brett.world.chunks.ShortBlockStorage;
 
 /**
 * @author Brett
@@ -45,8 +42,9 @@ public class SinglePlayer extends Screen {
 	@Override
 	public void onSwitch() {
 		super.onSwitch();
-		elements.add(new UITexture(ScreenManager.loader.loadTexture("dirt"), -2, -2, 0, 0, 200, 200, AnchorPoint.CENTER).setBoundingBox(200, 200, 200, 200));
-		UIText text = new UIText("he l loe there", 250.0f, "mono", 600, 300, 20);
+		//elements.add(new UITexture(ScreenManager.loader.loadTexture("dirt"), -2, -2, 0, 0, 200, 200, AnchorPoint.CENTER).setBoundingBox(200, 200, 200, 200));
+		
+		/*UIText text = new UIText("he l loe there", 250.0f, "mono", 600, 300, 20);
 		elements.add(new UIButton(ScreenManager.loader.loadTexture("dirt"), ScreenManager.loader.loadTexture("clay"), 600, 300, 115, 100).setText(text));
 		
 		UITexture bar = new UITexture(ScreenManager.loader.loadTexture("coal_block"), -1, -1, 50, 50, 10, 30);
@@ -54,26 +52,21 @@ public class SinglePlayer extends Screen {
 		elements.add(bar);
 		UIText textd = new UIText("", 250, "mono", 50, 200, 500);
 		addText(textd);
-		elements.add(new UITextInput(ScreenManager.loader.loadTexture("clay"), textd, 31, 50, 200, 400, 50));
-		camera = new CreativeCamera(new Vector3f());
+		elements.add(new UITextInput(ScreenManager.loader.loadTexture("clay"), textd, 31, 50, 200, 400, 50));*/
+		camera = new CreativeCamera(new Vector3f(0,4,0));
 		
-		ShortBlockStorage stor = new ShortBlockStorage();
-		
-		for (int i = 0; i < 15; i++) {
-			for (int k = 0; k < 15; k++)
-				stor.set(i, 14, k, Block.STONE);
-		}
 		
 		world = new World();
 		shader = new VoxelShader();
-		
-		Chunk test = new Chunk(world, stor, null, null, 0, 0, 0);
-		world.setChunk(0, 0, 0, test);
+		shader.start();
+		shader.loadProjectionMatrox(ProjectionMatrix.projectionMatrix);
+		shader.stop();
 		
 	}
 	
 	@Override
 	public void onLeave() {
+		world.save();
 		super.onLeave();
 	}
 	
@@ -82,15 +75,25 @@ public class SinglePlayer extends Screen {
 		camera.move();
 		viewMatrix = Maths.createViewMatrix(camera);
 		
+		ScreenManager.enableCulling();
+		ScreenManager.enableTransparentcy();
+		
 		Chunk c = world.getChunk(0, 0, 0);
 		
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureAtlas);
+		
 		shader.start();
+		shader.loadViewMatrix(viewMatrix);
+		
 		
 		if (c != null) {
-			c.render();
+			c.render(shader);
 		}
 		
 		shader.stop();
+		ScreenManager.disableCulling();
+		ScreenManager.disableTransparentcy();
 		
 		return super.render();
 	}

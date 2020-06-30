@@ -17,7 +17,7 @@ import com.brett.engine.tools.Maths;
 
 public class ProjectionMatrix {
 	
-	public static float FOV = 90;
+	public static float FOV = 70;
 	public static final float NEAR_PLANE = 0.1f;
 	public static final float FAR_PLANE = 1000;
 	
