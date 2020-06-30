@@ -8,6 +8,7 @@ import org.joml.Vector3f;
 
 import com.brett.engine.cameras.CreativeCamera;
 import com.brett.engine.managers.ScreenManager;
+import com.brett.engine.shaders.VoxelShader;
 import com.brett.engine.tools.Maths;
 import com.brett.engine.ui.AnchorPoint;
 import com.brett.engine.ui.UIButton;
@@ -16,6 +17,11 @@ import com.brett.engine.ui.UISlider;
 import com.brett.engine.ui.UITextInput;
 import com.brett.engine.ui.UITexture;
 import com.brett.engine.ui.font.UIText;
+import com.brett.world.GameRegistry;
+import com.brett.world.World;
+import com.brett.world.block.Block;
+import com.brett.world.chunks.Chunk;
+import com.brett.world.chunks.ShortBlockStorage;
 
 /**
 * @author Brett
@@ -26,9 +32,14 @@ public class SinglePlayer extends Screen {
 
 	public static Matrix4f viewMatrix;
 	public CreativeCamera camera;
+	public int textureAtlas;
+	public World world;
+	public VoxelShader shader;
 	
 	public SinglePlayer() {
-		
+		textureAtlas = ScreenManager.loader.loadSpecialTextureATLAS(16, 16);
+		GameRegistry.registerBlocks();
+		GameRegistry.registerItems();
 	}
 	
 	@Override
@@ -45,6 +56,20 @@ public class SinglePlayer extends Screen {
 		addText(textd);
 		elements.add(new UITextInput(ScreenManager.loader.loadTexture("clay"), textd, 31, 50, 200, 400, 50));
 		camera = new CreativeCamera(new Vector3f());
+		
+		ShortBlockStorage stor = new ShortBlockStorage();
+		
+		for (int i = 0; i < 15; i++) {
+			for (int k = 0; k < 15; k++)
+				stor.set(i, 14, k, Block.STONE);
+		}
+		
+		world = new World();
+		shader = new VoxelShader();
+		
+		Chunk test = new Chunk(world, stor, null, null, 0, 0, 0);
+		world.setChunk(0, 0, 0, test);
+		
 	}
 	
 	@Override
@@ -56,6 +81,17 @@ public class SinglePlayer extends Screen {
 	public List<UIElement> render() {
 		camera.move();
 		viewMatrix = Maths.createViewMatrix(camera);
+		
+		Chunk c = world.getChunk(0, 0, 0);
+		
+		shader.start();
+		
+		if (c != null) {
+			c.render();
+		}
+		
+		shader.stop();
+		
 		return super.render();
 	}
 	

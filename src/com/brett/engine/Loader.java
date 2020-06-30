@@ -56,15 +56,16 @@ public class Loader {
 	public VAO loadToVAO(float[] positions,float[] textureCoords,int[] indices){
 		// create a VAO
 		int vaoID = createVAO();
+		int[] vbos = new int[2];
 		// bind the index buffer
 		bindIndicesBuffer(indices);
 		// store the data into vbos
-		storeDataInAttributeList(0,3,positions);
-		storeDataInAttributeList(1,2,textureCoords);
+		vbos[0] = storeDataInAttributeList(0,3,positions);
+		vbos[1] = storeDataInAttributeList(1,2,textureCoords);
 		// unbind the vbos
 		unbindVAO();
 		// return the model
-		return new VAO(vaoID,indices.length);
+		return new VAO(vaoID,vbos,indices.length);
 	}
 	
 	/**
@@ -84,12 +85,27 @@ public class Loader {
 		return new VAO(vaoID, vbos, positions.length);
 	}
 	
+	public VAO loadToVAOChunk(float[] positions,float[] textureCoords){
+		// standard stuff that this point
+		// create VAO
+		int vaoID = createVAO();
+		// we want to keep reference of vbos for runtime deletion
+		int[] vbos = new int[2];
+		// store the data into the vbos
+		vbos[0] = this.storeDataInAttributeList(0, 3, positions);
+		vbos[1] = this.storeDataInAttributeList(1, 1, textureCoords);
+		// unbind the VAO
+		unbindVAO();
+		return new VAO(vaoID, vbos, positions.length);
+	}
+	
 	/**
 	 * loads to VAO using ModelData
 	 */
 	public VAO loadToVAO(ModelData data) {
 		// create the VAO
 		int vaoID = createVAO();
+		int[] vbos = new int[3];
 		// get the indices
 		int[] indices = data.getIndices();
 		// bind the indices buffer
@@ -99,13 +115,13 @@ public class Loader {
 		 * you still need to enable the VBO when rendering.
 		 */
 		// store data into the vao 
-		storeDataInAttributeList(0,3,data.getVertices());
-		storeDataInAttributeList(1,2,data.getTextureCoords());
-		storeDataInAttributeList(2,3,data.getNormals());
+		vbos[0] = storeDataInAttributeList(0,3,data.getVertices());
+		vbos[1] = storeDataInAttributeList(1,2,data.getTextureCoords());
+		vbos[2] = storeDataInAttributeList(2,3,data.getNormals());
 		// unbind the VAO
 		unbindVAO();
 		// return the model
-		return new VAO(vaoID,indices.length);
+		return new VAO(vaoID, vbos, indices.length);
 	}
 	
 	/**
@@ -114,12 +130,13 @@ public class Loader {
 	public VAO loadToVAO(float[] positions, int dimensions) {
 		// create the VAO
 		int vaoID = createVAO();
+		int[] vbos = new int[1];
 		// store data in its first position
-		this.storeDataInAttributeList(0, 2, positions);
+		vbos[0] = this.storeDataInAttributeList(0, 2, positions);
 		// unbind the vao
 		unbindVAO();
 		// return this as a ModelVAO object.
-		return new VAO(vaoID, positions.length/2);
+		return new VAO(vaoID, vbos, positions.length/2);
 		
 	}
 	

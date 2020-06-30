@@ -23,6 +23,16 @@ public class GameRegistry {
 		return blockTextures;
 	}
 	
+	public static void registerBlocks() {
+		registerBlock(new Block(Block.AIR, 0));
+		registerBlock(new Block(Block.STONE, getTexture("stone")));
+		registerBlock(new Block(Block.DIRT, getTexture("dirt")));
+	}
+	
+	public static void registerItems() {
+		
+	}
+	
 	public static void registerTexture(int id, String texture) {
 		blockTextures.put(id, texture);
 		blockTextureIDs.put(texture, id);
@@ -31,10 +41,11 @@ public class GameRegistry {
 	/**
 	 * registers an item
 	 */
-	protected static void registerItem(short id, int textureID) {
+	protected static Item registerItem(short id, int textureID) {
 		Item i = new Item(id, textureID);
 		Item.items.put(id, i);
 		Item.inverseItems.put(i, id);
+		return i;
 	}
 	
 	/**
@@ -59,16 +70,24 @@ public class GameRegistry {
 	/**
 	 * registers a block, also registers the block as an item of the same id.
 	 */
-	private static void registerBlock(short id, Block b) {
-		if (id > highestID)
-			highestID = id;
-		Block.blocks.put(id, b);
-		registerItemBlock(id);
-		Block.inverseBlocks.put(b, id);
+	private static void registerBlock(Block b) {
+		if (b.id > highestID)
+			highestID = b.id;
+		Block.blocks.put(b.id, b);
+		registerItemBlock(b.id);
+		Block.inverseBlocks.put(b, b.id);
 	}
 	
 	public static short getIdByBlock(Block b) {
 		return Block.inverseBlocks.get(b);
+	}
+	
+	public static int getTexture(String texture) {
+		return blockTextureIDs.get(texture);
+	}
+	
+	public static Block getBlock(short id) {
+		return Block.blocks.get(id) != null ? Block.blocks.get(id) : Block.blocks.get((short)0);
 	}
 	
 }

@@ -19,7 +19,7 @@ public class ShortBlockStorage {
 	}
 	
 	public short getWorld(int x, int y, int z) {
-		return blocks[y % SIZE + (z % SIZE) * SIZE + (x % SIZE) * SIZE * SIZE];
+		return blocks[y & 0xF + (z & 0xF) * SIZE + (x & 0xF) * SIZE * SIZE];
 	}
 	
 	public void set(int x, int y, int z, short id) {
@@ -31,11 +31,11 @@ public class ShortBlockStorage {
 	}
 	
 	public void setWorld(int x, int y, int z, short id) {
-		blocks[y % SIZE + (z % SIZE) * SIZE + (x % SIZE) * SIZE * SIZE] = id;
+		blocks[y & 0xF + (z & 0xF) * SIZE + (x & 0xF) * SIZE * SIZE] = id;
 	}
 	
 	public void setWorld(int x, int y, int z, int id) {
-		blocks[y % SIZE + (z % SIZE) * SIZE + (x % SIZE) * SIZE * SIZE] = (short) id;
+		blocks[y & 0xF + (z & 0xF) * SIZE + (x & 0xF) * SIZE * SIZE] = (short) id;
 	}
 	
 }

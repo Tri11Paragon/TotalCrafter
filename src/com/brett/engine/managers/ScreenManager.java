@@ -43,7 +43,6 @@ public class ScreenManager {
 	
 	public static void init() {
 		InputMaster.keyboard.add(new ScreenShot());
-		
 	}
 	
 	public static void post_init() {
