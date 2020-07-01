@@ -18,7 +18,9 @@ import com.brett.engine.ui.UIElement;
 import com.brett.engine.ui.font.UIText;
 import com.brett.world.GameRegistry;
 import com.brett.world.World;
+import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
+import com.brett.world.chunks.ShortBlockStorage;
 
 /**
 * @author Brett
@@ -62,6 +64,34 @@ public class SinglePlayer extends Screen {
 		shader.loadProjectionMatrox(ProjectionMatrix.projectionMatrix);
 		shader.stop();
 		
+		ShortBlockStorage shrt = new ShortBlockStorage();
+		
+		for (int i = 0; i < 16; i++) {
+			for (int k = 0; k < 16; k++) {
+				shrt.set(i, 1, k, Block.DIRT);
+			}
+		}
+		shrt.set(2, 1, 10, Block.STONE);
+		
+		Chunk c = new Chunk(world, shrt, null, null, 0, 0, 0);
+		world.setChunk(0, 0, 0, c);
+		c.meshChunk();
+		c.greedyMesh();
+		
+		ShortBlockStorage shrt2 = new ShortBlockStorage();
+		
+		for (int i = 0; i < 16; i++) {
+			for (int k = 0; k < 16; k++) {
+				shrt2.set(i, 1, k, Block.STONE);
+			}
+		}
+		
+		Chunk c2 = new Chunk(world, shrt2, null, null, 1, 0, 0);
+		world.setChunk(1, 0, 0, c2);
+		c2.meshChunk();
+		
+		GL13.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+		
 	}
 	
 	@Override
@@ -79,6 +109,7 @@ public class SinglePlayer extends Screen {
 		ScreenManager.enableTransparentcy();
 		
 		Chunk c = world.getChunk(0, 0, 0);
+		Chunk c2 = world.getChunk(1, 0, 0);
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureAtlas);
@@ -89,6 +120,9 @@ public class SinglePlayer extends Screen {
 		
 		if (c != null) {
 			c.render(shader);
+		}
+		if (c2 != null) {
+			c2.render(shader);
 		}
 		
 		shader.stop();

@@ -121,6 +121,18 @@ public class MeshStore {
 			size, size, size,
 	};
 	
+	public static float[] createFrontComplete(float z, float miny, float maxy, float minx, float maxx) {
+		return new float[] {
+				minx, miny, z,
+				maxx, miny, z,
+				minx, maxy, z,
+				
+				minx, maxy, z,
+				maxx, miny, z,
+				maxx, maxy, z,
+		};
+	}
+	
 	public static float[] vertsBackComplete = {
 			0, 0, 0,
 			0, size, 0,
@@ -130,6 +142,18 @@ public class MeshStore {
 			size, 0, 0,
 			0, 0, 0,
 	};
+	
+	public static float[] createBackComplete (float z, float miny, float maxy, float minx, float maxx) {
+		return new float[] {
+				minx, miny, z,
+				minx, maxy, z,
+				maxx, maxy, z,
+				
+				maxx, maxy, z,
+				maxx, miny, z,
+				minx, miny, z,
+		};
+	}
 	
 	public static float[] vertsRightComplete = {
 			size, 0, 0,
@@ -141,6 +165,18 @@ public class MeshStore {
 			size, size, size,
 	};
 	
+	public static float[] createRightComplete(float x, float miny, float maxy, float minz, float maxz) {
+		return new float[] {
+				x, miny, minz,
+				x, maxy, minz,
+				x, miny, maxz,
+				
+				x, miny, maxz,
+				x, maxy, minz,
+				x, maxy, maxz,	
+		};
+	}
+	
 	public static float[] vertsLeftComplete = {
 			0, 0, 0,
 			0, 0, size,
@@ -150,6 +186,18 @@ public class MeshStore {
 			0, size, 0,
 			0, 0, 0,
 	};
+	
+	public static float[] createLeftComplete(float x, float miny, float maxy, float minz, float maxz) {
+		return new float[] {
+				x, miny, minz,
+				x, miny, maxz,
+				x, maxy, maxz,
+				
+				x, maxy, maxz,
+				x, maxy, minz,
+				x, miny, minz,
+		};
+	}
 	
 	public static float[] vertsTopComplete = {
 			size, size, size,
@@ -161,6 +209,18 @@ public class MeshStore {
 			0, size, 0,
 	}; 
 	
+	public static float[] createTopComplete(float y, float minx, float maxx, float minz, float maxz) {
+		return new float[] {
+				maxx, y, maxz,
+				minx, y, minz,
+				minx, y, maxz,
+				
+				maxx, y, maxz,
+				maxx, y, minz,
+				minx, y, minz,
+		};
+	}
+	
 	public static float[] vertsBottomComplete = {
 			size, 0, size,
 			0, 0, size,
@@ -170,6 +230,18 @@ public class MeshStore {
 			0, 0, 0,
 			size, 0, 0,
 	};
+	
+	public static float[] createBottomComplete(float y, float minx, float maxx, float minz, float maxz) {
+		return new float[] {
+				maxx, y, maxz,
+				minx, y, maxz,
+				minx, y, minz,
+				
+				maxx, y, maxz,
+				minx, y, minz,
+				maxx, y, minz,
+		};
+	}
 	
 	public static float[] vertsBig = {
 			// front?

@@ -13,7 +13,7 @@ uniform mat4 viewMatrix;
 
 void main(void){
 
-	vec4 worldPosition = translationMatrix * vec4(position,1.0);
+	vec4 worldPosition = translationMatrix * vec4(position - 0.5f,1.0);
 	vec4 positionRelativeToCam = viewMatrix * worldPosition;
 	gl_Position = projectionMatrix * positionRelativeToCam;
 	

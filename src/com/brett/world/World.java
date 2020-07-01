@@ -19,7 +19,9 @@ public class World {
 	}
 	
 	public void setBlock(int x, int y, int z, short id) {
-		getChunkWorld(x, y, z).blocks.setWorld(x, y, z, id);
+		Chunk c	= getChunkWorld(x, y, z);
+		if (c != null)
+			c.blocks.setWorld(x, y, z, id);
 	}
 	
 	public RenderMode getRenderMode(int x, int y, int z) {
@@ -42,7 +44,10 @@ public class World {
 	}
 	
 	public short getBlock(int x, int y, int z) {
-		return getChunkWorld(x, y, z).blocks.getWorld(x, y, z);
+		Chunk c = getChunkWorld(x, y, z);
+		if (c == null)
+			return 0;
+		return c.blocks.getWorld(x, y, z);
 	}
 	
 	/*
