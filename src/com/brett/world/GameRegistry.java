@@ -19,14 +19,14 @@ public class GameRegistry {
 	public static HashMap<String, Integer> blockTextureIDs = new HashMap<String, Integer>();
 	
 	public static HashMap<Integer, String> registerTextures() {
-		registerTexture(0, "stone");
+		registerTexture(0, "stone2");
 		registerTexture(1, "dirt");
 		return blockTextures;
 	}
 	
 	public static void registerBlocks() {
 		registerBlock(new BlockAir());
-		registerBlock(new Block(Block.STONE, getTexture("stone")));
+		registerBlock(new Block(Block.STONE, getTexture("stone2")));
 		registerBlock(new Block(Block.DIRT, getTexture("dirt")));
 	}
 	

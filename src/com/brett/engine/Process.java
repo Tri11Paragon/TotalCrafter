@@ -5,10 +5,8 @@ package com.brett.engine;
 * @date Jul. 1, 2020
 */
 
-public class ThreadPool {
+public interface Process {
 	
-	public static void init() {
-		
-	}
+	public void process();
 	
 }

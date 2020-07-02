@@ -10,9 +10,9 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import com.brett.engine.SyncSave;
-import com.brett.engine.ThreadPool;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.ScreenManager;
+import com.brett.engine.managers.ThreadPool;
 import com.brett.engine.tools.Settings;
 import com.brett.engine.ui.screen.SinglePlayer;
 
@@ -63,6 +63,8 @@ public class Main {
 		user_home = System.getProperty("user.home");
 		user_workingdir = System.getProperty("user.dir");
 		processors = Runtime.getRuntime().availableProcessors();
+		if (processors < 4)
+			processors = 4;
 		/**
 		 * Display important info about OS
 		 */
