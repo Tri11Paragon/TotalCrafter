@@ -2,6 +2,7 @@ package com.brett.world.block;
 
 import java.util.HashMap;
 
+import com.brett.world.World;
 import com.brett.world.chunks.data.RenderMode;
 
 /**
@@ -33,6 +34,18 @@ public class Block {
 		this.textureBack = texture;
 		this.textureLeft = texture;
 		this.textureRight = texture;
+	}
+	
+	public void onBlockPlaced(World world, short id, int x, int y, int z) {
+		
+	}
+	
+	public void onBlockDestroyed(World world, short id, int x, int y, int z) {
+		
+	}
+	
+	public void onBlockUpdated(World world, short id, int x, int y, int z) {
+		
 	}
 	
 	public int getTextureTop() {

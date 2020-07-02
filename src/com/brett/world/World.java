@@ -1,9 +1,14 @@
 package com.brett.world;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
+import com.brett.world.chunks.data.ByteBlockStorage;
 import com.brett.world.chunks.data.NdHashMap;
 import com.brett.world.chunks.data.RenderMode;
+import com.brett.world.chunks.data.ShortBlockStorage;
 
 /**
 * @author Brett
@@ -12,14 +17,21 @@ import com.brett.world.chunks.data.RenderMode;
 
 public class World {
 	
+	public static World world;
+	
 	public NdHashMap<Integer, Chunk> chunks = new NdHashMap<Integer, Chunk>();
+	public List<Chunk> ungeneratedChunks = new ArrayList<Chunk>();
 	
 	public World() {
-		
+		World.world = this;
 	}
 	
 	public void setBlock(int x, int y, int z, short id) {
 		Chunk c	= getChunkWorld(x, y, z);
+		if (c == null) {
+			c = new Chunk(this, new ShortBlockStorage(), new ByteBlockStorage(), new ByteBlockStorage(), x >> 4, y >> 4, z >> 4);
+			ungeneratedChunks.add(c);
+		}
 		if (c != null)
 			c.blocks.setWorld(x, y, z, id);
 	}
@@ -66,6 +78,10 @@ public class World {
 	
 	public void setChunk(int x, int y, int z, Chunk c) {
 		chunks.set(x, y, z, c);
+	}
+	
+	public void setChunk(Chunk c) {
+		chunks.set(c.x_pos, c.y_pos, c.y_pos, c);
 	}
 	
 	public void setChunkWorld(int x, int y, int z, Chunk c) {

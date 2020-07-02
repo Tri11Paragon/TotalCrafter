@@ -26,8 +26,9 @@ public class Settings {
 	public static int AF = 4;
 	public static double SENSITIVITY = 0.5d;
 	public static double MUSIC = 0.5d;
-	public static int FPS = 120;
+	public static int FPS = 0;
 	public static int VSYNC = 0;
+	public static int RENDER_DISTANCE = 12;
 	
 	private static int readLines = 1;
 	public static void load() {
@@ -62,6 +63,8 @@ public class Settings {
 					FPS = (int)Float.parseFloat(name[1]);
 				if (name[0].equals("vsync"))
 					VSYNC = (int)Float.parseFloat(name[1]);
+				if (name[0].equals("rd"))
+					RENDER_DISTANCE = (int)Float.parseFloat(name[1]);
 			}
 			reader.close();
 		} catch (FileNotFoundException e) {
@@ -84,6 +87,7 @@ public class Settings {
 			writeLine(writer, "music: " + MUSIC);
 			writeLine(writer, "fps: " + FPS);
 			writeLine(writer, "vsync: " + VSYNC);
+			writeLine(writer, "rd: " + RENDER_DISTANCE);
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();

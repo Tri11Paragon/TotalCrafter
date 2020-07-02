@@ -2,5 +2,6 @@ sensitivity: 0.5
 samples: 4
 anisotropy: 4
 music: 0.5
-fps: 120
+fps: 0
 vsync: 0
+rd: 12

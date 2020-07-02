@@ -80,7 +80,7 @@ public class MeshStore {
 	 * light being split 4 bits for sun level and 4 bits for block light
 	 * layer being the later index. (you get 22 bits for this)
 	 */
-	public static float[] updateCompression(float[] fa, byte light, int layer) {
+	public static float[] updateCompression(float[] fa, int layer) {
 		/*
 		 * im not sure of a simple way of explaing this stuff other
 		 * then moving numbers into regions that are going to be zeros as the number sizes
@@ -92,13 +92,10 @@ public class MeshStore {
 		float[] tr = new float[fa.length];
 		for (int i = 0; i < fa.length; i++) {
 			int fai = (int)fa[i];
-			// move the light over by 2 bits so that its xxxx xxxx 00
-			int li = light << 2;
 			// move the layer over by 10 bits so that its xxxx xxxx xxxx xxxx 0000 0000 00
-			int la = layer << 10;
+			int la = layer << 2;
 			// or them in so that way no values are changed.
 			// since we moved them over into 0s we are not replacing any information.
-			fai |= li;
 			fai |= la;
 			tr[i] = fai;
 		}

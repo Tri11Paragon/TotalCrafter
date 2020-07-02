@@ -1,4 +1,4 @@
-package com.brett.world.chunks;
+package com.brett.world.chunks.data;
 
 /**
 * @author Brett

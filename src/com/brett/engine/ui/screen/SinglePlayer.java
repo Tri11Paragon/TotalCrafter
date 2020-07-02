@@ -20,7 +20,7 @@ import com.brett.world.GameRegistry;
 import com.brett.world.World;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
-import com.brett.world.chunks.ShortBlockStorage;
+import com.brett.world.chunks.data.ShortBlockStorage;
 
 /**
 * @author Brett
@@ -29,6 +29,7 @@ import com.brett.world.chunks.ShortBlockStorage;
 
 public class SinglePlayer extends Screen {
 
+	public static Matrix4f chunkViewMatrix;
 	public static Matrix4f viewMatrix;
 	public CreativeCamera camera;
 	public int textureAtlas;
@@ -68,21 +69,20 @@ public class SinglePlayer extends Screen {
 		
 		for (int i = 0; i < 16; i++) {
 			for (int k = 0; k < 16; k++) {
-				shrt.set(i, 1, k, Block.DIRT);
+				shrt.setWorld(i, 1, k, Block.DIRT);
 			}
 		}
-		shrt.set(2, 1, 10, Block.STONE);
+		shrt.setWorld(2, 1, 10, Block.STONE);
 		
 		Chunk c = new Chunk(world, shrt, null, null, 0, 0, 0);
 		world.setChunk(0, 0, 0, c);
 		c.meshChunk();
-		c.greedyMesh();
 		
 		ShortBlockStorage shrt2 = new ShortBlockStorage();
 		
 		for (int i = 0; i < 16; i++) {
 			for (int k = 0; k < 16; k++) {
-				shrt2.set(i, 1, k, Block.STONE);
+				shrt2.setWorld(i, 1, k, Block.STONE);
 			}
 		}
 		
@@ -90,7 +90,7 @@ public class SinglePlayer extends Screen {
 		world.setChunk(1, 0, 0, c2);
 		c2.meshChunk();
 		
-		GL13.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+		//GL13.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		
 	}
 	
@@ -103,6 +103,7 @@ public class SinglePlayer extends Screen {
 	@Override
 	public List<UIElement> render() {
 		camera.move();
+		chunkViewMatrix = Maths.createViewMatrixROT(camera);
 		viewMatrix = Maths.createViewMatrix(camera);
 		
 		ScreenManager.enableCulling();
@@ -115,14 +116,14 @@ public class SinglePlayer extends Screen {
 		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureAtlas);
 		
 		shader.start();
-		shader.loadViewMatrix(viewMatrix);
+		shader.loadViewMatrix(chunkViewMatrix);
 		
 		
 		if (c != null) {
-			c.render(shader);
+			c.render(shader, 0, 0, 0);
 		}
 		if (c2 != null) {
-			c2.render(shader);
+			c2.render(shader, 1, 0, 0);
 		}
 		
 		shader.stop();
