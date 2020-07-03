@@ -24,7 +24,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 public class DisplayManager {
 	
-	public static final String version = "0.1A";
+	public static final String version = "0.2A";
 	
 	public static int WIDTH = 1280;
 	public static int HEIGHT = 720;
@@ -56,7 +56,7 @@ public class DisplayManager {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		
 		
-		window = glfwCreateWindow(WIDTH, HEIGHT, "RMS - V" + version, NULL, NULL);
+		window = glfwCreateWindow(WIDTH, HEIGHT, "TotalCrafter - V" + version, NULL, NULL);
 		if ( window == NULL )
 			throw new RuntimeException("Failed to create the GLFW window");
 		
