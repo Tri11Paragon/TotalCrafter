@@ -5,7 +5,7 @@ import com.brett.engine.managers.InputMaster;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-import org.joml.Vector3f;
+import org.joml.Vector3d;
 
 /**
  * @author Brett
@@ -14,7 +14,7 @@ import org.joml.Vector3f;
 
 public class CreativeCamera extends Camera {
 
-	public CreativeCamera(Vector3f pos) {
+	public CreativeCamera(Vector3d pos) {
 		this.position = pos;
 	}
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /home/brett/Documents/Java/RMS
+cd /home/brett/Documents/Java/TotalCrafter
 git add *
 if [ -n "$1" ]; then
 	git commit -m $1

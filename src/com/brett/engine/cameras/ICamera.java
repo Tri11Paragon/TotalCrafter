@@ -1,6 +1,6 @@
 package com.brett.engine.cameras;
 
-import org.joml.Vector3f;
+import org.joml.Vector3d;
 
 /**
  * @author Brett
@@ -9,18 +9,18 @@ import org.joml.Vector3f;
 
 public abstract class ICamera {
 
-	protected Vector3f position = new Vector3f(0, 0, 0);
+	protected Vector3d position = new Vector3d(0, 0, 0);
 	protected float pitch;
 	protected float yaw;
 	protected float roll;
 
 	public abstract void move();
 	
-	public Vector3f getPosition() {
+	public Vector3d getPosition() {
 		return position;
 	}
 
-	public void setPosition(Vector3f position) {
+	public void setPosition(Vector3d position) {
 		this.position = position;
 	}
 

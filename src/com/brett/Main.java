@@ -12,7 +12,6 @@ import org.lwjgl.opengl.GL11;
 import com.brett.engine.SyncSave;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.ScreenManager;
-import com.brett.engine.managers.ThreadPool;
 import com.brett.engine.tools.Settings;
 import com.brett.engine.ui.screen.SinglePlayer;
 
@@ -77,7 +76,6 @@ public class Main {
 		/**
 		 * Inits
 		 */
-		ThreadPool.init();
 		ScreenManager.pre_init();
 		ScreenManager.init();
 		ScreenManager.post_init();

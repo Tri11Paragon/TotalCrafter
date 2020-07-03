@@ -1,8 +1,6 @@
 package com.brett.world;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.brett.engine.managers.ThreadPool;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
 import com.brett.world.chunks.data.ByteBlockStorage;
@@ -19,18 +17,40 @@ public class World {
 	
 	public static World world;
 	
-	public NdHashMap<Integer, Chunk> chunks = new NdHashMap<Integer, Chunk>();
-	public List<Chunk> ungeneratedChunks = new ArrayList<Chunk>();
+	public volatile NdHashMap<Integer, Chunk> chunks = new NdHashMap<Integer, Chunk>();
+	public volatile NdHashMap<Integer, Chunk> ungeneratedChunks = new NdHashMap<Integer, Chunk>();
+	public int threads = 1;
 	
 	public World() {
+		threads = ThreadPool.reserveQuarterThreads();
 		World.world = this;
 	}
 	
+	/**
+	 * queue a chunk for generation in chunk space.
+	 */
+	public synchronized void queueChunk(int x, int y, int z) {
+		if (ungeneratedChunks.containsKey(x, y, z))
+			return;
+		Chunk c = new Chunk(this, new ShortBlockStorage(), new ByteBlockStorage(), new ByteBlockStorage(), x, y, z);
+		ungeneratedChunks.set(x, y, z, c);
+	}
+	
+	/**
+	 * sets a block in block space.
+	 */
 	public void setBlock(int x, int y, int z, short id) {
-		Chunk c	= getChunkWorld(x, y, z);
+		int cx = x >> 4;
+		int cy = y >> 4;
+		int cz = z >> 4;
+		Chunk c	= getChunk(cx, cy, cz);
 		if (c == null) {
-			c = new Chunk(this, new ShortBlockStorage(), new ByteBlockStorage(), new ByteBlockStorage(), x >> 4, y >> 4, z >> 4);
-			ungeneratedChunks.add(c);
+			if (ungeneratedChunks.containsKey(cx, cy, cz)) {
+				c = ungeneratedChunks.get(cx, cy, cz);
+			} else {
+				c = new Chunk(this, new ShortBlockStorage(), new ByteBlockStorage(), new ByteBlockStorage(), cx, cy, cz);
+				ungeneratedChunks.set(cx, cy, cz, c);
+			}
 		}
 		if (c != null)
 			c.blocks.setWorld(x, y, z, id);

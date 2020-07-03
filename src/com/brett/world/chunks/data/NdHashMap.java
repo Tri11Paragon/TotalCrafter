@@ -31,6 +31,25 @@ public class NdHashMap<K, V> implements Cloneable {
 		return in;
 	}
 	
+	/**
+	 * fast and rough size of the map.
+	 */
+	public int sizeF() {
+		return hm.size()*3;
+	}
+	
+	public int sizeS() {
+		Counter c = new Counter();
+		iterate((HashMap<K, HashMap<K, HashMap<K, V>>> map, NdHashMap<K, V> dt, K k1, K k2, K k3, V v1) -> {
+			c.increment();
+		});
+		return c.count();
+	}
+	
+	public void clear() {
+		hm = new HashMap<K, HashMap<K,HashMap<K,V>>>();
+	}
+	
 	public NdHashMap<K, V> clone(){
 		NdHashMap<K, V> ndhm = new NdHashMap<K, V>();
 		iterate((HashMap<K, HashMap<K, HashMap<K, V>>> map, NdHashMap<K, V> dt, K k1, K k2, K k3, V v1) -> {
@@ -45,8 +64,26 @@ public class NdHashMap<K, V> implements Cloneable {
 		});
 	}
 	
+	/**
+	 * clears all values from this hashmap using the provided hashmap (if they exist)
+	 */
+	public void clear(NdHashMap<K, V> hm) {
+		hm.iterate((HashMap<K, HashMap<K, HashMap<K, V>>> map, NdHashMap<K, V> dt, K k1, K k2, K k3, V v1) -> {
+			if (this.containsKey(k1, k2, k3))
+				this.remove(k1, k2, k3);
+		});
+	}
+	
 	public boolean containsKey(K k1, K k2, K k3) {
-		return hm.containsKey(k1) ? hm.get(k1).containsKey(k2) ? hm.get(k2).containsKey(k3) ? true : false : false : false;
+		HashMap<K, HashMap<K, V>> h1 = hm.get(k1);
+		if (h1 == null)
+			return false;
+		HashMap<K, V> h2 = h1.get(k2);
+		if (h2 == null)
+			return false;
+		if (h2.get(k3) == null)
+			return false;
+		return true;
 	}
 	
 	/**
@@ -132,6 +169,19 @@ public class NdHashMap<K, V> implements Cloneable {
 		if (hm == null) 
 			return null;
 		V in = hm.get(k3);
+		return in;
+	}
+	
+	public V remove(K k1, K k2, K k3) {
+		HashMap<K, HashMap<K, V>> bl = hm.get(k1);
+		if (bl == null)
+			return null;
+		HashMap<K, V> hm = bl.get(k2);
+		if (hm == null) 
+			return null;
+		V in = hm.get(k3);
+		if (in != null)
+			hm.remove(k3);
 		return in;
 	}
 	

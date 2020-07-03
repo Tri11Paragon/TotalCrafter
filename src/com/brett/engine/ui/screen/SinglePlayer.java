@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
+import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
@@ -14,6 +14,7 @@ import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.shaders.ProjectionMatrix;
 import com.brett.engine.shaders.VoxelShader;
 import com.brett.engine.tools.Maths;
+import com.brett.engine.tools.Settings;
 import com.brett.engine.ui.UIElement;
 import com.brett.engine.ui.font.UIText;
 import com.brett.world.GameRegistry;
@@ -56,7 +57,7 @@ public class SinglePlayer extends Screen {
 		UIText textd = new UIText("", 250, "mono", 50, 200, 500);
 		addText(textd);
 		elements.add(new UITextInput(ScreenManager.loader.loadTexture("clay"), textd, 31, 50, 200, 400, 50));*/
-		camera = new CreativeCamera(new Vector3f(0,4,0));
+		camera = new CreativeCamera(new Vector3d(0,4,0));
 		
 		
 		world = new World();
@@ -109,21 +110,28 @@ public class SinglePlayer extends Screen {
 		ScreenManager.enableCulling();
 		ScreenManager.enableTransparentcy();
 		
-		Chunk c = world.getChunk(0, 0, 0);
-		Chunk c2 = world.getChunk(1, 0, 0);
-		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureAtlas);
 		
 		shader.start();
 		shader.loadViewMatrix(chunkViewMatrix);
 		
-		
-		if (c != null) {
-			c.render(shader, 0, 0, 0);
-		}
-		if (c2 != null) {
-			c2.render(shader, 1, 0, 0);
+		for (int i = -Settings.RENDER_DISTANCE; i <= Settings.RENDER_DISTANCE; i++) {
+			for (int j = -Settings.RENDER_DISTANCE; j <= Settings.RENDER_DISTANCE; j++) {
+				for (int k = -Settings.RENDER_DISTANCE; k <= Settings.RENDER_DISTANCE; k++) {
+					Vector3d pos = camera.getPosition();
+					int cx = ((int) (pos.x / 16)) + i;
+					int cy = ((int) (pos.y / 16)) + j;
+					int cz = ((int) (pos.z / 16)) + k;
+					
+					Chunk c = world.getChunk(cx, cy, cz);
+					
+					if (c == null)
+						world.queueChunk(cx, cy, cz);
+					else
+						c.render(shader, i, j, k);
+				}
+			}
 		}
 		
 		shader.stop();

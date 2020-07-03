@@ -6,6 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
+import org.joml.Vector3d;
 import org.joml.Vector3f;
 
 import com.brett.engine.cameras.ICamera;
@@ -80,7 +81,7 @@ public class Maths {
 		// took way to long to figure out this.
 		// I do the raw matrix math here because I don't want to lose performance due to
 		// abstraction
-		matrix.translate(x, y, z);
+		matrix.translate(x+fr, y+fr, z+fr);
 		//matrix.m30(matrix.m30() + matrix.m00() * (x + fr) + matrix.m10() * (y + fr) + matrix.m20() * (z + fr));
 		//matrix.m31(matrix.m31() + matrix.m01() * (x + fr) + matrix.m11() * (y + fr) + matrix.m21() * (z + fr));
 		//matrix.m32(matrix.m32() + matrix.m02() * (x + fr) + matrix.m12() * (y + fr) + matrix.m22() * (z + fr));
@@ -224,6 +225,7 @@ public class Maths {
 	}
 
 	static Matrix4f viewMatrix = new Matrix4f();
+	static Vector3f pos = new Vector3f();
 
 	/**
 	 * creates the view matrix based on the camera.
@@ -235,46 +237,50 @@ public class Maths {
 		// rotates to the camera
 		viewMatrix.rotate((float) Math.toRadians(camera.getPitch()), rx);
 		viewMatrix.rotate((float) Math.toRadians(camera.getYaw()), ry);
-		Vector3f cameraPos = camera.getPosition();
+		Vector3d cameraPos = camera.getPosition();
 		// make negative.
 		cameraPos.negate();
 		// to make the game look like we are moving, what games to is actually move the
 		// world negative
 		// to where the camera is. Pretty neat eh?
-		viewMatrix.translate(cameraPos);
+		viewMatrix.translate(cameraPos.get(pos));
 		// reset the camera pos back to normal
 		cameraPos.negate();
 		return viewMatrix;
 	}
 
-	private static float x = 0, z = 0;
+	static Matrix4f viewMatrixC = new Matrix4f();
+	private static double x = 0, z = 0, y = 0;
 
 	/**
 	 * used to render chunks relative to the camera pos and not the world pos.
 	 */
 	public static Matrix4f createViewMatrixROT(ICamera camera) {
-		viewMatrix.identity();
-		viewMatrix.rotate((float) Math.toRadians(camera.getPitch()), rx);
-		viewMatrix.rotate((float) Math.toRadians(camera.getYaw()), ry);
-		Vector3f cameraPos = camera.getPosition();
+		viewMatrixC.identity();
+		viewMatrixC.rotate((float) Math.toRadians(camera.getPitch()), rx);
+		viewMatrixC.rotate((float) Math.toRadians(camera.getYaw()), ry);
+		Vector3d cameraPos = camera.getPosition();
 		// make sure we are not actually changing the camera pos
 		// (due to objects being passed by reference)
 		x = cameraPos.x;
 		z = cameraPos.z;
+		y = cameraPos.y;
 		// make sure we can't actually move more then a chunk
 		// this is due to the way im drawing chunk, since im rendering based on the
 		// camera chunk pos
 		// this just allows you to move in individual blocks
 		// we modify the actual camera pos because it has a y
 		cameraPos.x %= (double) 16;
+		cameraPos.y %= (double) 16;
 		cameraPos.z %= (double) 16;
 		cameraPos.negate();
-		viewMatrix.translate(cameraPos);
+		viewMatrixC.translate(cameraPos.get(pos));
 		cameraPos.negate();
 		// resets back to the saved pos that we saved ^
 		cameraPos.x = x;
 		cameraPos.z = z;
-		return viewMatrix;
+		cameraPos.y = y;
+		return viewMatrixC;
 	}
 
 	public static Matrix4f createViewMatrixOTHER(ICamera camera) {
