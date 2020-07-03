@@ -18,7 +18,7 @@ public final class Noise {
 	/**
 	 * Initialization seed used to start the random number generator.
 	 */
-	public static int seed = 694;
+	public static long seed = 694;
 
 	private static final int P = 8;
 	private static final int B = 1 << P;
@@ -31,10 +31,6 @@ public final class Noise {
 	private static double g2[][] = new double[B + B + 2][2];
 	private static double g1[] = new double[B + B + 2];
 	private static double[][] points = new double[32][3];
-
-	static {
-		init();
-	}
 
 	private static double lerp(double t, double a, double b) {
 		return a + t * (b - a);
@@ -201,7 +197,8 @@ public final class Noise {
 		return points[i % 32];
 	}
 
-	private static void init() {
+	public static void init(long seed) {
+		Noise.seed = seed;
 		int i, j, k;
 		double u, v, w, U, V, W, Hi, Lo;
 		java.util.Random r = new java.util.Random(seed);

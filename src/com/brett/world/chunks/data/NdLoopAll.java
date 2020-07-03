@@ -8,5 +8,5 @@ import java.util.HashMap;
 */
 
 public interface NdLoopAll<K, V> {
-	public void loopd(HashMap<K, HashMap<K, HashMap<K, V>>> map, NdHashMap<K, V> dt, K k1, K k2, K k3, V v1);
+	public void loopd(NdHashMap<K, V> dt, K k1, K k2, K k3, V v1);
 }

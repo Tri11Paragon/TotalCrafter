@@ -38,8 +38,8 @@ public class Chunk {
 	public static final byte BOTTOM = 0b100000;
 
 	public ShortBlockStorage blocks = new ShortBlockStorage();
-	public ByteBlockStorage lightLevel = new ByteBlockStorage();
-	public ByteBlockStorage lights = new ByteBlockStorage();
+	//public ByteBlockStorage lightLevel = new ByteBlockStorage();
+	//public ByteBlockStorage lights = new ByteBlockStorage();
 
 	public VAO vao;
 	public float[] positions;
@@ -59,8 +59,6 @@ public class Chunk {
 
 	public Chunk(World world, short[][][] blocks, byte[] lightLevel, byte[] lights, int x_pos, int y_pos, int z_pos) {
 		this.blocks.blocks = blocks;
-		this.lightLevel.blocks = lightLevel;
-		this.lights.blocks = lights;
 		this.x_pos = x_pos;
 		this.y_pos = y_pos;
 		this.z_pos = z_pos;
@@ -70,10 +68,6 @@ public class Chunk {
 	public Chunk(World world, ShortBlockStorage blocks, ByteBlockStorage lightLevel, ByteBlockStorage lights, int x_pos, int y_pos, int z_pos) {
 		if (blocks != null)
 			this.blocks = blocks;
-		if (lightLevel != null)
-			this.lightLevel = lightLevel;
-		if (lights != null)
-			this.lights = lights;
 		this.x_pos = x_pos;
 		this.y_pos = y_pos;
 		this.z_pos = z_pos;
@@ -174,12 +168,76 @@ public class Chunk {
 				}
 			}
 		}
-
+		
+		if ((chunkInfo & LEFT) != LEFT) {
+			Chunk c = world.getChunk(x_pos - 1, y_pos, z_pos);
+			if (c == null) {
+				
+			} else {
+				if ((c.chunkInfo & RIGHT) == RIGHT) {
+					c.meshChunk();
+				}
+			}
+		}
+		
+		if ((chunkInfo & RIGHT) != RIGHT) {
+			Chunk c = world.getChunk(x_pos + 1, y_pos, z_pos);
+			if (c == null) {
+				
+			} else {
+				if ((c.chunkInfo & LEFT) == LEFT) {
+					c.meshChunk();
+				}
+			}
+		}
+		
+		if ((chunkInfo & FRONT) != FRONT) {
+			Chunk c = world.getChunk(x_pos, y_pos, z_pos + 1);
+			if (c == null) {
+				
+			} else {
+				if ((c.chunkInfo & BACK) == BACK) {
+					c.meshChunk();
+				}
+			}
+		}
+		
+		if ((chunkInfo & BACK) != BACK) {
+			Chunk c = world.getChunk(x_pos, y_pos, z_pos - 1);
+			if (c == null) {
+				
+			} else {
+				if ((c.chunkInfo & FRONT) == FRONT) {
+					c.meshChunk();
+				}
+			}
+		}
+		
+		if ((chunkInfo & TOP) != TOP) {
+			Chunk c = world.getChunk(x_pos, y_pos + 1, z_pos);
+			if (c == null) {
+				
+			} else {
+				if ((c.chunkInfo & BOTTOM) == BOTTOM) {
+					c.meshChunk();
+				}
+			}
+		}
+		
+		if ((chunkInfo & BOTTOM) != BOTTOM) {
+			Chunk c = world.getChunk(x_pos, y_pos - 1, z_pos);
+			if (c == null) {
+				
+			} else {
+				if ((c.chunkInfo & TOP) == TOP) {
+					c.meshChunk();
+				}
+			}
+		}
+		
 		positions = Arrays.copyOfRange(positions, 0, lastIndex);
 		data = Arrays.copyOfRange(data, 0, lastIndexData);
 
-		isMeshing = !isDoneMeshing;
-		waitingForMesh = isDoneMeshing;
 	}
 
 	public void meshChunk() {
@@ -336,11 +394,13 @@ public class Chunk {
 			isEmpty = false;
 			if (vao != null)
 				ScreenManager.loader.deleteVAO(vao);
-
-			if (positions.length > 0 && data.length > 0)
-				vao = ScreenManager.loader.loadToVAOChunk(positions, data);
-			else
-				isEmpty = true;
+			
+			if (positions != null && data != null) {
+				if (positions.length > 0 && data.length > 0)
+					vao = ScreenManager.loader.loadToVAOChunk(positions, data);
+				else
+					isEmpty = true;
+			}
 
 			waitingForMesh = false;
 			isMeshing = false;

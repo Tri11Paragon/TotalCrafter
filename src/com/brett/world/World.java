@@ -1,8 +1,10 @@
 package com.brett.world;
 
+import com.brett.Main;
 import com.brett.engine.managers.ThreadPool;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
+import com.brett.world.chunks.Noise;
 import com.brett.world.chunks.data.ByteBlockStorage;
 import com.brett.world.chunks.data.NdHashMap;
 import com.brett.world.chunks.data.RenderMode;
@@ -24,6 +26,39 @@ public class World {
 	public World() {
 		threads = ThreadPool.reserveQuarterThreads();
 		World.world = this;
+		new Thread(() ->  {
+			while (Main.isOpen) {
+				try {
+					NdHashMap<Integer, Chunk> hmcp = ungeneratedChunks.clone();
+					
+					hmcp.iterate((NdHashMap<Integer, Chunk> dt, Integer k1, Integer k2, Integer k3, Chunk v1)->{
+						ShortBlockStorage blks = v1.blocks;
+						int cxw = k1 * 16;
+						int cyw = k2 * 16;
+						int czw = k3 * 16;
+						for (int i = 0; i < 16; i++) {
+							for (int k = 0; k < 16; k++) {
+								int wx = cxw + i;
+								int wz = czw + k;
+								double nfxz = Noise.noise(wx/32.523, wz/32.523);
+								for (int j = 0; j < 16; j++) {
+									int wy = cyw + j;
+									
+									double nf = (Noise.noise(wx/173.593, wy/173.593, wz/173.593) * Noise.noise(wx/63.493, wy/63.293, wz/63.493)) 
+											+ Noise.noise(wx/123.793, wy/123.593, wz/123.793)*nfxz + nfxz;
+									if (nf > 0)
+										blks.setWorld(wx, wy, wz, Block.STONE);
+								}
+							}
+						}
+						v1.meshChunk();
+						chunks.set(k1, k2, k3, v1);
+					});
+					
+					ungeneratedChunks.clear(hmcp);
+				} catch (Exception e) {}
+			}
+		}).start();
 	}
 	
 	/**

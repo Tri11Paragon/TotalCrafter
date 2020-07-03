@@ -21,6 +21,7 @@ import com.brett.world.GameRegistry;
 import com.brett.world.World;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
+import com.brett.world.chunks.Noise;
 import com.brett.world.chunks.data.ShortBlockStorage;
 
 /**
@@ -46,6 +47,7 @@ public class SinglePlayer extends Screen {
 	@Override
 	public void onSwitch() {
 		super.onSwitch();
+		Noise.init(694);
 		//elements.add(new UITexture(ScreenManager.loader.loadTexture("dirt"), -2, -2, 0, 0, 200, 200, AnchorPoint.CENTER).setBoundingBox(200, 200, 200, 200));
 		
 		/*UIText text = new UIText("he l loe there", 250.0f, "mono", 600, 300, 20);
@@ -70,7 +72,14 @@ public class SinglePlayer extends Screen {
 		
 		for (int i = 0; i < 16; i++) {
 			for (int k = 0; k < 16; k++) {
-				shrt.setWorld(i, 1, k, Block.DIRT);
+				for (int j = 0; j < 16; j++) {
+					double f = Noise.noise(i/13.4895, j/13.4895, k/13.4596);
+					if (f > 0) {
+						shrt.setWorld(i, j, k, Block.STONE);
+					} else {
+						
+					}
+				}
 			}
 		}
 		shrt.setWorld(2, 1, 10, Block.STONE);
@@ -101,11 +110,16 @@ public class SinglePlayer extends Screen {
 		super.onLeave();
 	}
 	
+	private float ccx,ccy,ccz;
+	private int cx,cy,cz;
+	private Vector3d pos;
+	
 	@Override
 	public List<UIElement> render() {
 		camera.move();
 		chunkViewMatrix = Maths.createViewMatrixROT(camera);
 		viewMatrix = Maths.createViewMatrix(camera);
+		camera.calculateFrustum(ProjectionMatrix.projectionMatrix, viewMatrix);
 		
 		ScreenManager.enableCulling();
 		ScreenManager.enableTransparentcy();
@@ -117,15 +131,24 @@ public class SinglePlayer extends Screen {
 		shader.loadViewMatrix(chunkViewMatrix);
 		
 		for (int i = -Settings.RENDER_DISTANCE; i <= Settings.RENDER_DISTANCE; i++) {
-			for (int j = -Settings.RENDER_DISTANCE; j <= Settings.RENDER_DISTANCE; j++) {
+			for (int j = -Settings.RENDER_DISTANCE/2; j <= Settings.RENDER_DISTANCE/2; j++) {
 				for (int k = -Settings.RENDER_DISTANCE; k <= Settings.RENDER_DISTANCE; k++) {
-					Vector3d pos = camera.getPosition();
-					int cx = ((int) (pos.x / 16)) + i;
-					int cy = ((int) (pos.y / 16)) + j;
-					int cz = ((int) (pos.z / 16)) + k;
+					double distance = Math.sqrt(Math.pow(i, 2) + Math.pow(j, 2) + Math.pow(k, 2));
+					if (distance > Settings.RENDER_DISTANCE)
+						continue;
+					pos = camera.getPosition();
+					cx = ((int) (pos.x / 16)) + i;
+					cy = ((int) (pos.y / 16)) + j;
+					cz = ((int) (pos.z / 16)) + k;
+					
+					ccx = cx*16;
+					ccy = cy*16;
+					ccz = cz*16;
+					
+					if (!camera.cubeInFrustum(ccx, ccy, ccz, ccx+16, ccy+16, ccz+16))
+						continue;
 					
 					Chunk c = world.getChunk(cx, cy, cz);
-					
 					if (c == null)
 						world.queueChunk(cx, cy, cz);
 					else

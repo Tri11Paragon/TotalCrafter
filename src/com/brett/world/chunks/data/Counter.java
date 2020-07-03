@@ -17,6 +17,10 @@ public class Counter {
 		return count; 
 	}
 	
+	public void modulo(int m) {
+		count%=m;
+	}
+	
 	public String toString() {
 		return Integer.toString(count);
 	}
