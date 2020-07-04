@@ -1,5 +1,7 @@
 package com.brett.world;
 
+import java.util.List;
+
 import com.brett.Main;
 import com.brett.engine.managers.ThreadPool;
 import com.brett.world.block.Block;
@@ -21,41 +23,90 @@ public class World {
 	
 	public volatile NdHashMap<Integer, Chunk> chunks = new NdHashMap<Integer, Chunk>();
 	public volatile NdHashMap<Integer, Chunk> ungeneratedChunks = new NdHashMap<Integer, Chunk>();
+	public volatile List<NdHashMap<Integer, Chunk>> maps = null;
 	public int threads = 1;
 	
 	public World() {
-		threads = ThreadPool.reserveQuarterThreads();
+		threads = ThreadPool.reserveQuarterThreads() + ThreadPool.reserveQuarterThreads();
 		World.world = this;
 		new Thread(() ->  {
-			while (Main.isOpen) {
-				try {
-					NdHashMap<Integer, Chunk> hmcp = ungeneratedChunks.clone();
+			
+			for (int o = 0; o < threads; o++) {
+				//int threadIDLocal = i;
+				new Thread(() -> {
+					//int threadID = threadIDLocal;
 					
-					hmcp.iterate((NdHashMap<Integer, Chunk> dt, Integer k1, Integer k2, Integer k3, Chunk v1)->{
-						ShortBlockStorage blks = v1.blocks;
-						int cxw = k1 * 16;
-						int cyw = k2 * 16;
-						int czw = k3 * 16;
-						for (int i = 0; i < 16; i++) {
-							for (int k = 0; k < 16; k++) {
-								int wx = cxw + i;
-								int wz = czw + k;
-								double nfxz = Noise.noise(wx/32.523, wz/32.523);
-								for (int j = 0; j < 16; j++) {
-									int wy = cyw + j;
-									
-									double nf = (Noise.noise(wx/173.593, wy/173.593, wz/173.593) * Noise.noise(wx/63.493, wy/63.293, wz/63.493)) 
-											+ Noise.noise(wx/123.793, wy/123.593, wz/123.793)*nfxz + nfxz;
-									if (nf > 0)
-										blks.setWorld(wx, wy, wz, Block.STONE);
+					while (Main.isOpen) {
+						try {
+							if (maps != null && maps.size() > 0) {
+								NdHashMap<Integer, Chunk> ourMap = maps.get(0);
+								maps.remove(0);
+								if (ourMap != null) {
+									ourMap.iterate((NdHashMap<Integer, Chunk> dt, Integer k1, Integer k2, Integer k3, Chunk v1)->{
+										ShortBlockStorage blks = v1.blocks;
+										int cxw = k1 * 16;
+										int cyw = k2 * 16;
+										int czw = k3 * 16;
+										for (int i = 0; i < 16; i++) {
+											for (int k = 0; k < 16; k++) {
+												int wx = cxw + i;
+												int wz = czw + k;
+												double nfxz = 0;
+												if (cyw > -120)
+													nfxz = (Noise.noise.noise(wx/512.45, wz/512.45) * Noise.noise.noise(wx/16.45, wz/16.45) + 
+															(Noise.noise.noise(wx/16.45, wz/16.45) * Noise.noise.noise(wx/24.45, wz/24.45) * Noise.noise.noise(wx/32.45, wz/32.45))) * 64 + 64;
+												for (int j = 0; j < 16; j++) {
+													int wy = cyw + j;
+													
+													if (wy > nfxz) {
+														
+													} else {
+													
+														double nf = (Noise.noise.noise(wx/96.593, wy/173.593, wz/96.593) * Noise.noise.noise(wx/16.493, wy/32.293, wz/16.493)) 
+																+ Noise.noise.noise(wx/256.793, wy/256.593, wz/156.793);
+														if (nf > 0) {
+															if (wy < nfxz && wy > nfxz-1)
+																blks.setWorld(wx, wy, wz, Block.GRASS);
+															else if (wy < nfxz-1 && wy > (nfxz - 4))
+																blks.setWorld(wx, wy, wz, Block.DIRT);
+															else if (wy > -120)
+																blks.setWorld(wx, wy, wz, Block.STONE);
+															else
+																blks.setWorld(wx, wy, wz, Block.BASALT);
+														}
+													}
+												}
+											}
+										}
+										v1.meshChunk();
+										chunks.set(k1, k2, k3, v1);
+									});
+									ungeneratedChunks.clear(ourMap);
 								}
 							}
+							Thread.sleep(100);
+						} catch (Exception e) {}
+					}
+					
+				}).start();;
+			
+			}
+			
+			while (Main.isOpen) {
+				try {
+					//NdHashMap<Integer, Chunk> hmcp = ungeneratedChunks.clone();
+					
+					if (maps == null || maps.size() == 0) {
+						maps = ungeneratedChunks.split(threads);
+					}
+					
+					chunks.iterate((NdHashMap<Integer, Chunk> dt, Integer k1, Integer k2, Integer k3, Chunk v1) -> {
+						if (dt.get(k1, k2, k3).chunkInfo != 0) {
+							dt.get(k1, k2, k3).meshChunk();
 						}
-						v1.meshChunk();
-						chunks.set(k1, k2, k3, v1);
 					});
 					
-					ungeneratedChunks.clear(hmcp);
+					Thread.sleep(100);
 				} catch (Exception e) {}
 			}
 		}).start();

@@ -19,15 +19,20 @@ public class GameRegistry {
 	public static HashMap<String, Integer> blockTextureIDs = new HashMap<String, Integer>();
 	
 	public static HashMap<Integer, String> registerTextures() {
-		registerTexture(0, "stone2");
-		registerTexture(1, "dirt");
+		registerTexture(0, "stone2", "stone");
+		registerTexture(1, "dirt", "dirt");
+		registerTexture(2, "grass", "grass");
+		registerTexture(3, "stone3", "basalt");
+		registerTexture(4, "cobble", "cracked");
 		return blockTextures;
 	}
 	
 	public static void registerBlocks() {
 		registerBlock(new BlockAir());
-		registerBlock(new Block(Block.STONE, getTexture("stone2")));
+		registerBlock(new Block(Block.STONE, getTexture("stone")));
 		registerBlock(new Block(Block.DIRT, getTexture("dirt")));
+		registerBlock(new Block(Block.GRASS, getTexture("grass")));
+		registerBlock(new Block(Block.BASALT, getTexture("basalt")));
 	}
 	
 	public static void registerItems() {
@@ -37,6 +42,11 @@ public class GameRegistry {
 	public static void registerTexture(int id, String texture) {
 		blockTextures.put(id, texture);
 		blockTextureIDs.put(texture, id);
+	}
+	
+	public static void registerTexture(int id, String texture, String textureName) {
+		blockTextures.put(id, texture);
+		blockTextureIDs.put(textureName, id);
 	}
 	
 	/**

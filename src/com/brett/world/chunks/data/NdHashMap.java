@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class NdHashMap<K, V> implements Cloneable {
 	
-	public ConcurrentHashMap<K, ConcurrentHashMap<K, ConcurrentHashMap<K, V>>> hm = new ConcurrentHashMap<K, ConcurrentHashMap<K, ConcurrentHashMap<K, V>>>();
+	public volatile ConcurrentHashMap<K, ConcurrentHashMap<K, ConcurrentHashMap<K, V>>> hm = new ConcurrentHashMap<K, ConcurrentHashMap<K, ConcurrentHashMap<K, V>>>();
 	
 	public V set(K k1, K k2, K k3, V v) {
 		ConcurrentHashMap<K, ConcurrentHashMap<K, V>> bl = hm.get(k1);
@@ -77,6 +77,19 @@ public class NdHashMap<K, V> implements Cloneable {
 			lst.get(c.count()).set(k1, k2, k3, v1);
 			c.increment();
 			c.modulo(4);
+		});
+		return lst;
+	}
+	
+	public List<NdHashMap<K, V>> split(int amount){
+		List<NdHashMap<K, V>> lst = new ArrayList<NdHashMap<K,V>>();
+		for (int i = 0; i < amount; i++)
+			lst.add(new NdHashMap<K, V>());
+		Counter c = new Counter();
+		iterate((NdHashMap<K, V> dt, K k1, K k2, K k3, V v1) -> {
+			lst.get(c.count()).set(k1, k2, k3, v1);
+			c.increment();
+			c.modulo(amount);
 		});
 		return lst;
 	}

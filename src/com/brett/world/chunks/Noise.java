@@ -15,28 +15,35 @@ package com.brett.world.chunks;
 
 public final class Noise {
 
+	public static Noise noise = new Noise(694);
+	
 	/**
 	 * Initialization seed used to start the random number generator.
 	 */
-	public static long seed = 694;
+	public long seed = 694;
+	
+	public Noise(long seed) {
+		this.seed = seed;
+		init(seed);
+	}
 
-	private static final int P = 8;
-	private static final int B = 1 << P;
-	private static final int M = B - 1;
+	private final int P = 8;
+	private final int B = 1 << P;
+	private final int M = B - 1;
 
-	private static final int NP = 8;
-	private static final int N = 1 << NP;
+	private final int NP = 8;
+	private final int N = 1 << NP;
 
-	private static int p[] = new int[B + B + 2];
-	private static double g2[][] = new double[B + B + 2][2];
-	private static double g1[] = new double[B + B + 2];
-	private static double[][] points = new double[32][3];
+	private int p[] = new int[B + B + 2];
+	private double g2[][] = new double[B + B + 2][2];
+	private double g1[] = new double[B + B + 2];
+	private double[][] points = new double[32][3];
 
-	private static double lerp(double t, double a, double b) {
+	private double lerp(double t, double a, double b) {
 		return a + t * (b - a);
 	}
 
-	private static double s_curve(double t) {
+	private double s_curve(double t) {
 		return t * t * (3 - t - t);
 	}
 
@@ -46,7 +53,7 @@ public final class Noise {
 	 * @param x 1 dimensional parameter
 	 * @return the noise value at x
 	 */
-	public static double noise(double x) {
+	public double noise(double x) {
 
 		int bx0, bx1;
 		double rx0, rx1, sx, t, u, v;
@@ -70,7 +77,7 @@ public final class Noise {
 	 * @param y y dimension parameter
 	 * @return the value of noise at the point (x,y)
 	 */
-	public static double noise(double x, double y) {
+	public double noise(double x, double y) {
 
 		int bx0, bx1, by0, by1, b00, b10, b01, b11;
 		double rx0, rx1, ry0, ry1, sx, sy, a, b, t, u, v, q[];
@@ -122,7 +129,7 @@ public final class Noise {
 	 * @param z z dimension parameter
 	 * @return the noise value at the point (x, y, z)
 	 */
-	static public double noise(double x, double y, double z) {
+    public double noise(double x, double y, double z) {
 
 		int bx, by, bz, b0, b1, b00, b10, b01, b11;
 		double rx0, rx1, ry0, ry1, rz, sx, sy, sz, a, b, c, d, u, v, q[];
@@ -192,13 +199,32 @@ public final class Noise {
 
 		return lerp(sz, c, d);
 	}
+    
+    public double octaveNoise(double x, double y, double z, int octaves) {
+    	double total = 0;
+    	
+    	for (int i = 1; i <= octaves; i++) {
+    		total += noise(x/i, y/i, z/i)/i;
+    	}
+    	
+    	return total;
+    }
+    
+    public double octaveNoise(double x, double y, double sx, double sy, int octaves) {
+    	double total = 0;
+    	
+    	for (int i = 1; i <= octaves; i++) {
+    		total += noise((x/Math.pow(2, i))/sx, (y/Math.pow(2, i))/sx)/i;
+    	}
+    	
+    	return total;
+    }
 
-	private static double[] G(int i) {
+	private double[] G(int i) {
 		return points[i % 32];
 	}
 
-	public static void init(long seed) {
-		Noise.seed = seed;
+	public void init(long seed) {
 		int i, j, k;
 		double u, v, w, U, V, W, Hi, Lo;
 		java.util.Random r = new java.util.Random(seed);
@@ -262,7 +288,7 @@ public final class Noise {
 				}
 	}
 
-	private static void normalize2(double v[]) {
+	private void normalize2(double v[]) {
 		double s;
 		s = Math.sqrt(v[0] * v[0] + v[1] * v[1]);
 		v[0] = v[0] / s;

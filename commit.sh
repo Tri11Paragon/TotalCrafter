@@ -2,7 +2,7 @@
 
 cd /home/brett/Documents/Java/TotalCrafter
 git add *
-if [ -z "$@" ]; then
+if [ -n "$@" ]; then
 	git commit -m $@
 else
 	git commit -m "automated commit $((9956 + RANDOM % 100000))"

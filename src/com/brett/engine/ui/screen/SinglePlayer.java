@@ -21,7 +21,6 @@ import com.brett.world.GameRegistry;
 import com.brett.world.World;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
-import com.brett.world.chunks.Noise;
 import com.brett.world.chunks.data.ShortBlockStorage;
 
 /**
@@ -47,7 +46,6 @@ public class SinglePlayer extends Screen {
 	@Override
 	public void onSwitch() {
 		super.onSwitch();
-		Noise.init(694);
 		//elements.add(new UITexture(ScreenManager.loader.loadTexture("dirt"), -2, -2, 0, 0, 200, 200, AnchorPoint.CENTER).setBoundingBox(200, 200, 200, 200));
 		
 		/*UIText text = new UIText("he l loe there", 250.0f, "mono", 600, 300, 20);
@@ -67,26 +65,6 @@ public class SinglePlayer extends Screen {
 		shader.start();
 		shader.loadProjectionMatrox(ProjectionMatrix.projectionMatrix);
 		shader.stop();
-		
-		ShortBlockStorage shrt = new ShortBlockStorage();
-		
-		for (int i = 0; i < 16; i++) {
-			for (int k = 0; k < 16; k++) {
-				for (int j = 0; j < 16; j++) {
-					double f = Noise.noise(i/13.4895, j/13.4895, k/13.4596);
-					if (f > 0) {
-						shrt.setWorld(i, j, k, Block.STONE);
-					} else {
-						
-					}
-				}
-			}
-		}
-		shrt.setWorld(2, 1, 10, Block.STONE);
-		
-		Chunk c = new Chunk(world, shrt, null, null, 0, 0, 0);
-		world.setChunk(0, 0, 0, c);
-		c.meshChunk();
 		
 		ShortBlockStorage shrt2 = new ShortBlockStorage();
 		
@@ -131,7 +109,7 @@ public class SinglePlayer extends Screen {
 		shader.loadViewMatrix(chunkViewMatrix);
 		
 		for (int i = -Settings.RENDER_DISTANCE; i <= Settings.RENDER_DISTANCE; i++) {
-			for (int j = -Settings.RENDER_DISTANCE/2; j <= Settings.RENDER_DISTANCE/2; j++) {
+			for (int j = -Settings.RENDER_DISTANCE; j <= Settings.RENDER_DISTANCE; j++) {
 				for (int k = -Settings.RENDER_DISTANCE; k <= Settings.RENDER_DISTANCE; k++) {
 					double distance = Math.sqrt(Math.pow(i, 2) + Math.pow(j, 2) + Math.pow(k, 2));
 					if (distance > Settings.RENDER_DISTANCE)

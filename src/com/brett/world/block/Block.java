@@ -19,6 +19,7 @@ public class Block {
 	public static final short STONE = 1;
 	public static final short DIRT = 2;
 	public static final short GRASS = 3;
+	public static final short BASALT = 4;
 	
 	public int textureTop, textureBottom, textureLeft, textureRight, textureFront, textureFront2, textureBack;
 	public short id;

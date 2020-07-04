@@ -50,7 +50,7 @@ public class Chunk {
 	public int lastIndex;
 	public int lastIndexData;
 
-	public byte chunkInfo = 0;
+	public volatile byte chunkInfo = 0;
 	public boolean isEmpty = false;
 	public boolean isMeshing = false;
 	public boolean waitingForMesh = false;
@@ -75,7 +75,7 @@ public class Chunk {
 	}
 
 	public void meshChunk(boolean isDoneMeshing) {
-		if (isMeshing)
+		if (isMeshing || waitingForMesh)
 			return;
 
 		isMeshing = true;
