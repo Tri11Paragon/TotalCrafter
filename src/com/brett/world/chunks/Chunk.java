@@ -47,13 +47,13 @@ public class Chunk {
 
 	public int x_pos, y_pos, z_pos;
 
-	public int lastIndex;
-	public int lastIndexData;
+	public volatile int lastIndex;
+	public volatile int lastIndexData;
 
 	public volatile byte chunkInfo = 0;
-	public boolean isEmpty = false;
-	public boolean isMeshing = false;
-	public boolean waitingForMesh = false;
+	public volatile boolean isEmpty = false;
+	public volatile boolean isMeshing = false;
+	public volatile boolean waitingForMesh = false;
 
 	public World world;
 
@@ -402,10 +402,10 @@ public class Chunk {
 					isEmpty = true;
 			}
 
+			//positions = null;
+			//data = null;
 			waitingForMesh = false;
 			isMeshing = false;
-			positions = null;
-			data = null;
 		}
 
 		if (!isEmpty && vao != null) {
@@ -422,6 +422,14 @@ public class Chunk {
 		}
 	}
 
+	public void delete() {
+		isEmpty = true;
+		isMeshing = true;
+		vao = ScreenManager.loader.deleteVAO(vao);
+		positions = null;
+		data = null;
+	}
+	
 	public static float[] updateVertexTranslation(float[] verts, int xTrans, int yTrans, int zTrans) {
 		float[] newVerts = new float[verts.length];
 		for (int i = 0; i < verts.length; i += 3) {

@@ -12,6 +12,7 @@ public class BlockAir extends Block {
 	public BlockAir() {
 		super(Block.AIR, 0);
 		this.renderMode = RenderMode.TRANSPARENT;
+		this.bbox = null;
 	}
 	
 }

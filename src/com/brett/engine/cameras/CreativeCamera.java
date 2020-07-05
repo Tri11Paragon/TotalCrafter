@@ -1,9 +1,13 @@
 package com.brett.engine.cameras;
 
+import com.brett.engine.data.collision.AxisAlignedBB;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.InputMaster;
+import com.brett.world.World;
 
 import static org.lwjgl.glfw.GLFW.*;
+
+import java.util.List;
 
 import org.joml.Vector3d;
 
@@ -14,8 +18,12 @@ import org.joml.Vector3d;
 
 public class CreativeCamera extends Camera {
 
-	public CreativeCamera(Vector3d pos) {
+	public World world;
+	public AxisAlignedBB cbb = new AxisAlignedBB(-0.25,-0.75,-0.25, 0.25,0.25,0.25);
+	
+	public CreativeCamera(Vector3d pos, World world) {
 		this.position = pos;
+		this.world = world;
 	}
 
 	// speed of char
@@ -87,22 +95,70 @@ public class CreativeCamera extends Camera {
 		if (this.yaw > 360)
 			this.yaw = 0;
 
-		// something I tried to prevent FPPE
-		// doesn't work (duh)
-		double prez = 1000000d;
 		// Calculates the amount to move in the 3 axis based on the movement values
 		// since this is hard to read with all the Math.round, i'd be a good idea to go
 		// look at the player class
 		// it has the same time but without all the useless rounds.
-		float dx = (float) (Math.round((((-((moveAtX) * Math.round(Math.sin(Math.toRadians(yaw)) * prez) / prez)) + -((moveatZ) * Math.round(Math.cos(Math.toRadians(yaw)) * prez) / prez))) * prez) / prez);
-		float dy = (float) ((((moveAtX * (Math.sin(Math.toRadians(roll)))) + moveAtY)));
-		float dz = (float) (Math.round((((moveAtX) * Math.round(Math.cos(Math.toRadians(yaw)) * prez) / prez) + -((moveatZ) * Math.round(Math.sin(Math.toRadians(yaw)) * prez) / prez)) * prez) / prez);
+		double dx = ((((-((moveAtX) * Math.sin(Math.toRadians(yaw)))) + -((moveatZ) * Math.cos(Math.toRadians(yaw))))));
+		double dy = ((((moveAtX * (Math.sin(Math.toRadians(roll)))) + moveAtY)));
+		double dz = ((((moveAtX) * Math.cos(Math.toRadians(yaw))) + -((moveatZ) * Math.sin(Math.toRadians(yaw)))));
 		
-		position.x += dx;
-
-		position.y += dy;
-
-		position.z += dz;
+		int intpx = (int) position.x;
+		int intpy = (int) position.y;
+		int intpz = (int) position.z;
+		
+		List<AxisAlignedBB> bbs = world.getBoundsInRange(intpx-2, intpy-2, intpz-2, intpx+2, intpy+2, intpz+2);
+		
+		if (dx != 0) {
+			AxisAlignedBB ctb = cbb.translate(position.x + dx, position.y, position.z);
+			boolean broken = false;
+			for (int i = 0; i < bbs.size(); i++) {
+				if (bbs.get(i) == null)
+					continue;
+				
+				if (ctb.intersectsWith(bbs.get(i))) {
+					broken = true;
+					break;
+				}
+				
+			}
+			if (!broken)
+				position.x += dx;
+		}
+		
+		if (dy != 0) {
+			AxisAlignedBB ctb = cbb.translate(position.x, position.y + dy, position.z);
+			boolean broken = false;
+			for (int i = 0; i < bbs.size(); i++) {
+				if (bbs.get(i) == null)
+					continue;
+				
+				if (ctb.intersectsWith(bbs.get(i))) {
+					broken = true;
+					break;
+				}
+				
+			}
+			if (!broken)
+				position.y += dy;
+		}
+		
+		if (dz != 0) {
+			AxisAlignedBB ctb = cbb.translate(position.x, position.y, position.z+dz);
+			boolean broken = false;
+			for (int i = 0; i < bbs.size(); i++) {
+				if (bbs.get(i) == null)
+					continue;
+				
+				if (ctb.intersectsWith(bbs.get(i))) {
+					broken = true;
+					break;
+				}
+				
+			}
+			if (!broken)
+				position.z += dz;
+		}
 	}
 
 }

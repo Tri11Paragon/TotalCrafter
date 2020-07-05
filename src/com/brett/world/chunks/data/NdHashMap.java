@@ -1,6 +1,7 @@
 package com.brett.world.chunks.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -82,7 +83,7 @@ public class NdHashMap<K, V> implements Cloneable {
 	}
 	
 	public List<NdHashMap<K, V>> split(int amount){
-		List<NdHashMap<K, V>> lst = new ArrayList<NdHashMap<K,V>>();
+		List<NdHashMap<K, V>> lst = Collections.synchronizedList(new ArrayList<NdHashMap<K,V>>());
 		for (int i = 0; i < amount; i++)
 			lst.add(new NdHashMap<K, V>());
 		Counter c = new Counter();

@@ -14,7 +14,11 @@ package com.brett.world.chunks;
  */
 
 public final class Noise {
-
+	
+	public static double RANGE_1D = Math.sqrt(1)/2;
+	public static double RANGE_2D = Math.sqrt(2)/2;
+	public static double RANGE_3D = Math.sqrt(3)/2;
+	
 	public static Noise noise = new Noise(694);
 	
 	/**
@@ -199,6 +203,25 @@ public final class Noise {
 
 		return lerp(sz, c, d);
 	}
+    
+    public double nNoise(double x, double y, double z, int octaves, double roughness) {
+    	double total = 0;
+    	
+    	for (int i = 1; i <= octaves; i++) {
+    		total += noise(x/i, y/i, z/i);
+    	}
+    	
+    	double nf = noise(x, z) * 500000;
+    	
+    	if (nf > 0) {
+    		total /= nf;
+    		total += nf/500000;
+    	}
+    	
+    	//total /= octaves;
+    	
+    	return total;
+    }
     
     public double octaveNoise(double x, double y, double z, int octaves) {
     	double total = 0;

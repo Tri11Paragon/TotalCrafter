@@ -228,6 +228,10 @@ public class AxisAlignedBB
     {
         return new AxisAlignedBB(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
     }
+    
+    public AxisAlignedBB translate(double x, double y, double z) {
+    	return new AxisAlignedBB(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
+    }
 
 
     /**

@@ -9,8 +9,11 @@ import java.lang.management.ThreadMXBean;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
+import com.brett.engine.DebugInfo;
 import com.brett.engine.SyncSave;
+import com.brett.engine.data.IKeyState;
 import com.brett.engine.managers.DisplayManager;
+import com.brett.engine.managers.InputMaster;
 import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.tools.Settings;
 import com.brett.engine.ui.screen.SinglePlayer;
@@ -40,6 +43,8 @@ public class Main {
 	
 	/**
 	 * Josiah doesn't get credit
+	 * 
+	 * ^.*$
 	 * 
 	 * ThinMatrix gets credit? (loader)
 	 */
@@ -82,6 +87,18 @@ public class Main {
 		System.out.println();
 		printMemoryInfo();
 		
+		InputMaster.keyboard.add(new IKeyState() {
+			
+			@Override
+			public void onKeyReleased(int keys) {}
+			
+			@Override
+			public void onKeyPressed(int keys) {
+				if (keys == GLFW.GLFW_KEY_F3)
+					DebugInfo.toggle();
+			}
+		});
+		
 		ScreenManager.switchScreen(new SinglePlayer());
 		
 		while (isOpen) {
@@ -100,9 +117,11 @@ public class Main {
 				break;
 			}
 			
+			DebugInfo.update();
 			DisplayManager.updateDisplay();
 			SyncSave.sync(Settings.FPS);
 		}
+		isOpen = false;
 		
 		ScreenManager.close();
 	}

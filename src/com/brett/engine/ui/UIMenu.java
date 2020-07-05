@@ -52,6 +52,10 @@ public class UIMenu implements RescaleEvent {
 		enabled = false;
 	}
 	
+	public boolean getEnabled() {
+		return enabled;
+	}
+	
 	public void destroy() {
 		for (int i = 0; i < elements.size(); i++)
 			elements.get(i).destroy();

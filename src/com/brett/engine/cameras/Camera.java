@@ -21,7 +21,7 @@ public class Camera extends ICamera {
 	/**
 	 * All of this plane stuff is taken from the frustum class.
 	 */
-	public float[][] m_Frustum = new float[6][4];
+	public double[][] m_Frustum = new double[6][4];
     public static final int RIGHT = 0;
     public static final int LEFT = 1;
     public static final int BOTTOM = 2;
@@ -40,8 +40,8 @@ public class Camera extends ICamera {
 	/**
 	 * All of this plane stuff is taken from the frustum class.
 	 */
-    private void normalizePlane(float[][] frustum, int side) {
-            float nm = (float) Math.sqrt(frustum[side][0] * frustum[side][0] + frustum[side][1] * frustum[side][1] + frustum[side][2] * frustum[side][2]);
+    private void normalizePlane(double[][] frustum, int side) {
+    		double nm = Math.sqrt(frustum[side][0] * frustum[side][0] + frustum[side][1] * frustum[side][1] + frustum[side][2] * frustum[side][2]);
 
             frustum[side][0] /= nm;
             frustum[side][1] /= nm;
@@ -123,7 +123,7 @@ public class Camera extends ICamera {
 	 * All of this plane stuff is taken from the frustum class.
 	 * finds if the point is in the frustum
 	 */
-	public boolean pointInFrustum(float x, float y, float z) {
+	public boolean pointInFrustum(double x, double y, double z) {
 		for (int i = 0; i < 6; i++) {
 			if (this.m_Frustum[i][0] * x + this.m_Frustum[i][1] * y + this.m_Frustum[i][2] * z + this.m_Frustum[i][3] <= 0.0F) {
 				return false;
@@ -137,7 +137,7 @@ public class Camera extends ICamera {
 	 * All of this plane stuff is taken from the frustum class.
 	 * finds if the sphere is in the frustum
 	 */
-	public boolean sphereInFrustum(float x, float y, float z, float radius) {
+	public boolean sphereInFrustum(double x, double y, double z, double radius) {
 		for (int i = 0; i < 6; i++) {
 			if (this.m_Frustum[i][0] * x + this.m_Frustum[i][1] * y + this.m_Frustum[i][2] * z + this.m_Frustum[i][3] <= -radius) {
 				return false;
@@ -151,7 +151,7 @@ public class Camera extends ICamera {
 	 * All of this plane stuff is taken from the frustum class.
 	 * finds if this cube is in the frustum
 	 */
-	public boolean cubeInFrustum(float x1, float y1, float z1, float x2, float y2, float z2) {
+	public boolean cubeInFrustum(double x1, double y1, double z1, double x2, double y2, double z2) {
 		for (int i = 0; i < 6; i++) {
 			if ((this.m_Frustum[i][0] * x1 + this.m_Frustum[i][1] * y1 + this.m_Frustum[i][2] * z1 + this.m_Frustum[i][3] <= 0.0F)
 					&& (this.m_Frustum[i][0] * x2 + this.m_Frustum[i][1] * y1 + this.m_Frustum[i][2] * z1 + this.m_Frustum[i][3] <= 0.0F)

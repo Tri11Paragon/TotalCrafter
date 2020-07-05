@@ -60,6 +60,7 @@ public class Screen {
 				texts.getValue().get(i).destroy();
 		menus.clear();
 		elements.clear();
+		textMap.clear();
 	}
 	
 	/**

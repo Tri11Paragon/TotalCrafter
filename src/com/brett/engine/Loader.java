@@ -145,24 +145,28 @@ public class Loader {
 	 */
 	public VAO deleteVAO(VAO model) {
 		try {
-			// if this is a block then we will delete the VBOs
-			// list of all the VBOs for this model
-			int[] vbos = model.getVbos();
-			// remove them from the graphics card
-			for (int i = 0; i < vbos.length; i++) {
-				GL15.glDeleteBuffers(vbos[i]);
-				// make sure we remove them from the list.
-				for (int j = 0; j < this.vbos.size(); j++) {
-					if (this.vbos.get(i) == vbos[i])
-						this.vbos.remove(j);
+			try {
+				// if this is a block then we will delete the VBOs
+				// list of all the VBOs for this model
+				int[] vbos = model.getVbos();
+				// remove them from the graphics card
+				for (int i = 0; i < vbos.length; i++) {
+					GL15.glDeleteBuffers(vbos[i]);
+					// make sure we remove them from the list.
+					for (int j = 0; j < this.vbos.size(); j++) {
+						if (this.vbos.get(i) == vbos[i])
+							this.vbos.remove(j);
+					}
 				}
-			}
-			// make sure we remove it from the VAO list
-			for (int i = 0; i < vaos.size(); i++) {
-				if (vaos.get(i) == model.getVaoID()) {
-					vaos.remove(i);
+			} catch (Exception e) {}
+			try {
+				// make sure we remove it from the VAO list
+				for (int i = 0; i < vaos.size(); i++) {
+					if (vaos.get(i) == model.getVaoID()) {
+						vaos.remove(i);
+					}
 				}
-			}
+			} catch (Exception e) {}
 			// delete the VAO
 			GL30.glDeleteVertexArrays(model.getVaoID());
 		} catch (Exception e) {}

@@ -1,8 +1,10 @@
 package com.brett.world;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.brett.Main;
+import com.brett.engine.data.collision.AxisAlignedBB;
 import com.brett.engine.managers.ThreadPool;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
@@ -24,23 +26,27 @@ public class World {
 	public volatile NdHashMap<Integer, Chunk> chunks = new NdHashMap<Integer, Chunk>();
 	public volatile NdHashMap<Integer, Chunk> ungeneratedChunks = new NdHashMap<Integer, Chunk>();
 	public volatile List<NdHashMap<Integer, Chunk>> maps = null;
+	public volatile List<Thread> generatorThreads = new ArrayList<Thread>();
 	public int threads = 1;
 	
 	public World() {
 		threads = ThreadPool.reserveQuarterThreads() + ThreadPool.reserveQuarterThreads();
 		World.world = this;
-		new Thread(() ->  {
+		Thread th = new Thread(() ->  {
 			
 			for (int o = 0; o < threads; o++) {
 				//int threadIDLocal = i;
-				new Thread(() -> {
+				Thread dth = new Thread(() -> {
 					//int threadID = threadIDLocal;
 					
 					while (Main.isOpen) {
 						try {
 							if (maps != null && maps.size() > 0) {
-								NdHashMap<Integer, Chunk> ourMap = maps.get(0);
-								maps.remove(0);
+								NdHashMap<Integer, Chunk> ourMap = null;
+								try {
+									ourMap = maps.get(0);
+									maps.remove(0);
+								} catch (Exception e) {}
 								if (ourMap != null) {
 									ourMap.iterate((NdHashMap<Integer, Chunk> dt, Integer k1, Integer k2, Integer k3, Chunk v1)->{
 										ShortBlockStorage blks = v1.blocks;
@@ -53,8 +59,7 @@ public class World {
 												int wz = czw + k;
 												double nfxz = 0;
 												if (cyw > -120)
-													nfxz = (Noise.noise.noise(wx/512.45, wz/512.45) * Noise.noise.noise(wx/16.45, wz/16.45) + 
-															(Noise.noise.noise(wx/16.45, wz/16.45) * Noise.noise.noise(wx/24.45, wz/24.45) * Noise.noise.noise(wx/32.45, wz/32.45))) * 64 + 64;
+													nfxz = (Noise.noise.nNoise(wx/32d, 56.43958205810, wz/32d, 16, 4d)) * 64 + 64;
 												for (int j = 0; j < 16; j++) {
 													int wy = cyw + j;
 													
@@ -64,7 +69,7 @@ public class World {
 													
 														double nf = (Noise.noise.noise(wx/96.593, wy/173.593, wz/96.593) * Noise.noise.noise(wx/16.493, wy/32.293, wz/16.493)) 
 																+ Noise.noise.noise(wx/256.793, wy/256.593, wz/156.793);
-														if (nf > 0) {
+														if (nf > -0.2) {
 															if (wy < nfxz && wy > nfxz-1)
 																blks.setWorld(wx, wy, wz, Block.GRASS);
 															else if (wy < nfxz-1 && wy > (nfxz - 4))
@@ -85,11 +90,12 @@ public class World {
 								}
 							}
 							Thread.sleep(100);
-						} catch (Exception e) {}
+						} catch (Exception e) {e.printStackTrace();}
 					}
 					
-				}).start();;
-			
+				});
+				dth.start();
+				generatorThreads.add(dth);
 			}
 			
 			while (Main.isOpen) {
@@ -100,16 +106,18 @@ public class World {
 						maps = ungeneratedChunks.split(threads);
 					}
 					
-					chunks.iterate((NdHashMap<Integer, Chunk> dt, Integer k1, Integer k2, Integer k3, Chunk v1) -> {
-						if (dt.get(k1, k2, k3).chunkInfo != 0) {
-							dt.get(k1, k2, k3).meshChunk();
-						}
-					});
+					//chunks.iterate((NdHashMap<Integer, Chunk> dt, Integer k1, Integer k2, Integer k3, Chunk v1) -> {
+					//	if (dt.get(k1, k2, k3).chunkInfo != 0) {
+							//dt.get(k1, k2, k3).meshChunk();
+					//	}
+					//});
 					
 					Thread.sleep(100);
-				} catch (Exception e) {}
+				} catch (Exception e) {System.err.println(e.getCause());}
 			}
-		}).start();
+		});
+		th.start();
+		generatorThreads.add(th);
 	}
 	
 	/**
@@ -166,6 +174,29 @@ public class World {
 		if (c == null)
 			return 0;
 		return c.blocks.getWorld(x, y, z);
+	}
+	
+	public Block getBlockB(int x, int y, int z) {
+		Chunk c = getChunkWorld(x, y, z);
+		if (c == null)
+			return GameRegistry.getBlock((short) 0);
+		return GameRegistry.getBlock(c.blocks.getWorld(x, y, z));
+	}
+	
+	public List<AxisAlignedBB> getBoundsInRange(int nx, int ny, int nz, int px, int py, int pz){
+		ArrayList<AxisAlignedBB> lis = new ArrayList<AxisAlignedBB>();
+		
+		for (int i = nx; i <= px; i++) {
+			for (int j = ny; j <= py; j++) {
+				for (int k = nz; k <= pz; k++) {
+					AxisAlignedBB bb = getBlockB(i, j, k).bbox;
+					if (bb != null)
+						lis.add(bb.translate(i, j, k));
+				}
+			}
+		}
+		
+		return lis;
 	}
 	
 	/*

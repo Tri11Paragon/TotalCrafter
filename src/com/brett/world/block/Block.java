@@ -2,6 +2,7 @@ package com.brett.world.block;
 
 import java.util.HashMap;
 
+import com.brett.engine.data.collision.AxisAlignedBB;
 import com.brett.world.World;
 import com.brett.world.chunks.data.RenderMode;
 
@@ -23,6 +24,7 @@ public class Block {
 	
 	public int textureTop, textureBottom, textureLeft, textureRight, textureFront, textureFront2, textureBack;
 	public short id;
+	public AxisAlignedBB bbox = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
 	
 	public RenderMode renderMode = RenderMode.SOLID;
 	

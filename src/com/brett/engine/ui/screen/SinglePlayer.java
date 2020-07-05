@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 
+import com.brett.engine.DebugInfo;
 import com.brett.engine.cameras.CreativeCamera;
 import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.shaders.ProjectionMatrix;
@@ -57,10 +58,12 @@ public class SinglePlayer extends Screen {
 		UIText textd = new UIText("", 250, "mono", 50, 200, 500);
 		addText(textd);
 		elements.add(new UITextInput(ScreenManager.loader.loadTexture("clay"), textd, 31, 50, 200, 400, 50));*/
-		camera = new CreativeCamera(new Vector3d(0,4,0));
-		
 		
 		world = new World();
+		camera = new CreativeCamera(new Vector3d(0,140,0), world);
+		
+		menus.add(DebugInfo.init(camera));
+		
 		shader = new VoxelShader();
 		shader.start();
 		shader.loadProjectionMatrox(ProjectionMatrix.projectionMatrix);
@@ -85,6 +88,7 @@ public class SinglePlayer extends Screen {
 	@Override
 	public void onLeave() {
 		world.save();
+		menus.remove(DebugInfo.destroy());
 		super.onLeave();
 	}
 	
@@ -150,6 +154,9 @@ public class SinglePlayer extends Screen {
 	@Override
 	public void close() {
 		super.close();
+		for (int i = 0; i < world.generatorThreads.size(); i++) {
+			world.generatorThreads.get(i).interrupt();
+		}
 	}
 	
 }
