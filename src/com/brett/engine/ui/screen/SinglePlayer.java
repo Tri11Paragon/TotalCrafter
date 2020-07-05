@@ -17,6 +17,8 @@ import com.brett.engine.shaders.VoxelShader;
 import com.brett.engine.tools.Maths;
 import com.brett.engine.tools.Settings;
 import com.brett.engine.ui.UIElement;
+import com.brett.engine.ui.UIMenu;
+import com.brett.engine.ui.console.Console;
 import com.brett.engine.ui.font.UIText;
 import com.brett.world.GameRegistry;
 import com.brett.world.World;
@@ -37,11 +39,13 @@ public class SinglePlayer extends Screen {
 	public int textureAtlas;
 	public World world;
 	public VoxelShader shader;
+	private UIMenu console;
 	
 	public SinglePlayer() {
 		textureAtlas = ScreenManager.loader.loadSpecialTextureATLAS(16, 16);
 		GameRegistry.registerBlocks();
 		GameRegistry.registerItems();
+		console = Console.init();
 	}
 	
 	@Override
@@ -62,7 +66,9 @@ public class SinglePlayer extends Screen {
 		world = new World();
 		camera = new CreativeCamera(new Vector3d(0,140,0), world);
 		
+		menus.add(console);
 		menus.add(DebugInfo.init(camera));
+		
 		
 		shader = new VoxelShader();
 		shader.start();

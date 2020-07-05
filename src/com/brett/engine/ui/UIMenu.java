@@ -17,11 +17,15 @@ import com.brett.engine.ui.font.UIText;
 public class UIMenu implements RescaleEvent {
 	
 	protected List<UIElement> elements = new ArrayList<UIElement>();
-	protected static Map<String, List<UIText>> textMap = new HashMap<String, List<UIText>>();
+	protected Map<String, List<UIText>> textMap = new HashMap<String, List<UIText>>();
 	private boolean enabled = false;
 	
 	public UIMenu() {
 		DisplayManager.rescales.add(this);
+	}
+	
+	public int spillText() {
+		return textMap.get("mono").size();
 	}
 	
 	public List<UIElement> render() {
@@ -52,7 +56,7 @@ public class UIMenu implements RescaleEvent {
 		enabled = false;
 	}
 	
-	public boolean getEnabled() {
+	public boolean isEnabled() {
 		return enabled;
 	}
 	

@@ -14,7 +14,7 @@ public class InputMaster {
 	public static boolean mouseState;
 	
 	public static final boolean[] keyDown = new boolean[1023];
-	public static final boolean[] mouseDown = new boolean[3];
+	public static final boolean[] mouseDown = new boolean[32];
 	
 	public static void keyPressed(int key) {
 		keyDown[key] = true;

@@ -54,29 +54,29 @@ public class UITextInput extends UIButton implements IKeyState {
 				textBuffer += '_';
 				text.changeText(textBuffer);
 			}
+			if (InputMaster.keyDown[GLFW.GLFW_KEY_BACKSPACE]) {
+				if (System.currentTimeMillis() - startTime > 800) {
+					if (System.currentTimeMillis() - lastKeyTime > 40) {
+						if (textBuffer.length() < 2)
+							return;
+						textBuffer = textBuffer.substring(0, textBuffer.length()-2);
+						lastKeyTime = System.currentTimeMillis();
+						text.changeText(textBuffer);
+						if (event != null) {
+							if (event.event(getTextNoSel())) {
+								textBuffer = "_";
+								text.changeText(textBuffer);
+							}
+						}
+					}
+				}
+			}
 		} else {
 			if (texs.length == 0)
 				return;
 			if (texs[texs.length-1] == '_') {
 				textBuffer = textBuffer.substring(0, texs.length-1);
 				text.changeText(textBuffer);
-			}
-		}
-		if (InputMaster.keyDown[GLFW.GLFW_KEY_BACKSPACE]) {
-			if (System.currentTimeMillis() - startTime > 800) {
-				if (System.currentTimeMillis() - lastKeyTime > 40) {
-					if (textBuffer.length() < 2)
-						return;
-					textBuffer = textBuffer.substring(0, textBuffer.length()-2);
-					lastKeyTime = System.currentTimeMillis();
-					text.changeText(textBuffer);
-					if (event != null) {
-						if (event.event(getTextNoSel())) {
-							textBuffer = "_";
-							text.changeText(textBuffer);
-						}
-					}
-				}
 			}
 		}
 	}

@@ -269,6 +269,7 @@ public class UIText implements Serializable, RescaleEvent {
 	public static UIText updateTextMesh(UIText text){
 		// load the text data
 		TextMeshData data = ScreenManager.fonts.get(text.font).loadText(text);
+		ScreenManager.loader.deleteVAO(text.getMesh());
 		// get a vao from the text mesh data
 		int vao = ScreenManager.loader.loadToVAO(data.getVertexPositions(), data.getTextureCoords(), 2).getVaoID();
 		// update the text with the mesh

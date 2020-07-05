@@ -41,15 +41,17 @@ public class DebugInfo {
 	}
 	
 	public static void update() {
-		frames++;
-		if (System.currentTimeMillis() - lastTime > 1000) {
-			FPS.changeText(new StringBuilder().append("FPS: ").append(frames).toString());
-			POSITION.changeText(new StringBuilder().append("X: ").append(camera.getPosition().x)
-					.append("\nY: ").append(camera.getPosition().y).append("\nZ: ").append(camera.getPosition().z).toString());
-			MEMORYINFO.changeText(new StringBuilder().append("Free Memory: ").append((Runtime.getRuntime().freeMemory()/1024)/1024).append(" MB").append("\n")
-				.append("Total Memory: ").append((Runtime.getRuntime().totalMemory()/1024)/1024).append(" MB").toString());
-			frames = 0;
-			lastTime = System.currentTimeMillis();
+		if (menu.isEnabled()) {
+			frames++;
+			if (System.currentTimeMillis() - lastTime > 1000) {
+				FPS.changeText(new StringBuilder().append("FPS: ").append(frames).toString());
+				POSITION.changeText(new StringBuilder().append("X: ").append(camera.getPosition().x)
+						.append("\nY: ").append(camera.getPosition().y).append("\nZ: ").append(camera.getPosition().z).toString());
+				MEMORYINFO.changeText(new StringBuilder().append("Free Memory: ").append((Runtime.getRuntime().freeMemory()/1024)/1024).append(" MB").append("\n")
+					.append("Total Memory: ").append((Runtime.getRuntime().totalMemory()/1024)/1024).append(" MB").toString());
+				frames = 0;
+				lastTime = System.currentTimeMillis();
+			}
 		}
 	}
 	

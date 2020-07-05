@@ -17,12 +17,6 @@ public class VAO {
 		this.vertexCount = vertexCount;
 		this.vbos = vbos;
 	}
-	
-	public VAO(int vaoID, int vertexCount) {
-		this.vaoID = vaoID;
-		this.vertexCount = vertexCount;
-		this.vbos = new int[0];
-	}
 
 	public int getVaoID() {
 		return vaoID;

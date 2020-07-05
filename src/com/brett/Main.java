@@ -16,6 +16,7 @@ import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.InputMaster;
 import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.tools.Settings;
+import com.brett.engine.ui.console.Console;
 import com.brett.engine.ui.screen.SinglePlayer;
 
 public class Main {
@@ -118,6 +119,7 @@ public class Main {
 			}
 			
 			DebugInfo.update();
+			Console.update();
 			DisplayManager.updateDisplay();
 			SyncSave.sync(Settings.FPS);
 		}
