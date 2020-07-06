@@ -28,6 +28,8 @@ public class World {
 	public volatile List<NdHashMap<Integer, Chunk>> maps = null;
 	public volatile List<Thread> generatorThreads = new ArrayList<Thread>();
 	public int threads = 1;
+	public Noise noise1 = new Noise(694);
+	public Noise noise2 = new Noise(733210811l + 11181013212l + 11111173287l + 105108108326051l);
 	
 	public World() {
 		threads = ThreadPool.reserveQuarterThreads() + ThreadPool.reserveQuarterThreads();
@@ -59,7 +61,9 @@ public class World {
 												int wz = czw + k;
 												double nfxz = 0;
 												if (cyw > -120)
-													nfxz = (Noise.noise.nNoise(wx/32d, 56.43958205810, wz/32d, 16, 4d)) * 64 + 64;
+													nfxz = ((noise1.nNoise(wx/128d, noise2.noise(wx, wz), wz/128d, 16, 4d) * 
+															noise2.nNoise((wx + noise1.noise(wz, wx))/128d, (wz + noise1.noise(wx, wz))/128d, 0, 16, 4d)) 
+															+ noise1.noise(wx/173.0433d, wz/173.0433d)) * 64 + 64;
 												for (int j = 0; j < 16; j++) {
 													int wy = cyw + j;
 													
@@ -67,9 +71,9 @@ public class World {
 														
 													} else {
 													
-														double nf = (Noise.noise.noise(wx/96.593, wy/173.593, wz/96.593) * Noise.noise.noise(wx/16.493, wy/32.293, wz/16.493)) 
-																+ Noise.noise.noise(wx/256.793, wy/256.593, wz/156.793);
-														if (nf > -0.2) {
+														//double nf = (Noise.noise.noise(wx/96.593, wy/173.593, wz/96.593) * Noise.noise.noise(wx/16.493, wy/32.293, wz/16.493)) 
+														//		+ Noise.noise.noise(wx/256.793, wy/256.593, wz/156.793);
+														//if (nf > -0.2) {
 															if (wy < nfxz && wy > nfxz-1)
 																blks.setWorld(wx, wy, wz, Block.GRASS);
 															else if (wy < nfxz-1 && wy > (nfxz - 4))
@@ -78,7 +82,7 @@ public class World {
 																blks.setWorld(wx, wy, wz, Block.STONE);
 															else
 																blks.setWorld(wx, wy, wz, Block.BASALT);
-														}
+														//}
 													}
 												}
 											}

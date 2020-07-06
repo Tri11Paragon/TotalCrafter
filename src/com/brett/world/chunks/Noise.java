@@ -211,15 +211,6 @@ public final class Noise {
     		total += noise(x/i, y/i, z/i);
     	}
     	
-    	double nf = noise(x, z) * 500000;
-    	
-    	if (nf > 0) {
-    		total /= nf;
-    		total += nf/500000;
-    	}
-    	
-    	//total /= octaves;
-    	
     	return total;
     }
     
