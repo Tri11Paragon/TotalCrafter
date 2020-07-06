@@ -107,57 +107,59 @@ public class CreativeCamera extends Camera {
 		int intpy = (int) position.y;
 		int intpz = (int) position.z;
 		
-		List<AxisAlignedBB> bbs = world.getBoundsInRange(intpx-2, intpy-2, intpz-2, intpx+2, intpy+2, intpz+2);
-		
-		if (dx != 0) {
-			AxisAlignedBB ctb = cbb.translate(position.x + dx, position.y, position.z);
-			boolean broken = false;
-			for (int i = 0; i < bbs.size(); i++) {
-				if (bbs.get(i) == null)
-					continue;
-				
-				if (ctb.intersectsWith(bbs.get(i))) {
-					broken = true;
-					break;
+		if (dx != 0 || dy != 0 || dz != 0) {
+			List<AxisAlignedBB> bbs = world.getBoundsInRange(intpx-2, intpy-2, intpz-2, intpx+2, intpy+2, intpz+2);
+			
+			if (dx != 0) {
+				AxisAlignedBB ctb = cbb.translate(position.x + dx, position.y, position.z);
+				boolean broken = false;
+				for (int i = 0; i < bbs.size(); i++) {
+					if (bbs.get(i) == null)
+						continue;
+					
+					if (ctb.intersectsWith(bbs.get(i))) {
+						broken = true;
+						break;
+					}
+					
 				}
-				
+				if (!broken)
+					position.x += dx;
 			}
-			if (!broken)
-				position.x += dx;
-		}
-		
-		if (dy != 0) {
-			AxisAlignedBB ctb = cbb.translate(position.x, position.y + dy, position.z);
-			boolean broken = false;
-			for (int i = 0; i < bbs.size(); i++) {
-				if (bbs.get(i) == null)
-					continue;
-				
-				if (ctb.intersectsWith(bbs.get(i))) {
-					broken = true;
-					break;
+			
+			if (dy != 0) {
+				AxisAlignedBB ctb = cbb.translate(position.x, position.y + dy, position.z);
+				boolean broken = false;
+				for (int i = 0; i < bbs.size(); i++) {
+					if (bbs.get(i) == null)
+						continue;
+					
+					if (ctb.intersectsWith(bbs.get(i))) {
+						broken = true;
+						break;
+					}
+					
 				}
-				
+				if (!broken)
+					position.y += dy;
 			}
-			if (!broken)
-				position.y += dy;
-		}
-		
-		if (dz != 0) {
-			AxisAlignedBB ctb = cbb.translate(position.x, position.y, position.z+dz);
-			boolean broken = false;
-			for (int i = 0; i < bbs.size(); i++) {
-				if (bbs.get(i) == null)
-					continue;
-				
-				if (ctb.intersectsWith(bbs.get(i))) {
-					broken = true;
-					break;
+			
+			if (dz != 0) {
+				AxisAlignedBB ctb = cbb.translate(position.x, position.y, position.z+dz);
+				boolean broken = false;
+				for (int i = 0; i < bbs.size(); i++) {
+					if (bbs.get(i) == null)
+						continue;
+					
+					if (ctb.intersectsWith(bbs.get(i))) {
+						broken = true;
+						break;
+					}
+					
 				}
-				
+				if (!broken)
+					position.z += dz;
 			}
-			if (!broken)
-				position.z += dz;
 		}
 	}
 
