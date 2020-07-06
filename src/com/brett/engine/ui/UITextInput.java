@@ -110,8 +110,6 @@ public class UITextInput extends UIButton implements IKeyState {
 					text.changeText(textBuffer);
 					return;
 				}
-				if (textBuffer.length() >= maxCharacters)
-					return;
 				if (keys == GLFW.GLFW_KEY_ENTER) {
 					if (event != null) {
 						if (event.event(getTextNoSel())) {
@@ -121,6 +119,8 @@ public class UITextInput extends UIButton implements IKeyState {
 					}
 					return;
 				}
+				if (textBuffer.length() >= maxCharacters)
+					return;
 				if (keys < 30 || keys > 100)
 					return;
 				for (int i = 0; i < Utils.illegalCharacters.size(); i++){

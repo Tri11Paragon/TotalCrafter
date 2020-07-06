@@ -20,7 +20,7 @@ public class Screen {
 	
 	public List<UIElement> elements = new ArrayList<UIElement>();
 	public List<UIMenu> menus = new ArrayList<UIMenu>();
-	public static Map<String, List<UIText>> textMap = new HashMap<String, List<UIText>>();
+	public Map<String, List<UIText>> textMap = new HashMap<String, List<UIText>>();
 	
 	/**
 	 * called when the game switches to the screen

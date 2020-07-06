@@ -83,6 +83,10 @@ public class UIMenu implements RescaleEvent {
 			textMap.put(text.getFont(), new ArrayList<UIText>());
 		textMap.get(text.getFont()).add(text);
 	}
+	
+	public void addElement(UIElement ele) {
+		elements.add(ele);
+	}
 
 	@Override
 	public void rescale() {

@@ -23,6 +23,22 @@ public abstract class ICamera {
 	public void setPosition(Vector3d position) {
 		this.position = position;
 	}
+	
+	public void setPosition(double x, double y, double z) {
+		this.position.set(x,y,z);
+	}
+	
+	public double getX() {
+		return this.position.x;
+	}
+	
+	public double getY() {
+		return this.position.y;
+	}
+	
+	public double getZ() {
+		return this.position.z;
+	}
 
 	public void setPitch(float pitch) {
 		this.pitch = pitch;

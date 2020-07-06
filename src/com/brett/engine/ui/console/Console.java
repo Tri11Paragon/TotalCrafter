@@ -7,7 +7,9 @@ import org.lwjgl.glfw.GLFW;
 import com.brett.engine.Utils;
 import com.brett.engine.data.IKeyState;
 import com.brett.engine.managers.InputMaster;
+import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.ui.UIMenu;
+import com.brett.engine.ui.UITexture;
 import com.brett.engine.ui.font.UIText;
 
 /**
@@ -19,17 +21,22 @@ public class Console {
 	
 	private static UIMenu menu;
 	private static String textBuffer = "";
-	public static int maxCharacters = 32;
-	private static HashMap<String, Command> commands = new HashMap<String, Command>();
+	private static String bodyBuffer = "";
+	public static int maxCharacters = 48;
+	public static HashMap<String, Command> commands = new HashMap<String, Command>();
 	private static long startTime = 0;
 	private static long lastKeyTime = 0;
 	private static UIText commandtext;
+	private static UIText pastCommands;
 	
 	public static UIMenu init() {
 		menu = new UIMenu();
 		
-		commandtext = new UIText("", 250, "mono", 300, 300, 3000, 1);
+		commandtext = new UIText("", 175, "mono", 10, 600, 3000, 1);
+		pastCommands = new UIText("", 175, "mono", 10, 10, 600, 100);
 		menu.addText(commandtext);
+		menu.addText(pastCommands);
+		menu.addElement(new UITexture(ScreenManager.loader.loadTexture("gui/darkgrey"), -1, -1, 5, 5, 445, 620));
 		
 		InputMaster.keyboard.add(new IKeyState() {
 			
@@ -49,23 +56,43 @@ public class Console {
 						commandtext.changeText(textBuffer);
 						return;
 					}
-					if (textBuffer.length() >= maxCharacters)
-						return;
 					if (keys == GLFW.GLFW_KEY_ENTER) {
+						if (pastCommands.getHeight()>4.595069) {
+							bodyBuffer = "";
+							pastCommands.changeText(bodyBuffer);
+							pastCommands.setHeight(0);
+						}
+						if (textBuffer.length() < 1)
+							return;
+						if (textBuffer.toCharArray()[textBuffer.length()-1] == '_')
+							textBuffer = textBuffer.substring(0, textBuffer.length()-1);
 						String[] args = textBuffer.split(" ");
 						if (args.length < 1)
 							return;
 						String command = args[0];
+						if (command.length() < 1)
+							return;
+						if (command.toCharArray()[command.length()-1] == '_')
+							command = command.substring(0, command.length()-1);
+						bodyBuffer += ">" + textBuffer + "\n";
 						if (args.length > 1)
 							args = Arrays.copyOfRange(args, 1, args.length);
 						else
 							args = new String[0];
+						String responce = "";
 						if (commands.containsKey(command))
-							commands.get(command).commandEntered(textBuffer, args);
+							responce = commands.get(command).commandEntered(textBuffer, args);
+						else
+							bodyBuffer += "COMMAND NOT FOUND\n";
+						bodyBuffer += responce + ""; 
 						textBuffer = "_";
 						commandtext.changeText(textBuffer);
+						pastCommands.changeText(bodyBuffer);
 						return;
 					}
+					// TODO: Character Scroll
+					if (textBuffer.length() >= maxCharacters)
+						return;
 					if (keys < 30 || keys > 100 || keys == GLFW.GLFW_KEY_GRAVE_ACCENT)
 						return;
 					for (int i = 0; i < Utils.illegalCharacters.size(); i++){
@@ -102,8 +129,11 @@ public class Console {
 	}
 	
 	public static void registerCommand(String[] sands, Command command) {
-		for (int i = 0; i < sands.length; i++)
+		for (int i = 0; i < sands.length; i++) {
+			if (commands.containsKey(sands[i]))
+				commands.remove(sands[i]);
 			commands.put(sands[i], command);
+		}
 	}
 	
 	public static String getTextNoSel() {
@@ -128,7 +158,8 @@ public class Console {
 				commandtext.changeText(textBuffer);
 			}
 			if (InputMaster.keyDown[GLFW.GLFW_KEY_BACKSPACE]) {
-				if (System.currentTimeMillis() - startTime > 800) {
+				long time = System.currentTimeMillis() - startTime;
+				if (time > 800 && time < 1600) {
 					if (System.currentTimeMillis() - lastKeyTime > 40) {
 						if (textBuffer.length() < 2)
 							return;

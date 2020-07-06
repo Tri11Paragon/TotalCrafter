@@ -19,6 +19,7 @@ import com.brett.engine.tools.Settings;
 import com.brett.engine.ui.UIElement;
 import com.brett.engine.ui.UIMenu;
 import com.brett.engine.ui.console.Console;
+import com.brett.engine.ui.console.TeleportCommand;
 import com.brett.engine.ui.font.UIText;
 import com.brett.world.GameRegistry;
 import com.brett.world.World;
@@ -65,6 +66,7 @@ public class SinglePlayer extends Screen {
 		
 		world = new World();
 		camera = new CreativeCamera(new Vector3d(0,140,0), world);
+		Console.registerCommand(new String[] {"tp", "teleport"}, new TeleportCommand(camera));
 		
 		menus.add(console);
 		menus.add(DebugInfo.init(camera));
