@@ -38,8 +38,8 @@ public class Chunk {
 	public static final byte BOTTOM = 0b100000;
 
 	public ShortBlockStorage blocks = new ShortBlockStorage();
-	//public ByteBlockStorage lightLevel = new ByteBlockStorage();
-	//public ByteBlockStorage lights = new ByteBlockStorage();
+	public ByteBlockStorage lightLevel = new ByteBlockStorage();
+	public ByteBlockStorage lights = new ByteBlockStorage();
 
 	public VAO vao;
 	public float[] positions;
@@ -68,6 +68,10 @@ public class Chunk {
 	public Chunk(World world, ShortBlockStorage blocks, ByteBlockStorage lightLevel, ByteBlockStorage lights, int x_pos, int y_pos, int z_pos) {
 		if (blocks != null)
 			this.blocks = blocks;
+		if (lightLevel != null)
+			this.lightLevel = lightLevel;
+		if (lights != null) 
+			this.lights = lights;
 		this.x_pos = x_pos;
 		this.y_pos = y_pos;
 		this.z_pos = z_pos;
@@ -111,7 +115,7 @@ public class Chunk {
 						if (leftR != RenderMode.SOLID) {
 							positions = addArray(positions,
 									updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
-							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, b.textureLeft));
+							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, world.getLightLevel(wx - 1, wy, wz), b.textureLeft));
 						}
 					}
 
@@ -121,7 +125,7 @@ public class Chunk {
 						if (rightR != RenderMode.SOLID) {
 							positions = addArray(positions,
 									updateVertexTranslation(MeshStore.vertsRightComplete, i, j, k));
-							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, b.textureRight));
+							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, world.getLightLevel(wx + 1, wy, wz), b.textureRight));
 						}
 					}
 
@@ -131,7 +135,7 @@ public class Chunk {
 						if (frontR != RenderMode.SOLID) {
 							positions = addArray(positions,
 									updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
-							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, b.textureFront));
+							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, world.getLightLevel(wx, wy, wz + 1), b.textureFront));
 						}
 					}
 
@@ -141,7 +145,7 @@ public class Chunk {
 						if (backR != RenderMode.SOLID) {
 							positions = addArray(positions,
 									updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
-							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, b.textureBack));
+							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, world.getLightLevel(wx, wy, wz - 1), b.textureBack));
 						}
 					}
 
@@ -151,7 +155,7 @@ public class Chunk {
 						if (topR != RenderMode.SOLID) {
 							positions = addArray(positions,
 									updateVertexTranslation(MeshStore.vertsTopComplete, i, j, k));
-							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, b.textureTop));
+							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, world.getLightLevel(wx, wy + 1, wz), b.textureTop));
 						}
 					}
 
@@ -161,7 +165,7 @@ public class Chunk {
 						if (bottomR != RenderMode.SOLID) {
 							positions = addArray(positions,
 									updateVertexTranslation(MeshStore.vertsBottomComplete, i, j, k));
-							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, b.textureBottom));
+							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, world.getLightLevel(wx, wy - 1, wz), b.textureBottom));
 						}
 					}
 

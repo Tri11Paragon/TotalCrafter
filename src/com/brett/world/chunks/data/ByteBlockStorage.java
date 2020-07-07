@@ -14,14 +14,14 @@ public static final int SIZE = 16;
 	/**
 	 * returns the block at a position in the array
 	 */
-	public short get(int x, int y, int z) {
+	public byte get(int x, int y, int z) {
 		return blocks[y + z * SIZE + x * SIZE * SIZE];
 	}
 	
 	/**
 	 * set a index in the array from a world position
 	 */
-	public short getWorld(int x, int y, int z) {
+	public byte getWorld(int x, int y, int z) {
 		return blocks[y & 0xF + (z & 0xF) * SIZE + (x & 0xF) * SIZE * SIZE];
 	}
 	

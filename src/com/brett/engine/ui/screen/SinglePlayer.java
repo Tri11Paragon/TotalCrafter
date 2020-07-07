@@ -1,5 +1,6 @@
 package com.brett.engine.ui.screen;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import org.lwjgl.opengl.GL30;
 
 import com.brett.engine.DebugInfo;
 import com.brett.engine.cameras.CreativeCamera;
+import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.shaders.ProjectionMatrix;
 import com.brett.engine.shaders.VoxelShader;
@@ -41,6 +43,7 @@ public class SinglePlayer extends Screen {
 	public World world;
 	public VoxelShader shader;
 	private UIMenu console;
+	private static int gBuffer = -1, gPosition, gNormal, gColorSpec;
 	
 	public SinglePlayer() {
 		textureAtlas = ScreenManager.loader.loadSpecialTextureATLAS(16, 16);
@@ -165,6 +168,43 @@ public class SinglePlayer extends Screen {
 		for (int i = 0; i < world.generatorThreads.size(); i++) {
 			world.generatorThreads.get(i).interrupt();
 		}
+	}
+	
+	public static void genBuffers() {
+		if (gBuffer > -1) {
+			GL30.glDeleteFramebuffers(gBuffer);
+			GL11.glDeleteTextures(gPosition);
+			GL11.glDeleteTextures(gNormal);
+			GL11.glDeleteTextures(gColorSpec);
+		}
+		
+		gBuffer = GL30.glGenFramebuffers();
+		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, gBuffer);
+		
+		gPosition = GL11.glGenTextures();
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gPosition);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA16, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (ByteBuffer) null);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, gPosition, 0);
+		
+		gNormal = GL11.glGenTextures();
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gNormal);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA16, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (ByteBuffer) null);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT1, GL11.GL_TEXTURE_2D, gNormal, 0);
+		
+		gColorSpec = GL11.glGenTextures();
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gColorSpec);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT2, GL11.GL_TEXTURE_2D, gColorSpec, 0);
+		
+		GL30.glDrawBuffers(new int[] {GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1, GL30.GL_COLOR_ATTACHMENT2});
+		
+		
 	}
 	
 }

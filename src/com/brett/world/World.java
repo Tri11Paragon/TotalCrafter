@@ -61,7 +61,7 @@ public class World {
 												int wz = czw + k;
 												double nfxz = 0;
 												if (cyw > -120)
-													nfxz = noise1.noise(wx/128d + noise2.nNoise(wx/32d, 4/3492d, wz/32d, 8, 4d), wz/128d) * 64 + 64;
+													nfxz = noise1.noise(wx/128d + noise2.nNoise(wx/32d, 4/3492d, wz/32d + noise1.noise(wx, wz), 8, 4d), wz/128d) * 64 + 64;
 												for (int j = 0; j < 16; j++) {
 													int wy = cyw + j;
 													
@@ -175,6 +175,45 @@ public class World {
 		if (c == null)
 			return 0;
 		return c.blocks.getWorld(x, y, z);
+	}
+	
+	public byte getLightLevel(int x, int y, int z) {
+		Chunk c = getChunkWorld(x, y, z);
+		if (c == null)
+			return 0;
+		return c.lightLevel.getWorld(x, y, z);
+	}
+	
+	public byte getSunLevel(int x, int y, int z) {
+		Chunk c = getChunkWorld(x, y, z);
+		if (c == null)
+			return 0;
+		return (byte) (c.lightLevel.getWorld(x, y, z) >> 4);
+	}
+	
+	public byte getBlockLevel(int x, int y, int z) {
+		Chunk c = getChunkWorld(x, y, z);
+		if (c == null)
+			return 0;
+		return (byte) (c.lightLevel.getWorld(x, y, z) & 0xF);
+	}
+	
+	public void setLightLevel(int x, int y, int z, byte level) {
+		Chunk c = getChunkWorld(x, y, z);
+		if (c != null)
+			c.lightLevel.setWorld(x, y, z, level);
+	}
+	
+	public void setSunLevel(int x, int y, int z, byte level) {
+		Chunk c = getChunkWorld(x, y, z);
+		if (c != null)
+			c.lightLevel.setWorld(x, y, z, c.lightLevel.getWorld(x, y, z) | (level << 4));
+	}
+	
+	public void setBlockLevel(int x, int y, int z, byte level) {
+		Chunk c = getChunkWorld(x, y, z);
+		if (c != null)
+			c.lightLevel.setWorld(x, y, z, c.lightLevel.getWorld(x, y, z) | (level & 0xF));
 	}
 	
 	public Block getBlockB(int x, int y, int z) {

@@ -20,11 +20,11 @@ void main(void){
 	int idata = int(data);
 	textureCoords = vec2((idata >> 1) & 0x1, idata & 0x1);
 	
-	lightLevel = 15;
+	lightLevel = (idata >> 2 & 0xF) + (idata >> 6 & 0xF);
 	
 	if (lightLevel > 15){
 		lightLevel = 15;
 	}
-	layerF = (idata >> 2) & 0x2FF;
+	layerF = (idata >> 10) & 0x2FF;
 	
 }
