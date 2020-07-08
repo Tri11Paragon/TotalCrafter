@@ -90,7 +90,7 @@ public class World {
 									ungeneratedChunks.clear(ourMap);
 								}
 							}
-							Thread.sleep(100);
+							Thread.sleep(250);
 						} catch (Exception e) {e.printStackTrace();}
 					}
 					
@@ -113,7 +113,7 @@ public class World {
 					//	}
 					//});
 					
-					Thread.sleep(100);
+					Thread.sleep(250);
 				} catch (Exception e) {System.err.println(e.getCause());}
 			}
 		});

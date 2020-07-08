@@ -248,6 +248,25 @@ public class Maths {
 		cameraPos.negate();
 		return viewMatrix;
 	}
+	
+	public static Matrix4f createViewMatrix(ICamera camera, Matrix4f matrix) {
+		// reset the matrix from the last frame
+		// saves on making new objects.
+		matrix.identity();
+		// rotates to the camera
+		matrix.rotate((float) Math.toRadians(camera.getPitch()), rx);
+		matrix.rotate((float) Math.toRadians(camera.getYaw()), ry);
+		Vector3d cameraPos = camera.getPosition();
+		// make negative.
+		cameraPos.negate();
+		// to make the game look like we are moving, what games to is actually move the
+		// world negative
+		// to where the camera is. Pretty neat eh?
+		matrix.translate(cameraPos.get(pos));
+		// reset the camera pos back to normal
+		cameraPos.negate();
+		return matrix;
+	}
 
 	static Matrix4f viewMatrixC = new Matrix4f();
 	private static double x = 0, z = 0, y = 0;

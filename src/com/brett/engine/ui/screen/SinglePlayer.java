@@ -28,6 +28,7 @@ import com.brett.world.World;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
 import com.brett.world.chunks.data.ShortBlockStorage;
+import com.brett.world.tools.RayCasting;
 
 /**
 * @author Brett
@@ -113,6 +114,7 @@ public class SinglePlayer extends Screen {
 		chunkViewMatrix = Maths.createViewMatrixROT(camera);
 		viewMatrix = Maths.createViewMatrix(camera);
 		camera.calculateFrustum(ProjectionMatrix.projectionMatrix, viewMatrix);
+		RayCasting.update(camera);
 		
 		ScreenManager.enableCulling();
 		ScreenManager.enableTransparentcy();
