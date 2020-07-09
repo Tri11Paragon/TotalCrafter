@@ -217,7 +217,10 @@ public class SinglePlayer extends Screen implements IMouseState {
 
 	@Override
 	public void onMousePressed(int button) {
-		System.out.println(MouseBlockPicker.getBlockMine(world, camera, 6, Block.AIR).id);
+		if (button == 0) {
+			MouseBlockPicker.getBlockMine(world, camera, 6, Block.AIR);
+		} else if (button == 1)
+			MouseBlockPicker.getBlockPlace(world, camera, 6, Block.BASALT);
 	}
 
 	@Override

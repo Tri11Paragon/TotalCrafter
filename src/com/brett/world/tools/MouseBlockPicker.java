@@ -28,7 +28,7 @@ public class MouseBlockPicker {
 	 * @param replacement the block to replace the closest non air block with this, set to -1 if you don't wish to remove
 	 * @return the block at the closest non air pos
 	 */
-	public static Block getBlockMine(World world, ICamera camera, float range, short replacement) {
+	public static synchronized Block getBlockMine(World world, ICamera camera, float range, short replacement) {
 		cur.x = RayCasting.currentRay.x * range;
 		cur.y = RayCasting.currentRay.y * range;
 		cur.z = RayCasting.currentRay.z * range;
@@ -63,16 +63,38 @@ public class MouseBlockPicker {
 		return GameRegistry.getBlock(Block.AIR);
 	}
 	
-	public static void getBlockPlace(World world, ICamera camera, float range, short block) {
+	public static synchronized void getBlockPlace(World world, ICamera camera, float range, short block) {
 		//mystic is lowkey cute but kinda retarded
 		// noything compared to will
 		cur.x = RayCasting.currentRay.x * range;
 		cur.y = RayCasting.currentRay.y * range;
 		cur.z = RayCasting.currentRay.z * range;
-		pos.set(RayCasting.currentRay);
+		pos.set(cur);
 		float xStep = cur.x / 12;
 		float yStep = cur.y / 12;
 		float zStep = cur.z / 12;
+		for (int i = 0; i < 12; i++) {
+			worldpos.x = (int) ((pos.x -= xStep) + camera.getPosition().x);
+			worldpos.y = (int) ((pos.y -= yStep) + camera.getPosition().y);
+			worldpos.z = (int) ((pos.z -= zStep) + camera.getPosition().z);
+			if (worldpos.x < 1)
+				xoff = -1;
+			else
+				zoff = 0;
+			if (worldpos.y < 1)
+				yoff = -1;
+			else
+				yoff = 0;
+			if (worldpos.z < 1)
+				zoff = -1;
+			else
+				zoff = 0;
+			Block bapos = GameRegistry.getBlock(world.getBlock(worldpos.x + xoff, worldpos.y, worldpos.z + zoff));
+			if (bapos.id != Block.AIR)
+				continue;
+			world.setBlock(worldpos.x + xoff, worldpos.y + yoff, worldpos.z + zoff, block);
+			return;
+		}
 	}
 	
 }

@@ -221,7 +221,7 @@ public class World {
 	public Block getBlockB(int x, int y, int z) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c == null)
-			return GameRegistry.getBlock((short) 0);
+			return GameRegistry.getBlock(Block.AIR);
 		return GameRegistry.getBlock(c.blocks.getWorld(x, y, z));
 	}
 	
