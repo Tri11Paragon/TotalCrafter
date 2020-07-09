@@ -98,7 +98,7 @@ public class GameRegistry {
 	}
 	
 	public static Block getBlock(short id) {
-		return Block.blocks.get(id) != null ? Block.blocks.get(id) : Block.blocks.get((short)0);
+		return Block.blocks.get(id) != null ? Block.blocks.get(id) : Block.blocks.get(Block.AIR);
 	}
 	
 }

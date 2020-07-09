@@ -147,8 +147,10 @@ public class World {
 				ungeneratedChunks.set(cx, cy, cz, c);
 			}
 		}
-		if (c != null)
+		if (c != null) {
 			c.blocks.setWorld(x, y, z, id);
+			c.meshChunk();
+		}
 	}
 	
 	public RenderMode getRenderMode(int x, int y, int z) {
@@ -225,6 +227,10 @@ public class World {
 	
 	public List<AxisAlignedBB> getBoundsInRange(int nx, int ny, int nz, int px, int py, int pz){
 		ArrayList<AxisAlignedBB> lis = new ArrayList<AxisAlignedBB>();
+		return getBoundsInRange(lis, nx, ny, nz, px, py, pz);
+	}
+	
+	public List<AxisAlignedBB> getBoundsInRange(ArrayList<AxisAlignedBB> lis, int nx, int ny, int nz, int px, int py, int pz){
 		
 		for (int i = nx; i <= px; i++) {
 			for (int j = ny; j <= py; j++) {

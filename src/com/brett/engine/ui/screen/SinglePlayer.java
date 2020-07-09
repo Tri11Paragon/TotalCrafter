@@ -12,14 +12,18 @@ import org.lwjgl.opengl.GL30;
 
 import com.brett.engine.DebugInfo;
 import com.brett.engine.cameras.CreativeCamera;
+import com.brett.engine.data.IMouseState;
 import com.brett.engine.managers.DisplayManager;
+import com.brett.engine.managers.InputMaster;
 import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.shaders.ProjectionMatrix;
 import com.brett.engine.shaders.VoxelShader;
 import com.brett.engine.tools.Maths;
 import com.brett.engine.tools.Settings;
+import com.brett.engine.ui.AnchorPoint;
 import com.brett.engine.ui.UIElement;
 import com.brett.engine.ui.UIMenu;
+import com.brett.engine.ui.UITexture;
 import com.brett.engine.ui.console.Console;
 import com.brett.engine.ui.console.TeleportCommand;
 import com.brett.engine.ui.font.UIText;
@@ -28,6 +32,7 @@ import com.brett.world.World;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
 import com.brett.world.chunks.data.ShortBlockStorage;
+import com.brett.world.tools.MouseBlockPicker;
 import com.brett.world.tools.RayCasting;
 
 /**
@@ -35,7 +40,7 @@ import com.brett.world.tools.RayCasting;
 * @date Jun. 22, 2020
 */
 
-public class SinglePlayer extends Screen {
+public class SinglePlayer extends Screen implements IMouseState {
 
 	public static Matrix4f chunkViewMatrix;
 	public static Matrix4f viewMatrix;
@@ -51,12 +56,13 @@ public class SinglePlayer extends Screen {
 		GameRegistry.registerBlocks();
 		GameRegistry.registerItems();
 		console = Console.init();
+		InputMaster.mouse.add(this);
 	}
 	
 	@Override
 	public void onSwitch() {
 		super.onSwitch();
-		//elements.add(new UITexture(ScreenManager.loader.loadTexture("dirt"), -2, -2, 0, 0, 200, 200, AnchorPoint.CENTER).setBoundingBox(200, 200, 200, 200));
+		elements.add(new UITexture(ScreenManager.loader.loadTexture("crosshair"), -2, -2, 0, 0, 16, 16, AnchorPoint.CENTER));
 		
 		/*UIText text = new UIText("he l loe there", 250.0f, "mono", 600, 300, 20);
 		elements.add(new UIButton(ScreenManager.loader.loadTexture("dirt"), ScreenManager.loader.loadTexture("clay"), 600, 300, 115, 100).setText(text));
@@ -207,6 +213,15 @@ public class SinglePlayer extends Screen {
 		GL30.glDrawBuffers(new int[] {GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1, GL30.GL_COLOR_ATTACHMENT2});
 		
 		
+	}
+
+	@Override
+	public void onMousePressed(int button) {
+		System.out.println(MouseBlockPicker.getBlockMine(world, camera, 6, Block.AIR).id);
+	}
+
+	@Override
+	public void onMouseReleased(int button) {
 	}
 	
 }
