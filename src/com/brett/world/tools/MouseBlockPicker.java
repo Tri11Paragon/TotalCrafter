@@ -63,4 +63,16 @@ public class MouseBlockPicker {
 		return GameRegistry.getBlock(Block.AIR);
 	}
 	
+	public static void getBlockPlace(World world, ICamera camera, float range, short block) {
+		//mystic is lowkey cute but kinda retarded
+		// noything compared to will
+		cur.x = RayCasting.currentRay.x * range;
+		cur.y = RayCasting.currentRay.y * range;
+		cur.z = RayCasting.currentRay.z * range;
+		pos.set(RayCasting.currentRay);
+		float xStep = cur.x / 12;
+		float yStep = cur.y / 12;
+		float zStep = cur.z / 12;
+	}
+	
 }
