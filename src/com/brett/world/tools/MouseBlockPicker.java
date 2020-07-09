@@ -18,8 +18,8 @@ public class MouseBlockPicker {
 	// same some GC by reusing memory.
 	private static Vector3f cur = new Vector3f();
 	private static Vector3f pos = new Vector3f();
-	private static Vector3i blockpos = new Vector3i();
 	private static Vector3i worldpos = new Vector3i();
+	private static int xoff, yoff, zoff;
 	
 	/**
 	 * @param world
@@ -37,17 +37,27 @@ public class MouseBlockPicker {
 		float yStep = cur.y / 12;
 		float zStep = cur.z / 12;
 		for (int i = 0; i < 12; i++) {
-			blockpos.x = (int) (pos.x += xStep);
-			blockpos.y = (int) (pos.y += yStep);
-			blockpos.z = (int) (pos.z += zStep);
-			worldpos.x = (blockpos.x + (int) camera.getPosition().x);
-			worldpos.y = (blockpos.y + (int) camera.getPosition().y);
-			worldpos.z = (blockpos.z + (int) camera.getPosition().z);
-			Block block = GameRegistry.getBlock(world.getBlock(worldpos.x, worldpos.y, worldpos.z));
+			worldpos.x = (int) ((pos.x += xStep) + camera.getPosition().x);
+			worldpos.y = (int) ((pos.y += yStep) + camera.getPosition().y);
+			worldpos.z = (int) ((pos.z += zStep) + camera.getPosition().z);
+			// terrible solution to this problem
+			if (worldpos.x < 1)
+				xoff = -1;
+			else
+				zoff = 0;
+			if (worldpos.y < 1)
+				yoff = -1;
+			else
+				yoff = 0;
+			if (worldpos.z < 1)
+				zoff = -1;
+			else
+				zoff = 0;
+			Block block = GameRegistry.getBlock(world.getBlock(worldpos.x + xoff, worldpos.y, worldpos.z + zoff));
 			if (block.id == Block.AIR)
 				continue;
 			if (replacement > -1)
-				world.setBlock(worldpos.x, worldpos.y, worldpos.z, replacement);
+				world.setBlock(worldpos.x + xoff, worldpos.y + yoff, worldpos.z + zoff, replacement);
 			return block;
 		}
 		return GameRegistry.getBlock(Block.AIR);
