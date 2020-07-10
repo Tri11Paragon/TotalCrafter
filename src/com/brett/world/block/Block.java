@@ -21,10 +21,12 @@ public class Block {
 	public static final short DIRT = 2;
 	public static final short GRASS = 3;
 	public static final short BASALT = 4;
+	public static final short GLOWSTONE = 5;
 	
 	public int textureTop, textureBottom, textureLeft, textureRight, textureFront, textureFront2, textureBack;
 	public short id;
 	public AxisAlignedBB bbox = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
+	public int lightLevel = 0;
 	
 	public RenderMode renderMode = RenderMode.SOLID;
 	
@@ -71,6 +73,11 @@ public class Block {
 
 	public int getTextureLeft() {
 		return textureLeft;
+	}
+	
+	public Block setLightLevel(int a) {
+		this.lightLevel = a;
+		return this;
 	}
 
 	public Block setTextureLeft(int textureLeft) {

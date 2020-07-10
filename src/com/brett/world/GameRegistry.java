@@ -24,6 +24,7 @@ public class GameRegistry {
 		registerTexture(2, "grass", "grass");
 		registerTexture(3, "stone3", "basalt");
 		registerTexture(4, "cobble", "cracked");
+		registerTexture(5, "glowstone", "glowstone");
 		return blockTextures;
 	}
 	
@@ -33,6 +34,7 @@ public class GameRegistry {
 		registerBlock(new Block(Block.DIRT, getTexture("dirt")));
 		registerBlock(new Block(Block.GRASS, getTexture("grass")));
 		registerBlock(new Block(Block.BASALT, getTexture("basalt")));
+		registerBlock(new Block(Block.GLOWSTONE, getTexture("glowstone")).setLightLevel(15));
 	}
 	
 	public static void registerItems() {
