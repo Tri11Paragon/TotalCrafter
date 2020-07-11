@@ -10,6 +10,10 @@ public class VoxelShader extends WorldShader {
 	public VoxelShader() {
 		super("voxel.vert", "voxel.frag");
 	}
+	
+	public VoxelShader(String f1, String f2) {
+		super(f1, f2);
+	}
 
 	@Override
 	protected void bindAttributes() {

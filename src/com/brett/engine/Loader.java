@@ -99,6 +99,21 @@ public class Loader {
 		return new VAO(vaoID, vbos, positions.length);
 	}
 	
+	public VAO loadToVAOChunk(float[] positions, float[] normals, float[] textureCoords){
+		// standard stuff that this point
+		// create VAO
+		int vaoID = createVAO();
+		// we want to keep reference of vbos for runtime deletion
+		int[] vbos = new int[3];
+		// store the data into the vbos
+		vbos[0] = this.storeDataInAttributeList(0, 3, positions);
+		vbos[1] = this.storeDataInAttributeList(1, 1, textureCoords);
+		vbos[2] = this.storeDataInAttributeList(2, 3, normals);
+		// unbind the VAO
+		unbindVAO();
+		return new VAO(vaoID, vbos, positions.length);
+	}
+	
 	/**
 	 * loads to VAO using ModelData
 	 */

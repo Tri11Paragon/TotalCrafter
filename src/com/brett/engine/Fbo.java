@@ -23,8 +23,8 @@ public class Fbo {
 	public static final int DEPTH_TEXTURE = 1;
 	public static final int DEPTH_RENDER_BUFFER = 2;
 
-	private final int width;
-	private final int height;
+	public int width;
+	public int height;
 
 	private int frameBuffer;
 	

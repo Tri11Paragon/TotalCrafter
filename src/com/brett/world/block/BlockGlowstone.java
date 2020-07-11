@@ -18,12 +18,14 @@ public class BlockGlowstone extends Block {
 	@Override
 	public void onBlockPlaced(World world, short id, int x, int y, int z) {
 		Lighting.updateLighting(x, y, z, 15);
+		world.getChunkWorld(x, y, z).lights.setWorld(x, y, z, 15);
 		super.onBlockPlaced(world, id, x, y, z);
 	}
 
 	@Override
 	public void onBlockDestroyed(World world, short id, int x, int y, int z) {
 		Lighting.updateLightingRemove(x, y, z, 15);
+		world.getChunkWorld(x, y, z).lights.setWorld(x, y, z, 0);
 		super.onBlockDestroyed(world, id, x, y, z);
 	}
 

@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL30;
 import com.brett.engine.data.datatypes.Face;
 import com.brett.engine.data.datatypes.VAO;
 import com.brett.engine.managers.ScreenManager;
-import com.brett.engine.shaders.VoxelShader;
+import com.brett.engine.shaders.VoxelGBufferShader;
 import com.brett.engine.tools.Maths;
 import com.brett.world.GameRegistry;
 import com.brett.world.World;
@@ -44,11 +44,13 @@ public class Chunk {
 	public VAO vao;
 	public float[] positions;
 	public float[] data;
+	public float[] normals;
 
 	public int x_pos, y_pos, z_pos;
 
 	public volatile int lastIndex;
 	public volatile int lastIndexData;
+	public volatile int lastIndexNormal;
 
 	public volatile byte chunkInfo = 0;
 	public volatile boolean isEmpty = false;
@@ -85,9 +87,11 @@ public class Chunk {
 		isMeshing = true;
 		lastIndex = 0;
 		lastIndexData = 0;
+		lastIndexNormal = 0;
 		chunkInfo = 0;
 		positions = new float[0];
 		data = new float[0];
+		normals = new float[0];
 
 		for (int i = 0; i < ShortBlockStorage.SIZE; i++) {
 			for (int j = 0; j < ShortBlockStorage.SIZE; j++) {
@@ -116,6 +120,7 @@ public class Chunk {
 							positions = addArray(positions,
 									updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
 							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, world.getLightLevel(wx - 1, wy, wz), b.textureLeft));
+							normals = addArrayNormal(normals, MeshStore.normalsLeft);
 						}
 					}
 
@@ -126,6 +131,7 @@ public class Chunk {
 							positions = addArray(positions,
 									updateVertexTranslation(MeshStore.vertsRightComplete, i, j, k));
 							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, world.getLightLevel(wx + 1, wy, wz), b.textureRight));
+							normals = addArrayNormal(normals, MeshStore.normalsRight);
 						}
 					}
 
@@ -136,6 +142,7 @@ public class Chunk {
 							positions = addArray(positions,
 									updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
 							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, world.getLightLevel(wx, wy, wz + 1), b.textureFront));
+							normals = addArrayNormal(normals, MeshStore.normalsFront);
 						}
 					}
 
@@ -146,6 +153,7 @@ public class Chunk {
 							positions = addArray(positions,
 									updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
 							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, world.getLightLevel(wx, wy, wz - 1), b.textureBack));
+							normals = addArrayNormal(normals, MeshStore.normalsBack);
 						}
 					}
 
@@ -156,6 +164,7 @@ public class Chunk {
 							positions = addArray(positions,
 									updateVertexTranslation(MeshStore.vertsTopComplete, i, j, k));
 							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, world.getLightLevel(wx, wy + 1, wz), b.textureTop));
+							normals = addArrayNormal(normals, MeshStore.normalsTop);
 						}
 					}
 
@@ -166,6 +175,7 @@ public class Chunk {
 							positions = addArray(positions,
 									updateVertexTranslation(MeshStore.vertsBottomComplete, i, j, k));
 							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, world.getLightLevel(wx, wy - 1, wz), b.textureBottom));
+							normals = addArrayNormal(normals, MeshStore.normalsBottom);
 						}
 					}
 
@@ -241,6 +251,7 @@ public class Chunk {
 		
 		positions = Arrays.copyOfRange(positions, 0, lastIndex);
 		data = Arrays.copyOfRange(data, 0, lastIndexData);
+		normals = Arrays.copyOfRange(normals, 0, lastIndexNormal);
 
 	}
 
@@ -392,7 +403,7 @@ public class Chunk {
 		return new float[] { found, commons };
 	}
 
-	public void render(VoxelShader shader, int cx, int cy, int cz) {
+	public void render(VoxelGBufferShader shader, int cx, int cy, int cz) {
 		if (waitingForMesh && !isMeshing) {
 			isMeshing = true;
 			isEmpty = false;
@@ -401,7 +412,7 @@ public class Chunk {
 			
 			if (positions != null && data != null) {
 				if (positions.length > 0 && data.length > 0)
-					vao = ScreenManager.loader.loadToVAOChunk(positions, data);
+					vao = ScreenManager.loader.loadToVAOChunk(positions, normals, data);
 				else
 					isEmpty = true;
 			}
@@ -416,12 +427,14 @@ public class Chunk {
 			GL30.glBindVertexArray(vao.getVaoID());
 			GL20.glEnableVertexAttribArray(0);
 			GL20.glEnableVertexAttribArray(1);
+			GL20.glEnableVertexAttribArray(2);
 
 			shader.loadTranslationMatrix(Maths.createTransformationMatrixCube(cx * 16, cy * 16, cz * 16));
 			GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, vao.getVertexCount());
 
 			GL20.glDisableVertexAttribArray(0);
 			GL20.glDisableVertexAttribArray(1);
+			GL20.glDisableVertexAttribArray(2);
 			GL30.glBindVertexArray(0);
 		}
 	}
@@ -464,6 +477,18 @@ public class Chunk {
 
 		System.arraycopy(array2, 0, rtv, lastIndexData, array2.length);
 		lastIndexData += array2.length;
+
+		return rtv;
+	}
+	
+	public float[] addArrayNormal(float[] array1, float[] array2) {
+		float[] rtv = array1;
+
+		if (lastIndexNormal + array2.length >= array1.length)
+			rtv = Arrays.copyOf(array1, (array1.length + array2.length) * 2);
+
+		System.arraycopy(array2, 0, rtv, lastIndexNormal, array2.length);
+		lastIndexNormal += array2.length;
 
 		return rtv;
 	}

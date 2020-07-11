@@ -16,8 +16,9 @@ import com.brett.engine.data.IMouseState;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.InputMaster;
 import com.brett.engine.managers.ScreenManager;
+import com.brett.engine.shaders.GBufferShader;
 import com.brett.engine.shaders.ProjectionMatrix;
-import com.brett.engine.shaders.VoxelShader;
+import com.brett.engine.shaders.VoxelGBufferShader;
 import com.brett.engine.tools.Maths;
 import com.brett.engine.tools.Settings;
 import com.brett.engine.ui.AnchorPoint;
@@ -48,9 +49,10 @@ public class SinglePlayer extends Screen implements IMouseState {
 	public CreativeCamera camera;
 	public int textureAtlas;
 	public World world;
-	public VoxelShader shader;
+	public VoxelGBufferShader shader;
+	public GBufferShader gshader;
 	private UIMenu console;
-	private static int gBuffer = -1, gPosition, gNormal, gColorSpec;
+	private static int gBuffer = -1, rboDepth, gPosition, gNormal, gColorSpec;
 	
 	public SinglePlayer() {
 		textureAtlas = ScreenManager.loader.loadSpecialTextureATLAS(16, 16);
@@ -84,10 +86,15 @@ public class SinglePlayer extends Screen implements IMouseState {
 		menus.add(DebugInfo.init(camera));
 		
 		
-		shader = new VoxelShader();
+		shader = new VoxelGBufferShader();
+		gshader = new GBufferShader();
 		shader.start();
 		shader.loadProjectionMatrox(ProjectionMatrix.projectionMatrix);
 		shader.stop();
+		gshader.start();
+		gshader.connectTextureUnits();
+		gshader.loadProjectionMatrox(ProjectionMatrix.projectionMatrix);
+		gshader.stop();
 		
 		ShortBlockStorage shrt2 = new ShortBlockStorage();
 		
@@ -100,6 +107,10 @@ public class SinglePlayer extends Screen implements IMouseState {
 		Chunk c2 = new Chunk(world, shrt2, null, null, 1, 0, 0);
 		world.setChunk(1, 0, 0, c2);
 		c2.meshChunk();
+		
+		genBuffers();
+		
+		elements.add(new UITexture(gColorSpec, gNormal, gColorSpec, 0, 0, 500, 500));
 		
 		//GL13.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		
@@ -126,6 +137,10 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		ScreenManager.enableCulling();
 		ScreenManager.enableTransparentcy();
+		
+		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, gBuffer);
+		
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureAtlas);
@@ -161,6 +176,37 @@ public class SinglePlayer extends Screen implements IMouseState {
 		}
 		
 		shader.stop();
+		
+		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+		
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		gshader.start();
+		
+		ScreenManager.uiRenderer.startRenderQuad();
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gPosition);
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gNormal);
+		GL13.glActiveTexture(GL13.GL_TEXTURE2);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gColorSpec);
+		
+		ScreenManager.uiRenderer.renderQuad();
+		
+		ScreenManager.uiRenderer.stopRenderQuad();
+		
+		gshader.stop();
+		
+		GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, gBuffer);	
+		GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
+		//GL11.glDrawBuffer(GL11.GL_BACK);
+		
+		GL30.glBlitFramebuffer(0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST);
+		
+		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+		
+		
+		
 		ScreenManager.disableCulling();
 		ScreenManager.disableTransparentcy();
 		
@@ -186,6 +232,8 @@ public class SinglePlayer extends Screen implements IMouseState {
 			GL11.glDeleteTextures(gPosition);
 			GL11.glDeleteTextures(gNormal);
 			GL11.glDeleteTextures(gColorSpec);
+			
+			GL30.glDeleteRenderbuffers(rboDepth);
 		}
 		
 		gBuffer = GL30.glGenFramebuffers();
@@ -193,14 +241,14 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		gPosition = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gPosition);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA16, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (ByteBuffer) null);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB16, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGB, GL11.GL_FLOAT, (ByteBuffer) null);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, gPosition, 0);
 		
 		gNormal = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gNormal);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA16, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (ByteBuffer) null);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB16, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGB, GL11.GL_FLOAT, (ByteBuffer) null);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT1, GL11.GL_TEXTURE_2D, gNormal, 0);
@@ -214,7 +262,16 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		GL30.glDrawBuffers(new int[] {GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1, GL30.GL_COLOR_ATTACHMENT2});
 		
+		rboDepth = GL30.glGenRenderbuffers();
+		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, rboDepth);
+		GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH_COMPONENT, DisplayManager.WIDTH, DisplayManager.HEIGHT);
+		GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL30.GL_RENDERBUFFER, rboDepth);
 		
+		if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE) {
+			System.err.println("Error creating framebuffer!");
+			System.err.println(GL30.glGetError());
+		}
+		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 	}
 
 	@Override

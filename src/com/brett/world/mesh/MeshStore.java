@@ -120,6 +120,16 @@ public class MeshStore {
 			size, size, size,
 	};
 	
+	public static float[] normalsFront = {
+			0, 0, 1,
+			0, 0, 1,
+			0, 0, 1,
+			
+			0, 0, 1,
+			0, 0, 1,
+			0, 0, 1,
+	};
+	
 	public static float[] createFrontComplete(float z, float miny, float maxy, float minx, float maxx) {
 		return new float[] {
 				minx, miny, z,
@@ -140,6 +150,16 @@ public class MeshStore {
 			size, size, 0,
 			size, 0, 0,
 			0, 0, 0,
+	};
+	
+	public static float[] normalsBack = {
+			0, 0, -1,
+			0, 0, -1,
+			0, 0, -1,
+			
+			0, 0, -1,
+			0, 0, -1,
+			0, 0, -1,
 	};
 	
 	public static float[] createBackComplete (float z, float miny, float maxy, float minx, float maxx) {
@@ -164,6 +184,16 @@ public class MeshStore {
 			size, size, size,
 	};
 	
+	public static float[] normalsRight = {
+			1, 0, 0,
+			1, 0, 0,
+			1, 0, 0,
+			
+			1, 0, 0,
+			1, 0, 0,
+			1, 0, 0,
+	};
+	
 	public static float[] createRightComplete(float x, float miny, float maxy, float minz, float maxz) {
 		return new float[] {
 				x, miny, minz,
@@ -184,6 +214,16 @@ public class MeshStore {
 			0, size, size,
 			0, size, 0,
 			0, 0, 0,
+	};
+	
+	public static float[] normalsLeft = {
+			-1, 0, 0,
+			-1, 0, 0,
+			-1, 0, 0,
+			
+			-1, 0, 0,
+			-1, 0, 0,
+			-1, 0, 0,
 	};
 	
 	public static float[] createLeftComplete(float x, float miny, float maxy, float minz, float maxz) {
@@ -208,6 +248,16 @@ public class MeshStore {
 			0, size, 0,
 	}; 
 	
+	public static float[] normalsTop = {
+			0, 1, 0,
+			0, 1, 0,
+			0, 1, 0,
+			
+			0, 1, 0,
+			0, 1, 0,
+			0, 1, 0,
+	};
+	
 	public static float[] createTopComplete(float y, float minx, float maxx, float minz, float maxz) {
 		return new float[] {
 				maxx, y, maxz,
@@ -228,6 +278,16 @@ public class MeshStore {
 			size, 0, size,
 			0, 0, 0,
 			size, 0, 0,
+	};
+	
+	public static float[] normalsBottom = {
+			0, -1, 0,
+			0, -1, 0,
+			0, -1, 0,
+			
+			0, -1, 0,
+			0, -1, 0,
+			0, -1, 0,
 	};
 	
 	public static float[] createBottomComplete(float y, float minx, float maxx, float minz, float maxz) {
