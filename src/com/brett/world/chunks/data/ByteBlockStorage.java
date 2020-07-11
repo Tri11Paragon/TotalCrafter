@@ -1,5 +1,7 @@
 package com.brett.world.chunks.data;
 
+import com.brett.world.block.Block;
+
 /**
 * @author Brett
 * @date Jun. 28, 2020
@@ -7,50 +9,37 @@ package com.brett.world.chunks.data;
 
 public class ByteBlockStorage {
 	
-public static final int SIZE = 16;
+	public static final int SIZE = 16;
 	
-	public byte[] blocks = new byte[SIZE*SIZE*SIZE];
+	public byte[][][] blocks = new byte[SIZE][SIZE][SIZE];
 	
 	/**
 	 * returns the block at a position in the array
 	 */
 	public byte get(int x, int y, int z) {
-		return blocks[y + z * SIZE + x * SIZE * SIZE];
+		return blocks[x][y][z];
 	}
 	
-	/**
-	 * set a index in the array from a world position
-	 */
 	public byte getWorld(int x, int y, int z) {
-		return blocks[y & 0xF + (z & 0xF) * SIZE + (x & 0xF) * SIZE * SIZE];
+		return blocks[x & 0xF][y & 0xF][z & 0xF];
 	}
 	
-	/**
-	 * set a index in the array from a chunk position
-	 */
-	public void set(int x, int y, int z, byte id) {
-		(blocks[y + z * SIZE + x * SIZE * SIZE]) = id;
+	public void setAirWorld(int x, int y, int z, byte id) {
+		if (blocks[x & 0xF][y & 0xF][z & 0xF] == Block.AIR)
+			blocks[x & 0xF][y & 0xF][z & 0xF] = id;
 	}
 	
-	/**
-	 * set a index in the array from a chunk position
-	 */
-	public void set(int x, int y, int z, int id) {
-		(blocks[y + z * SIZE + x * SIZE * SIZE]) = (byte) id;
+	public void setAirWorld(int x, int y, int z, int id) {
+		if (blocks[x & 0xF][y & 0xF][z & 0xF] == Block.AIR)
+			blocks[x & 0xF][y & 0xF][z & 0xF] = (byte)id;
 	}
 	
-	/**
-	 * set a index in the array from a world position
-	 */
 	public void setWorld(int x, int y, int z, byte id) {
-		blocks[y & 0xF + (z & 0xF) * SIZE + (x & 0xF) * SIZE * SIZE] = id;
+		blocks[x & 0xF][y & 0xF][z & 0xF] = id;
 	}
 	
-	/**
-	 * set a index in the array from a world position
-	 */
 	public void setWorld(int x, int y, int z, int id) {
-		blocks[y & 0xF + (z & 0xF) * SIZE + (x & 0xF) * SIZE * SIZE] = (byte) id;
+		blocks[x & 0xF][y & 0xF][z & 0xF] = (byte) id;
 	}
 	
 }

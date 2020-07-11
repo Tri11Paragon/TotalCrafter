@@ -12,6 +12,7 @@ public class BlockGlowstone extends Block {
 
 	public BlockGlowstone(short id, int texture) {
 		super(id, texture);
+		super.lightLevel = 15;
 	}
 
 	@Override
@@ -22,7 +23,7 @@ public class BlockGlowstone extends Block {
 
 	@Override
 	public void onBlockDestroyed(World world, short id, int x, int y, int z) {
-		Lighting.updateLighting(x, y, z, 15);
+		Lighting.updateLightingRemove(x, y, z, 15);
 		super.onBlockDestroyed(world, id, x, y, z);
 	}
 

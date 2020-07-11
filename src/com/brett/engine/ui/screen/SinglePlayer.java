@@ -28,6 +28,7 @@ import com.brett.engine.ui.console.Console;
 import com.brett.engine.ui.console.TeleportCommand;
 import com.brett.engine.ui.font.UIText;
 import com.brett.world.GameRegistry;
+import com.brett.world.Lighting;
 import com.brett.world.World;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
@@ -75,6 +76,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 		elements.add(new UITextInput(ScreenManager.loader.loadTexture("clay"), textd, 31, 50, 200, 400, 50));*/
 		
 		world = new World();
+		Lighting.init(world);
 		camera = new CreativeCamera(new Vector3d(0,140,0), world);
 		Console.registerCommand(new String[] {"tp", "teleport"}, new TeleportCommand(camera));
 		
@@ -220,7 +222,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 		if (button == 0) {
 			MouseBlockPicker.getBlockMine(world, camera, 6, Block.AIR);
 		} else if (button == 1)
-			MouseBlockPicker.getBlockPlace(world, camera, 6, Block.BASALT);
+			MouseBlockPicker.getBlockPlace(world, camera, 6, Block.GLOWSTONE);
 	}
 
 	@Override

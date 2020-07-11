@@ -149,8 +149,35 @@ public class World {
 		}
 		if (c != null) {
 			c.blocks.setWorld(x, y, z, id);
-			c.meshChunk();
 		}
+	}
+	
+	public Chunk meshAt(int x, int y, int z) {
+		Chunk c = getChunkWorld(x, y, z);
+		if (c == null)
+			return null;
+		c.meshChunk();
+		return c;
+	}
+	
+	public Chunk meshAt(int x, int y, int z, Chunk co) {
+		Chunk c = getChunkWorld(x, y, z);
+		if (c == null)
+			return null;
+		if (co == c)
+			return c;
+		c.meshChunk();
+		return c;
+	}
+	
+	public void meshAround(int x, int y, int z) {
+		int cx = x >> 4;
+		int cy = y >> 4;
+		int cz = z >> 4;
+		for (int i = -1; i <= 1; i++)
+			for (int j = -1; j <= 1; j++)
+				for (int k = -1; k <= 1; k++)
+						chunks.get(cx + i, cy + j, cz + k).meshChunk();
 	}
 	
 	public RenderMode getRenderMode(int x, int y, int z) {
@@ -209,13 +236,14 @@ public class World {
 	public void setSunLevel(int x, int y, int z, byte level) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c != null)
-			c.lightLevel.setWorld(x, y, z, c.lightLevel.getWorld(x, y, z) | (level << 4));
+			c.lightLevel.setWorld(x, y, z, c.lightLevel.getWorld(x, y, z) & ((level << 4) | 0x0F));
 	}
 	
 	public void setBlockLevel(int x, int y, int z, byte level) {
 		Chunk c = getChunkWorld(x, y, z);
-		if (c != null)
-			c.lightLevel.setWorld(x, y, z, c.lightLevel.getWorld(x, y, z) | (level & 0xF));
+		if (c != null) {
+			c.lightLevel.setWorld(x, y, z, (c.lightLevel.getWorld(x, y, z) & 0xF0) | (level & 0xF));
+		}
 	}
 	
 	public Block getBlockB(int x, int y, int z) {

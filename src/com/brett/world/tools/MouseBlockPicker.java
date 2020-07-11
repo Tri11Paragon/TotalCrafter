@@ -56,8 +56,13 @@ public class MouseBlockPicker {
 			Block block = GameRegistry.getBlock(world.getBlock(worldpos.x + xoff, worldpos.y, worldpos.z + zoff));
 			if (block.id == Block.AIR)
 				continue;
-			if (replacement > -1)
-				world.setBlock(worldpos.x + xoff, worldpos.y + yoff, worldpos.z + zoff, replacement);
+			if (replacement > -1) {
+				int wx = worldpos.x + xoff;
+				int wy = worldpos.y + yoff;
+				int wz = worldpos.z + zoff;
+				world.setBlock(wx, wy, wz, replacement);
+				world.meshAround(wx, wy, wz);
+			}
 			return block;
 		}
 		return GameRegistry.getBlock(Block.AIR);
@@ -92,7 +97,11 @@ public class MouseBlockPicker {
 			Block bapos = GameRegistry.getBlock(world.getBlock(worldpos.x + xoff, worldpos.y, worldpos.z + zoff));
 			if (bapos.id != Block.AIR)
 				continue;
-			world.setBlock(worldpos.x + xoff, worldpos.y + yoff, worldpos.z + zoff, block);
+			int wx = worldpos.x + xoff;
+			int wy = worldpos.y + yoff;
+			int wz = worldpos.z + zoff;
+			world.setBlock(wx, wy, wz, block);
+			world.meshAround(wx, wy, wz);
 			return;
 		}
 	}

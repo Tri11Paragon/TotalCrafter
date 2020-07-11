@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import com.brett.world.block.Block;
 import com.brett.world.block.BlockAir;
+import com.brett.world.block.BlockGlowstone;
 import com.brett.world.item.Item;
 
 /**
@@ -34,7 +35,7 @@ public class GameRegistry {
 		registerBlock(new Block(Block.DIRT, getTexture("dirt")));
 		registerBlock(new Block(Block.GRASS, getTexture("grass")));
 		registerBlock(new Block(Block.BASALT, getTexture("basalt")));
-		registerBlock(new Block(Block.GLOWSTONE, getTexture("glowstone")).setLightLevel(15));
+		registerBlock(new BlockGlowstone(Block.GLOWSTONE, getTexture("glowstone")).setLightLevel(15));
 	}
 	
 	public static void registerItems() {
