@@ -9,6 +9,7 @@ import org.joml.Matrix4f;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.tools.Maths;
+import com.brett.engine.ui.screen.SinglePlayer;
 
 /**
 * @author Brett
@@ -64,6 +65,7 @@ public class ProjectionMatrix {
 		fontshader.loadScreenHeight(DisplayManager.HEIGHT);
 		fontshader.stop();
 		
+		SinglePlayer.genBuffers();
     }
 	
 	public static int addShader(WorldShader shader) {

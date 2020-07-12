@@ -24,9 +24,9 @@ public class GBufferShader extends WorldShader {
 	}
 
 	public void connectTextureUnits() {
-		super.loadInt(location_gposition, 0);
+		super.loadInt(location_gposition, 2);
 		super.loadInt(location_gnormal, 1);
-		super.loadInt(location_gcolor, 2);
+		super.loadInt(location_gcolor, 0);
 	}
 
 }

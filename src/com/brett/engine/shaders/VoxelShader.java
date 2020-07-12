@@ -19,6 +19,7 @@ public class VoxelShader extends WorldShader {
 	protected void bindAttributes() {
 		bindAttribute(0, "position");
 		bindAttribute(1, "data");
+		bindAttribute(2, "normal");
 	}
 
 	@Override

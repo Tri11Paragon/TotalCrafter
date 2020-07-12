@@ -238,7 +238,7 @@ public class Fbo {
 		if (!multisampleAndMultitarget) {
 			GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL14.GL_DEPTH_COMPONENT24, width, height);
 		} else {
-			GL30.glRenderbufferStorageMultisample(GL30.GL_RENDERBUFFER, 8, GL14.GL_DEPTH_COMPONENT24, width, height); // HAS MULTISAMPLE AMOUNT
+			GL30.glRenderbufferStorageMultisample(GL30.GL_RENDERBUFFER, 4, GL14.GL_DEPTH_COMPONENT24, width, height); // HAS MULTISAMPLE AMOUNT
 		}
 		GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL30.GL_RENDERBUFFER, depthBuffer);
 	}

@@ -19,6 +19,7 @@ import com.brett.world.GameRegistry;
 import com.brett.world.World;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.data.ByteBlockStorage;
+import com.brett.world.chunks.data.NdHashMap;
 import com.brett.world.chunks.data.RenderMode;
 import com.brett.world.chunks.data.ShortBlockStorage;
 import com.brett.world.mesh.MeshStore;
@@ -39,7 +40,7 @@ public class Chunk {
 
 	public ShortBlockStorage blocks = new ShortBlockStorage();
 	public ByteBlockStorage lightLevel = new ByteBlockStorage();
-	public ByteBlockStorage lights = new ByteBlockStorage();
+	public NdHashMap<Integer, Byte> lights = new NdHashMap<Integer, Byte>();
 
 	public VAO vao;
 	public float[] positions;
@@ -67,13 +68,11 @@ public class Chunk {
 		this.world = world;
 	}
 
-	public Chunk(World world, ShortBlockStorage blocks, ByteBlockStorage lightLevel, ByteBlockStorage lights, int x_pos, int y_pos, int z_pos) {
+	public Chunk(World world, ShortBlockStorage blocks, ByteBlockStorage lightLevel, int x_pos, int y_pos, int z_pos) {
 		if (blocks != null)
 			this.blocks = blocks;
 		if (lightLevel != null)
 			this.lightLevel = lightLevel;
-		if (lights != null) 
-			this.lights = lights;
 		this.x_pos = x_pos;
 		this.y_pos = y_pos;
 		this.z_pos = z_pos;

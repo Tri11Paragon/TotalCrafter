@@ -2,6 +2,7 @@
 
 in vec3 position;
 in float data;
+in vec3 normal;
 
 out vec2 textureCoords;
 out float lightLevel;

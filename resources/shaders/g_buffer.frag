@@ -5,9 +5,9 @@ in vec3 normal;
 in vec3 fragpos;
 in float layerF;
 
-layout (location = 0) out vec3 gPosition;
+layout (location = 0) out vec4 gAlbedoSpec;
 layout (location = 1) out vec3 gNormal;
-layout (location = 2) out vec4 gAlbedoSpec;
+layout (location = 2) out vec3 gPosition;
 
 uniform sampler2DArray te;
 
@@ -24,5 +24,5 @@ void main(void){
 	}
 	
     gAlbedoSpec.rgb = color.rgb;
-    gAlbedoSpec.a = 0;
+    gAlbedoSpec.a = 1.0;
 }

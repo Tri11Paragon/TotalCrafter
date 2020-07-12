@@ -127,7 +127,7 @@ public class World {
 	public synchronized void queueChunk(int x, int y, int z) {
 		if (ungeneratedChunks.containsKey(x, y, z))
 			return;
-		Chunk c = new Chunk(this, new ShortBlockStorage(), new ByteBlockStorage(), new ByteBlockStorage(), x, y, z);
+		Chunk c = new Chunk(this, new ShortBlockStorage(), new ByteBlockStorage(), x, y, z);
 		ungeneratedChunks.set(x, y, z, c);
 	}
 	
@@ -143,7 +143,7 @@ public class World {
 			if (ungeneratedChunks.containsKey(cx, cy, cz)) {
 				c = ungeneratedChunks.get(cx, cy, cz);
 			} else {
-				c = new Chunk(this, new ShortBlockStorage(), new ByteBlockStorage(), new ByteBlockStorage(), cx, cy, cz);
+				c = new Chunk(this, new ShortBlockStorage(), new ByteBlockStorage(), cx, cy, cz);
 				ungeneratedChunks.set(cx, cy, cz, c);
 			}
 		}

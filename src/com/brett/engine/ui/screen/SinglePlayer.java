@@ -1,13 +1,16 @@
 package com.brett.engine.ui.screen;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.List;
 import java.util.Map;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import com.brett.engine.DebugInfo;
@@ -104,13 +107,15 @@ public class SinglePlayer extends Screen implements IMouseState {
 			}
 		}
 		
-		Chunk c2 = new Chunk(world, shrt2, null, null, 1, 0, 0);
+		Chunk c2 = new Chunk(world, shrt2, null, 1, 0, 0);
 		world.setChunk(1, 0, 0, c2);
 		c2.meshChunk();
 		
 		genBuffers();
 		
-		elements.add(new UITexture(gColorSpec, gNormal, gColorSpec, 0, 0, 500, 500));
+		//elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gColorSpec, -1, 0, 0, 500, 500));
+		//elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gNormal, -1, 500, 0, 500, 500));
+		//selements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gPosition, -1, 0, 500, 500, 500));
 		
 		//GL13.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		
@@ -124,7 +129,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 	}
 	
 	private float ccx,ccy,ccz;
-	private int cx,cy,cz;
+	private int cx,cy,cz, ll;
 	private Vector3d pos;
 	
 	@Override
@@ -185,11 +190,36 @@ public class SinglePlayer extends Screen implements IMouseState {
 		ScreenManager.uiRenderer.startRenderQuad();
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gPosition);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gColorSpec);
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gNormal);
 		GL13.glActiveTexture(GL13.GL_TEXTURE2);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gColorSpec);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gPosition);
+		
+		for (int i = -Settings.RENDER_DISTANCE; i <= Settings.RENDER_DISTANCE; i++) {
+			for (int j = -Settings.RENDER_DISTANCE; j <= Settings.RENDER_DISTANCE; j++) {
+				for (int k = -Settings.RENDER_DISTANCE; k <= Settings.RENDER_DISTANCE; k++) {
+					double distance = Math.sqrt(Math.pow(i, 2) + Math.pow(j, 2) + Math.pow(k, 2));
+					if (distance > Settings.RENDER_DISTANCE)
+						continue;
+					pos = camera.getPosition();
+					cx = ((int) (pos.x / 16)) + i;
+					cy = ((int) (pos.y / 16)) + j;
+					cz = ((int) (pos.z / 16)) + k;
+					
+					ccx = cx*16;
+					ccy = cy*16;
+					ccz = cz*16;
+					
+					if (!camera.cubeInFrustum(ccx, ccy, ccz, ccx+16, ccy+16, ccz+16))
+						continue;
+					
+					Chunk c = world.getChunk(cx, cy, cz);
+					if (c != null)
+						System.out.println("yes");
+				}
+			}
+		}
 		
 		ScreenManager.uiRenderer.renderQuad();
 		
@@ -197,14 +227,11 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		gshader.stop();
 		
-		GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, gBuffer);	
 		GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
-		//GL11.glDrawBuffer(GL11.GL_BACK);
-		
-		GL30.glBlitFramebuffer(0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST);
-		
+		GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, gBuffer);
+		GL11.glDrawBuffer(GL11.GL_BACK);
+		GL30.glBlitFramebuffer(0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
-		
 		
 		
 		ScreenManager.disableCulling();
@@ -238,17 +265,18 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		gBuffer = GL30.glGenFramebuffers();
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, gBuffer);
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		
 		gPosition = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gPosition);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB16, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGB, GL11.GL_FLOAT, (ByteBuffer) null);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA16, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (ByteBuffer) null);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, gPosition, 0);
+		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT2, GL11.GL_TEXTURE_2D, gPosition, 0);
 		
 		gNormal = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gNormal);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB16, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGB, GL11.GL_FLOAT, (ByteBuffer) null);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA16, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (ByteBuffer) null);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT1, GL11.GL_TEXTURE_2D, gNormal, 0);
@@ -258,13 +286,19 @@ public class SinglePlayer extends Screen implements IMouseState {
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT2, GL11.GL_TEXTURE_2D, gColorSpec, 0);
+		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, gColorSpec, 0);
+
+		IntBuffer drawBuffers = BufferUtils.createIntBuffer(3);
+		drawBuffers.put(GL30.GL_COLOR_ATTACHMENT0);
+		drawBuffers.put(GL30.GL_COLOR_ATTACHMENT1);
+		drawBuffers.put(GL30.GL_COLOR_ATTACHMENT2);
 		
-		GL30.glDrawBuffers(new int[] {GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1, GL30.GL_COLOR_ATTACHMENT2});
+		drawBuffers.flip();
+		GL20.glDrawBuffers(drawBuffers);
 		
 		rboDepth = GL30.glGenRenderbuffers();
 		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, rboDepth);
-		GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH_COMPONENT, DisplayManager.WIDTH, DisplayManager.HEIGHT);
+		GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH_COMPONENT24, DisplayManager.WIDTH, DisplayManager.HEIGHT);
 		GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL30.GL_RENDERBUFFER, rboDepth);
 		
 		if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE) {
