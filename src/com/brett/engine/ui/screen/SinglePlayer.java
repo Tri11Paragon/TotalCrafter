@@ -36,6 +36,7 @@ import com.brett.world.Lighting;
 import com.brett.world.World;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
+import com.brett.world.chunks.data.NdHashMap;
 import com.brett.world.chunks.data.ShortBlockStorage;
 import com.brett.world.tools.MouseBlockPicker;
 import com.brett.world.tools.RayCasting;
@@ -115,17 +116,10 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		//elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gColorSpec, -1, 0, 0, 500, 500));
 		//elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gNormal, -1, 500, 0, 500, 500));
-		//selements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gPosition, -1, 0, 500, 500, 500));
+		elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gPosition, -1, 0, 0, 500, 500));
 		
 		//GL13.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		
-	}
-	
-	@Override
-	public void onLeave() {
-		world.save();
-		menus.remove(DebugInfo.destroy());
-		super.onLeave();
 	}
 	
 	private float ccx,ccy,ccz;
@@ -134,6 +128,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 	
 	@Override
 	public List<UIElement> render() {
+		ll = 0;
 		camera.move();
 		chunkViewMatrix = Maths.createViewMatrixROT(camera);
 		viewMatrix = Maths.createViewMatrix(camera);
@@ -152,6 +147,8 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		shader.start();
 		shader.loadViewMatrix(chunkViewMatrix);
+		pos = camera.getPosition();
+		shader.loadCamera(pos);
 		
 		for (int i = -Settings.RENDER_DISTANCE; i <= Settings.RENDER_DISTANCE; i++) {
 			for (int j = -Settings.RENDER_DISTANCE; j <= Settings.RENDER_DISTANCE; j++) {
@@ -159,7 +156,6 @@ public class SinglePlayer extends Screen implements IMouseState {
 					double distance = Math.sqrt(Math.pow(i, 2) + Math.pow(j, 2) + Math.pow(k, 2));
 					if (distance > Settings.RENDER_DISTANCE)
 						continue;
-					pos = camera.getPosition();
 					cx = ((int) (pos.x / 16)) + i;
 					cy = ((int) (pos.y / 16)) + j;
 					cz = ((int) (pos.z / 16)) + k;
@@ -184,8 +180,15 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 		
+		GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, gBuffer);
+		GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
+		GL11.glDrawBuffer(GL11.GL_BACK);
+		GL30.glBlitFramebuffer(0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
+		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+		
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		gshader.start();
+		gshader.loadViewPos(camera.getPosition());
 		
 		ScreenManager.uiRenderer.startRenderQuad();
 		
@@ -215,23 +218,22 @@ public class SinglePlayer extends Screen implements IMouseState {
 						continue;
 					
 					Chunk c = world.getChunk(cx, cy, cz);
-					if (c != null)
-						System.out.println("yes");
+					if (c != null) {
+						c.lights.iterate((NdHashMap<Integer, Byte> dt, Integer k1, Integer k2, Integer k3, Byte v1) -> {
+							gshader.loadLightData(ll, (float) (k1 - pos.x), (float)(k2 - pos.y), (float) (k3 - pos.z));
+							ll++;
+						});
+					}
 				}
 			}
 		}
+		gshader.loadLightAmount(ll);
 		
 		ScreenManager.uiRenderer.renderQuad();
 		
 		ScreenManager.uiRenderer.stopRenderQuad();
 		
 		gshader.stop();
-		
-		GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
-		GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, gBuffer);
-		GL11.glDrawBuffer(GL11.GL_BACK);
-		GL30.glBlitFramebuffer(0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
-		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 		
 		
 		ScreenManager.disableCulling();
@@ -251,6 +253,21 @@ public class SinglePlayer extends Screen implements IMouseState {
 		for (int i = 0; i < world.generatorThreads.size(); i++) {
 			world.generatorThreads.get(i).interrupt();
 		}
+	}
+	
+	@Override
+	public void onLeave() {
+		world.save();
+		menus.remove(DebugInfo.destroy());
+		if (gBuffer > -1) {
+			GL30.glDeleteFramebuffers(gBuffer);
+			GL11.glDeleteTextures(gPosition);
+			GL11.glDeleteTextures(gNormal);
+			GL11.glDeleteTextures(gColorSpec);
+			
+			GL30.glDeleteRenderbuffers(rboDepth);
+		}
+		super.onLeave();
 	}
 	
 	public static void genBuffers() {
@@ -298,7 +315,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		rboDepth = GL30.glGenRenderbuffers();
 		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, rboDepth);
-		GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH_COMPONENT24, DisplayManager.WIDTH, DisplayManager.HEIGHT);
+		GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH_COMPONENT32, DisplayManager.WIDTH, DisplayManager.HEIGHT);
 		GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL30.GL_RENDERBUFFER, rboDepth);
 		
 		if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE) {

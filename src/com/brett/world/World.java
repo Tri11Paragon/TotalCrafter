@@ -15,14 +15,14 @@ import com.brett.world.chunks.data.RenderMode;
 import com.brett.world.chunks.data.ShortBlockStorage;
 
 /**
-* @author Brett
-* @date Jun. 28, 2020
-*/
+ * @author Brett
+ * @date Jun. 28, 2020
+ */
 
 public class World {
-	
+
 	public static World world;
-	
+
 	public volatile NdHashMap<Integer, Chunk> chunks = new NdHashMap<Integer, Chunk>();
 	public volatile NdHashMap<Integer, Chunk> ungeneratedChunks = new NdHashMap<Integer, Chunk>();
 	public volatile List<NdHashMap<Integer, Chunk>> maps = null;
@@ -30,17 +30,17 @@ public class World {
 	public int threads = 1;
 	public Noise noise1 = new Noise(694);
 	public Noise noise2 = new Noise(733210811l + 11181013212l + 11111173287l + 105108108326051l);
-	
+
 	public World() {
 		threads = ThreadPool.reserveQuarterThreads() + ThreadPool.reserveQuarterThreads();
 		World.world = this;
-		Thread th = new Thread(() ->  {
-			
+		Thread th = new Thread(() -> {
+
 			for (int o = 0; o < threads; o++) {
-				//int threadIDLocal = i;
+				// int threadIDLocal = i;
 				Thread dth = new Thread(() -> {
-					//int threadID = threadIDLocal;
-					
+					// int threadID = threadIDLocal;
+
 					while (Main.isOpen) {
 						try {
 							if (maps != null && maps.size() > 0) {
@@ -48,9 +48,11 @@ public class World {
 								try {
 									ourMap = maps.get(0);
 									maps.remove(0);
-								} catch (Exception e) {}
+								} catch (Exception e) {
+								}
 								if (ourMap != null) {
-									ourMap.iterate((NdHashMap<Integer, Chunk> dt, Integer k1, Integer k2, Integer k3, Chunk v1)->{
+									ourMap.iterate((NdHashMap<Integer, Chunk> dt, Integer k1, Integer k2, Integer k3,
+											Chunk v1) -> {
 										ShortBlockStorage blks = v1.blocks;
 										int cxw = k1 * 16;
 										int cyw = k2 * 16;
@@ -61,19 +63,22 @@ public class World {
 												int wz = czw + k;
 												double nfxz = 0;
 												if (cyw > -120)
-													nfxz = noise1.noise(wx/128d + noise2.nNoise(wx/32d, 4/3492d, wz/32d + noise1.noise(wx, wz), 8, 4d), wz/128d) * 64 + 64;
+													nfxz = noise1
+															.noise(wx / 128d + noise2.nNoise(wx / 32d, 4 / 3492d,
+																	wz / 32d + noise1.noise(wx, wz), 8, 4d), wz / 128d)
+															* 64 + 64;
 												for (int j = 0; j < 16; j++) {
 													int wy = cyw + j;
-													
+
 													if (wy > nfxz) {
-														
+
 													} else {
-													
-														double nf = noise1.noise(wx/32d, wy/32d, wz/32d);
-														if (nf > -Noise.RANGE_3D/2) {
-															if (wy < nfxz && wy > nfxz-1)
+
+														double nf = noise1.noise(wx / 32d, wy / 32d, wz / 32d);
+														if (nf > -Noise.RANGE_3D / 2) {
+															if (wy < nfxz && wy > nfxz - 1)
 																blks.setWorld(wx, wy, wz, Block.GRASS);
-															else if (wy < nfxz-1 && wy > (nfxz - 4))
+															else if (wy < nfxz - 1 && wy > (nfxz - 4))
 																blks.setWorld(wx, wy, wz, Block.DIRT);
 															else if (wy > -120)
 																blks.setWorld(wx, wy, wz, Block.STONE);
@@ -91,36 +96,41 @@ public class World {
 								}
 							}
 							Thread.sleep(250);
-						} catch (Exception e) {e.printStackTrace();}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
-					
+
 				});
 				dth.start();
 				generatorThreads.add(dth);
 			}
-			
+
 			while (Main.isOpen) {
 				try {
-					//NdHashMap<Integer, Chunk> hmcp = ungeneratedChunks.clone();
-					
+					// NdHashMap<Integer, Chunk> hmcp = ungeneratedChunks.clone();
+
 					if (maps == null || maps.size() == 0) {
 						maps = ungeneratedChunks.split(threads);
 					}
-					
-					//chunks.iterate((NdHashMap<Integer, Chunk> dt, Integer k1, Integer k2, Integer k3, Chunk v1) -> {
-					//	if (dt.get(k1, k2, k3).chunkInfo != 0) {
-							//dt.get(k1, k2, k3).meshChunk();
-					//	}
-					//});
-					
+
+					// chunks.iterate((NdHashMap<Integer, Chunk> dt, Integer k1, Integer k2, Integer
+					// k3, Chunk v1) -> {
+					// if (dt.get(k1, k2, k3).chunkInfo != 0) {
+					// dt.get(k1, k2, k3).meshChunk();
+					// }
+					// });
+
 					Thread.sleep(250);
-				} catch (Exception e) {System.err.println(e.getCause());}
+				} catch (Exception e) {
+					System.err.println(e.getCause());
+				}
 			}
 		});
 		th.start();
 		generatorThreads.add(th);
 	}
-	
+
 	/**
 	 * queue a chunk for generation in chunk space.
 	 */
@@ -130,7 +140,7 @@ public class World {
 		Chunk c = new Chunk(this, new ShortBlockStorage(), new ByteBlockStorage(), x, y, z);
 		ungeneratedChunks.set(x, y, z, c);
 	}
-	
+
 	/**
 	 * sets a block in block space.
 	 */
@@ -138,7 +148,7 @@ public class World {
 		int cx = x >> 4;
 		int cy = y >> 4;
 		int cz = z >> 4;
-		Chunk c	= getChunk(cx, cy, cz);
+		Chunk c = getChunk(cx, cy, cz);
 		if (c == null) {
 			if (ungeneratedChunks.containsKey(cx, cy, cz)) {
 				c = ungeneratedChunks.get(cx, cy, cz);
@@ -151,7 +161,7 @@ public class World {
 			c.blocks.setWorld(x, y, z, id);
 		}
 	}
-	
+
 	public Chunk meshAt(int x, int y, int z) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c == null)
@@ -159,7 +169,7 @@ public class World {
 		c.meshChunk();
 		return c;
 	}
-	
+
 	public Chunk meshAt(int x, int y, int z, Chunk co) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c == null)
@@ -169,25 +179,30 @@ public class World {
 		c.meshChunk();
 		return c;
 	}
-	
+
 	public void meshAround(int x, int y, int z) {
 		int cx = x >> 4;
 		int cy = y >> 4;
 		int cz = z >> 4;
-		for (int i = -1; i <= 1; i++)
-			for (int j = -1; j <= 1; j++)
-				for (int k = -1; k <= 1; k++)
-						chunks.get(cx + i, cy + j, cz + k).meshChunk();
+		for (int i = -1; i <= 1; i++) {
+			for (int j = -1; j <= 1; j++) {
+				for (int k = -1; k <= 1; k++) {
+					Chunk c = chunks.get(cx + i, cy + j, cz + k);
+					if (c != null)
+						c.meshChunk();
+				}
+			}
+		}
 	}
-	
+
 	public RenderMode getRenderMode(int x, int y, int z) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c == null)
-			return GameRegistry.getBlock((short)0).getRenderMode();
+			return GameRegistry.getBlock((short) 0).getRenderMode();
 		short block = c.blocks.getWorld(x, y, z);
 		return GameRegistry.getBlock(block).getRenderMode();
 	}
-	
+
 	public RenderMode getRenderModeNull(int x, int y, int z) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c == null)
@@ -198,68 +213,69 @@ public class World {
 			return null;
 		return b.getRenderMode();
 	}
-	
+
 	public short getBlock(int x, int y, int z) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c == null)
 			return 0;
 		return c.blocks.getWorld(x, y, z);
 	}
-	
+
 	public byte getLightLevel(int x, int y, int z) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c == null)
 			return 0;
 		return c.lightLevel.getWorld(x, y, z);
 	}
-	
+
 	public byte getSunLevel(int x, int y, int z) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c == null)
 			return 0;
 		return (byte) (c.lightLevel.getWorld(x, y, z) >> 4);
 	}
-	
+
 	public byte getBlockLevel(int x, int y, int z) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c == null)
 			return 0;
 		return (byte) (c.lightLevel.getWorld(x, y, z) & 0xF);
 	}
-	
+
 	public void setLightLevel(int x, int y, int z, byte level) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c != null)
 			c.lightLevel.setWorld(x, y, z, level);
 	}
-	
+
 	public void setSunLevel(int x, int y, int z, byte level) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c != null)
 			c.lightLevel.setWorld(x, y, z, c.lightLevel.getWorld(x, y, z) & ((level << 4) | 0x0F));
 	}
-	
+
 	public void setBlockLevel(int x, int y, int z, byte level) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c != null) {
 			c.lightLevel.setWorld(x, y, z, (c.lightLevel.getWorld(x, y, z) & 0xF0) | (level & 0xF));
 		}
 	}
-	
+
 	public Block getBlockB(int x, int y, int z) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c == null)
 			return GameRegistry.getBlock(Block.AIR);
 		return GameRegistry.getBlock(c.blocks.getWorld(x, y, z));
 	}
-	
-	public List<AxisAlignedBB> getBoundsInRange(int nx, int ny, int nz, int px, int py, int pz){
+
+	public List<AxisAlignedBB> getBoundsInRange(int nx, int ny, int nz, int px, int py, int pz) {
 		ArrayList<AxisAlignedBB> lis = new ArrayList<AxisAlignedBB>();
 		return getBoundsInRange(lis, nx, ny, nz, px, py, pz);
 	}
-	
-	public List<AxisAlignedBB> getBoundsInRange(ArrayList<AxisAlignedBB> lis, int nx, int ny, int nz, int px, int py, int pz){
-		
+
+	public List<AxisAlignedBB> getBoundsInRange(ArrayList<AxisAlignedBB> lis, int nx, int ny, int nz, int px, int py,
+			int pz) {
+
 		for (int i = nx; i <= px; i++) {
 			for (int j = ny; j <= py; j++) {
 				for (int k = nz; k <= pz; k++) {
@@ -269,38 +285,38 @@ public class World {
 				}
 			}
 		}
-		
+
 		return lis;
 	}
-	
+
 	/*
 	 * gets the chunk in world pos
 	 */
 	public Chunk getChunkWorld(int wx, int wy, int wz) {
 		return chunks.get(wx >> 4, wy >> 4, wz >> 4);
 	}
-	
+
 	/**
 	 * gets the chunk in chunk pos
 	 */
 	public Chunk getChunk(int x, int y, int z) {
 		return chunks.get(x, y, z);
 	}
-	
+
 	public void setChunk(int x, int y, int z, Chunk c) {
 		chunks.set(x, y, z, c);
 	}
-	
+
 	public void setChunk(Chunk c) {
 		chunks.set(c.x_pos, c.y_pos, c.y_pos, c);
 	}
-	
+
 	public void setChunkWorld(int x, int y, int z, Chunk c) {
 		chunks.set(x >> 4, y >> 4, z >> 4, c);
 	}
-	
+
 	public void save() {
-		
+
 	}
-	
+
 }

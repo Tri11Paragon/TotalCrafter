@@ -6,17 +6,18 @@ in float data;
 
 out vec2 textureCoords;
 out vec3 normal;
-out vec3 fragpos;
+out vec3 fragPos;
 out float layerF;
 
 uniform mat4 translationMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
+uniform vec3 cameraPos;
 
 void main(void){
 
 	vec4 worldPosition = translationMatrix * vec4(position - 0.5f,1.0);
-	fragpos = worldPosition.xyz;
+	fragPos = worldPosition.xyz;
 	
 	vec4 positionRelativeToCam = viewMatrix * worldPosition;
 	gl_Position = projectionMatrix * positionRelativeToCam;

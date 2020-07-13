@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
+import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
@@ -142,6 +143,14 @@ public abstract class ShaderProgram {
 
 	protected void loadVector(int location, Vector3f vector) {
 		GL20.glUniform3f(location, vector.x, vector.y, vector.z);
+	}
+	
+	protected void loadVector(int location, Vector3d vector) {
+		GL20.glUniform3f(location, (float) vector.x, (float) vector.y, (float) vector.z);
+	}
+	
+	protected void loadVector(int location, float x, float y, float z) {
+		GL20.glUniform3f(location, x, y, z);
 	}
 
 	protected void load4DVector(int location, Vector4f vector) {
