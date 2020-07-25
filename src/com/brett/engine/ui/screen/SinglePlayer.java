@@ -21,7 +21,7 @@ import com.brett.engine.managers.InputMaster;
 import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.shaders.GBufferShader;
 import com.brett.engine.shaders.ProjectionMatrix;
-import com.brett.engine.shaders.VoxelGBufferShader;
+import com.brett.engine.shaders.VoxelShader;
 import com.brett.engine.tools.Maths;
 import com.brett.engine.tools.Settings;
 import com.brett.engine.ui.AnchorPoint;
@@ -36,7 +36,6 @@ import com.brett.world.Lighting;
 import com.brett.world.World;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
-import com.brett.world.chunks.data.NdHashMap;
 import com.brett.world.chunks.data.ShortBlockStorage;
 import com.brett.world.tools.MouseBlockPicker;
 import com.brett.world.tools.RayCasting;
@@ -53,7 +52,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 	public CreativeCamera camera;
 	public int textureAtlas;
 	public World world;
-	public VoxelGBufferShader shader;
+	public VoxelShader shader;
 	public GBufferShader gshader;
 	private UIMenu console;
 	private static int gBuffer = -1, rboDepth, gPosition, gNormal, gColorSpec;
@@ -90,7 +89,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 		menus.add(DebugInfo.init(camera));
 		
 		
-		shader = new VoxelGBufferShader();
+		shader = new VoxelShader();
 		gshader = new GBufferShader();
 		shader.start();
 		shader.loadProjectionMatrox(ProjectionMatrix.projectionMatrix);
@@ -123,12 +122,11 @@ public class SinglePlayer extends Screen implements IMouseState {
 	}
 	
 	private float ccx,ccy,ccz;
-	private int cx,cy,cz, ll;
+	private int cx,cy,cz;
 	private Vector3d pos;
 	
 	@Override
 	public List<UIElement> render() {
-		ll = 0;
 		camera.move();
 		chunkViewMatrix = Maths.createViewMatrixROT(camera);
 		viewMatrix = Maths.createViewMatrix(camera);
@@ -138,9 +136,9 @@ public class SinglePlayer extends Screen implements IMouseState {
 		ScreenManager.enableCulling();
 		ScreenManager.enableTransparentcy();
 		
-		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, gBuffer);
+		//GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, gBuffer);
 		
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureAtlas);
@@ -148,7 +146,6 @@ public class SinglePlayer extends Screen implements IMouseState {
 		shader.start();
 		shader.loadViewMatrix(chunkViewMatrix);
 		pos = camera.getPosition();
-		shader.loadCamera(pos);
 		
 		for (int i = -Settings.RENDER_DISTANCE; i <= Settings.RENDER_DISTANCE; i++) {
 			for (int j = -Settings.RENDER_DISTANCE; j <= Settings.RENDER_DISTANCE; j++) {
@@ -178,7 +175,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		shader.stop();
 		
-		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+		/*GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 		
 		GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, gBuffer);
 		GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
@@ -186,8 +183,8 @@ public class SinglePlayer extends Screen implements IMouseState {
 		GL30.glBlitFramebuffer(0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 		
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		gshader.start();
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);*/
+		/*gshader.start();
 		gshader.loadViewPos(camera.getPosition());
 		
 		ScreenManager.uiRenderer.startRenderQuad();
@@ -199,6 +196,8 @@ public class SinglePlayer extends Screen implements IMouseState {
 		GL13.glActiveTexture(GL13.GL_TEXTURE2);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gPosition);
 		
+		ll = 1;
+		gshader.loadLightData(0, 0, 70, 0);
 		for (int i = -Settings.RENDER_DISTANCE; i <= Settings.RENDER_DISTANCE; i++) {
 			for (int j = -Settings.RENDER_DISTANCE; j <= Settings.RENDER_DISTANCE; j++) {
 				for (int k = -Settings.RENDER_DISTANCE; k <= Settings.RENDER_DISTANCE; k++) {
@@ -233,7 +232,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		ScreenManager.uiRenderer.stopRenderQuad();
 		
-		gshader.stop();
+		gshader.stop();*/
 		
 		
 		ScreenManager.disableCulling();

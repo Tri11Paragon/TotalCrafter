@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL30;
 import com.brett.engine.data.datatypes.Face;
 import com.brett.engine.data.datatypes.VAO;
 import com.brett.engine.managers.ScreenManager;
-import com.brett.engine.shaders.VoxelGBufferShader;
+import com.brett.engine.shaders.VoxelShader;
 import com.brett.engine.tools.Maths;
 import com.brett.world.GameRegistry;
 import com.brett.world.World;
@@ -402,7 +402,7 @@ public class Chunk {
 		return new float[] { found, commons };
 	}
 
-	public void render(VoxelGBufferShader shader, int cx, int cy, int cz) {
+	public void render(VoxelShader shader, int cx, int cy, int cz) {
 		if (waitingForMesh && !isMeshing) {
 			isMeshing = true;
 			isEmpty = false;

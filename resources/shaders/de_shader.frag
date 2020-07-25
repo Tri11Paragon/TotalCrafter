@@ -13,7 +13,7 @@ uniform float lightAmount;
 uniform vec3 viewPos;
 
 void main(){
-	vec3 fragpos = texture(gPosition, textureCoords).rgb - viewPos;
+	vec3 fragpos = texture(gPosition, textureCoords).rgb;
 	vec3 normal = texture(gNormal, textureCoords).rgb;
 	vec3 diffuse = texture(gAlbedoSpec, textureCoords).rgb;
 	
@@ -26,7 +26,7 @@ void main(){
 		
 		float distance = length(lightDistVec);
 		float attenuation = 1.0 / (1.0 + 0.7 * distance + 1.8 * distance * distance);
-		diff *= distance;
+		diff *= attenuation;
 		lighting += diff;
 	} 
 	out_Color = vec4(lighting, 1.0);

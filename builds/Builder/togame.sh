@@ -27,7 +27,8 @@ if [ -n "$1" ]; then
 	mv temp/brett com/brett
 	rm -fr temp/
 
-	jar -cfv0 $dt.jar com/
+	echo -e "Manifest-Version: 1.0 \nMain-Class: com.brett.Main \nClass-Path: lib/*:$dt.jar" > MANIFEST.MF;
+	jar -cfv0m $dt.jar MANIFEST.MF com/
 
 	rm -fr java/
 	rm -fr com/
@@ -37,6 +38,8 @@ if [ -n "$1" ]; then
 
 	echo "java -Dfile.encoding=UTF-8 -classpath lib/*:$dt.jar com.brett.Main" > game.sh
 	chmod +x game.sh
+
+	cp -R /home/brett/Documents/Java/TotalCrafter/resources/ resources/
 
 else
 	echo "Please enter name of this build!"
