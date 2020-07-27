@@ -8,6 +8,7 @@ import java.util.Map;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -136,10 +137,6 @@ public class SinglePlayer extends Screen implements IMouseState {
 		ScreenManager.enableCulling();
 		ScreenManager.enableTransparentcy();
 		
-		//GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, gBuffer);
-		
-		//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureAtlas);
 		
@@ -174,65 +171,6 @@ public class SinglePlayer extends Screen implements IMouseState {
 		}
 		
 		shader.stop();
-		
-		/*GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
-		
-		GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, gBuffer);
-		GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
-		GL11.glDrawBuffer(GL11.GL_BACK);
-		GL30.glBlitFramebuffer(0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
-		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
-		
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);*/
-		/*gshader.start();
-		gshader.loadViewPos(camera.getPosition());
-		
-		ScreenManager.uiRenderer.startRenderQuad();
-		
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gColorSpec);
-		GL13.glActiveTexture(GL13.GL_TEXTURE1);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gNormal);
-		GL13.glActiveTexture(GL13.GL_TEXTURE2);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gPosition);
-		
-		ll = 1;
-		gshader.loadLightData(0, 0, 70, 0);
-		for (int i = -Settings.RENDER_DISTANCE; i <= Settings.RENDER_DISTANCE; i++) {
-			for (int j = -Settings.RENDER_DISTANCE; j <= Settings.RENDER_DISTANCE; j++) {
-				for (int k = -Settings.RENDER_DISTANCE; k <= Settings.RENDER_DISTANCE; k++) {
-					double distance = Math.sqrt(Math.pow(i, 2) + Math.pow(j, 2) + Math.pow(k, 2));
-					if (distance > Settings.RENDER_DISTANCE)
-						continue;
-					pos = camera.getPosition();
-					cx = ((int) (pos.x / 16)) + i;
-					cy = ((int) (pos.y / 16)) + j;
-					cz = ((int) (pos.z / 16)) + k;
-					
-					ccx = cx*16;
-					ccy = cy*16;
-					ccz = cz*16;
-					
-					if (!camera.cubeInFrustum(ccx, ccy, ccz, ccx+16, ccy+16, ccz+16))
-						continue;
-					
-					Chunk c = world.getChunk(cx, cy, cz);
-					if (c != null) {
-						c.lights.iterate((NdHashMap<Integer, Byte> dt, Integer k1, Integer k2, Integer k3, Byte v1) -> {
-							gshader.loadLightData(ll, (float) (k1 - pos.x), (float)(k2 - pos.y), (float) (k3 - pos.z));
-							ll++;
-						});
-					}
-				}
-			}
-		}
-		gshader.loadLightAmount(ll);
-		
-		ScreenManager.uiRenderer.renderQuad();
-		
-		ScreenManager.uiRenderer.stopRenderQuad();
-		
-		gshader.stop();*/
 		
 		
 		ScreenManager.disableCulling();
@@ -326,10 +264,14 @@ public class SinglePlayer extends Screen implements IMouseState {
 
 	@Override
 	public void onMousePressed(int button) {
-		if (button == 0) {
+		if (button == 0)
 			MouseBlockPicker.getBlockMine(world, camera, 6, Block.AIR);
-		} else if (button == 1)
-			MouseBlockPicker.getBlockPlace(world, camera, 6, Block.GLOWSTONE);
+		else if (button == 1) {
+			if (InputMaster.keyDown[GLFW.GLFW_KEY_X])
+				MouseBlockPicker.getBlockPlace(world, camera, 6, Block.STONE);
+			else
+				MouseBlockPicker.getBlockPlace(world, camera, 6, Block.GLOWSTONE);
+		}
 	}
 
 	@Override
