@@ -18,7 +18,7 @@ public class RegionPart {
 	
 	private int x,y,z;
 	private String location;
-	private List<Chunk> chunks;
+	public List<Chunk> chunks;
 	
 	public RegionPart(String location, int x, int y, int z, List<Chunk> chunks) {
 		this.location = location;
