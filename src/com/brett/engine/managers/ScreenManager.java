@@ -76,6 +76,10 @@ public class ScreenManager {
 			screens.get(i).close();
 			screens.get(i).onLeave();
 		}
+		if (activeScreen != null) {
+			activeScreen.onLeave();
+			activeScreen.close();
+		}
 		DisplayManager.closeDisplay();
 		Settings.save();
 	}

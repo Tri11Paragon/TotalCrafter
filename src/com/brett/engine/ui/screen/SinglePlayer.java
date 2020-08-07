@@ -81,7 +81,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 		addText(textd);
 		elements.add(new UITextInput(ScreenManager.loader.loadTexture("clay"), textd, 31, 50, 200, 400, 50));*/
 		
-		world = new World();
+		world = new World("w1");
 		Lighting.init(world);
 		camera = new CreativeCamera(new Vector3d(0,140,0), world);
 		Console.registerCommand(new String[] {"tp", "teleport"}, new TeleportCommand(camera));
@@ -188,7 +188,9 @@ public class SinglePlayer extends Screen implements IMouseState {
 	public void close() {
 		super.close();
 		for (int i = 0; i < world.generatorThreads.size(); i++) {
-			world.generatorThreads.get(i).interrupt();
+			try {
+				world.generatorThreads.get(i).interrupt();
+			} catch (Exception e) {}
 		}
 	}
 	

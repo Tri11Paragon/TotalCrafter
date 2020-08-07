@@ -1,7 +1,15 @@
 package com.brett.world;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
 import com.brett.Main;
 import com.brett.engine.data.collision.AxisAlignedBB;
@@ -9,6 +17,7 @@ import com.brett.engine.managers.ThreadPool;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
 import com.brett.world.chunks.Noise;
+import com.brett.world.chunks.Region;
 import com.brett.world.chunks.data.ByteBlockStorage;
 import com.brett.world.chunks.data.NdHashMap;
 import com.brett.world.chunks.data.RenderMode;
@@ -30,8 +39,10 @@ public class World {
 	public int threads = 1;
 	public Noise noise1 = new Noise(694);
 	public Noise noise2 = new Noise(733210811l + 11181013212l + 11111173287l + 105108108326051l);
-
-	public World() {
+	private String worldName;
+	
+	public World(String worldName) {
+		this.worldName = worldName;
 		threads = ThreadPool.reserveQuarterThreads() + ThreadPool.reserveQuarterThreads();
 		World.world = this;
 		Thread th = new Thread(() -> {
@@ -96,9 +107,7 @@ public class World {
 								}
 							}
 							Thread.sleep(250);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+						} catch (Exception e) {}
 					}
 
 				});
@@ -316,7 +325,15 @@ public class World {
 	}
 
 	public void save() {
-
+		System.out.println("Saving World");
+		
+		new File("worlds/" + worldName).mkdirs();
+		String chunksLocation = "worlds/" + worldName + "/chunks/";
+		new File(chunksLocation).mkdirs();
+		
+		new Region(chunksLocation, chunks).saveChunks();
+		
+		System.out.println("World Saved");
 	}
 
 }
