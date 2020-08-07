@@ -1,5 +1,6 @@
 package com.brett.world.tools;
 
+import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 
@@ -19,6 +20,7 @@ public class MouseBlockPicker {
 	private static Vector3f cur = new Vector3f();
 	private static Vector3f pos = new Vector3f();
 	private static Vector3i worldpos = new Vector3i();
+	private static Vector3d worldposf = new Vector3d();
 	private static int xoff, yoff, zoff;
 	
 	/**
@@ -37,23 +39,26 @@ public class MouseBlockPicker {
 		float yStep = cur.y / 12;
 		float zStep = cur.z / 12;
 		for (int i = 0; i < 12; i++) {
-			worldpos.x = (int) ((pos.x += xStep) + camera.getPosition().x);
-			worldpos.y = (int) ((pos.y += yStep) + camera.getPosition().y);
-			worldpos.z = (int) ((pos.z += zStep) + camera.getPosition().z);
+			worldposf.x = ((pos.x += xStep) + camera.getPosition().x);
+			worldposf.y = ((pos.y += yStep) + camera.getPosition().y);
+			worldposf.z = ((pos.z += zStep) + camera.getPosition().z);
 			// terrible solution to this problem
-			if (worldpos.x < 1)
+			if (worldposf.x < 0)
 				xoff = -1;
 			else
 				zoff = 0;
-			if (worldpos.y < 1)
+			if (worldposf.y < 0)
 				yoff = -1;
 			else
 				yoff = 0;
-			if (worldpos.z < 1)
+			if (worldposf.z < 0)
 				zoff = -1;
 			else
 				zoff = 0;
-			Block block = GameRegistry.getBlock(world.getBlock(worldpos.x + xoff, worldpos.y, worldpos.z + zoff));
+			worldpos.x = (int) worldposf.x;
+			worldpos.y = (int) worldposf.y;
+			worldpos.z = (int) worldposf.z;
+			Block block = GameRegistry.getBlock(world.getBlock(worldpos.x + xoff, worldpos.y + yoff, worldpos.z + zoff));
 			if (block.id == Block.AIR)
 				continue;
 			if (replacement > -1) {
@@ -82,19 +87,19 @@ public class MouseBlockPicker {
 			worldpos.x = (int) ((pos.x -= xStep) + camera.getPosition().x);
 			worldpos.y = (int) ((pos.y -= yStep) + camera.getPosition().y);
 			worldpos.z = (int) ((pos.z -= zStep) + camera.getPosition().z);
-			if (worldpos.x < 1)
+			if (worldpos.x < 0)
 				xoff = -1;
 			else
 				zoff = 0;
-			if (worldpos.y < 1)
+			if (worldpos.y < 0)
 				yoff = -1;
 			else
 				yoff = 0;
-			if (worldpos.z < 1)
+			if (worldpos.z < 0)
 				zoff = -1;
 			else
 				zoff = 0;
-			Block bapos = GameRegistry.getBlock(world.getBlock(worldpos.x + xoff, worldpos.y, worldpos.z + zoff));
+			Block bapos = GameRegistry.getBlock(world.getBlock(worldpos.x + xoff, worldpos.y + yoff, worldpos.z + zoff));
 			if (bapos.id != Block.AIR)
 				continue;
 			int wx = worldpos.x + xoff;

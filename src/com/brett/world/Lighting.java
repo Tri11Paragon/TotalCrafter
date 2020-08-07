@@ -62,7 +62,7 @@ public class Lighting {
 	public static void updateLightingRemove(int x, int y, int z, int val) {
 		if (val < 0)
 			return;
-		updateLighting(x, y, z, 0);
+		//updateLighting(x, y, z, 0);
 		world.setBlockLevel(x, y, z, (byte)0);
 		byte ngl = world.getBlockLevel(x+1, y, z);
 		if (ngl != 0 && ngl < val)

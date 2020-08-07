@@ -15,7 +15,7 @@ void main(void){
 		discard;
 	}
 	
-	float lid = lightLevel;
-	float lif = lid/15.0;
-    out_Color = color * max(vec4(lif, lif, lif, 1.0), vec4(0.1));
+	float lid = pow(lightLevel, 2);
+	float lif = lid/225;
+    out_Color = color * max(vec4(lif, lif, lif, 1.0), vec4(1.0));
 }
