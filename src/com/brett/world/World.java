@@ -10,6 +10,7 @@ import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
 import com.brett.world.chunks.Noise;
 import com.brett.world.chunks.Region;
+import com.brett.world.chunks.RegionPart;
 import com.brett.world.chunks.data.ByteBlockStorage;
 import com.brett.world.chunks.data.NdHashMap;
 import com.brett.world.chunks.data.RenderMode;
@@ -26,6 +27,7 @@ public class World {
 
 	public volatile NdHashMap<Integer, Chunk> chunks = new NdHashMap<Integer, Chunk>();
 	public volatile NdHashMap<Integer, Chunk> ungeneratedChunks = new NdHashMap<Integer, Chunk>();
+	public volatile NdHashMap<Integer, RegionPart> loadedRegions = new NdHashMap<Integer, RegionPart>();
 	public volatile List<NdHashMap<Integer, Chunk>> maps = null;
 	public volatile List<Thread> generatorThreads = new ArrayList<Thread>();
 	public int threads = 1;
@@ -52,6 +54,8 @@ public class World {
 									ourMap = maps.get(0);
 									maps.remove(0);
 								} catch (Exception e) {
+									Thread.sleep(250);
+									continue;
 								}
 								if (ourMap != null) {
 									ourMap.iterate((NdHashMap<Integer, Chunk> dt, Integer k1, Integer k2, Integer k3,
@@ -103,6 +107,7 @@ public class World {
 					}
 
 				});
+				dth.setName("id:"+o);
 				dth.start();
 				generatorThreads.add(dth);
 			}

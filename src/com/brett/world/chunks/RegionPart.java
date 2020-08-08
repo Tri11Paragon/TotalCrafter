@@ -30,6 +30,7 @@ public class RegionPart {
 	private int x,y,z;
 	private String location;
 	public List<Chunk> chunks;
+	private boolean loading = false;
 	
 	public RegionPart(String location, int x, int y, int z, List<Chunk> chunks) {
 		this.location = location;
@@ -39,11 +40,14 @@ public class RegionPart {
 		this.chunks = chunks;
 	}
 	
-	public void load(World world) {
+	public boolean load(World world) {
+		if (loading)
+			return false;
 		try {
+			loading = true;
 			String loc = new StringBuilder().append(location).append(x).append("_").append(y).append("_").append(z).append(".rg").toString();
 			if (!new File(loc).exists())
-				return;
+				return false;
 			
 			DataInputStream ios = new DataInputStream(new GZIPInputStream(new BufferedInputStream(
 					new FileInputStream(loc), 8192)));
@@ -83,9 +87,12 @@ public class RegionPart {
 				index++;
 			}
 			ios.close();
+			loading = false;
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return false;
 	}
 	
 	public void save() {
