@@ -251,13 +251,13 @@ public class Chunk {
 		positions = Arrays.copyOfRange(positions, 0, lastIndex);
 		data = Arrays.copyOfRange(data, 0, lastIndexData);
 		normals = Arrays.copyOfRange(normals, 0, lastIndexNormal);
-
 	}
 
-	public void meshChunk() {
+	public Chunk meshChunk() {
 		meshChunk(true);
 		isMeshing = false;
 		waitingForMesh = true;
+		return this;
 	}
 	
 	/**

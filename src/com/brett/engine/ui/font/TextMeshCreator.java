@@ -47,9 +47,13 @@ public class TextMeshCreator implements Serializable {
 				// this is what I added
 				if (lines.size() < text.getMaxNumberOfLines()) {
 					currentLine.attemptToAddWord(currentWord);
+					currentLine.setLineHeight(maxHeight);
 					lines.add(currentLine);
 					currentLine = new Line(metaData.getSpaceWidth(), text.getFontSizeX(), text.getFontSizeY(), text.getMaxLineSize()); 
-					text.setHeight(text.getHeight() +  maxHeight);
+					float linesHeight = 0;
+					for (int i = 0; i < lines.size(); i++)
+						linesHeight += lines.get(i).getLineHeight();
+					text.setHeight(linesHeight);
 					maxHeight = 0;
 					maxWidth = 0;
 					totalWidth = 0;
@@ -72,7 +76,10 @@ public class TextMeshCreator implements Serializable {
 					if (lines.size() < text.getMaxNumberOfLines()) {
 						lines.add(currentLine);
 						currentLine = new Line(metaData.getSpaceWidth(), text.getFontSizeX(), text.getFontSizeY(), text.getMaxLineSize());
-						text.setHeight(text.getHeight() +  maxHeight);
+						float linesHeight = 0;
+						for (int i = 0; i < lines.size(); i++)
+							linesHeight += lines.get(i).getLineHeight();
+						text.setHeight(linesHeight);
 						maxHeight = 0;
 						maxWidth = 0;
 						totalWidth = 0;

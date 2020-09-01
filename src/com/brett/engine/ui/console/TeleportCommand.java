@@ -19,9 +19,9 @@ public class TeleportCommand implements Command {
 	public String commandEntered(String full, String[] args) {
 		if (args.length < 3)
 			return "PLEASE ENTER X, Y, Z";
-		double x = Double.parseDouble(args[0]);
-		double y = Double.parseDouble(args[1]);
-		double z = Double.parseDouble(args[2]);
+		double x = Double.parseDouble(args[0].replaceAll("[^\\d.]", ""));
+		double y = Double.parseDouble(args[1].replaceAll("[^\\d.]", ""));
+		double z = Double.parseDouble(args[2].replaceAll("[^\\d.]", ""));
 		double xoff = 0;
 		double yoff = 0;
 		double zoff = 0;

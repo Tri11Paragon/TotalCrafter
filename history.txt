@@ -1,0 +1,36 @@
+>hel
+COMMAND NOT FOUND
+>tp
+PLEASE ENTER X, Y, Z
+>tp 100 100 100
+Position set!
+>tp /100 /100 /100
+Position set!
+>hello
+COMMAND NOT FOUND
+>hello
+COMMAND NOT FOUND
+>tp 100 100 100
+Position set!
+>tp /100 /100 /100
+Position set!
+>penis
+COMMAND NOT FOUND
+>hay
+COMMAND NOT FOUND
+>gay
+COMMAND NOT FOUND
+>nay
+COMMAND NOT FOUND
+>bay
+COMMAND NOT FOUND
+>pay
+COMMAND NOT FOUND
+[2020-08-30 @ 19:06:29 EDT] >hey there
+[2020-08-30 @ 19:06:29 EDT] COMMAND NOT FOUND
+[2020-08-30 @ 19:06:36 EDT] >you are gay
+[2020-08-30 @ 19:06:36 EDT] COMMAND NOT FOUND
+[2020-08-30 @ 19:06:42 EDT] >have sex with a man
+[2020-08-30 @ 19:06:42 EDT] COMMAND NOT FOUND
+[2020-08-30 @ 19:06:46 EDT] >tp 010 100 100
+[2020-08-30 @ 19:06:46 EDT] Position set!

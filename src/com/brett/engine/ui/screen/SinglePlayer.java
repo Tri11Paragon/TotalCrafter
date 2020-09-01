@@ -187,11 +187,6 @@ public class SinglePlayer extends Screen implements IMouseState {
 	@Override
 	public void close() {
 		super.close();
-		for (int i = 0; i < world.generatorThreads.size(); i++) {
-			try {
-				world.generatorThreads.get(i).interrupt();
-			} catch (Exception e) {}
-		}
 	}
 	
 	@Override
@@ -203,7 +198,6 @@ public class SinglePlayer extends Screen implements IMouseState {
 			GL11.glDeleteTextures(gPosition);
 			GL11.glDeleteTextures(gNormal);
 			GL11.glDeleteTextures(gColorSpec);
-			
 			GL30.glDeleteRenderbuffers(rboDepth);
 		}
 		super.onLeave();

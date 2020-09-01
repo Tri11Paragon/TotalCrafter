@@ -10,6 +10,7 @@ public class Line {
 
 	private double maxLength;
 	private double spaceSize;
+	private double lineHeight;
 
 	private List<Word> words = new ArrayList<Word>();
 	private double currentLineLength = 0;
@@ -34,6 +35,14 @@ public class Line {
 		} else {
 			return false;
 		}
+	}
+	
+	public double getLineHeight() {
+		return lineHeight;
+	}
+
+	public void setLineHeight(double lineHeight) {
+		this.lineHeight = lineHeight;
 	}
 
 	protected double getMaxLength() {

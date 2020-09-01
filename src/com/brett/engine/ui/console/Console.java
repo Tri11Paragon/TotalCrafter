@@ -1,11 +1,17 @@
 package com.brett.engine.ui.console;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import org.lwjgl.glfw.GLFW;
 
 import com.brett.engine.Utils;
 import com.brett.engine.data.IKeyState;
+import com.brett.engine.data.IScrollState;
 import com.brett.engine.managers.InputMaster;
 import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.ui.UIMenu;
@@ -22,21 +28,39 @@ public class Console {
 	private static UIMenu menu;
 	private static String textBuffer = "";
 	private static String bodyBuffer = "";
+	private static double bodyHeight = 0;
 	public static int maxCharacters = 48;
 	public static HashMap<String, Command> commands = new HashMap<String, Command>();
+	public static KeyMap keysMap;
 	private static long startTime = 0;
 	private static long lastKeyTime = 0;
 	private static UIText commandtext;
 	private static UIText pastCommands;
+	private static PrintWriter his;
+	//private static int SCALE = DisplayManager.HEIGHT;
 	
 	public static UIMenu init() {
 		menu = new UIMenu();
+		keysMap = new KeyMap();
+		try {
+			his = new PrintWriter( new BufferedWriter(new FileWriter("history.txt", true)));
+		} catch (Exception e) {}
 		
 		commandtext = new UIText("", 175, "mono", 10, 600, 3000, 1);
 		pastCommands = new UIText("", 175, "mono", 10, 10, 600, 100);
+		pastCommands.setBoundingBox(10, 10, 455, 595);
 		menu.addText(commandtext);
 		menu.addText(pastCommands);
 		menu.addElement(new UITexture(ScreenManager.loader.loadTexture("gui/darkgrey"), -1, -1, 5, 5, 445, 620));
+		menu.addElement(new UITexture(ScreenManager.loader.loadTexture("gui/lightgrey"), -1, -1, 5, 10, 445, 84));
+		
+		InputMaster.scroll.add(new IScrollState() {
+			@Override
+			public void scroll(int dir) {
+				double d = dir * 5;
+				Console.pastCommands.ry += d;
+			}
+		});
 		
 		InputMaster.keyboard.add(new IKeyState() {
 			
@@ -57,10 +81,8 @@ public class Console {
 						return;
 					}
 					if (keys == GLFW.GLFW_KEY_ENTER) {
-						if (pastCommands.getHeight()>4.595069) {
-							bodyBuffer = "";
-							pastCommands.changeText(bodyBuffer);
-							pastCommands.setHeight(0);
+						if (bodyHeight + (pastCommands.ry+38) > 588) {
+							pastCommands.ry -= 42;
 						}
 						if (textBuffer.length() < 1)
 							return;
@@ -74,16 +96,23 @@ public class Console {
 							return;
 						if (command.toCharArray()[command.length()-1] == '_')
 							command = command.substring(0, command.length()-1);
-						bodyBuffer += ">" + textBuffer + "\n";
+						String tmp = ">" + textBuffer + "\n";
+						String time = new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss z] ").format(new Date(System.currentTimeMillis()));
+						his.print(time + tmp);
+						bodyBuffer += tmp;
 						if (args.length > 1)
 							args = Arrays.copyOfRange(args, 1, args.length);
 						else
 							args = new String[0];
 						String responce = "";
-						if (commands.containsKey(command))
-							responce = commands.get(command).commandEntered(textBuffer, args);
-						else
+						if (commands.containsKey(command)) {
+							responce = commands.get(command).commandEntered(textBuffer, args) + "\n";
+							his.print(time + responce);
+						} else {
 							bodyBuffer += "COMMAND NOT FOUND\n";
+							his.println(time + "COMMAND NOT FOUND");
+						}
+						his.flush();
 						bodyBuffer += responce + ""; 
 						textBuffer = "_";
 						commandtext.changeText(textBuffer);
@@ -109,7 +138,6 @@ public class Console {
 							textBuffer+=(char)(keys+32);
 					} else 
 						textBuffer+=(char)keys;
-					
 					//textBuffer = "_";
 					//commandtext.changeText(textBuffer);
 				}
@@ -144,6 +172,9 @@ public class Console {
 		return textBuffer;
 	}
 
+	public static void close() {
+		his.close();
+	}
 	
 	public static void update() {
 		char[] texs = textBuffer.toCharArray();
@@ -157,6 +188,8 @@ public class Console {
 				textBuffer += '_';
 				commandtext.changeText(textBuffer);
 			}
+			int tmp = ((pastCommands.getNumberOfLines()-1)/2);
+			bodyHeight = tmp*39 + (3 * tmp);
 			if (InputMaster.keyDown[GLFW.GLFW_KEY_BACKSPACE]) {
 				long time = System.currentTimeMillis() - startTime;
 				if (time > 800 && time < 1600) {

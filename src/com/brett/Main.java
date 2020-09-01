@@ -43,11 +43,7 @@ public class Main {
 	
 	
 	/**
-	 * Josiah doesn't get credit
-	 * 
 	 * ^.*$
-	 * 
-	 * ThinMatrix gets credit? (loader)
 	 */
 	
 	public static void main(String[] args) {
@@ -121,11 +117,13 @@ public class Main {
 			DebugInfo.update();
 			Console.update();
 			DisplayManager.updateDisplay();
+			InputMaster.update();
 			SyncSave.sync(Settings.FPS);
 		}
 		isOpen = false;
 		
 		ScreenManager.close();
+		Console.close();
 	}
 	
 	public static void printMemoryInfo() {

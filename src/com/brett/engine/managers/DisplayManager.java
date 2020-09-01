@@ -89,6 +89,10 @@ public class DisplayManager {
 			//ScreenManager.fonts.put("mono", ScreenManager.monospaced);
 		});
 		
+		glfwSetScrollCallback(window, (window, x, y) -> {
+			InputMaster.scrollMoved((int)y);
+		});
+		
 		glfwSetCursorPosCallback(window, (window, x, y) -> {
 			DisplayManager.mouseX = x;
 			DisplayManager.mouseY = y;
