@@ -74,6 +74,7 @@ public class Main {
 		System.out.println("User: " + user_name + "@" + user_home);
 		System.out.println("Working Directory: " + user_workingdir);
 		System.out.println("Number of cores: " + processors);
+		System.out.println("Current Thread: " + Thread.currentThread());
 		System.out.println();
 		/**
 		 * Inits
@@ -95,14 +96,16 @@ public class Main {
 					DebugInfo.toggle();
 			}
 		});
-		
-		ScreenManager.switchScreen(new SinglePlayer());
+
+		ScreenManager.switchScreen(new SinglePlayer(Console.init()));
 		
 		while (isOpen) {
 			isOpen = !GLFW.glfwWindowShouldClose(DisplayManager.window);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 			GL11.glClearColor(RED, GREEN, BLUE, 1);
+			
+			
 			
 			try {
 				ScreenManager.update();

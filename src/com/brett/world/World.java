@@ -8,12 +8,12 @@ import java.util.concurrent.Executors;
 
 import com.brett.engine.data.collision.AxisAlignedBB;
 import com.brett.engine.managers.ThreadPool;
+import com.brett.utils.NdHashMap;
+import com.brett.utils.Noise;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
-import com.brett.world.chunks.Noise;
 import com.brett.world.chunks.Region;
 import com.brett.world.chunks.data.ByteBlockStorage;
-import com.brett.world.chunks.data.NdHashMap;
 import com.brett.world.chunks.data.RenderMode;
 import com.brett.world.chunks.data.ShortBlockStorage;
 
@@ -28,12 +28,13 @@ public class World {
 
 	public volatile NdHashMap<Integer, Region> regions = new NdHashMap<Integer, Region>();
 	public volatile NdHashMap<Integer, Chunk> ungeneratedChunks = new NdHashMap<Integer, Chunk>();
+	private volatile NdHashMap<Integer, Integer> lockedRegions = new NdHashMap<Integer, Integer>();
 	public int threads = 1;
 	public Noise noise1 = new Noise(694);
 	public Noise noise2 = new Noise(733210811l + 11181013212l + 11111173287l + 105108108326051l);
 	public String worldName;
 	public String regionsLocation;
-	private ExecutorService worldExecutor;
+	public ExecutorService worldExecutor;
 	
 	public World(String worldName) {
 		this.worldName = worldName;
@@ -41,57 +42,10 @@ public class World {
 		regionsLocation = "worlds/" + this.worldName + "/regions/";
 		new File(regionsLocation).mkdirs();
 		
-		ShortBlockStorage blks = new ShortBlockStorage();
-		for (int i = 0; i < 16; i++) {
-			for (int j = 0; j < 16; j++) {
-				blks.blocks[i][2][j] = Block.DIRT;
-			}
-		}
-		Chunk c = new Chunk(this, blks, new ByteBlockStorage(), 0, 5, 0);
-		setChunk(c);
-		c.meshChunk();
-		
 		threads = ThreadPool.reserveQuarterThreads() + ThreadPool.reserveQuarterThreads();
-		worldExecutor = Executors.newFixedThreadPool(threads - 1);
+		worldExecutor = Executors.newFixedThreadPool(threads);
 		World.world = this;
-										/*ShortBlockStorage blks = v1.blocks;
-										int cxw = k1 * 16;
-										int cyw = k2 * 16;
-										int czw = k3 * 16;
-										for (int i = 0; i < 16; i++) {
-											for (int k = 0; k < 16; k++) {
-												int wx = cxw + i;
-												int wz = czw + k;
-												double nfxz = 0;
-												if (cyw > -120)
-													nfxz = noise1
-															.noise(wx / 128d + noise2.nNoise(wx / 32d, 4 / 3492d,
-																	wz / 32d + noise1.noise(wx, wz), 8, 4d), wz / 128d)
-															* 64 + 64;
-												for (int j = 0; j < 16; j++) {
-													int wy = cyw + j;
-
-													if (wy > nfxz) {
-
-													} else {
-
-														double nf = noise1.noise(wx / 32d, wy / 32d, wz / 32d);
-														if (nf > -Noise.RANGE_3D / 2) {
-															if (wy < nfxz && wy > nfxz - 1)
-																blks.setWorld(wx, wy, wz, Block.GRASS);
-															else if (wy < nfxz - 1 && wy > (nfxz - 4))
-																blks.setWorld(wx, wy, wz, Block.DIRT);
-															else if (wy > -120)
-																blks.setWorld(wx, wy, wz, Block.STONE);
-															else
-																blks.setWorld(wx, wy, wz, Block.BASALT);
-														}
-													}
-												}
-											}
-										}
-										v1.meshChunk();
-										chunks.set(k1, k2, k3, v1);*/
+		
 	}
 
 	/**
@@ -104,6 +58,28 @@ public class World {
 		Chunk c = new Chunk(this, new ShortBlockStorage(), new ByteBlockStorage(), x, y, z);
 		ungeneratedChunks.set(x, y, z, c);
 		worldExecutor.submit(() -> {
+			int rx = c.x_pos >> 3;
+			int ry = c.y_pos >> 3;
+			int rz = c.z_pos >> 3;
+			Region r = regions.get(rx, ry, rz);
+			if (r == null) {
+				if (lockedRegions.containsKey(rx, ry, rz)) {
+					while (lockedRegions.containsKey(rx, ry, rz)) {try{ Thread.sleep(1); } catch (Exception e) {}}
+					r = regions.get(rx, ry, rz);
+					if (r == null)
+						System.err.println("we got an issue with a null region after loading :(");
+				} else {
+					lockedRegions.set(rx, ry, rz, 1);
+					r = Region.load(regionsLocation, this, rx, ry, rz);
+					regions.set(rx, ry, rz, r);
+					lockedRegions.remove(rx, ry, rz);
+				}
+			}
+			Chunk cr = r.getChunk(x, y, z);
+			if (cr != null) {
+				ungeneratedChunks.remove(x, y, z);
+				return;
+			}
 			ShortBlockStorage blks = c.blocks;
 			int cxw = x * 16;
 			int cyw = y * 16;
@@ -114,9 +90,7 @@ public class World {
 					int wz = czw + k;
 					double nfxz = 0;
 					if (cyw > -120)
-						nfxz = noise1.noise(wx / 128d + noise2.nNoise(wx / 32d, 4 / 3492d,
-										wz / 32d + noise1.noise(wx, wz), 8, 4d), wz / 128d)
-								* 64 + 64;
+						nfxz = noise1.noise(wx / 128d + noise2.nNoise(wx / 32d, 4 / 3492d, wz / 32d + noise1.noise(wx, wz), 8, 4d), wz / 128d) * 64 + 64;
 					for (int j = 0; j < 16; j++) {
 						int wy = cyw + j;
 
@@ -139,8 +113,7 @@ public class World {
 					}
 				}
 			}
-			c.meshChunk();
-			World.world.setChunk(x, y, z, c);
+			r.setChunk(x, y, z, c);
 			ungeneratedChunks.remove(x, y, z);
 		});
 	}
@@ -160,10 +133,8 @@ public class World {
 				c = new Chunk(this, new ShortBlockStorage(), new ByteBlockStorage(), cx, cy, cz);
 				ungeneratedChunks.set(cx, cy, cz, c);
 			}
-		}
-		if (c != null) {
+		} else
 			c.blocks.setWorld(x, y, z, id);
-		}
 	}
 
 	public Chunk meshAt(int x, int y, int z) {
@@ -335,18 +306,9 @@ public class World {
 		return c;
 	}
 
-	public void setChunk(int x, int y, int z, Chunk c) {
-		Region r = getRegion(x, y, z);
-		if (r != null)
-			r.setChunk(x, y, z, c);
-		else {
-			int rx = c.x_pos >> 3;
-			int ry = c.y_pos >> 3;
-			int rz = c.z_pos >> 3;
-			regions.set(rx, ry, rz, new Region(rx, ry, rz, regionsLocation).setChunk(c.x_pos, c.y_pos, c.z_pos, c));
-		}
-	}
-
+	/**
+	 * sets a chunk, do not call from main thread.
+	 */
 	public void setChunk(Chunk c) {
 		Region r = getRegion(c.x_pos, c.y_pos, c.z_pos);
 		if (r != null)
@@ -355,17 +317,16 @@ public class World {
 			int rx = c.x_pos >> 3;
 			int ry = c.y_pos >> 3;
 			int rz = c.z_pos >> 3;
-			regions.set(rx, ry, rz, new Region(rx, ry, rz, regionsLocation).setChunk(c.x_pos, c.y_pos, c.z_pos, c));
+			r = Region.load(regionsLocation, this, rx, ry, rz);
+			Chunk rc = r.getChunk(c.x_pos, c.y_pos, c.z_pos);
+			if (rc != null) {
+				rc.blocks.integrate(c.blocks);
+				rc.meshChunk();
+			} else
+				r.setChunk(c.x_pos, c.y_pos, c.z_pos, c);
+			
+			regions.set(rx, ry, rz, r);
 		}
-	}
-
-	public void setChunkWorld(int x, int y, int z, Chunk c) {
-		x >>= 4;
-		y >>= 4;
-		z >>= 4;
-		Region r = getRegion(x, y, z);
-		if (r != null)
-			r.setChunk(x, y, z, c);
 	}
 
 	public void save() {

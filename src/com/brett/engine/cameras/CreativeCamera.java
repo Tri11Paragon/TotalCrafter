@@ -90,8 +90,8 @@ public class CreativeCamera extends Camera {
 		if (this.pitch < -90)
 			this.pitch = -90;
 		// prevents the yaw from getting to very very large numbers.
-		if (this.yaw < -360)
-			this.yaw = 0;
+		if (this.yaw < 0)
+			this.yaw = 360;
 		if (this.yaw > 360)
 			this.yaw = 0;
 

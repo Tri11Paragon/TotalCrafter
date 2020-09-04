@@ -30,14 +30,16 @@ import com.brett.engine.ui.UIElement;
 import com.brett.engine.ui.UIMenu;
 import com.brett.engine.ui.UITexture;
 import com.brett.engine.ui.console.Console;
+import com.brett.engine.ui.console.PolygonCommand;
 import com.brett.engine.ui.console.TeleportCommand;
 import com.brett.engine.ui.font.UIText;
+import com.brett.utils.NdHashMap;
 import com.brett.world.GameRegistry;
 import com.brett.world.Lighting;
 import com.brett.world.World;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
-import com.brett.world.chunks.data.ShortBlockStorage;
+import com.brett.world.chunks.Region;
 import com.brett.world.tools.MouseBlockPicker;
 import com.brett.world.tools.RayCasting;
 
@@ -57,17 +59,20 @@ public class SinglePlayer extends Screen implements IMouseState {
 	public GBufferShader gshader;
 	private UIMenu console;
 	private static int gBuffer = -1, rboDepth, gPosition, gNormal, gColorSpec;
+	private Thread th;
+	private boolean running = false;
 	
-	public SinglePlayer() {
+	public SinglePlayer(UIMenu console) {
 		textureAtlas = ScreenManager.loader.loadSpecialTextureATLAS(16, 16);
 		GameRegistry.registerBlocks();
 		GameRegistry.registerItems();
-		console = Console.init();
+		this.console = console;
 		InputMaster.mouse.add(this);
 	}
 	
 	@Override
 	public void onSwitch() {
+		running = true;
 		super.onSwitch();
 		elements.add(new UITexture(ScreenManager.loader.loadTexture("crosshair"), -2, -2, 0, 0, 16, 16, AnchorPoint.CENTER));
 		
@@ -85,6 +90,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 		Lighting.init(world);
 		camera = new CreativeCamera(new Vector3d(0,140,0), world);
 		Console.registerCommand(new String[] {"tp", "teleport"}, new TeleportCommand(camera));
+		Console.registerCommand(new String[] {"poly", "pmode", "rend.p", "renderer.p"}, new PolygonCommand());
 		
 		menus.add(console);
 		menus.add(DebugInfo.init(camera));
@@ -100,17 +106,17 @@ public class SinglePlayer extends Screen implements IMouseState {
 		gshader.loadProjectionMatrox(ProjectionMatrix.projectionMatrix);
 		gshader.stop();
 		
-		ShortBlockStorage shrt2 = new ShortBlockStorage();
+		//ShortBlockStorage shrt2 = new ShortBlockStorage();
 		
-		for (int i = 0; i < 16; i++) {
-			for (int k = 0; k < 16; k++) {
-				shrt2.setWorld(i, 1, k, Block.STONE);
-			}
-		}
+		//for (int i = 0; i < 16; i++) {
+		//	for (int k = 0; k < 16; k++) {
+		//		shrt2.setWorld(i, 1, k, Block.STONE);
+		//	}
+		//}
 		
-		Chunk c2 = new Chunk(world, shrt2, null, 1, 0, 0);
-		world.setChunk(1, 0, 0, c2);
-		c2.meshChunk();
+		//Chunk c2 = new Chunk(world, shrt2, null, 1, 0, 0);
+		//world.setChunk(c2);
+		//c2.meshChunk();
 		
 		genBuffers();
 		
@@ -119,12 +125,42 @@ public class SinglePlayer extends Screen implements IMouseState {
 		elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gPosition, -1, 0, 0, 500, 500));
 		
 		//GL13.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-		
+		th = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (running) {
+					
+					int rgDist = (int) Math.pow(((Settings.RENDER_DISTANCE >> 3) + 1) * 2, 2) * 2;
+					System.out.println("SAVE CYCLE " + rgDist);
+					
+					Vector3d pos = camera.getPosition();
+					int rpx = (int)(pos.x) >> 3;
+					int rpy = (int)(pos.y) >> 3;
+					int rpz = (int)(pos.z) >> 3; 
+					
+					world.regions.iterate( (NdHashMap<Integer, Region> rg, Integer rx, Integer ry, Integer rz, Region r) -> {
+						r.save();
+						double dist = Math.sqrt(Math.pow(rx - rpx, 2) + Math.pow(ry - rpy, 2) + Math.pow(rz - rpz, 2));
+						if (dist > rgDist) {
+							System.out.println("Unloading region: " + rx + " " + ry + " " + rz + " || " + dist);
+							world.regions.remove(rx, ry, rz);
+						}
+					});
+					
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {break;}
+				}
+			}
+		});
+		th.start();
 	}
 	
 	private float ccx,ccy,ccz;
 	private int cx,cy,cz;
 	private Vector3d pos;
+	private long lastCheckTime = 0;
+	private boolean checked = false;
 	
 	@Override
 	public List<UIElement> render() {
@@ -147,9 +183,9 @@ public class SinglePlayer extends Screen implements IMouseState {
 		for (int i = -Settings.RENDER_DISTANCE; i <= Settings.RENDER_DISTANCE; i++) {
 			for (int j = -Settings.RENDER_DISTANCE; j <= Settings.RENDER_DISTANCE; j++) {
 				for (int k = -Settings.RENDER_DISTANCE; k <= Settings.RENDER_DISTANCE; k++) {
-					double distance = Math.sqrt(Math.pow(i, 2) + Math.pow(j, 2) + Math.pow(k, 2));
-					if (distance > Settings.RENDER_DISTANCE)
-						continue;
+					//double distance = Math.sqrt(Math.pow(i, 2) + Math.pow(j, 2) + Math.pow(k, 2));
+					//if (distance > Settings.RENDER_DISTANCE)
+					//	continue;
 					cx = ((int) (pos.x / 16)) + i;
 					cy = ((int) (pos.y / 16)) + j;
 					cz = ((int) (pos.z / 16)) + k;
@@ -164,10 +200,24 @@ public class SinglePlayer extends Screen implements IMouseState {
 					Chunk c = world.getChunk(cx, cy, cz);
 					if (c == null)
 						world.queueChunk(cx, cy, cz);
-					else
+					else {
 						c.render(shader, i, j, k);
+						// this is cancer pls ignore
+						if (System.currentTimeMillis() - lastCheckTime > 500) {
+							checked = true;
+							if (!c.hasMeshed || c.chunkInfo > 0) {
+								world.worldExecutor.execute(() -> {
+									c.iNeedMesh();
+								});
+							}
+						}
+					}
 				}
 			}
+		}
+		if (checked) {
+			lastCheckTime = System.currentTimeMillis();
+			checked = false;
 		}
 		
 		shader.stop();
@@ -192,6 +242,8 @@ public class SinglePlayer extends Screen implements IMouseState {
 	@Override
 	public void onLeave() {
 		world.save();
+		running = false;
+		th.interrupt();
 		menus.remove(DebugInfo.destroy());
 		if (gBuffer > -1) {
 			GL30.glDeleteFramebuffers(gBuffer);

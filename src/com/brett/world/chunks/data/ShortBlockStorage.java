@@ -16,6 +16,23 @@ public class ShortBlockStorage {
 	public short[][][] blocks = new short[SIZE][SIZE][SIZE];
 	
 	/**
+	 * integrates another chunk's block into this one, but only replaces if the block in this is air.
+	 * this is slow and shouldn't be called from the main thread.
+	 */
+	public ShortBlockStorage integrate(ShortBlockStorage other) {
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				for (int k = 0; k < SIZE; k++) {
+					if (blocks[i][j][k] == Block.AIR) {
+						blocks[i][j][k] = other.blocks[i][j][k];
+					}
+				}
+			}
+		}
+		return this;
+	}
+	
+	/**
 	 * returns the block at a position in the array
 	 */
 	public short get(int x, int y, int z) {

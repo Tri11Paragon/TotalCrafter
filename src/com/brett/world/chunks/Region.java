@@ -58,29 +58,43 @@ public class Region {
 		try {
 			DataInputStream dis = new DataInputStream(new GZIPInputStream(new BufferedInputStream(new FileInputStream(loc), 8192)));
 			
-			rx = dis.readInt();
-			ry = dis.readInt();
-			rz = dis.readInt();
-			
 			while (dis.available() > 0) {
-				int x = dis.readByte();
-				int y = dis.readByte();
-				int z = dis.readByte();
-				
-				Chunk c = new Chunk(world, new ShortBlockStorage(), new ByteBlockStorage(), rx + x, ry + y, rz + z);
-				for (int w = 0; w < 16; w++) {
-					for (int s = 0; s < 16; s++) {
-						for (int d = 0; d < 16; d++) {
-							c.blocks.blocks[w][s][d] = dis.readShort();
+				try {
+					int x = dis.readByte();
+					int y = dis.readByte();
+					int z = dis.readByte();
+					
+					int cx = rx * 8 + x;
+					int cy = ry * 8 + y;
+					int cz = rz * 8 + z;
+					
+					ShortBlockStorage shbk = new ShortBlockStorage();
+					for (int i = 0; i < 16; i++) {
+						for (int j = 0; j < 16; j++) {
+							for (int k = 0; k < 16; k++) {
+								try {
+									short blk = dis.readShort();
+									shbk.blocks[i][j][k] = blk;
+									//if (blk != 0)
+									//	GameRegistry.getBlock(blk).onBlockPlaced(world, blk, cx + i, cy + j, cz + k);
+								} catch (Exception e) {
+									System.err.println("Tiny Error: " + e.getCause());
+									break;
+								}
+							}
 						}
 					}
-				}
-				chunks[x][y][z] = c;
-			
+					
+					Chunk c = new Chunk(world, shbk, new ByteBlockStorage(), cx, cy, cz);
+					chunks[x][y][z] = c;
+					byte flag = dis.readByte();
+					if (flag == -2)
+						break;
+				} catch (Exception e) {break;}
 			}
 			
 			dis.close();
-		} catch (Exception e) {}
+		} catch (Exception e) {System.err.println("BIG ERROR " + e.getCause()); }
 		return this;
 	}
 	
@@ -88,9 +102,6 @@ public class Region {
 		String loc = new StringBuilder().append(location).append(rx).append("_").append(ry).append("_").append(rz).append(".rg").toString();
 		try {
 			DataOutputStream dos = new DataOutputStream(new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(loc), 8192)));
-			dos.writeInt(rx);
-			dos.writeInt(ry);
-			dos.writeInt(rz);
 			
 			for (int i = 0; i < regionSize; i++) {
 				for (int j = 0; j < regionSize; j++) {
@@ -98,20 +109,24 @@ public class Region {
 						Chunk c = chunks[i][j][k];
 						if (c == null)
 							continue;
+						if (c.isEmpty)
+							continue;
 						short[][][] blocks = c.blocks.blocks;
 						dos.writeByte(i);
 						dos.writeByte(j);
 						dos.writeByte(k);
-						for (int w = 0; w < 16; w++) {
-							for (int s = 0; s < 16; s++) {
-								for (int d = 0; d < 16; d++) {
-									dos.writeShort(blocks[w][s][d]);
+						for (int xx = 0; xx < 16; xx++) {
+							for (int yy = 0; yy < 16; yy++) {
+								for (int zz = 0; zz < 16; zz++) {
+									dos.writeShort(blocks[xx][yy][zz]);
 								}
 							}
 						}
+						dos.writeByte(-1);
 					}
 				}
 			}
+			dos.writeByte(-2);
 			
 			dos.close();
 		} catch (Exception e) {}

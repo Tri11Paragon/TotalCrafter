@@ -15,11 +15,11 @@ import com.brett.engine.data.datatypes.VAO;
 import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.shaders.VoxelShader;
 import com.brett.engine.tools.Maths;
+import com.brett.utils.NdHashMap;
 import com.brett.world.GameRegistry;
 import com.brett.world.World;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.data.ByteBlockStorage;
-import com.brett.world.chunks.data.NdHashMap;
 import com.brett.world.chunks.data.RenderMode;
 import com.brett.world.chunks.data.ShortBlockStorage;
 import com.brett.world.mesh.MeshStore;
@@ -54,8 +54,10 @@ public class Chunk {
 	public volatile int lastIndexNormal;
 
 	public volatile byte chunkInfo = 0;
+	public volatile boolean hasMeshed = false;
 	public volatile boolean isEmpty = false;
 	public volatile boolean isMeshing = false;
+	public volatile boolean yesMan = false;
 	public volatile boolean waitingForMesh = false;
 
 	public World world;
@@ -79,6 +81,155 @@ public class Chunk {
 		this.world = world;
 	}
 
+	public void iNeedMesh() {
+		if (isMeshing || waitingForMesh)
+			return;
+		
+		if (hasMeshed) {
+		//if ((chunkInfo & LEFT) == LEFT) {
+			Chunk dc = world.getChunk(x_pos - 1, y_pos, z_pos);
+			if (dc == null)
+				return;
+		//}
+		
+		//if ((chunkInfo & RIGHT) == RIGHT) {
+			Chunk hc = world.getChunk(x_pos + 1, y_pos, z_pos);
+			if (hc == null)
+				return;
+		//}
+		
+		//if ((chunkInfo & FRONT) == FRONT) {
+			Chunk ch = world.getChunk(x_pos, y_pos, z_pos + 1);
+			if (ch == null)
+				return;
+		//}
+		
+		//if ((chunkInfo & BACK) == BACK) {
+			Chunk cg = world.getChunk(x_pos, y_pos, z_pos - 1);
+			if (cg == null)
+				return;
+		//}
+		
+		//if ((chunkInfo & TOP) == TOP) {
+			Chunk cd = world.getChunk(x_pos, y_pos + 1, z_pos);
+			if (cd == null)
+				return;
+		//}
+		
+		//if ((chunkInfo & BOTTOM) == BOTTOM) {
+			Chunk cr = world.getChunk(x_pos, y_pos - 1, z_pos);
+			if (cr == null)
+				return;
+			//System.out.println("GQR " + dc + " " + hc + " " + ch + " " + cg + " " + cd + " " + cr);
+		//}
+		} 
+		
+		isMeshing = true;
+		
+		lastIndex = 0;
+		lastIndexData = 0;
+		lastIndexNormal = 0;
+		chunkInfo = 0;
+		positions = new float[0];
+		data = new float[0];
+		normals = new float[0];
+
+		for (int i = 0; i < ShortBlockStorage.SIZE; i++) {
+			for (int j = 0; j < ShortBlockStorage.SIZE; j++) {
+				for (int k = 0; k < ShortBlockStorage.SIZE; k++) {
+					short block = blocks.get(i, j, k);
+					if (block == Block.AIR)
+						continue;
+
+					Block b = GameRegistry.getBlock(block);
+
+					int wx = i + this.x_pos * 16;
+					int wy = j + this.y_pos * 16;
+					int wz = k + this.z_pos * 16;
+
+					RenderMode leftR = world.getRenderModeNull(wx - 1, wy, wz);
+					RenderMode rightR = world.getRenderModeNull(wx + 1, wy, wz);
+					RenderMode frontR = world.getRenderModeNull(wx, wy, wz + 1);
+					RenderMode backR = world.getRenderModeNull(wx, wy, wz - 1);
+					RenderMode topR = world.getRenderModeNull(wx, wy + 1, wz);
+					RenderMode bottomR = world.getRenderModeNull(wx, wy - 1, wz);
+
+					if (leftR == null) {
+						chunkInfo |= LEFT;
+					} else {
+						if (leftR != RenderMode.SOLID) {
+							positions = addArray(positions,
+									updateVertexTranslation(MeshStore.vertsLeftComplete, i, j, k));
+							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvLeftCompleteCompress, world.getLightLevel(wx - 1, wy, wz), b.textureLeft));
+							normals = addArrayNormal(normals, MeshStore.normalsLeft);
+						}
+					}
+
+					if (rightR == null) {
+						chunkInfo |= RIGHT;
+					} else {
+						if (rightR != RenderMode.SOLID) {
+							positions = addArray(positions,
+									updateVertexTranslation(MeshStore.vertsRightComplete, i, j, k));
+							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvRightCompleteCompress, world.getLightLevel(wx + 1, wy, wz), b.textureRight));
+							normals = addArrayNormal(normals, MeshStore.normalsRight);
+						}
+					}
+
+					if (frontR == null) {
+						chunkInfo |= FRONT;
+					} else {
+						if (frontR != RenderMode.SOLID) {
+							positions = addArray(positions, updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
+							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, world.getLightLevel(wx, wy, wz + 1), b.textureFront));
+							normals = addArrayNormal(normals, MeshStore.normalsFront);
+						}
+					}
+
+					if (backR == null) {
+						chunkInfo |= BACK;
+					} else {
+						if (backR != RenderMode.SOLID) {
+							positions = addArray(positions, updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
+							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, world.getLightLevel(wx, wy, wz - 1), b.textureBack));
+							normals = addArrayNormal(normals, MeshStore.normalsBack);
+						}
+					}
+
+					if (topR == null) {
+						chunkInfo |= TOP;
+					} else {
+						if (topR != RenderMode.SOLID) {
+							positions = addArray(positions,
+									updateVertexTranslation(MeshStore.vertsTopComplete, i, j, k));
+							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvTopCompleteCompress, world.getLightLevel(wx, wy + 1, wz), b.textureTop));
+							normals = addArrayNormal(normals, MeshStore.normalsTop);
+						}
+					}
+
+					if (bottomR == null) {
+						chunkInfo |= BOTTOM;
+					} else {
+						if (bottomR != RenderMode.SOLID) {
+							positions = addArray(positions,
+									updateVertexTranslation(MeshStore.vertsBottomComplete, i, j, k));
+							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvBottomCompleteCompress, world.getLightLevel(wx, wy - 1, wz), b.textureBottom));
+							normals = addArrayNormal(normals, MeshStore.normalsBottom);
+						}
+					}
+
+				}
+			}
+		}
+		positions = Arrays.copyOfRange(positions, 0, lastIndex);
+		data = Arrays.copyOfRange(data, 0, lastIndexData);
+		normals = Arrays.copyOfRange(normals, 0, lastIndexNormal);
+		
+		waitingForMesh = true;
+		isMeshing = false;
+		yesMan = true;
+	}
+	
 	public void meshChunk(boolean isDoneMeshing) {
 		if (isMeshing || waitingForMesh)
 			return;
@@ -138,8 +289,7 @@ public class Chunk {
 						chunkInfo |= FRONT;
 					} else {
 						if (frontR != RenderMode.SOLID) {
-							positions = addArray(positions,
-									updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
+							positions = addArray(positions, updateVertexTranslation(MeshStore.vertsFrontComplete, i, j, k));
 							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvFrontCompleteCompress, world.getLightLevel(wx, wy, wz + 1), b.textureFront));
 							normals = addArrayNormal(normals, MeshStore.normalsFront);
 						}
@@ -149,8 +299,7 @@ public class Chunk {
 						chunkInfo |= BACK;
 					} else {
 						if (backR != RenderMode.SOLID) {
-							positions = addArray(positions,
-									updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
+							positions = addArray(positions, updateVertexTranslation(MeshStore.vertsBackComplete, i, j, k));
 							data = addArrayData(data, MeshStore.updateCompression(MeshStore.uvBackCompleteCompress, world.getLightLevel(wx, wy, wz - 1), b.textureBack));
 							normals = addArrayNormal(normals, MeshStore.normalsBack);
 						}
@@ -401,7 +550,7 @@ public class Chunk {
 		}
 		return new float[] { found, commons };
 	}
-
+	
 	public void render(VoxelShader shader, int cx, int cy, int cz) {
 		if (waitingForMesh && !isMeshing) {
 			isMeshing = true;
@@ -415,9 +564,17 @@ public class Chunk {
 				else
 					isEmpty = true;
 			}
+			
+			if (yesMan) {
+				positions = new float[0];
+				normals = new float[0];
+				data = new float[0];
+			}
 
 			//positions = null;
 			//data = null;
+			hasMeshed = true;
+			yesMan = false;
 			waitingForMesh = false;
 			isMeshing = false;
 		}
