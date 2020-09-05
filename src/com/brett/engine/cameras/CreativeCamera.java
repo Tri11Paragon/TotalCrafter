@@ -3,6 +3,7 @@ package com.brett.engine.cameras;
 import com.brett.engine.data.collision.AxisAlignedBB;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.InputMaster;
+import com.brett.networking.ServerConnection;
 import com.brett.world.World;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -20,10 +21,17 @@ public class CreativeCamera extends Camera {
 
 	public World world;
 	public AxisAlignedBB cbb = new AxisAlignedBB(-0.25,-0.75,-0.25, 0.25,0.25,0.25);
+	public ServerConnection sc;
 	
 	public CreativeCamera(Vector3d pos, World world) {
 		this.position = pos;
 		this.world = world;
+	}
+	
+	public CreativeCamera(Vector3d pos, World world, ServerConnection sc) {
+		this.position = pos;
+		this.world = world;
+		this.sc = sc;
 	}
 
 	// speed of char
@@ -123,8 +131,11 @@ public class CreativeCamera extends Camera {
 					}
 					
 				}
-				if (!broken)
+				if (!broken) {
 					position.x += dx;
+					if (sc != null)
+						sc.sendPlayerSync(position.x, position.y, position.z);
+				}
 			}
 			
 			if (dy != 0) {
@@ -140,8 +151,11 @@ public class CreativeCamera extends Camera {
 					}
 					
 				}
-				if (!broken)
+				if (!broken) {
 					position.y += dy;
+					if (sc != null)
+						sc.sendPlayerSync(position.x, position.y, position.z);
+				}
 			}
 			
 			if (dz != 0) {
@@ -157,8 +171,11 @@ public class CreativeCamera extends Camera {
 					}
 					
 				}
-				if (!broken)
+				if (!broken) {
 					position.z += dz;
+					if (sc != null)
+						sc.sendPlayerSync(position.x, position.y, position.z);
+				}
 			}
 		}
 	}

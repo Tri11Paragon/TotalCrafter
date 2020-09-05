@@ -17,7 +17,7 @@ import com.brett.engine.managers.InputMaster;
 import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.tools.Settings;
 import com.brett.engine.ui.console.Console;
-import com.brett.engine.ui.screen.SinglePlayer;
+import com.brett.engine.ui.screen.MainMenu;
 
 public class Main {
 
@@ -97,7 +97,7 @@ public class Main {
 			}
 		});
 
-		ScreenManager.switchScreen(new SinglePlayer(Console.init()));
+		ScreenManager.switchScreen(new MainMenu());
 		
 		while (isOpen) {
 			isOpen = !GLFW.glfwWindowShouldClose(DisplayManager.window);

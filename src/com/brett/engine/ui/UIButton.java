@@ -69,8 +69,8 @@ public class UIButton extends UITexture implements IMouseState {
 	public boolean isButtonSelected(float boundx, float boundy) {
 		float mx = (float) DisplayManager.mouseX;
 		float my = (float) DisplayManager.mouseY;
-		if (mx > (x-boundx) && mx < (x + width + boundx)) {
-			if (my > (y-boundy) && my < (y + height + boundy)) {
+		if (mx > (pos.x-boundx) && mx < (pos.x + scale.x + boundx)) {
+			if (my > (pos.y-boundy) && my < (pos.y + scale.y + boundy)) {
 				return true;
 			}
 		}

@@ -1,6 +1,5 @@
 package com.brett.world.block;
 
-import com.brett.world.Lighting;
 import com.brett.world.World;
 
 /**
@@ -17,15 +16,15 @@ public class BlockGlowstone extends Block {
 
 	@Override
 	public void onBlockPlaced(World world, short id, int x, int y, int z) {
-		Lighting.updateLighting(x, y, z, 15);
-		world.getChunkWorld(x, y, z).lights.set(x, y, z, (byte)15);
+		//Lighting.updateLighting(x, y, z, 15);
+		//world.getChunkWorld(x, y, z).lights.set(x, y, z, (byte)15);
 		super.onBlockPlaced(world, id, x, y, z);
 	}
 
 	@Override
 	public void onBlockDestroyed(World world, short id, int x, int y, int z) {
-		Lighting.updateLightingRemove(x, y, z, 15);
-		world.getChunkWorld(x, y, z).lights.remove(x, y, z);
+		//Lighting.updateLightingRemove(x, y, z, 15);
+		//world.getChunkWorld(x, y, z).lights.remove(x, y, z);
 		super.onBlockDestroyed(world, id, x, y, z);
 	}
 

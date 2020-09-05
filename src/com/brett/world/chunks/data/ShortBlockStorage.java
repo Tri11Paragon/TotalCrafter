@@ -14,6 +14,9 @@ public class ShortBlockStorage {
 	public static final int SIZE = 16;
 	
 	public short[][][] blocks = new short[SIZE][SIZE][SIZE];
+	// information about if the chunk has been changed but not saved to disk
+	// only true if not saved to disk**
+	public volatile boolean hasChanged = false;
 	
 	/**
 	 * integrates another chunk's block into this one, but only replaces if the block in this is air.
@@ -47,6 +50,7 @@ public class ShortBlockStorage {
 		if (blocks[x & 0xF][y & 0xF][z & 0xF] == Block.AIR) {
 			blocks[x & 0xF][y & 0xF][z & 0xF] = id;
 			GameRegistry.getBlock(id).onBlockPlaced(World.world, id, x, y, z);
+			hasChanged = true;
 		}
 	}
 	
@@ -54,6 +58,7 @@ public class ShortBlockStorage {
 		if (blocks[x & 0xF][y & 0xF][z & 0xF] == Block.AIR) {
 			blocks[x & 0xF][y & 0xF][z & 0xF] = (short)id;
 			GameRegistry.getBlock((short)id).onBlockPlaced(World.world, (short)id, x, y, z);
+			hasChanged = true;
 		}
 	}
 	
@@ -61,12 +66,14 @@ public class ShortBlockStorage {
 		GameRegistry.getBlock(blocks[x & 0xF][y & 0xF][z & 0xF]).onBlockDestroyed(World.world, id, x, y, z);
 		blocks[x & 0xF][y & 0xF][z & 0xF] = id;
 		GameRegistry.getBlock(id).onBlockPlaced(World.world, (short)id, x, y, z);
+		hasChanged = true;
 	}
 	
 	public void setWorld(int x, int y, int z, int id) {
 		GameRegistry.getBlock(blocks[x & 0xF][y & 0xF][z & 0xF]).onBlockDestroyed(World.world, (short)id, x, y, z);
 		blocks[x & 0xF][y & 0xF][z & 0xF] = (short) id;
 		GameRegistry.getBlock((short)id).onBlockPlaced(World.world, (short)id, x, y, z);
+		hasChanged = true;
 	}
 	
 }

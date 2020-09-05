@@ -15,10 +15,10 @@ public class UITexture implements UIElement, RescaleEvent {
 	protected float x,y,width,height;
 	public float minx,miny,maxx,maxy;
 	private float rminx, rminy, rmaxx, rmaxy;
-	public float sx = 1, sy = 1;
+	public float sx = 1, sy = 1, textsx, textsy;
 	public int t1,t2,t3, z;
 	protected Vector3f pos = new Vector3f();
-	private Vector2f scale = new Vector2f(1,1);
+	protected Vector2f scale = new Vector2f(1,1);
 	public Vector3f color = new Vector3f(-1,0,0);
 	public AnchorPoint anchorPoint = AnchorPoint.TOPLEFT;
 	
@@ -43,6 +43,8 @@ public class UITexture implements UIElement, RescaleEvent {
 		this.t3 = t3;
 		this.sx = textureScaleX;
 		this.sy = textureScaleY;
+		this.textsx = textureScaleX;
+		this.textsy = textureScaleY;
 		recalculateVectors();
 	}
 	
@@ -84,11 +86,20 @@ public class UITexture implements UIElement, RescaleEvent {
 
 	public UITexture setTextureScaleX(float sx) {
 		this.sx = sx;
+		this.textsx = sx;
 		return this;
 	}
 
 	public UITexture setTextureScaleY(float sy) {
 		this.sy = sy;
+		this.textsy = sy;
+		return this;
+	}
+	
+	public UITexture setAnchorPoint(AnchorPoint p) {
+		anchorPoint = p;
+		DisplayManager.rescales.add(this);
+		recalculateVectors();
 		return this;
 	}
 	
@@ -208,6 +219,20 @@ public class UITexture implements UIElement, RescaleEvent {
 			case BOTTOMRIGHT:
 				pos.x = DisplayManager.WIDTH-width + x;
 				pos.y = DisplayManager.HEIGHT-height + y;
+				break;
+			case FULLSCREEN:
+				width = DisplayManager.WIDTH;
+				height = DisplayManager.HEIGHT;
+				scale.x = width;
+				scale.y = height;
+				break;
+			case FULLFIXED:
+				width = DisplayManager.WIDTH;
+				height = DisplayManager.HEIGHT;
+				scale.x = width;
+				scale.y = height;
+				sx = width / textsx;
+				sy = height / textsy;
 				break;
 			default:
 				break;

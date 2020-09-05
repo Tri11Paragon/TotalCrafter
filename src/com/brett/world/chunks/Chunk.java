@@ -400,6 +400,7 @@ public class Chunk {
 		positions = Arrays.copyOfRange(positions, 0, lastIndex);
 		data = Arrays.copyOfRange(data, 0, lastIndexData);
 		normals = Arrays.copyOfRange(normals, 0, lastIndexNormal);
+		yesMan = true;
 	}
 
 	public Chunk meshChunk() {

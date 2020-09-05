@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 
 import com.brett.engine.data.collision.AxisAlignedBB;
 import com.brett.engine.managers.ThreadPool;
+import com.brett.networking.ServerConnection;
 import com.brett.utils.NdHashMap;
 import com.brett.utils.Noise;
 import com.brett.world.block.Block;
@@ -35,6 +36,9 @@ public class World {
 	public String worldName;
 	public String regionsLocation;
 	public ExecutorService worldExecutor;
+	public boolean isRemote = false;
+	public boolean isServer = false;
+	public ServerConnection serverConnection;
 	
 	public World(String worldName) {
 		this.worldName = worldName;
@@ -47,6 +51,28 @@ public class World {
 		World.world = this;
 		
 	}
+	
+	public World() {
+		isRemote = true;
+		isServer = false;
+		this.worldName = "NULL";
+		
+		threads = ThreadPool.reserveQuarterThreads() + ThreadPool.reserveQuarterThreads();
+		worldExecutor = Executors.newFixedThreadPool(threads);
+		World.world = this;
+	}
+	
+	public World(ServerConnection serverConnection) {
+		this.serverConnection = serverConnection;
+		this.worldName = "NULL";
+		
+		isRemote = false;
+		isServer = true;
+		
+		threads = ThreadPool.reserveQuarterThreads() + ThreadPool.reserveQuarterThreads();
+		worldExecutor = Executors.newFixedThreadPool(threads);
+		World.world = this;
+	}
 
 	/**
 	 * queue a chunk for generation in chunk space.
@@ -57,6 +83,10 @@ public class World {
 		}
 		Chunk c = new Chunk(this, new ShortBlockStorage(), new ByteBlockStorage(), x, y, z);
 		ungeneratedChunks.set(x, y, z, c);
+		if (world.isRemote) {
+			serverConnection.sendChunkReq(x, y, z);
+			return;
+		}
 		worldExecutor.submit(() -> {
 			int rx = c.x_pos >> 3;
 			int ry = c.y_pos >> 3;

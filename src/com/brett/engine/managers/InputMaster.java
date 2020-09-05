@@ -21,12 +21,16 @@ public class InputMaster {
 	public static volatile boolean scrolledLastFrame = false;
 	
 	public static void keyPressed(int key) {
+		if (key < 0)
+			return;
 		keyDown[key] = true;
 		for (int i = 0; i < keyboard.size(); i++)
 			keyboard.get(i).onKeyPressed(key);
 	}
 	
 	public static void keyReleased(int key) {
+		if (key < 0)
+			return;
 		keyDown[key] = false;
 		for (int i = 0; i < keyboard.size(); i++)
 			keyboard.get(i).onKeyReleased(key);

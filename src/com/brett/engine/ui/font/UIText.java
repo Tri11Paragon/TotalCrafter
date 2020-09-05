@@ -159,6 +159,13 @@ public class UIText implements Serializable, RescaleEvent {
 		return this;
 	}
 
+	public UIText setAnchorPoint(AnchorPoint p) {
+		anchorPoint = p;
+		DisplayManager.rescales.add(this);
+		rescale();
+		return this;
+	}
+	
 	/*
 	 * Getters and setters
 	 */

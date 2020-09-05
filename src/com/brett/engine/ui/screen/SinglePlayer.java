@@ -67,13 +67,13 @@ public class SinglePlayer extends Screen implements IMouseState {
 		GameRegistry.registerBlocks();
 		GameRegistry.registerItems();
 		this.console = console;
-		InputMaster.mouse.add(this);
 	}
 	
 	@Override
 	public void onSwitch() {
 		running = true;
 		super.onSwitch();
+		InputMaster.mouse.add(this);
 		elements.add(new UITexture(ScreenManager.loader.loadTexture("crosshair"), -2, -2, 0, 0, 16, 16, AnchorPoint.CENTER));
 		
 		/*UIText text = new UIText("he l loe there", 250.0f, "mono", 600, 300, 20);
@@ -122,7 +122,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		//elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gColorSpec, -1, 0, 0, 500, 500));
 		//elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gNormal, -1, 500, 0, 500, 500));
-		elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gPosition, -1, 0, 0, 500, 500));
+		//elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gPosition, -1, 0, 0, 500, 500));
 		
 		//GL13.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		th = new Thread(new Runnable() {
@@ -130,17 +130,17 @@ public class SinglePlayer extends Screen implements IMouseState {
 			public void run() {
 				while (running) {
 					
-					int rgDist = (int) Math.pow(((Settings.RENDER_DISTANCE >> 3) + 1) * 2, 2) * 2;
-					System.out.println("SAVE CYCLE " + rgDist);
-					
-					Vector3d pos = camera.getPosition();
-					int rpx = (int)(pos.x) >> 3;
-					int rpy = (int)(pos.y) >> 3;
-					int rpz = (int)(pos.z) >> 3; 
+					int rgDist = (int)((Settings.RENDER_DISTANCE >> 3) + 1) * 2 + 1;
+					//System.out.println("SAVE CYCLE " + rgDist);
 					
 					world.regions.iterate( (NdHashMap<Integer, Region> rg, Integer rx, Integer ry, Integer rz, Region r) -> {
 						r.save();
+						Vector3d pos = camera.getPosition();
+						int rpx = ((int)(pos.x) >> 4) >> 3;
+						int rpy = ((int)(pos.y) >> 4) >> 3;
+						int rpz = ((int)(pos.z) >> 4) >> 3; 
 						double dist = Math.sqrt(Math.pow(rx - rpx, 2) + Math.pow(ry - rpy, 2) + Math.pow(rz - rpz, 2));
+						
 						if (dist > rgDist) {
 							System.out.println("Unloading region: " + rx + " " + ry + " " + rz + " || " + dist);
 							world.regions.remove(rx, ry, rz);
@@ -245,6 +245,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 		running = false;
 		th.interrupt();
 		menus.remove(DebugInfo.destroy());
+		InputMaster.mouse.remove(this);
 		if (gBuffer > -1) {
 			GL30.glDeleteFramebuffers(gBuffer);
 			GL11.glDeleteTextures(gPosition);

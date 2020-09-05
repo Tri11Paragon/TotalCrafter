@@ -31,6 +31,8 @@ import de.matthiasmann.twl.utils.PNGDecoder;
 
 public class Loader {
 	
+	public static Loader l;
+	
 	/**
 	 * list of the VBOs, textures and VAOs.
 	 */

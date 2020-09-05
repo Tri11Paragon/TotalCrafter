@@ -37,6 +37,7 @@ public class ScreenManager {
 		Settings.load();
 		DisplayManager.createDisplay(false);
 		loader = new Loader();
+		Loader.l = loader;
 		uiRenderer = new GUIRenderer(loader);
 		fontrenderer = new FontRenderer();
 		monospaced = new FontType(loader.loadTexture("fonts/monospaced-72", 0), new File("resources/textures/fonts/monospaced-72.fnt"));
@@ -74,7 +75,8 @@ public class ScreenManager {
 	public static void close() {
 		for (int i = 0; i < screens.size(); i++) {
 			screens.get(i).close();
-			screens.get(i).onLeave();
+			// no need to call on leave on non active screens.
+			//screens.get(i).onLeave();
 		}
 		if (activeScreen != null) {
 			activeScreen.onLeave();

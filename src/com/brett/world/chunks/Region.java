@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -100,7 +101,41 @@ public class Region {
 	
 	public Region save() {
 		String loc = new StringBuilder().append(location).append(rx).append("_").append(ry).append("_").append(rz).append(".rg").toString();
+		File f = new File(loc + ".lock");
 		try {
+			if (f.exists())
+				return this;
+			f.createNewFile();
+		} catch (IOException e1) {e1.printStackTrace();}
+		try {
+			int hasChangedN = 0;
+			// check to see if the region has changed by, as we don't want to over save to the disk
+			// which wastes IO and RAM.
+			for (int i = 0; i < regionSize; i++) {
+				for (int j = 0; j < regionSize; j++) {
+					for (int k = 0; k < regionSize; k++) {
+						Chunk c = chunks[i][j][k];
+						if (c == null) {
+							hasChangedN++;
+							continue;
+						}
+						if (c.isEmpty) {
+							hasChangedN++;
+							continue;
+						}
+						if (!c.blocks.hasChanged) {
+							hasChangedN++;
+							continue;
+						}
+					}
+				}
+			}
+			
+			if (hasChangedN >= 512) {
+				f.delete();
+				return this;
+			}
+			
 			DataOutputStream dos = new DataOutputStream(new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(loc), 8192)));
 			
 			for (int i = 0; i < regionSize; i++) {
@@ -111,6 +146,8 @@ public class Region {
 							continue;
 						if (c.isEmpty)
 							continue;
+						// change to false because we have written changes to disk
+						c.blocks.hasChanged = false;
 						short[][][] blocks = c.blocks.blocks;
 						dos.writeByte(i);
 						dos.writeByte(j);
@@ -127,8 +164,8 @@ public class Region {
 				}
 			}
 			dos.writeByte(-2);
-			
 			dos.close();
+			f.delete();
 		} catch (Exception e) {}
 		return this;
 	}
