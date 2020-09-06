@@ -35,6 +35,11 @@ public class ShortBlockStorage {
 		return this;
 	}
 	
+	public ShortBlockStorage setBlocks(short[][][] blocks) {
+		this.blocks = blocks;
+		return this;
+	}
+	
 	/**
 	 * returns the block at a position in the array
 	 */

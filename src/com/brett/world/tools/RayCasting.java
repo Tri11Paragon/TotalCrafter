@@ -8,7 +8,9 @@ import org.joml.Vector4f;
 import com.brett.engine.cameras.ICamera;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.shaders.ProjectionMatrix;
+import com.brett.engine.ui.screen.MultiPlayer;
 import com.brett.engine.ui.screen.SinglePlayer;
+import com.brett.world.World;
 
 /**
 * @author Brett
@@ -37,7 +39,12 @@ public class RayCasting {
 	}
 
 	private static synchronized Vector3f toWorldCoords(Vector4f eyeCoords) {
-		Matrix4f invertedView = SinglePlayer.viewMatrix.invert(viewProjection);
+		Matrix4f invertedView = null;
+		// ugly way of doing this but its late and im tired and just want this to work!
+		if (World.world.isRemote)
+			invertedView = MultiPlayer.viewMatrix.invert(viewProjection);
+		else
+			invertedView = SinglePlayer.viewMatrix.invert(viewProjection);
 		Vector4f rayWorld = invertedView.transform(eyeCoords);
 		Vector3f mouseRay = new Vector3f(rayWorld.x, rayWorld.y, rayWorld.z);
 		mouseRay.normalize();

@@ -64,12 +64,12 @@ public class MultiPlayer extends Screen implements IMouseState {
 		InputMaster.mouse.add(this);
 		elements.add(new UITexture(ScreenManager.loader.loadTexture("crosshair"), -2, -2, 0, 0, 16, 16, AnchorPoint.CENTER));
 		
-		menus.add(console);
-		menus.add(DebugInfo.init(camera));
-		
 		sc = ServerConnection.connectToServer("paragonscode.ddns.net", 1337);
 		world = new World(sc);
 		camera = new CreativeCamera(new Vector3d(0,140,0), world, sc);
+		
+		menus.add(console);
+		menus.add(DebugInfo.init(camera));
 		
 		Console.registerCommand(new String[] {"tp", "teleport"}, new TeleportCommand(camera));
 		Console.registerCommand(new String[] {"poly", "pmode", "rend.p", "renderer.p"}, new PolygonCommand());
@@ -186,6 +186,11 @@ public class MultiPlayer extends Screen implements IMouseState {
 		running = false;
 		menus.remove(DebugInfo.destroy());
 		InputMaster.mouse.remove(this);
+		try {
+			sc.fromServer.close();
+			sc.toServer.close();
+			sc.close();
+		} catch (Exception e) {}
 		super.onLeave();
 	}
 

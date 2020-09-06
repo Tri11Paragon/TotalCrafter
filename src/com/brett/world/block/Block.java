@@ -3,7 +3,6 @@ package com.brett.world.block;
 import java.util.HashMap;
 
 import com.brett.engine.data.collision.AxisAlignedBB;
-import com.brett.world.Lighting;
 import com.brett.world.World;
 import com.brett.world.chunks.data.RenderMode;
 
@@ -43,11 +42,11 @@ public class Block {
 	}
 	
 	public void onBlockPlaced(World world, short id, int x, int y, int z) {
-		Lighting.updatePlacedLight(x, y, z);
+		//Lighting.updatePlacedLight(x, y, z);
 	}
 	
 	public void onBlockDestroyed(World world, short id, int x, int y, int z) {
-		Lighting.updateMinedLight(x, y, z);
+		//Lighting.updateMinedLight(x, y, z);
 	}
 	
 	public void onBlockUpdated(World world, short id, int x, int y, int z) {

@@ -97,7 +97,10 @@ public class GameRegistry {
 	}
 	
 	public static int getTexture(String texture) {
-		return blockTextureIDs.get(texture);
+		if (blockTextureIDs.containsKey(texture))
+			return blockTextureIDs.get(texture);
+		else
+			return -1;
 	}
 	
 	public static Block getBlock(short id) {

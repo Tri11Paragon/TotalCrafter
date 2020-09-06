@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 
 import com.brett.engine.data.collision.AxisAlignedBB;
 import com.brett.engine.managers.ThreadPool;
+import com.brett.networking.Client;
 import com.brett.networking.ServerConnection;
 import com.brett.utils.NdHashMap;
 import com.brett.utils.Noise;
@@ -29,6 +30,7 @@ public class World {
 
 	public volatile NdHashMap<Integer, Region> regions = new NdHashMap<Integer, Region>();
 	public volatile NdHashMap<Integer, Chunk> ungeneratedChunks = new NdHashMap<Integer, Chunk>();
+	public volatile NdHashMap<Integer, List<Client>> playerRequestedChunks = new NdHashMap<Integer, List<Client>>();
 	private volatile NdHashMap<Integer, Integer> lockedRegions = new NdHashMap<Integer, Integer>();
 	public int threads = 1;
 	public Noise noise1 = new Noise(694);
@@ -49,12 +51,11 @@ public class World {
 		threads = ThreadPool.reserveQuarterThreads() + ThreadPool.reserveQuarterThreads();
 		worldExecutor = Executors.newFixedThreadPool(threads);
 		World.world = this;
-		
 	}
 	
 	public World() {
-		isRemote = true;
-		isServer = false;
+		isRemote = false;
+		isServer = true;
 		this.worldName = "NULL";
 		
 		threads = ThreadPool.reserveQuarterThreads() + ThreadPool.reserveQuarterThreads();
@@ -66,8 +67,8 @@ public class World {
 		this.serverConnection = serverConnection;
 		this.worldName = "NULL";
 		
-		isRemote = false;
-		isServer = true;
+		isRemote = true;
+		isServer = false;
 		
 		threads = ThreadPool.reserveQuarterThreads() + ThreadPool.reserveQuarterThreads();
 		worldExecutor = Executors.newFixedThreadPool(threads);
@@ -144,6 +145,13 @@ public class World {
 				}
 			}
 			r.setChunk(x, y, z, c);
+			if (playerRequestedChunks.containsKey(x, y, z) && isServer) {
+				List<Client> clients = playerRequestedChunks.get(x, y, z);
+				for (int i = 0; i < clients.size(); i++) {
+					clients.get(i).sendChunk(c);
+				}
+				playerRequestedChunks.remove(x, y, z);
+			}
 			ungeneratedChunks.remove(x, y, z);
 		});
 	}

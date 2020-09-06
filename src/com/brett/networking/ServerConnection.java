@@ -12,6 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.brett.Main;
+import com.brett.world.World;
+import com.brett.world.chunks.Chunk;
+import com.brett.world.chunks.data.ByteBlockStorage;
+import com.brett.world.chunks.data.ShortBlockStorage;
 
 /**
 * @author Brett
@@ -30,6 +34,24 @@ public class ServerConnection extends Socket {
 		super(hostname, port);
 		this.toServer = new DataOutputStream(new BufferedOutputStream(this.getOutputStream()));
 		this.fromServer = new DataInputStream(new BufferedInputStream(this.getInputStream()));
+		registerEventReciever(Flags.B_CHUNKREQ, (DataInputStream dis) -> {
+			try {
+			int x = dis.readInt();
+			int y = dis.readInt();
+			int z = dis.readInt();
+			short[][][] blks = new short[16][16][16];
+			for (int i = 0; i < 16; i++) {
+				for (int j = 0; j < 16; j++) {
+					for (int k = 0; k < 16; k++) {
+						blks[i][j][k] = dis.readShort();
+					}
+				}
+			}
+			World.world.setChunk(new Chunk(World.world, new ShortBlockStorage().setBlocks(blks), new ByteBlockStorage(), x, y, z));
+			} catch (Exception e) {
+				
+			}
+		});
 		reciever = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -91,7 +113,8 @@ public class ServerConnection extends Socket {
 	
 	public static ServerConnection connectToServer(String hostname, int port) {
 		interupt = false;
-		reciever.interrupt();
+		if (reciever != null)
+			reciever.interrupt();
 		try {
 			interupt = true;
 			ServerConnection sr = new ServerConnection(hostname, port);

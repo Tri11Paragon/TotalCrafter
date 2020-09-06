@@ -39,7 +39,7 @@ public class Main {
 	public static String user_name;
 	public static String user_home;
 	public static String user_workingdir;
-	public static int processors;
+	public static int processors = 8;
 	
 	
 	/**

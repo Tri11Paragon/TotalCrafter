@@ -15,6 +15,7 @@ public class Flags {
 	public static final byte B_BLOCKREQ = 0x2;
 	
 	public static final byte P_PLYSYNC = 0x3;
+	public static final byte S_STOP = 0x4;
 	
 	
 }
