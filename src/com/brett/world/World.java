@@ -370,11 +370,15 @@ public class World {
 	public void save() {
 		System.out.println("Saving World");
 		
-		regions.iterate((NdHashMap<Integer, Region> rg, Integer x, Integer y, Integer z, Region r) -> {
-			worldExecutor.execute(() -> {
-				r.save();
+		if (!isRemote) {
+			
+			regions.iterate((NdHashMap<Integer, Region> rg, Integer x, Integer y, Integer z, Region r) -> {
+				worldExecutor.execute(() -> {
+					r.save();
+				});
 			});
-		});
+		
+		}
 		
 		worldExecutor.shutdown();
 	}

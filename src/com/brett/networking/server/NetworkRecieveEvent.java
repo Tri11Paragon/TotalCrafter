@@ -1,4 +1,4 @@
-package com.brett.networking;
+package com.brett.networking.server;
 
 import java.io.DataInputStream;
 
@@ -7,7 +7,7 @@ import java.io.DataInputStream;
 * @date 4-Sep-2020
 */
 
-public interface NetworkEventReciever {
+public interface NetworkRecieveEvent {
 	
 	public void dataRecieved(DataInputStream dis);
 	

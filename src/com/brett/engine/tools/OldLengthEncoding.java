@@ -8,7 +8,7 @@ import java.util.List;
  * @date Jun. 27, 2020
  */
 
-public class RunLengthEncoding {
+public class OldLengthEncoding {
 
 	public static byte[] encode(byte[] array) {
 		int i = 0;

@@ -9,20 +9,31 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joml.Vector3d;
+
+import com.brett.networking.server.NetworkTransmitEvent;
 import com.brett.networking.server.Server;
+import com.brett.utils.RunLengthEncoding;
 import com.brett.world.chunks.Chunk;
 
 /**
  * @author Brett
  * @date 5-Sep-2020
  * reference to client connected to the server
+ * 'Olvia is a drunk; send videos while drunk with friend
+ * Zev liked her 13 months, thought about her when he was high on mushrooms
+ * Don't tell anyone, kicked her from bcg.. Olivia made him want to die
  */
 
 public class Client extends Thread {
 
 	public Socket socketToClient;
-	public DataInputStream dis;
-	public DataOutputStream dos;
+	public Vector3d pos = new Vector3d();
+	public String username;
+	private DataInputStream dis;
+	private DataOutputStream dos;
+	public List<NetworkTransmitEvent> transmit_events = new ArrayList<NetworkTransmitEvent>();
+	public boolean client_open = true;
 	
 	public Client(Socket s) {
 		this.socketToClient = s;
@@ -30,12 +41,40 @@ public class Client extends Thread {
 			this.dis = new DataInputStream(new BufferedInputStream(s.getInputStream()));
 			this.dos = new DataOutputStream(new BufferedOutputStream(s.getOutputStream()));
 		} catch (Exception e) {}
+		Client th = this;
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (Server.isOpen && client_open) {
+					try {
+						if (transmit_events.size() > 0) {
+							NetworkTransmitEvent e1 = transmit_events.get(0);
+							transmit_events.remove(0);
+							if (e1 == null)
+								continue;
+							e1.transmit(dos);
+						} else
+							Thread.sleep(1);
+					} catch (Exception e) {
+						try {
+							dis.close();
+							dos.close();
+						} catch (IOException er) {}
+						e.printStackTrace();
+						Server.connectedClients.remove(th);
+						client_open = false;
+						System.out.println("Client disconnected [" + socketToClient.getInetAddress() + ":" + socketToClient.getPort() + "]");
+						return;
+					}
+				}
+			}
+		}).start();
 	}
 
 	@Override
 	public void run() {
 		super.run();
-		while (Server.isOpen) {
+		while (Server.isOpen && client_open) {
 			if (socketToClient.isClosed() || socketToClient.isOutputShutdown()) {
 				Server.connectedClients.remove(this);
 				break;
@@ -47,6 +86,11 @@ public class Client extends Thread {
 					int y = dis.readInt();
 					int z = dis.readInt();
 					
+					byte ret = dis.readByte();
+					System.out.println(ret);
+					if (ret != Flags.B_BLOCKREQ)
+						continue;
+					
 					Chunk c = Server.world.getChunk(x, y, z);
 					if (c != null) {
 						sendChunk(c);
@@ -57,12 +101,36 @@ public class Client extends Thread {
 					if (cli == null) {
 						cli = new ArrayList<Client>();
 						Server.world.playerRequestedChunks.set(x, y, z, cli);
+						System.out.println("Generating Chunk [" + x + ' ' + y + ' ' + z + "]");
 					}
 					cli.add(this);
 					Server.world.queueChunk(x, y, z);
 				}
+				if (flag == Flags.P_PLYSYNC) {
+					double x = dis.readDouble();
+					double y = dis.readDouble();
+					double z = dis.readDouble();
+					byte ret = dis.readByte();
+					if (ret != Flags.P_PLYSYNC)
+						continue;
+					pos.x = x;
+					pos.y = y;
+					pos.z = z;
+				}
+				if (flag == Flags.S_LOGIN) {
+					String username = dis.readUTF();
+					String token = dis.readUTF();
+					
+					
+					
+				}
 			} catch (Exception e) {
+				try {
+					dis.close();
+					dos.close();
+				} catch (IOException er) {}
 				Server.connectedClients.remove(this);
+				this.client_open = false;
 				System.out.println("Client disconnected [" + socketToClient.getInetAddress() + ":" + socketToClient.getPort() + "]");
 				break;
 			} 
@@ -70,29 +138,32 @@ public class Client extends Thread {
 	}
 	
 	public void sendClose() {
-		try {
-			dos.writeByte(Flags.S_STOP);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		transmit_events.add((DataOutputStream dos) -> {
+			try {
+				dos.writeByte(Flags.S_STOP);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	public void sendChunk(Chunk c) {
-		try {
-			dos.writeByte(Flags.B_CHUNKREQ);
-			dos.writeInt(c.x_pos);
-			dos.writeInt(c.y_pos);
-			dos.writeInt(c.z_pos);
-			for (int i = 0; i < 16; i++) {
-				for (int j = 0; j < 16; j++) {
-					for (int k = 0; k < 16; k++) {
-						dos.writeShort(c.blocks.blocks[i][j][k]);
-					}
+		transmit_events.add((DataOutputStream dos) -> {
+			try {
+				ArrayList<Short> compressed_blocks = RunLengthEncoding.encode_chunk(c.blocks.blocks);
+				dos.writeByte(Flags.B_CHUNKREQ);
+				dos.writeInt(c.x_pos);
+				dos.writeInt(c.y_pos);
+				dos.writeInt(c.z_pos);
+				int size = compressed_blocks.size();
+				dos.writeInt(size);
+				for (int i = 0; i < compressed_blocks.size(); i++) {
+					dos.writeShort(compressed_blocks.get(i));
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			
-		}
+		});
 	}
 
 }

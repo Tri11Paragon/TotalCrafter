@@ -29,6 +29,7 @@ import com.brett.engine.ui.console.PolygonCommand;
 import com.brett.engine.ui.console.TeleportCommand;
 import com.brett.engine.ui.font.UIText;
 import com.brett.networking.ServerConnection;
+import com.brett.world.Lighting;
 import com.brett.world.World;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
@@ -54,6 +55,7 @@ public class MultiPlayer extends Screen implements IMouseState {
 	public ServerConnection sc;
 	
 	public MultiPlayer(UIMenu console) {
+		textureAtlas = ScreenManager.loader.loadSpecialTextureATLAS(16, 16);
 		this.console = console;
 	}
 	
@@ -65,6 +67,7 @@ public class MultiPlayer extends Screen implements IMouseState {
 		elements.add(new UITexture(ScreenManager.loader.loadTexture("crosshair"), -2, -2, 0, 0, 16, 16, AnchorPoint.CENTER));
 		
 		sc = ServerConnection.connectToServer("paragonscode.ddns.net", 1337);
+		Lighting.init(world);
 		world = new World(sc);
 		camera = new CreativeCamera(new Vector3d(0,140,0), world, sc);
 		

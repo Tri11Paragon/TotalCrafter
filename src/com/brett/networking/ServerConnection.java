@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.brett.Main;
+import com.brett.networking.server.NetworkRecieveEvent;
+import com.brett.networking.server.NetworkTransmitEvent;
+import com.brett.utils.RunLengthEncoding;
 import com.brett.world.World;
 import com.brett.world.chunks.Chunk;
 import com.brett.world.chunks.data.ByteBlockStorage;
@@ -27,8 +30,10 @@ public class ServerConnection extends Socket {
 	public DataOutputStream toServer;
 	public DataInputStream fromServer;
 	public static Thread reciever;
+	public static Thread transmitter;
 	public static boolean interupt = true;
-	private HashMap<Byte, List<NetworkEventReciever>> events = new HashMap<Byte, List<NetworkEventReciever>>();
+	private HashMap<Byte, NetworkRecieveEvent> recieve_events = new HashMap<Byte, NetworkRecieveEvent>();
+	private List<NetworkTransmitEvent> transmit_events = new ArrayList<NetworkTransmitEvent>();
 	
 	public ServerConnection(String hostname, int port) throws UnknownHostException, IOException {
 		super(hostname, port);
@@ -36,20 +41,18 @@ public class ServerConnection extends Socket {
 		this.fromServer = new DataInputStream(new BufferedInputStream(this.getInputStream()));
 		registerEventReciever(Flags.B_CHUNKREQ, (DataInputStream dis) -> {
 			try {
-			int x = dis.readInt();
-			int y = dis.readInt();
-			int z = dis.readInt();
-			short[][][] blks = new short[16][16][16];
-			for (int i = 0; i < 16; i++) {
-				for (int j = 0; j < 16; j++) {
-					for (int k = 0; k < 16; k++) {
-						blks[i][j][k] = dis.readShort();
-					}
+				int x = dis.readInt();
+				int y = dis.readInt();
+				int z = dis.readInt();
+				ArrayList<Short> blocks_compressed = new ArrayList<Short>();
+				int size = dis.readInt();
+				for (int i = 0; i < size; i++) {
+					blocks_compressed.add(dis.readShort());
 				}
-			}
-			World.world.setChunk(new Chunk(World.world, new ShortBlockStorage().setBlocks(blks), new ByteBlockStorage(), x, y, z));
+				short[][][] blks = RunLengthEncoding.decode_chunk(blocks_compressed);
+				World.world.setChunk(new Chunk(World.world, new ShortBlockStorage().setBlocks(blks), new ByteBlockStorage(), x, y, z));
 			} catch (Exception e) {
-				
+				e.printStackTrace();
 			}
 		});
 		reciever = new Thread(new Runnable() {
@@ -59,63 +62,92 @@ public class ServerConnection extends Socket {
 				while(Main.isOpen && interupt) {
 					try {
 						byte flag = fromServer.readByte();
-						List<NetworkEventReciever> el = events.get(flag);
+						NetworkRecieveEvent el = recieve_events.get(flag);
 						if (el == null)
 							continue;
-						for (int i = 0; i < el.size(); i++)
-							el.get(i).dataRecieved(fromServer);
-					} catch (Exception e) {  }
+						el.dataRecieved(fromServer);
+					} catch (Exception e) { 
+						interupt = false;
+						return;
+					}
 				}
 				
 			}
 		});
 		reciever.start();
+		transmitter = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while(Main.isOpen && interupt) {
+					try {
+						if (transmit_events.size() > 0) {
+							NetworkTransmitEvent e1 = transmit_events.get(0);
+							transmit_events.remove(0);
+							if (e1 == null)
+								continue;
+							e1.transmit(toServer);
+						} else
+							Thread.sleep(1);
+					} catch (Exception e) {
+						e.printStackTrace();
+						interupt = false;
+						return;
+					}
+				}
+			}
+		});
+		transmitter.start();
 	}
 	
-	public void registerEventReciever(byte flag, NetworkEventReciever event) {
-		List<NetworkEventReciever> evl = events.get(flag);
-		if (evl == null) {
-			evl = new ArrayList<NetworkEventReciever>();
-			events.put(flag, evl);
-		}
-		evl.add(event);
+	public void registerEventReciever(byte flag, NetworkRecieveEvent event) {
+		recieve_events.put(flag, event);
 	}
 	
 	public void sendChunkReq(int x, int y, int z) {
-		try {
-			toServer.writeByte(Flags.B_CHUNKREQ);
-			toServer.writeInt(x);
-			toServer.writeInt(y);
-			toServer.writeInt(z);
-		} catch (Exception e) {
-			
-		}
+		transmit_events.add((DataOutputStream dos) -> {
+			try {
+				toServer.writeByte(Flags.B_CHUNKREQ);
+				toServer.writeInt(x);
+				toServer.writeInt(y);
+				toServer.writeInt(z);
+				toServer.writeByte(Flags.B_BLOCKREQ);
+			} catch (Exception e) {}
+		});
 	}
 	
 	public void sendBlockMod(int x, int y, int z, short block) {
-		try {
-			toServer.writeByte(Flags.B_BLOCKSET);
-			toServer.writeInt(x);
-			toServer.writeInt(y);
-			toServer.writeInt(z);
-			toServer.writeShort(block);
-		} catch (Exception e) {}
+		transmit_events.add((DataOutputStream dos) -> {
+			try {
+				toServer.writeByte(Flags.B_BLOCKSET);
+				toServer.writeInt(x);
+				toServer.writeInt(y);
+				toServer.writeInt(z);
+				toServer.writeShort(block);
+			} catch (Exception e) {}
+		});
 	}
 	
 	public void sendPlayerSync(double x, double y, double z) {
-		try {
-			toServer.writeByte(Flags.P_PLYSYNC);
-			toServer.writeDouble(x);
-			toServer.writeDouble(y);
-			toServer.writeDouble(z);
-		} catch (Exception e) {}
+		transmit_events.add((DataOutputStream dos) -> {
+			try {
+				toServer.writeByte(Flags.P_PLYSYNC);
+				toServer.writeDouble(x);
+				toServer.writeDouble(y);
+				toServer.writeDouble(z);
+				toServer.writeByte(Flags.P_PLYSYNC);
+			} catch (Exception e) {}
+		});
 	}
 	
 	public static ServerConnection connectToServer(String hostname, int port) {
 		interupt = false;
 		if (reciever != null)
 			reciever.interrupt();
+		if (transmitter != null)
+			transmitter.interrupt();
+		
 		try {
+			Thread.sleep(5);
 			interupt = true;
 			ServerConnection sr = new ServerConnection(hostname, port);
 			return sr;

@@ -18,6 +18,7 @@ import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.tools.Settings;
 import com.brett.engine.ui.console.Console;
 import com.brett.engine.ui.screen.MainMenu;
+import com.brett.utils.ClientAuth;
 
 public class Main {
 
@@ -47,6 +48,7 @@ public class Main {
 	 */
 	
 	public static void main(String[] args) {
+		
 		/**
 		 * Assign system variables
 		 */
