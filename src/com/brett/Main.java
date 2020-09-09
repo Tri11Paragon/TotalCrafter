@@ -40,6 +40,9 @@ public class Main {
 	public static String user_name;
 	public static String user_home;
 	public static String user_workingdir;
+	public static String username = null;
+	public static String password = null;
+	public static String token = null;
 	public static int processors = 8;
 	
 	
@@ -48,6 +51,20 @@ public class Main {
 	 */
 	
 	public static void main(String[] args) {
+		for (int i = 0; i < args.length; i++) {
+			if (args[i] == null)
+				continue;
+			String[] vars = args[i].split("=");
+			if (vars == null)
+				continue;
+			if (vars.length < 2)
+				continue;
+			if(vars[0].contentEquals("username"))
+				username = vars[1];
+			if (vars[0].contentEquals("password"))
+				password = vars[1];
+		}
+		token = ClientAuth.setToken(username, password);
 		
 		/**
 		 * Assign system variables

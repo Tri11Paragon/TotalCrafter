@@ -18,7 +18,8 @@ public class Flags {
 	
 	public static final byte S_STOP = 0x5;
 	public static final byte S_LOGIN = 0x6;
-	public static final byte S_FAILED = 0x7;
-	
+	public static final byte S_BADLOGIN = 0x7;
+	public static final byte S_BADTOKEN = 0x8;
+	public static final byte S_NOBUY = 0x9;
 	
 }

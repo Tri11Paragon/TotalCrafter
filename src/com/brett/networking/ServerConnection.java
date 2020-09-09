@@ -55,6 +55,60 @@ public class ServerConnection extends Socket {
 				e.printStackTrace();
 			}
 		});
+		registerEventReciever(Flags.S_STOP, (DataInputStream dis) -> {
+			System.out.println("TODO: add menu for server shutting down");
+			System.out.println("Server shutting down");
+			interupt = false;
+			reciever.interrupt();
+			transmitter.interrupt();
+		});
+		registerEventReciever(Flags.S_BADLOGIN, (DataInputStream dis) -> {
+			System.out.println("LOGIN FAILED");
+			interupt = false;
+			reciever.interrupt();
+			transmitter.interrupt();
+			try {
+				this.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			System.exit(-1);
+		});
+		registerEventReciever(Flags.S_BADTOKEN, (DataInputStream dis) -> {
+			System.out.println("BAD TOKEN");
+			interupt = false;
+			reciever.interrupt();
+			transmitter.interrupt();
+			try {
+				this.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			System.exit(-1);
+		});
+		registerEventReciever(Flags.S_NOBUY, (DataInputStream dis) -> {
+			System.out.println("Multiplayer is for people who buy the game!");
+			interupt = false;
+			reciever.interrupt();
+			transmitter.interrupt();
+			try {
+				this.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			System.exit(-1);
+		});
+		registerEventReciever(Flags.S_LOGIN, (DataInputStream dis) -> {
+			
+		});
+		registerEventReciever(Flags.P_PLYSYNC, (DataInputStream dis) -> {
+			try {
+				double x = dis.readDouble();
+				double y = dis.readDouble();
+				double z = dis.readDouble();
+				String username = dis.readUTF();
+			} catch (Exception e) {}
+		});
 		reciever = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -97,6 +151,13 @@ public class ServerConnection extends Socket {
 			}
 		});
 		transmitter.start();
+		transmit_events.add((DataOutputStream dos) -> {
+			try {
+				dos.writeByte(Flags.S_LOGIN);
+				dos.writeUTF(Main.username);
+				dos.writeUTF(Main.token);
+			} catch (Exception e) {}
+		});
 	}
 	
 	public void registerEventReciever(byte flag, NetworkRecieveEvent event) {

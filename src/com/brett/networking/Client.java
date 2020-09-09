@@ -13,6 +13,7 @@ import org.joml.Vector3d;
 
 import com.brett.networking.server.NetworkTransmitEvent;
 import com.brett.networking.server.Server;
+import com.brett.utils.ClientAuth;
 import com.brett.utils.RunLengthEncoding;
 import com.brett.world.chunks.Chunk;
 
@@ -29,7 +30,7 @@ public class Client extends Thread {
 
 	public Socket socketToClient;
 	public Vector3d pos = new Vector3d();
-	public String username;
+	public String username = null;
 	private DataInputStream dis;
 	private DataOutputStream dos;
 	public List<NetworkTransmitEvent> transmit_events = new ArrayList<NetworkTransmitEvent>();
@@ -41,7 +42,6 @@ public class Client extends Thread {
 			this.dis = new DataInputStream(new BufferedInputStream(s.getInputStream()));
 			this.dos = new DataOutputStream(new BufferedOutputStream(s.getOutputStream()));
 		} catch (Exception e) {}
-		Client th = this;
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -61,9 +61,7 @@ public class Client extends Thread {
 							dos.close();
 						} catch (IOException er) {}
 						e.printStackTrace();
-						Server.connectedClients.remove(th);
-						client_open = false;
-						System.out.println("Client disconnected [" + socketToClient.getInetAddress() + ":" + socketToClient.getPort() + "]");
+						disconnect();
 						return;
 					}
 				}
@@ -118,10 +116,48 @@ public class Client extends Thread {
 					pos.z = z;
 				}
 				if (flag == Flags.S_LOGIN) {
-					String username = dis.readUTF();
+					username = dis.readUTF();
 					String token = dis.readUTF();
 					
+					int level = ClientAuth.check_auth_token(username, token);
 					
+					if (level == 0) {
+						transmit_events.add((DataOutputStream dos) -> {
+							try {
+								dos.writeByte(Flags.S_NOBUY);
+								dos.flush();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							disconnect();
+						});
+					}
+					
+					if (level == -1) {
+						System.out.println("Client with bad login information attempted to connect");
+						transmit_events.add((DataOutputStream dos) -> {
+							try {
+								dos.writeByte(Flags.S_BADLOGIN);
+								dos.flush();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							disconnect();
+						});
+					}
+					
+					if (level == -2) {
+						System.out.println("Client with bad token attempted to connect");
+						transmit_events.add((DataOutputStream dos) -> {
+							try {
+								dos.writeByte(Flags.S_BADTOKEN);
+								dos.flush();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							disconnect();
+						});
+					}
 					
 				}
 			} catch (Exception e) {
@@ -129,9 +165,7 @@ public class Client extends Thread {
 					dis.close();
 					dos.close();
 				} catch (IOException er) {}
-				Server.connectedClients.remove(this);
-				this.client_open = false;
-				System.out.println("Client disconnected [" + socketToClient.getInetAddress() + ":" + socketToClient.getPort() + "]");
+				disconnect();
 				break;
 			} 
 		}
@@ -164,6 +198,29 @@ public class Client extends Thread {
 				e.printStackTrace();
 			}
 		});
+	}
+	
+	public void sendPos(Vector3d pos, String username) {
+		transmit_events.add((DataOutputStream dos) -> {
+			try {
+				dos.writeByte(Flags.P_PLYSYNC);
+				dos.writeDouble(pos.x);
+				dos.writeDouble(pos.y);
+				dos.writeDouble(pos.z);
+				dos.writeUTF(username);
+			} catch (Exception e) {}
+		});	
+	}
+	
+	public void disconnect() {
+		Server.connectedClients.remove(this);
+		this.client_open = false;
+		System.out.println("Client disconnected [" + socketToClient.getInetAddress() + ":" + socketToClient.getPort() + "]");
+		try {
+			socketToClient.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

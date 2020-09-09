@@ -7,6 +7,8 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joml.Vector3d;
+
 import com.brett.Main;
 import com.brett.networking.Client;
 import com.brett.world.GameRegistry;
@@ -97,6 +99,15 @@ public class Server {
 			serverSocket.close();
 		} catch (Exception e) {e.printStackTrace();}
 		
+	}
+	
+	public static void sendPositionToAllClientsInRange(Vector3d pos, Client sender) {
+		for (int i = 0; i < connectedClients.size(); i++) {
+			Client c = connectedClients.get(i);
+			if (c.pos.distance(sender.pos) < (render_distance*16)) {
+				c.sendPos(pos, sender.username);
+			}
+		}
 	}
 
 }
