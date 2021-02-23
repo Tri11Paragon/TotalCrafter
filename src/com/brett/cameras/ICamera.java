@@ -1,6 +1,6 @@
 package com.brett.cameras;
 
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector3d;
 
 /**
 *
@@ -12,7 +12,7 @@ import org.lwjgl.util.vector.Vector3f;
 public abstract class ICamera {
 	
 	// camera data required for the game to run
-	protected Vector3f position = new Vector3f(0, 0, 0);
+	protected Vector3d position = new Vector3d(0, 0, 0);
 	protected float pitch;
 	protected float yaw;
 	protected float roll;
@@ -24,11 +24,11 @@ public abstract class ICamera {
 	 * *They explain themselves*
 	 */
 
-	public Vector3f getPosition() {
+	public Vector3d getPosition() {
 		return position;
 	}
 
-	public void setPosition(Vector3f position) {
+	public void setPosition(Vector3d position) {
 		this.position = position;
 	}
 

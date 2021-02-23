@@ -2,32 +2,37 @@ package com.brett.renderer.gui;
 
 import java.util.List;
 
-import org.lwjgl.opengl.Display;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
 
+import com.brett.DisplayManager;
 import com.brett.datatypes.GUITexture;
 import com.brett.datatypes.ModelVAO;
 import com.brett.renderer.Loader;
 import com.brett.renderer.shaders.GUIShader;
 import com.brett.tools.Maths;
+import com.brett.tools.RescaleEvent;
 
-public class GUIRenderer {
+public class GUIRenderer implements RescaleEvent {
 	
 	private final ModelVAO quad;
 	private GUIShader shader;
-	private int SWIDTH = 800;
-	private int SHEIGHT = 600;
+	public int SWIDTH = 800;
+	public int SHEIGHT = 600;
 	private Vector3f nullvec = new Vector3f(-1, 0, 0);
+
+	public GUIShader getShader() {
+		return shader;
+	}
 	
 	public GUIRenderer(Loader loader) {
-		SWIDTH = Display.getWidth();
-		SHEIGHT = Display.getHeight();
+		SWIDTH = DisplayManager.WIDTH;
+		SHEIGHT = DisplayManager.HEIGHT;
 		// create the quad every texture uses
 		float[] positions = {-1, 1, -1, -1, 1, 1, 1, -1};
 		quad = loader.loadToVAO(positions, 2);
@@ -36,6 +41,7 @@ public class GUIRenderer {
 		// could use layouts instead but whatever
 		shader.connectTextureUnits();
 		shader.stop();
+		DisplayManager.rescales.add(this);
 	}
 	
 	public void render(List<UIElement> textures) {
@@ -199,6 +205,12 @@ public class GUIRenderer {
 	
 	public void cleanup() {
 		shader.cleanUp();
+	}
+
+	@Override
+	public void rescale() {
+		SWIDTH = DisplayManager.WIDTH;
+		SHEIGHT = DisplayManager.HEIGHT;
 	}
 	
 }

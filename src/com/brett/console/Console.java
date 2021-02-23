@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.util.vector.Vector2f;
+import org.joml.Vector2f;
 
-import com.brett.IKeyState;
+import com.brett.DisplayManager;
 import com.brett.KeyMaster;
 import com.brett.console.commands.ClearCommand;
 import com.brett.renderer.Loader;
 import com.brett.renderer.font.FontType;
 import com.brett.renderer.font.UIDynamicText;
 import com.brett.renderer.gui.GUIRenderer;
+import com.brett.tools.IKeyState;
+import com.brett.tools.InputMaster;
 import com.brett.tools.SettingsLoader;
 
 /**
@@ -72,43 +72,14 @@ public class Console implements IKeyState {
 		texts.add(new UIDynamicText(textBuffer, fontSize, font, new Vector2f(0.007f, 0.020f), 0.45f, false));
 		// add a clear command to clear the body.
 		this.registerCommand("clear", new ClearCommand(this));
+		InputMaster.keyboard.add(this);
 	}
 	
 	public void update() {
 		// this makes sure that it only runs once per button press.
 		if (KeyMaster.state) {
 			// only add to the line if the console is open
-			if (isOpen) {
-				// also makes sure that this only responds to button presses.
-				if(Keyboard.getEventKeyState()) {
-					// gets the character that we are currently pressing.
-					char c = Keyboard.getEventCharacter();
-					// make sure we don't add if we are pressing the console open key.
-					if (c == 96 || c == SettingsLoader.KEY_CONSOLE)
-						return;
-					// this is backspace. we use it to remove text.
-					if (c == 8) {
-						if (inputTextBuffer.length() > 1)
-							inputTextBuffer = inputTextBuffer.substring(0, inputTextBuffer.length() - 1);
-					// enters the command when enter is pressed.
-					} else if (c == 10 || c == 13) {
-						// clears the body text if it is larger then the console window pane.
-						if (texts.get(1).getHeight() > 7.8) {
-							texts.get(1).changeText(""); 
-							textBuffer = "";
-							texts.get(1).setHeight(0);
-						}
-						// enters the comamnd
-						enterCommand();
-					// we don't want to write anything if we are pressing a key that isn't a character.
-					} else if (c < 32) {
-					// add in the character to the input line
-					} else 
-						inputTextBuffer += c;
-					// change the text
-					texts.get(0).changeText(inputTextBuffer);
-				}
-			}
+			
 		}
 		// render if we are open.
 		if (isOpen) {
@@ -190,11 +161,11 @@ public class Console implements IKeyState {
 	}
 
 	@Override
-	public void onKeyPressed() {
+	public void onKeyPressed(int key) {
 		// open the console if we press the console key.
-		if (Keyboard.isKeyDown(SettingsLoader.KEY_CONSOLE)) {
+		if (key == SettingsLoader.KEY_CONSOLE) {
 			// grab the mouse if its open
-			Mouse.setGrabbed(isOpen);
+			DisplayManager.setMouseGrabbed(isOpen);
 			// invert the console state
 			isOpen = !isOpen;
 			// enable / disable texts.
@@ -208,7 +179,34 @@ public class Console implements IKeyState {
 	}
 
 	@Override
-	public void onKeyReleased() {
+	public void onKeyReleased(int keys) {
+		if (isOpen) {
+			char c = (char) keys;
+			// make sure we don't add if we are pressing the console open key.
+			if (c == 96 || c == SettingsLoader.KEY_CONSOLE)
+				return;
+			// this is backspace. we use it to remove text.
+			if (c == 8) {
+				if (inputTextBuffer.length() > 1)
+					inputTextBuffer = inputTextBuffer.substring(0, inputTextBuffer.length() - 1);
+			// enters the command when enter is pressed.
+			} else if (c == 10 || c == 13) {
+				// clears the body text if it is larger then the console window pane.
+				if (texts.get(1).getHeight() > 7.8) {
+					texts.get(1).changeText(""); 
+					textBuffer = "";
+					texts.get(1).setHeight(0);
+				}
+				// enters the comamnd
+				enterCommand();
+			// we don't want to write anything if we are pressing a key that isn't a character.
+			} else if (c < 32) {
+			// add in the character to the input line
+			} else 
+				inputTextBuffer += c;
+			// change the text
+			texts.get(0).changeText(inputTextBuffer);
+		}
 	}
-	
+
 }

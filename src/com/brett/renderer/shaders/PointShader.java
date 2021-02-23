@@ -4,15 +4,16 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 
+import com.brett.tools.IKeyState;
+import com.brett.tools.InputMaster;
 import com.brett.tools.Maths;
 import com.brett.tools.SettingsLoader;
 
@@ -25,7 +26,7 @@ import com.brett.tools.SettingsLoader;
 * 
 */
 
-public class PointShader extends ShaderProgram {
+public class PointShader extends WorldShader implements IKeyState {
 
 	private int vao = 0;
 	private int vbo = 0;
@@ -45,9 +46,6 @@ public class PointShader extends ShaderProgram {
 	private static final String VERTEX_FILE = "pointVertexShader.vert";
 	private static final String FRAGMENT_FILE = "pointFragmentShader.frag";
 	
-	private int location_projectionMatrix;
-	private int location_viewMatrix;
-	private int location_translationMatrix;
 	private int location_time;
 	private int location_scale;
 	private float timeSinceStart = 0;
@@ -58,13 +56,12 @@ public class PointShader extends ShaderProgram {
 		GL30.glBindVertexArray(vao);
 		vbo = storeDataInAttributeList(0, 3, plane);
 		GL30.glBindVertexArray(0);
+		InputMaster.keyboard.add(this);
 	}
 
 	@Override
 	protected void getAllUniformLocations() {
-		location_projectionMatrix = super.getUniformLocation("projectionMatrix");
-		location_viewMatrix = super.getUniformLocation("viewMatrix");
-		location_translationMatrix = super.getUniformLocation("translationMatrix");
+		super.getAllUniformLocations();
 		location_time = super.getUniformLocation("time");
 		location_scale = super.getUniformLocation("scale");
 	}
@@ -133,8 +130,6 @@ public class PointShader extends ShaderProgram {
 		GL20.glDisableVertexAttribArray(0);
 		GL30.glBindVertexArray(0);
 		this.stop();
-		if(Keyboard.isKeyDown(SettingsLoader.KEY_CLEAR)) 
-			points.clear();
 	}
 	
 	private FloatBuffer storeDataInFloatBuffer(float[] data){
@@ -157,6 +152,7 @@ public class PointShader extends ShaderProgram {
 	@Override
 	public void cleanUp() {
 		super.cleanUp();
+		InputMaster.keyboard.remove(this);
 		GL30.glDeleteVertexArrays(vao);
 		GL15.glDeleteBuffers(vbo);
 	}
@@ -174,6 +170,16 @@ public class PointShader extends ShaderProgram {
 	
 	public void loadTranslationMatrix(Vector3f pos) {
 		super.loadMatrix(location_translationMatrix, Maths.createTransformationMatrix(pos));
+	}
+
+	@Override
+	public void onKeyPressed(int keys) {
+		if (keys == SettingsLoader.KEY_CLEAR)
+			points.clear();
+	}
+
+	@Override
+	public void onKeyReleased(int keys) {
 	}
 
 }

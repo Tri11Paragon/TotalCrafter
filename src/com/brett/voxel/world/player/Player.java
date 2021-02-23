@@ -1,8 +1,7 @@
 package com.brett.voxel.world.player;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector3f;
+
 import com.brett.DisplayManager;
 import com.brett.cameras.Camera;
 import com.brett.renderer.Loader;

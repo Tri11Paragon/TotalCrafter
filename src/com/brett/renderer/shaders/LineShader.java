@@ -8,16 +8,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.renderer.MasterRenderer;
+import com.brett.tools.IKeyState;
+import com.brett.tools.InputMaster;
 import com.brett.tools.Maths;
 import com.brett.tools.SettingsLoader;
 
@@ -28,7 +29,7 @@ import com.brett.tools.SettingsLoader;
 *	THIS IS AN UNUSED CLASS PLEASE IGNORE
 *   I only ever use this if I need visual debugging.
 */ 
-public class LineShader extends ShaderProgram {
+public class LineShader extends WorldShader implements IKeyState {
 
 	// TODO: make this a list
 	// this is not needed since the size is fixed due to there being only 2 points in our lines.
@@ -50,13 +51,12 @@ public class LineShader extends ShaderProgram {
 		this.start();
 		this.loadTranslationMatrix();
 		this.stop();
+		InputMaster.keyboard.add(this);
 	}
 
 	@Override
 	protected void getAllUniformLocations() {
-		location_projectionMatrix = super.getUniformLocation("projectionMatrix");
-		location_viewMatrix = super.getUniformLocation("viewMatrix");
-		location_translationMatrix = super.getUniformLocation("translationMatrix");
+		super.getAllUniformLocations();
 	}
 	
 	public void renderIN(Vector3f pos1, Vector3f pos2) {
@@ -118,8 +118,6 @@ public class LineShader extends ShaderProgram {
 			GL20.glDisableVertexAttribArray(0);
 			GL30.glBindVertexArray(0);
 		}
-		if(Keyboard.isKeyDown(SettingsLoader.KEY_CLEAR)) 
-			clearLines();
 		if (vao == 0)
 			return;
 		GL30.glBindVertexArray(vao);
@@ -167,6 +165,7 @@ public class LineShader extends ShaderProgram {
 		Iterator<Entry<Integer, Integer>> is = vaols.entrySet().iterator();
 		while (is.hasNext())
 			GL30.glDeleteVertexArrays(is.next().getKey());
+		InputMaster.keyboard.remove(this);
 	}
 	
 	@Override
@@ -182,6 +181,16 @@ public class LineShader extends ShaderProgram {
 	
 	public void loadTranslationMatrix() {
 		super.loadMatrix(location_translationMatrix, Maths.createTransformationMatrix(new Vector3f(0,0,0), 0, 0, 0, 1));
+	}
+
+	@Override
+	public void onKeyPressed(int keys) {
+		if (keys == SettingsLoader.KEY_CLEAR)
+			clearLines();
+	}
+
+	@Override
+	public void onKeyReleased(int keys) {
 	}
 
 }

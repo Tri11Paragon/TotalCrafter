@@ -9,7 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
 import com.brett.DisplayManager;
 import com.brett.renderer.MasterRenderer;
@@ -32,12 +32,13 @@ public class SettingsLoader {
 	/*
 	 * some static variable definitions for classes that need them.
 	 */
-	public static int KEY_CONSOLE = Keyboard.KEY_GRAVE;
-	public static int KEY_CLEAR = Keyboard.KEY_F6;
+	public static int KEY_CONSOLE = GLFW.GLFW_KEY_GRAVE_ACCENT;
+	public static int KEY_CLEAR = GLFW.GLFW_KEY_F6;
 	public static int SAMPLES = 4;
 	public static int AF = 4;
 	public static double SENSITIVITY = 0.5d;
 	public static double MUSIC = 0.5d;
+	public static int VSYNC = 0;
 	
 	private static int readLines = 1;
 	public static void loadSettings() {
@@ -78,6 +79,8 @@ public class SettingsLoader {
 					AF = (int) Float.parseFloat(name[1]);
 				if (name[0].equals("music"))
 					MUSIC = Float.parseFloat(name[1]);
+				if (name[0].equals("vsync"))
+					VSYNC = (int)Float.parseFloat(name[1]);
 				try {
 				if (name[0].equals("username"))
 					MainMenu.username = name[1].trim();
@@ -112,6 +115,7 @@ public class SettingsLoader {
 			writeLine(writer, "ip: " + MainMenu.ip);
 			writeLine(writer, "samples: " + SAMPLES);
 			writeLine(writer, "anisotropy: " + AF);
+			writeLine(writer, "vsync: " + VSYNC);
 			writeLine(writer, "music: " + MUSIC);
 			writer.close();
 		} catch (IOException e) {

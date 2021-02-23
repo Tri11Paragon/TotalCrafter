@@ -3,9 +3,8 @@ package com.brett.renderer.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import com.brett.datatypes.GUITexture;
 import com.brett.renderer.Loader;
@@ -25,8 +24,6 @@ public class UIMaster {
 	
 	public static int inventoryTexture = 0;
 	
-	private int SWIDTH = 800;
-	private int SHEIGHT = 600;
 	private GUIRenderer renderer;
 	// static textures
 	private List<UIElement> guitextures = new ArrayList<UIElement>();
@@ -34,9 +31,6 @@ public class UIMaster {
 	private List<IMenu> guimenus = new ArrayList<IMenu>();
 	
 	public UIMaster(Loader loader) {
-		// get a local instance of the width and height
-		SWIDTH = Display.getWidth();
-		SHEIGHT = Display.getHeight();
 		// create the rednerer
 		renderer = new GUIRenderer(loader);
 		menu = new EscapeMenu(this, loader);
@@ -87,13 +81,13 @@ public class UIMaster {
 	}
 	
 	public GUITexture addCenteredTexture(int texture, int texture2, int texture3, float xoff, float yoff, float width, float height) {
-		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec((this.SWIDTH/2 - width/2) + xoff, (this.SHEIGHT/2 - height/2) + yoff), calcVec(width, height));
+		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec((renderer.SWIDTH/2 - width/2) + xoff, (renderer.SHEIGHT/2 - height/2) + yoff), calcVec(width, height));
 		guitextures.add(t);
 		return t;
 	}
 	
 	public GUITexture addCenteredTexture(int texture, int texture2, int texture3, float xoff, float yoff, float width, float height, Vector3f color) {
-		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec((this.SWIDTH/2 - width/2) + xoff, (this.SHEIGHT/2 - height/2) + yoff), calcVec(width, height)).setColor(color);
+		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec((renderer.SWIDTH/2 - width/2) + xoff, (renderer.SHEIGHT/2 - height/2) + yoff), calcVec(width, height)).setColor(color);
 		guitextures.add(t);
 		return t;
 	}
@@ -124,29 +118,29 @@ public class UIMaster {
 	}
 	
 	public GUITexture createCenteredTexture(int texture, int texture2, int texture3, float xoff, float yoff, float width, float height) {
-		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec((this.SWIDTH/2 - width/2) + xoff, (this.SHEIGHT/2 - height/2) + yoff), calcVec(width, height));
+		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec((renderer.SWIDTH/2 - width/2) + xoff, (renderer.SHEIGHT/2 - height/2) + yoff), calcVec(width, height));
 		return t;
 	}
 	
 	public GUITexture createCenteredTexture(int texture, int texture2, int texture3, float xoff, float yoff, float width, float height, Vector3f color) {
-		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec((this.SWIDTH/2 - width/2) + xoff, (this.SHEIGHT/2 - height/2) + yoff), calcVec(width, height)).setColor(color);
+		GUITexture t = new GUITexture(texture, texture2, texture3, calcVec((renderer.SWIDTH/2 - width/2) + xoff, (renderer.SHEIGHT/2 - height/2) + yoff), calcVec(width, height)).setColor(color);
 		return t;
 	}
 	
 	public UIDynamicText createDynamicText(String text, float size, FontType type, float x, float y, float maxWidth, boolean centered) {
-		return new UIDynamicText(text, size, type, calcVec(x, y), maxWidth/this.SWIDTH, centered);
+		return new UIDynamicText(text, size, type, calcVec(x, y), maxWidth/renderer.SWIDTH, centered);
 	}
 	
 	public UIDynamicText createDynamicText(String text, float sizeX, float sizeY, FontType type, float x, float y, float maxWidth, boolean centered) {
-		return new UIDynamicText(text, sizeX, sizeY, type, calcVec(x, y), maxWidth/this.SWIDTH, centered, 1);
+		return new UIDynamicText(text, sizeX, sizeY, type, calcVec(x, y), maxWidth/renderer.SWIDTH, centered, 1);
 	}
 	
 	public UIDynamicText createDynamicText(String text, float sizeX, float sizeY, FontType type, float x, float y, float maxWidth, boolean centered, int maxNumberOfLines) {
-		return new UIDynamicText(text, sizeX, sizeY, type, calcVec(x, y), maxWidth/this.SWIDTH, centered, maxNumberOfLines);
+		return new UIDynamicText(text, sizeX, sizeY, type, calcVec(x, y), maxWidth/renderer.SWIDTH, centered, maxNumberOfLines);
 	}
 	
 	public Vector2f calcVec(float x, float y) {
-		return new Vector2f(x / SWIDTH, y / SHEIGHT);
+		return new Vector2f(x / renderer.SWIDTH, y / renderer.SHEIGHT);
 	}
 	
 	public void addMenu(IMenu menu) {

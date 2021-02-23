@@ -13,6 +13,7 @@ import javax.sound.sampled.AudioFormat;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.ALC;
 
 import paulscode.sound.Channel;
 import paulscode.sound.FilenameURL;
@@ -183,11 +184,11 @@ public class LibraryLWJGLOpenAL extends Library
         listenerVelocity.flip();
         
         // Pass the buffers to the sound system, and check for potential errors:
-        AL10.alListener( AL10.AL_POSITION, listenerPositionAL );
+        AL10.alListenerfv( AL10.AL_POSITION, listenerPositionAL );
         errors = checkALError() || errors;
-        AL10.alListener( AL10.AL_ORIENTATION, listenerOrientation );
+        AL10.alListenerfv( AL10.AL_ORIENTATION, listenerOrientation );
         errors = checkALError() || errors;
-        AL10.alListener( AL10.AL_VELOCITY, listenerVelocity );        
+        AL10.alListenerfv( AL10.AL_VELOCITY, listenerVelocity );        
         errors = checkALError() || errors;
 
         AL10.alDopplerFactor( SoundSystemConfig.getDopplerFactor() );
@@ -242,12 +243,12 @@ public class LibraryLWJGLOpenAL extends Library
  */
     public static boolean libraryCompatible()
     {
-        if( AL.isCreated() )
+        if( AL.getCapabilities() != null )
             return true;
         
         try
         {
-            AL.create();
+            ALC.create();
         }
         catch( java.lang.Exception e )
         {
@@ -256,7 +257,7 @@ public class LibraryLWJGLOpenAL extends Library
         
         try
         {
-            AL.destroy();
+            ALC.destroy();
         }
         catch( java.lang.Exception e )
         {}
@@ -322,7 +323,7 @@ public class LibraryLWJGLOpenAL extends Library
         }
         
         bufferMap.clear();
-        AL.destroy();
+        ALC.destroy();
         
         bufferMap = null;
         listenerPositionAL = null;
@@ -853,7 +854,7 @@ public class LibraryLWJGLOpenAL extends Library
         listenerPositionAL.put( 2, z );
         
         // Update OpenAL listener position:
-        AL10.alListener( AL10.AL_POSITION, listenerPositionAL );
+        AL10.alListenerfv( AL10.AL_POSITION, listenerPositionAL );
         // Check for errors:
         checkALError();
     }
@@ -872,7 +873,7 @@ public class LibraryLWJGLOpenAL extends Library
         listenerOrientation.put( 2, listener.lookAt.z );
         
         // Update OpenAL listener orientation:
-        AL10.alListener( AL10.AL_ORIENTATION, listenerOrientation );
+        AL10.alListenerfv( AL10.AL_ORIENTATION, listenerOrientation );
         // Check for errors:
         checkALError();
     }
@@ -897,7 +898,7 @@ public class LibraryLWJGLOpenAL extends Library
         listenerOrientation.put( 3, upX );
         listenerOrientation.put( 4, upY );
         listenerOrientation.put( 5, upZ );
-        AL10.alListener( AL10.AL_ORIENTATION, listenerOrientation );
+        AL10.alListenerfv( AL10.AL_ORIENTATION, listenerOrientation );
         checkALError();
     }
     
@@ -914,7 +915,7 @@ public class LibraryLWJGLOpenAL extends Library
         listenerPositionAL.put( 0, l.position.x );
         listenerPositionAL.put( 1, l.position.y );
         listenerPositionAL.put( 2, l.position.z );
-        AL10.alListener( AL10.AL_POSITION, listenerPositionAL );
+        AL10.alListenerfv( AL10.AL_POSITION, listenerPositionAL );
         checkALError();
 
         listenerOrientation.put( 0, l.lookAt.x );
@@ -923,13 +924,13 @@ public class LibraryLWJGLOpenAL extends Library
         listenerOrientation.put( 3, l.up.x );
         listenerOrientation.put( 4, l.up.y );
         listenerOrientation.put( 5, l.up.z );
-        AL10.alListener( AL10.AL_ORIENTATION, listenerOrientation );
+        AL10.alListenerfv( AL10.AL_ORIENTATION, listenerOrientation );
         checkALError();
 
         listenerVelocity.put( 0, l.velocity.x );
         listenerVelocity.put( 1, l.velocity.y );
         listenerVelocity.put( 2, l.velocity.z );
-        AL10.alListener( AL10.AL_VELOCITY, listenerVelocity );
+        AL10.alListenerfv( AL10.AL_VELOCITY, listenerVelocity );
         checkALError();
     }
     
@@ -947,7 +948,7 @@ public class LibraryLWJGLOpenAL extends Library
         listenerVelocity.put( 0, listener.velocity.x );
         listenerVelocity.put( 1, listener.velocity.y );
         listenerVelocity.put( 2, listener.velocity.z );
-        AL10.alListener( AL10.AL_VELOCITY, listenerVelocity );
+        AL10.alListenerfv( AL10.AL_VELOCITY, listenerVelocity );
     }
 
 /**

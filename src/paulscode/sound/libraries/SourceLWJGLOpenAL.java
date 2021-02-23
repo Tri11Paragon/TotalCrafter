@@ -370,7 +370,7 @@ public class SourceLWJGLOpenAL extends Source
             channelOpenAL != null && channelOpenAL.ALSource != null )
         {
             // move the source:
-            AL10.alSource( channelOpenAL.ALSource.get( 0 ), AL10.AL_POSITION,
+            AL10.alSourcefv( channelOpenAL.ALSource.get( 0 ), AL10.AL_POSITION,
                            sourcePosition );
             checkALError();
         }
@@ -500,7 +500,7 @@ public class SourceLWJGLOpenAL extends Source
         if( channel != null && channel.attachedSource == this &&
             channelOpenAL != null && channelOpenAL.ALSource != null )
         {
-            AL10.alSource( channelOpenAL.ALSource.get( 0 ),
+            AL10.alSourcefv( channelOpenAL.ALSource.get( 0 ),
                           AL10.AL_VELOCITY, sourceVelocity );
             checkALError();
         }
@@ -563,11 +563,11 @@ public class SourceLWJGLOpenAL extends Source
                                   AL10.AL_PITCH, pitch );
                     checkALError();
                 }
-                AL10.alSource( channelOpenAL.ALSource.get( 0 ),
+                AL10.alSourcefv( channelOpenAL.ALSource.get( 0 ),
                                AL10.AL_POSITION, sourcePosition );
                 checkALError();
 
-                AL10.alSource( channelOpenAL.ALSource.get( 0 ),
+                AL10.alSourcefv( channelOpenAL.ALSource.get( 0 ),
                                AL10.AL_VELOCITY, sourceVelocity );
                 
                 checkALError();

@@ -1,122 +1,252 @@
 package com.brett;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
+import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
+import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_DISABLED;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
+import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
+import static org.lwjgl.glfw.GLFW.GLFW_SAMPLES;
+import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
+import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
+import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
+import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
+import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
+import static org.lwjgl.glfw.GLFW.glfwGetInputMode;
+import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
+import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowIcon;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
+import static org.lwjgl.glfw.GLFW.glfwShowWindow;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
+import static org.lwjgl.glfw.GLFW.glfwWindowHint;
+import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
-import javax.imageio.ImageIO;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.Sys;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.*;
-import org.newdawn.slick.opengl.ImageIOImageData;
+import org.lwjgl.Version;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.system.MemoryStack;
 
-import com.brett.console.Console;
-import com.brett.renderer.gui.UIMaster;
+import com.brett.renderer.ProjectionMatrix;
+import com.brett.tools.GLIcon;
+import com.brett.tools.InputMaster;
+import com.brett.tools.RescaleEvent;
 import com.brett.tools.SettingsLoader;
-import com.brett.voxel.inventory.PlayerInventory;
 
 public class DisplayManager {
-
-	// width and height of the screen
-	// Don't change these as font is not 100% screen size safe.
-	public static final int WIDTH = 1280;
-	public static final int HEIGHT = 720;
-	// note: this value is overwritten by the settings found in settings.txt
-	// max FPS
+	
+	public static final String version = "0.2A";
+	
+	public static int WIDTH = 1280;
+	public static int HEIGHT = 720;
 	public static int FPS_MAX = 120;
 	
-	// time of the last frame
-	private static long lastFrameTime;
-	// amount of frames between last frame.
-	private static float delta;
+	public static boolean isMouseGrabbed = false;
+
+	public static long window;
 	
+	private static long lastFrameTime;
+	private static double delta;
+	
+	public static double mouseX,mouseY;
+	
+	public static List<RescaleEvent> rescales = new ArrayList<RescaleEvent>();
+
 	public static void createDisplay(boolean isUsingFBOs) {
+		System.out.println("LWJGL Version: " + Version.getVersion() + "!");
+		System.out.println("Game Version: " + version);
 		
-		// creates a context for this OpenGL (3.3)
-		ContextAttribs attribs = new ContextAttribs(3, 3).withForwardCompatible(true).withProfileCore(true);
+		GLFWErrorCallback.createPrint(System.err).set();
 		
-		try {
-			// creates the display with the width and height
-			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
-			// withsamples = AntiAliasing
-			/**
-			 * Why disable AA if you are rendering to FBOs and not the default display buffer?
-			 * Well its because this kind of AA only applies to the default display buffer (the one drawn on screen)
-			 * and since when you use FBOs you are actually only rendering one quad to the screen, OpenGL doesn't have any
-			 * edges to AA. OpenGL doesn't see the edges that are rendered on the quad (edges in the FBO), 
-			 * it only sees the edges of the quad which should be the edges of your screen, which results in nothing happening.
-			 */
-			// this should be enabled if FBOs are not being used
-			if (!isUsingFBOs) // no reason to use more then 4 samples. 
-				Display.create(new PixelFormat().withSamples(SettingsLoader.SAMPLES), attribs);
-			else
-				Display.create(new PixelFormat(), attribs);
-			// set the window title
-			Display.setTitle("RMS - V0.11A // Майнкрафт³ - V0.50.0A");
-			// enable multisampling (AA)
-			// this needs to be enabled even if you are using FBOs
-			// (as there is a way of doing AA on FBOs)
-			GL11.glEnable(GL13.GL_MULTISAMPLE);
-		} catch (LWJGLException e) {e.printStackTrace();}
+		if ( !glfwInit() )
+			throw new IllegalStateException("Unable to initialize GLFW");
 		
-		// tells OpenGL that we will be drawing in these areas.
-		GL11.glViewport(0, 0, WIDTH, HEIGHT);
-		lastFrameTime = getCurrentTime();
-		// this just assigns the icon textures.
-		ByteBuffer[] list = new ByteBuffer[2];
-		try {
-			list[0] = new ImageIOImageData().imageToByteBuffer(ImageIO.read(new File("resources/textures/icon/icon16.png")), false, true, null);
-			list[1] = new ImageIOImageData().imageToByteBuffer(ImageIO.read(new File("resources/textures/icon/icon32.png")), false, true, null);
-		} catch (IOException e) {}
-		// assign icons.
-		Display.setIcon(list);
+		glfwDefaultWindowHints(); 
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); 
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		
+		
+		window = glfwCreateWindow(WIDTH, HEIGHT, "TotalCrafter - V" + version, NULL, NULL);
+		if ( window == NULL )
+			throw new RuntimeException("Failed to create the GLFW window");
+		
+		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE ) {
+				glfwSetInputMode(window, GLFW_CURSOR, glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+				isMouseGrabbed = glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED ? true : false;
+			}
+			if ( action == GLFW_PRESS )
+				InputMaster.keyPressed(key);
+			if ( action == GLFW_RELEASE )
+				InputMaster.keyReleased(key);
+		});
+		
+		glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
+			if ( action == GLFW_PRESS )
+				InputMaster.mousePressed(button);
+			if ( action == GLFW_RELEASE )
+				InputMaster.mouseReleased(button);
+		});
+		
+		glfwSetWindowSizeCallback(window, (window, x, y) -> {
+			DisplayManager.WIDTH = x;
+			DisplayManager.HEIGHT = y;
+			GL11.glViewport(0, 0, x, y); ProjectionMatrix.updateProjectionMatrix();
+			for (int i = 0; i < rescales.size(); i++)
+				rescales.get(i).rescale();
+			//ScreenManager.monospaced = new FontType(ScreenManager.loader.loadTexture("fonts/monospaced-72", 0), new File("resources/textures/fonts/monospaced-72.fnt"));
+			//ScreenManager.fonts.remove("mono");
+			//ScreenManager.fonts.put("mono", ScreenManager.monospaced);
+		});
+		
+		glfwSetScrollCallback(window, (window, x, y) -> {
+			InputMaster.scrollMoved((int)y);
+		});
+		
+		glfwSetCursorPosCallback(window, (window, x, y) -> {
+			DisplayManager.mouseX = x;
+			DisplayManager.mouseY = y;
+		});
+		
+		try ( MemoryStack stack = stackPush() ) {
+			IntBuffer pWidth = stack.mallocInt(1);
+			IntBuffer pHeight = stack.mallocInt(1);
+
+			glfwGetWindowSize(window, pWidth, pHeight);
+
+			GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+			glfwSetWindowPos(
+				window,
+				(vidmode.width() - pWidth.get(0)) / 2,
+				(vidmode.height() - pHeight.get(0)) / 2
+			);
+		}
+		
+		glfwMakeContextCurrent(window);
+		// Enable v-sync
+		glfwSwapInterval(SettingsLoader.VSYNC);
+
+		glfwShowWindow(window);
+		
+		GL.createCapabilities();
+		
+		glfwWindowHint(GLFW_SAMPLES, 4);
+		GL11.glEnable(GL13.GL_MULTISAMPLE);
+		
+		GLIcon gli = new GLIcon("resources/textures/icon/icon16.png", "resources/textures/icon/icon32.png");
+		glfwSetWindowIcon(window, gli.getBuffer());
+		
+	}
+
+	public static double getDX() {
+		return mouseX - lx;
 	}
 	
+	public static double getDY() {
+		return mouseY - ly;
+	}
+	
+	private static double lx, ly;
+	
 	public static void updateDisplay() {
-		// tell the display to sync at this FPS.
-		Display.sync(FPS_MAX);
-		// updates the current frame buffer with what we have drawn over the last frame.
-		Display.update();
-		// allows you to use the mouse if you want (not really needed TODO: replace with a menu)
-		if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE) && Keyboard.next() && !Console.getIsOpen() && !PlayerInventory.isOpen) {
+		
+		/**
+		 * if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE) && Keyboard.next() && !Console.getIsOpen() && !PlayerInventory.isOpen) {
 			if(Keyboard.getEventKeyState()) {
 				Mouse.setGrabbed(!Mouse.isGrabbed());
 				UIMaster.menu.setEnabled(!Mouse.isGrabbed());
 			}
 		}
-		// calculate the amount of time that frame took
+		 */
+		
+		lx = mouseX;
+		ly = mouseY;
+		
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+		
 		long currentFrameTime = getCurrentTime();
 		delta = currentFrameTime - lastFrameTime;
 		lastFrameTime = currentFrameTime;
 	}
-	
+
 	public static void closeDisplay() {
+		glfwFreeCallbacks(window);
+		glfwDestroyWindow(window);
 		
-		// cleans up OpenGL
-		Display.destroy();
-		
+		glfwTerminate();
+		glfwSetErrorCallback(null);
+	}
+
+	public static void setMouseGrabbed(boolean gr) {
+		if (gr) {
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		} else {
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
 	}
 	
-	// gets the current time
 	private static long getCurrentTime() {
-		return Sys.getTime() * 1000 / Sys.getTimerResolution();
+		return System.nanoTime();
+	}
+
+	public static double getFrameTimeMilis() {
+		return delta / 1000000d;
+	}
+
+	public static double getFrameTimeSeconds() {
+		return delta / 1000000000d;
 	}
 	
-	/**
-	 *  gets the frame time in ms
-	 */
-	public static float getFrameTimeMilis() {
-		return delta;
+	public static double getFPS() {
+		return 1000000000d / delta;
 	}
 	
-	/**
-	 * gets the frame time in seconds
-	 */
-	public static float getFrameTimeSeconds() {
-		return delta / 1000;
+	public static void enableCulling() {
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
+	}
+	
+	public static void enableTransparentcy() {
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+	}
+	
+	public static void disableTransparentcy() {
+		GL11.glDisable(GL11.GL_BLEND);
+	}
+	
+	public static void disableCulling() {
+		GL11.glDisable(GL11.GL_CULL_FACE);
 	}
 	
 }

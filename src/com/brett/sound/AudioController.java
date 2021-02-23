@@ -11,16 +11,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.Sys;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
-import org.lwjgl.opengl.GLContext;
-import org.lwjgl.util.vector.Vector3f;
-import org.newdawn.slick.openal.OggData;
-import org.newdawn.slick.openal.OggDecoder;
-import org.newdawn.slick.util.Log;
+import org.lwjgl.openal.ALC;
+
+import sun.rmi.runtime.Log;
 
 /**
 *
@@ -45,8 +42,8 @@ public class AudioController {
 		listndata.put( 5, 0 );
 		try {
 			// creates OpenAL instance
-			AL.create();
-		} catch (LWJGLException e) {
+			ALC.create();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -65,7 +62,7 @@ public class AudioController {
 			listndata.put( 1, ry );
 			listndata.put( 2, rz );
 			// apply it to OpenAl
-			AL10.alListener(AL10.AL_ORIENTATION, listndata);
+			AL10.alListenerfv(AL10.AL_ORIENTATION, listndata);
 			} catch (Exception e) {}
 	}
 	
@@ -80,14 +77,14 @@ public class AudioController {
 			listndata.put( 0, rx);
 			listndata.put( 1, ry );
 			listndata.put( 2, rz );
-			AL10.alListener(AL10.AL_ORIENTATION, listndata);
+			AL10.alListenerfv(AL10.AL_ORIENTATION, listndata);
 		} catch (Exception e) {}
 	}
 	
 	/**
 	 * loads an entire folder of sounds. Starts in resources/sound/
 	 */
-	public static int[] loadSoundFolder(String folder) {
+	/*public static int[] loadSoundFolder(String folder) {
 		try {
 			folder = "resources/sound/" + folder;
 			File sfolder = new File(folder);
@@ -110,25 +107,26 @@ public class AudioController {
 			return is;
 			} catch (Exception e) {}
 		return null;
-	}
+	}*/
 	
 	/**
 	 * loads a single sound file. (OGG)
 	 */
-	public static int loadSound(String file) {
+	/*public static int loadSound(String file) {
 		try {
 			return loadS("resources/sound/" + file);
 		} catch (Exception e) {}
 		return 0;
-	}
+	}*/
 	
 	/**
 	 * loads a sound from a sound file (ogg)
 	 */
-	public static int loadS(String file) {
+	/*public static int loadS(String file) {
 		// make sure we have a window open (not running server)
-		if (GLContext.getCapabilities() == null)
-			return 0;
+		//TODO: RE-ADD THIS
+		//if (GLContext.getCapabilities() == null)
+		//	return 0;
 		// generate a buffer for this sound
 		int buffer = AL10.alGenBuffers();
 		// for deletion (should know this by now)
@@ -140,7 +138,7 @@ public class AudioController {
 			e.printStackTrace();
 		}
 		return buffer;
-	}
+	}*/
 	
 	/**
 	 * deletes all active buffers
@@ -159,7 +157,7 @@ public class AudioController {
 	// (everything below the line I didn't write)
 	// --------------------------------------------
 	
-	public static int getOgg(InputStream in) throws IOException {
+	/*public static int getOgg(InputStream in) throws IOException {
 		return getOgg(in.toString(), in);
 	}
 	public static int getOgg(String ref, InputStream in) throws IOException {
@@ -221,6 +219,6 @@ public class AudioController {
 		}
 		
 		return buffer;
-	}
+	}*/
 	
 }

@@ -2,10 +2,10 @@ package com.brett.datatypes;
 
 import java.io.Serializable;
 
-import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
+import com.brett.DisplayManager;
 import com.brett.renderer.gui.UIElement;
 
 public class GUITexture implements UIElement, Serializable {
@@ -158,7 +158,7 @@ public class GUITexture implements UIElement, Serializable {
 	 * converts pixel coords into screen space coords.
 	 */
 	public static Vector2f calcVec(float x, float y) {
-		return new Vector2f(x / Display.getWidth(), y / Display.getHeight());
+		return new Vector2f(x / DisplayManager.WIDTH, y / DisplayManager.HEIGHT);
 	}
 	
 	/**

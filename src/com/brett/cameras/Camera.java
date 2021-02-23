@@ -2,8 +2,8 @@ package com.brett.cameras;
 
 import java.nio.FloatBuffer;
 
+import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.util.vector.Matrix4f;
 
 /**
  * View frustums help:
@@ -74,8 +74,8 @@ public class Camera extends ICamera {
             this.projbuff.clear();
             this.modlbuff.clear();
             this.clipbiff.clear();
-            projection.store(this.projbuff);
-            view.store(this.modlbuff);
+            projection.set(this.projbuff);
+            view.set(this.modlbuff);
 
             this.projbuff.flip().limit(16);
             this.projbuff.get(this.proj);

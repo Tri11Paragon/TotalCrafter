@@ -2,8 +2,8 @@ package com.brett.cameras;
 
 import java.nio.FloatBuffer;
 
+import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.util.vector.Matrix4f;
 
 /**
 *
@@ -57,9 +57,9 @@ public class Frustum {
             this._modl.clear();
             this._clip.clear();
 
-            projection.store(this._proj);
+            projection.set(this._proj);
            //GL11.glGetFloat(2983, this._proj);
-            view.store(this._modl);
+            view.set(this._modl);
             //GL11.glGetFloat(2982, this._modl);
 
             this._proj.flip().limit(16);

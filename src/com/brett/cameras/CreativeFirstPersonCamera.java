@@ -1,10 +1,11 @@
 package com.brett.cameras;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector3d;
+import org.lwjgl.glfw.GLFW;
 
 import com.brett.DisplayManager;
+import com.brett.tools.IKeyState;
+import com.brett.tools.InputMaster;
 import com.brett.voxel.world.VoxelWorld;
 
 
@@ -19,12 +20,13 @@ import com.brett.voxel.world.VoxelWorld;
  *
  */
 
-public class CreativeFirstPersonCamera extends Camera {
+public class CreativeFirstPersonCamera extends Camera implements IKeyState {
 	
 	private VoxelWorld world;
 	
-	public CreativeFirstPersonCamera(Vector3f pos) {
+	public CreativeFirstPersonCamera(Vector3d pos) {
 		this.position = pos;
+		InputMaster.keyboard.add(this);
 	}
 	
 	public void assignWorld(VoxelWorld world) {
@@ -46,7 +48,7 @@ public class CreativeFirstPersonCamera extends Camera {
 	@Override
 	public void move() {
 		// we don't want to move if we are not focused.
-		if (!Mouse.isGrabbed())
+		if (!DisplayManager.isMouseGrabbed)
 			return;
 		
 		/**
@@ -55,54 +57,54 @@ public class CreativeFirstPersonCamera extends Camera {
 		 * Im not going to write some repetitive semi sarcastic nonsense for everyone of
 		 * these. I think we all have eyeballs here or at least some kind of braille screen?
 		 */
-		if (Keyboard.isKeyDown(Keyboard.KEY_LMENU)) {
+		if (InputMaster.keyDown[GLFW.GLFW_KEY_LEFT_ALT]) {
 			speed = 5f;
-			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+			if (InputMaster.keyDown[GLFW.GLFW_KEY_LEFT_CONTROL])
 				speed=1f;
 		} else
 			speed = 40f;
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_W))
-			moveAtX = -speed * DisplayManager.getFrameTimeSeconds();
+		if (InputMaster.keyDown[GLFW.GLFW_KEY_W])
+			moveAtX = (float) (-speed * DisplayManager.getFrameTimeSeconds());
 		
-		else if (Keyboard.isKeyDown(Keyboard.KEY_S))
-			moveAtX = speed * DisplayManager.getFrameTimeSeconds();
+		else if (InputMaster.keyDown[GLFW.GLFW_KEY_S])
+			moveAtX = (float) (speed * DisplayManager.getFrameTimeSeconds());
 		else
 			moveAtX = 0;
 			
-		if (Keyboard.isKeyDown(Keyboard.KEY_A))
-			moveatZ = speed * DisplayManager.getFrameTimeSeconds();
+		if (InputMaster.keyDown[GLFW.GLFW_KEY_A])
+			moveatZ = (float) (speed * DisplayManager.getFrameTimeSeconds());
 		else
-		if (Keyboard.isKeyDown(Keyboard.KEY_D))
-			moveatZ = -speed * DisplayManager.getFrameTimeSeconds();
+		if (InputMaster.keyDown[GLFW.GLFW_KEY_D])
+			moveatZ = (float) (-speed * DisplayManager.getFrameTimeSeconds());
 		else 
 			moveatZ = 0;
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
-			moveAtY = speed * DisplayManager.getFrameTimeSeconds();
+		if (InputMaster.keyDown[GLFW.GLFW_KEY_SPACE])
+			moveAtY = (float) (speed * DisplayManager.getFrameTimeSeconds());
 		else
 			moveAtY = 0;
 			
-		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-			moveAtY = -speed * DisplayManager.getFrameTimeSeconds();
+		if (InputMaster.keyDown[GLFW.GLFW_KEY_LEFT_SHIFT])
+			moveAtY = (float) (-speed * DisplayManager.getFrameTimeSeconds());
 		
 		float speed = 30f;
 		
-		if (Mouse.isGrabbed()) {
-			pitch += -Mouse.getDY() * turnSpeed/100;
-			yaw += Mouse.getDX() * turnSpeed/100;
+		if (DisplayManager.isMouseGrabbed) {
+			pitch += -DisplayManager.getDX() * turnSpeed/100;
+			yaw += DisplayManager.getDX() * turnSpeed/100;
 		}
 		
 		/**
 		 * This allows you to turn without having a mouse
 		 */
-		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
+		if (InputMaster.keyDown[GLFW.GLFW_KEY_LEFT])
 			yaw += -speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
-		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+		if (InputMaster.keyDown[GLFW.GLFW_KEY_RIGHT])
 			yaw += speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
-		if (Keyboard.isKeyDown(Keyboard.KEY_UP))
+		if (InputMaster.keyDown[GLFW.GLFW_KEY_UP])
 			pitch += -speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
-		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+		if (InputMaster.keyDown[GLFW.GLFW_KEY_DOWN])
 			pitch += speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
 		
 		// prevent the player from looping around when looking up or down
@@ -143,7 +145,7 @@ public class CreativeFirstPersonCamera extends Camera {
 			// add to the stepped amount
 			wx += xStep;
 			// check to make sure that this new step position has an open air block
-			if (world.chunk.getBlock(position.x + (wx), position.y, position.z) == 0) {
+			if (world.chunk.getBlock((float)(position.x + (wx)), (float)position.y, (float)position.z) == 0) {
 				// if allowed to move then update the amount we can move
 				xb = wx;
 			} else // if we can't move any more then no need to loop with higher values
@@ -152,7 +154,7 @@ public class CreativeFirstPersonCamera extends Camera {
 		// same thing as ^ but in the y direction
 		for (int i = 0; i < RECUR_AMT; i++) {
 			wy += yStep;
-			if (world.chunk.getBlock(position.x, position.y + (wy), position.z) == 0) {
+			if (world.chunk.getBlock((float)position.x, (float)(position.y + (wy)), (float)position.z) == 0) {
 				yb = wy;
 			} else
 				break;
@@ -160,21 +162,29 @@ public class CreativeFirstPersonCamera extends Camera {
 		// same thinf as ^^ but in the z direction
 		for (int i = 0; i < RECUR_AMT; i++) {
 			wz += zStep;
-			if (world.chunk.getBlock(position.x, position.y, position.z + (wz)) == 0) {
+			if (world.chunk.getBlock((float)position.x, (float)position.y, (float)(position.z + (wz))) == 0) {
 				zb = wz;
 			} else 
 				break;
 		}
 		
 		// apply the translations after one final check
-		if (world.chunk.getBlock(position.x + (xb), position.y, position.z) == 0)
+		if (world.chunk.getBlock((float)(position.x + (xb)), (float)position.y, (float)position.z) == 0)
 			position.x += xb;
 		
-		if (world.chunk.getBlock(position.x, position.y + (yb), position.z) == 0)
+		if (world.chunk.getBlock((float)position.x, (float)(position.y + (yb)), (float)position.z) == 0)
 			position.y += yb;
 		
-		if (world.chunk.getBlock(position.x , position.y, position.z + (zb)) == 0)
+		if (world.chunk.getBlock((float)position.x , (float)position.y, (float)(position.z + (zb))) == 0)
 			position.z += zb;
+	}
+
+	@Override
+	public void onKeyPressed(int keys) {
+	}
+
+	@Override
+	public void onKeyReleased(int keys) {
 	}
 	
 }

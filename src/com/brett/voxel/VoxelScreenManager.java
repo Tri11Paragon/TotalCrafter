@@ -3,15 +3,11 @@ package com.brett.voxel;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 
-import org.lwjgl.Sys;
-import org.lwjgl.input.Mouse;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
-
 import com.brett.DisplayManager;
 import com.brett.KeyMaster;
 import com.brett.console.Console;
@@ -299,7 +295,7 @@ public class VoxelScreenManager {
 					sb.append(" + YAW: ");
 					sb.append(player.getYaw());
 					sb.append(" + POS: [");
-					Vector3f pos = player.getPosition();
+					Vector3d pos = player.getPosition();
 					sb.append(pos.x);
 					sb.append(", ");
 					sb.append(pos.y);
