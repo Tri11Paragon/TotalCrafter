@@ -22,7 +22,7 @@ public class ClientAuth {
 	
 	public static int check_auth(String username, String password) {
 		try {
-			URL obj = new URL("http://paragonscode.ddns.net/totalcrafter/post_auth.php");
+			URL obj = new URL("http://tpgc.me/totalcrafter/post_auth.php");
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod("POST");
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
@@ -90,7 +90,7 @@ public class ClientAuth {
 	
 	public static String setToken(String username, String password) {
 		try {
-			URL obj = new URL("http://paragonscode.ddns.net/totalcrafter/set_token.php");
+			URL obj = new URL("http://tpgc.me/totalcrafter/set_token.php");
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod("POST");
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
@@ -120,7 +120,7 @@ public class ClientAuth {
 			}
 			return token;
 		} catch (Exception e) {e.printStackTrace();}
-		return "";
+		return "NOTOKEN";
 	}
 	
 }

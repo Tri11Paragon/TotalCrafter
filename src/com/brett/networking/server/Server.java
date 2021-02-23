@@ -11,6 +11,7 @@ import org.joml.Vector3d;
 
 import com.brett.Main;
 import com.brett.networking.Client;
+import com.brett.utils.RunLengthEncoding;
 import com.brett.world.GameRegistry;
 import com.brett.world.World;
 
@@ -52,6 +53,44 @@ public class Server {
 		Main.processors = Runtime.getRuntime().availableProcessors();
 		if (Main.processors < 4)
 			Main.processors = 4;
+		
+		short[][][] blks = new short[16][16][16];
+		for (int i = 0; i < 16; i++)
+			blks[i][i][i] = 1;
+		for (int i = 0; i < 16; i++)
+			blks[i][0][i] = 1;
+		for (int i = 0; i < 16; i++)
+			blks[i][0][0] = 1;
+		
+		ArrayList<Short> yes = RunLengthEncoding.encode_chunk(blks);
+		System.out.print("[");
+		for (int i = 0; i < yes.size(); i++) {
+			if (i % 2 == 0)
+				System.out.print("[" + yes.get(i) + ", ");
+			if ((i % 2) == 1)
+				System.out.print(yes.get(i) + "] ");
+			if (i % 35 == 0 && i > 30)
+				System.out.println();
+		}
+		System.out.print("] \n");
+		System.out.println();
+		
+		short[][][] deblks = RunLengthEncoding.decode_chunk(yes);
+		yes = RunLengthEncoding.encode_chunk(deblks);
+		
+		System.out.print("[");
+		for (int i = 0; i < yes.size(); i++) {
+			if (i % 2 == 0)
+				System.out.print("[" + yes.get(i) + ", ");
+			if ((i % 2) == 1)
+				System.out.print(yes.get(i) + "] ");
+			if (i % 35 == 0 && i > 30)
+				System.out.println();
+		}
+		System.out.print("] \n");
+		System.out.println();
+		
+		
 		try {
 			ServerProperties.load();
 			port = ServerProperties.getPropertyInt("port");

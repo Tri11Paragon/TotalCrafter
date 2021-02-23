@@ -39,14 +39,23 @@ public class RunLengthEncoding {
 	public static short[][][] decode_chunk(ArrayList<Short> shorts) {
 		short[][][] blocks = new short[16][16][16];
 		
+		int lastHighest = 0;
+		int endHighest = 0;
 		for (int i = 0; i < shorts.size(); i+=2) {
 			int index1 = i;
 			int index2 = i+1;
-			for (int j = 0; j < shorts.get(index2); j++) {
-				int col1 = j % 16;
-				int col2 = j / 16 % 16;
-				int col3 = j / 16 / 16;
-				blocks[col1][col2][col3] = shorts.get(index1);
+			for (int j = 0; j < (shorts.get(index2)); j++) {
+				int col1 = (j + lastHighest) % 16;
+				int col2 = (j + lastHighest) / 16 % 16;
+				int col3 = (j + lastHighest) / 16 / 16;
+				//System.out.println(col1 + " " + col2 + " " + col3 + " " + j);
+				lastHighest++;
+				try {
+					blocks[col1][col2][col3] = shorts.get(index1);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return blocks;
+				}
 			}
 		}
 		

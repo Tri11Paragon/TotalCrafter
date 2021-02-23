@@ -56,7 +56,7 @@ public class World {
 	public World() {
 		isRemote = false;
 		isServer = true;
-		this.worldName = "NULL";
+		this.worldName = "NULL/NULL";
 		
 		threads = ThreadPool.reserveQuarterThreads() + ThreadPool.reserveQuarterThreads();
 		worldExecutor = Executors.newFixedThreadPool(threads);
@@ -65,7 +65,7 @@ public class World {
 	
 	public World(ServerConnection serverConnection) {
 		this.serverConnection = serverConnection;
-		this.worldName = "NULL";
+		this.worldName = "NULL/NULL";
 		
 		isRemote = true;
 		isServer = false;
