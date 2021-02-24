@@ -1,15 +1,16 @@
 package com.brett.voxel.world;
 
-import org.lwjgl.input.Mouse;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 
-import com.brett.IMouseState;
-import com.brett.KeyMaster;
 import com.brett.cameras.ICamera;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
+import com.brett.renderer.ProjectionMatrix;
+import com.brett.tools.IMouseState;
+import com.brett.tools.InputMaster;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.networking.Client;
@@ -64,23 +65,23 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 		shader = new VoxelShader();
 		ply.assignWorld(this);
 		ply.init();
-		KeyMaster.registerKeyRequester(ply.getInventory());
+		InputMaster.keyboard.add(ply.getInventory());
 		chunk = new ChunkStore(ply, loader, this);
 		// setup the seed
 		random.setSeed(LevelLoader.seed);
 		LightingEngine.init(this, ply);
 		this.textureAtlas = loader.loadSpecialTextureATLAS(16, 16);
 		this.voverlayrenderer = new VOverlayRenderer(renderer, ply, this);
-		picker = new MouseBlockPicker(ply, renderer.getProjectionMatrix(), this, ply, this.voverlayrenderer);
+		picker = new MouseBlockPicker(ply, ProjectionMatrix.projectionMatrix, this, ply, this.voverlayrenderer);
 		if (!isRemote)
 			tickTileEnts();
 		// screen shot is f2
-		KeyMaster.registerKeyRequester(new ScreenShot());
-		KeyMaster.registerMouseRequester(this);
+		InputMaster.keyboard.add(new ScreenShot());
+		InputMaster.mouse.add(this);
 		if (localClient != null)
 			localClient.world = this;
 		shader.start();
-		shader.loadProjectionMatrix(renderer.getProjectionMatrix());
+		shader.loadProjectionMatrix(ProjectionMatrix.projectionMatrix);
 		shader.stop();
 	}
 	
@@ -94,7 +95,7 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 		shader.start();
 			// 2d array because we are using 3d textures
 			GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureAtlas);
-			chunk.renderChunks(shader, renderer.getProjectionMatrix());
+			chunk.renderChunks(shader, ProjectionMatrix.projectionMatrix);
 		shader.stop();
 		MasterRenderer.disableCulling();
 		MasterRenderer.disableTransparentcy();
@@ -167,8 +168,8 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 
 	private int times = 0;
 	@Override
-	public void onMousePressed() {
-		if (Mouse.getEventButton() == 1) {
+	public void onMousePressed(int button) {
+		if (button ==1) {
 			PlayerInventory i = ply.getInventory();
 			ItemStack st = i.getItemInSelectedSlot();
 			// make sure there is an item in our hand.
@@ -191,7 +192,7 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 				picker.placeBlock((short) 0);
 			}
 		}
-		if (Mouse.getEventButton() == 0) {
+		if (button == 0) {
 			// make sure the item we are holding knows that we have pressed the mouse button
 			PlayerInventory i = ply.getInventory();
 			ItemStack st = i.getItemInSelectedSlot();
@@ -204,14 +205,14 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 				}
 			}
 		}
-		if (Mouse.getEventButton() == 2) {
+		if (button == 2) {
 			// set the timer for reset
 			if (times == 0)
 				startTime = System.currentTimeMillis();
 			times++;
 			if (times > 3) {
 				// don't want the user exploding their house by accident.
-				new Explosion(ply.getPosition().x, ply.getPosition().y, ply.getPosition().z, 4, this).explode();
+				new Explosion((float)ply.getPosition().x, (float)ply.getPosition().y, (float)ply.getPosition().z, 4, this).explode();
 				times = 0;
 			}
 		}
@@ -238,7 +239,7 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 	}
 	
 	@Override
-	public void onMouseReleased() {
+	public void onMouseReleased(int button) {
 	}
 	
 }

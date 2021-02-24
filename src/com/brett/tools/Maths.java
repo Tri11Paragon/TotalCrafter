@@ -148,6 +148,21 @@ public class Maths {
 		return matrix;
 	}
 	
+	
+	static Vector3f trans = new Vector3f();
+	
+	public static Matrix4f createTransformationMatrixYAW(float[] translationandrotation) {
+		mtx.identity();
+		trans.x = translationandrotation[0];
+		trans.y = translationandrotation[1];
+		trans.z = translationandrotation[2];
+		mtx.translate(trans);
+		//Matrix4f.rotate((float) Math.toRadians(translationandrotation[3]), Maths.rx, mtx, mtx);
+		mtx.rotate((float) Math.toRadians(-translationandrotation[4]), Maths.ry);
+		//Matrix4f.rotate((float) Math.toRadians(translationandrotation[5]), Maths.rz, mtx, mtx);
+		return mtx;
+	}
+	
 	/**
 	 * creates a translation matrix
 	 */

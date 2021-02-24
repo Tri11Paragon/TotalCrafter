@@ -1,11 +1,9 @@
 package com.brett.voxel.world;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Stack;
 
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector3f;
 
 import com.brett.voxel.world.blocks.Block;
 import com.brett.voxel.world.chunk.Chunk;
@@ -15,7 +13,6 @@ import com.brett.voxel.world.chunk.Chunk;
 * @author brett
 * @date Mar. 8, 2020
 */
-@SuppressWarnings("unused")
 public class Explosion {
 	
 	// chunks that have been remeshed. (Prevents issues with remeshing)
@@ -44,7 +41,7 @@ public class Explosion {
 				for (int k =  -RE_MNT; k <= RE_MNT; k++) {
 					Vector3f vec = new Vector3f(i,j,k);
 					// put the vector into normalized coords
-					vec.normalise(vec);
+					vec.normalize();
 					// add it to the stack.
 					points.push(vec);
 				}

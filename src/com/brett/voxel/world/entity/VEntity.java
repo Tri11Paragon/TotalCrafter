@@ -1,6 +1,6 @@
 package com.brett.voxel.world.entity;
 
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector3f;
 
 import com.brett.DisplayManager;
 import com.brett.datatypes.TexturedModel;
@@ -60,7 +60,7 @@ public class VEntity {
 		this.velocity.y += acceleration.y * DisplayManager.getFrameTimeSeconds();
 		this.velocity.z += acceleration.z * DisplayManager.getFrameTimeSeconds();
 		// apply position and check collision.
-		if (world.chunk.getBlock(this.posision.x + (velocity.x * DisplayManager.getFrameTimeSeconds()), this.posision.y, this.posision.z) == 0)
+		/*if (world.chunk.getBlock(this.posision.x + (velocity.x * DisplayManager.getFrameTimeSeconds()), this.posision.y, this.posision.z) == 0)
 			this.posision.x += velocity.x * DisplayManager.getFrameTimeSeconds();
 		else {
 			this.velocity.x = 0;
@@ -77,7 +77,7 @@ public class VEntity {
 		else {
 			this.velocity.z = 0;
 			this.acceleration.z = 0;
-		}
+		}*/
 	}
 	
 	/**
@@ -115,7 +115,7 @@ public class VEntity {
 	}
 	
 	public VEntity increaseAcceleration(Vector3f acceleration) {
-		Vector3f.add(this.acceleration, acceleration, this.acceleration);
+		this.acceleration.add(acceleration);
 		return this;
 	}
 	
@@ -140,7 +140,7 @@ public class VEntity {
 	}
 	
 	public void increaseVelocity(Vector3f velocity) {
-		Vector3f.add(this.velocity, velocity, this.velocity);
+		this.velocity.add(velocity);
 	}
 	
 	public VEntity increaseVelocity(float x, float y, float z) {

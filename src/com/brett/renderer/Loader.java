@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
@@ -21,8 +22,6 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL42;
-import org.lwjgl.opengl.GLContext;
-
 import com.brett.datatypes.BlockModelVAO;
 import com.brett.datatypes.ModelVAO;
 import com.brett.datatypes.TextureData;
@@ -378,7 +377,7 @@ public class Loader {
 			return textureMap.get(texture);
 		try {
 			// don't load if we don't have a window with OpenGL (we are the server)
-			if (GLContext.getCapabilities() == null)
+			if (GL.getCapabilities() == null)
 				return 0;
 			// decode some texture data.
 			TextureData d = decodeTextureFile("resources/textures/" + texture + ".png");

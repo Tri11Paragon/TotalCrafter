@@ -2,9 +2,9 @@ package com.brett.voxel.inventory;
 
 import java.io.Serializable;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.util.vector.Vector2f;
+import org.joml.Vector2f;
 
+import com.brett.DisplayManager;
 import com.brett.renderer.font.UIDynamicText;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.world.items.ItemStack;
@@ -21,7 +21,7 @@ public class PlayerSlot implements Serializable {
 	private static final long serialVersionUID = -4508178413249010682L;
 	
 	private static ItemStack itemInHand;
-	public static UIDynamicText text = new UIDynamicText("", 0.8f, VoxelScreenManager.monospaced, new Vector2f(Mouse.getX(), Mouse.getY()), 1.0f, false);
+	public static UIDynamicText text = new UIDynamicText("", 0.8f, VoxelScreenManager.monospaced, new Vector2f((float)DisplayManager.mouseX, (float)DisplayManager.mouseY), 1.0f, false);
 	
 	
 	public static ItemStack getStack() {

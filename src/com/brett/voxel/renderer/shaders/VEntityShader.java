@@ -1,9 +1,9 @@
 package com.brett.voxel.renderer.shaders;
 
-import org.lwjgl.util.vector.Matrix4f;
+import org.joml.Matrix4f;
 
 import com.brett.cameras.Camera;
-import com.brett.renderer.shaders.ShaderProgram;
+import com.brett.renderer.shaders.WorldShader;
 import com.brett.tools.Maths;
 
 /**
@@ -13,14 +13,10 @@ import com.brett.tools.Maths;
 * pretty standard shader.
 */
 
-public class VEntityShader extends ShaderProgram {
+public class VEntityShader extends WorldShader {
 
 	private static final String VERTEX_FILE = "vEntityVertexShader.vert";
 	private static final String FRAGMENT_FILE = "vEntityFragmentShader.frag";
-	
-	private int location_transformationMatrix;
-	private int location_projectionMatrix;
-	private int location_viewMatrix;
 	
 	public VEntityShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -28,9 +24,7 @@ public class VEntityShader extends ShaderProgram {
 
 	@Override
 	protected void getAllUniformLocations() {
-		location_transformationMatrix = super.getUniformLocation("translationMatrix");
-		location_projectionMatrix = super.getUniformLocation("projectionMatrix");
-		location_viewMatrix = super.getUniformLocation("viewMatrix");
+		super.getAllUniformLocations();
 	}
 
 	@Override
@@ -42,7 +36,7 @@ public class VEntityShader extends ShaderProgram {
 	}
 	
 	public void loadTranslationMatrix(Matrix4f trans) {
-		super.loadMatrix(location_transformationMatrix, trans);
+		super.loadMatrix(location_translationMatrix, trans);
 	}
 	
 	public void loadProjectionMatrix(Matrix4f projection){

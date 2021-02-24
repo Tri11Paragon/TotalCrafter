@@ -1,16 +1,15 @@
-package com.brett.renderer.illegal;
+/**package com.brett.renderer.illegal;
 
 import java.nio.FloatBuffer;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 
 import com.brett.cameras.Camera;
 import com.brett.datatypes.ModelVAO;
@@ -29,7 +28,7 @@ import com.brett.tools.Maths;
 * its just me testing some non-euclidean geometry.
 */
 
-public class RenderedPortal {
+/**public class RenderedPortal {
 	
 	private Vector3f temp;
 	private Vector3f temp2;
@@ -72,8 +71,8 @@ public class RenderedPortal {
 		this.outscale = outscale;
 		this.inpos = inpos;
 		this.outpos = outpos;
-		this.front = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_RENDER_BUFFER);
-		this.back = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_RENDER_BUFFER);
+		this.front = new Fbo(DisplayManager.WIDTH, DisplayManager.HEIGHT, Fbo.DEPTH_RENDER_BUFFER);
+		this.back = new Fbo(DisplayManager.WIDTH, DisplayManager.HEIGHT, Fbo.DEPTH_RENDER_BUFFER);
 	}
 	
 	public Vector3f prepareRenderFrontFBO() {
@@ -189,4 +188,4 @@ public class RenderedPortal {
 		return new Vector3f(v);
 	}
 	
-}
+}*/

@@ -3,13 +3,13 @@ package com.brett.voxel;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 
+import org.joml.Vector2f;
 import org.joml.Vector3d;
-import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.opengl.GL11;
 import com.brett.DisplayManager;
-import com.brett.KeyMaster;
 import com.brett.console.Console;
 import com.brett.console.commands.CloseServerCommand;
 import com.brett.console.commands.CollisionCommand;
@@ -19,6 +19,7 @@ import com.brett.console.commands.TeleportCommand;
 import com.brett.renderer.DisplaySource;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
+import com.brett.renderer.ProjectionMatrix;
 import com.brett.renderer.font.FontType;
 import com.brett.renderer.font.UIDynamicText;
 import com.brett.renderer.font.fontRendering.StaticText;
@@ -80,7 +81,7 @@ public class VoxelScreenManager {
 		// audio stuff
 		AudioController.init();
 		AudioController.setListenerData(0, 0, 0, 0, 0, 0);
-		AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE_CLAMPED);
+		//AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE_CLAMPED);
 		staticSource = new AudioSource();
 		staticSource.setPosition(0, 0, 0);
 		
@@ -106,8 +107,8 @@ public class VoxelScreenManager {
 		LevelLoader.ply = player;
 		
 		renderer = new MasterRenderer(loader, player);
-		ls.loadProjectionMatrix(renderer.getProjectionMatrix());
-		pt.loadProjectionMatrix(renderer.getProjectionMatrix());
+		ls.loadProjectionMatrix(ProjectionMatrix.projectionMatrix);
+		pt.loadProjectionMatrix(ProjectionMatrix.projectionMatrix);
 		//World world = new World(renderer, loader, camera, -5);
 		
 		// TERRAIN TEXTURES
@@ -132,7 +133,6 @@ public class VoxelScreenManager {
 		
 		// FONT
 		Console console = new Console(loader, monospaced, ui.getRenderer());
-		KeyMaster.registerKeyRequester(console);
 		console.registerCommand(new String[] {"tp", "teleport"}, new TeleportCommand(player));
 		console.registerCommand(new String[] {"flight", "fly", "f", "toggle_flight", "toggleflight"}, new FlightCommand());
 		console.registerCommand(new String[] {"collision", "col", "c", "toggle_collision", "togglecollision"}, new CollisionCommand());
@@ -234,7 +234,7 @@ public class VoxelScreenManager {
 		EscapeMenu.world = world;
 		console.registerCommand("exit", new CloseServerCommand());
 		
-		Mouse.setGrabbed(false);
+		DisplayManager.setMouseGrabbed(false);
 		
 		mainmenu = new MainMenu(ui, renderer, player, world, loader);
 		scene = mainmenu;
@@ -246,21 +246,15 @@ public class VoxelScreenManager {
 		
 		Chunk.init();
 
-		MusicMaster.init();
+		//MusicMaster.init();
 		
 		System.gc();
-		while (!Display.isCloseRequested()) {
+		while (!GLFW.glfwWindowShouldClose(DisplayManager.window)) {
 			try {
 				// do required OpenGL clearings
-				double startTime = Sys.getTime() * 1000 / Sys.getTimerResolution();
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 				scene.render();
-				KeyMaster.update();
-				
-				if (Mouse.isButtonDown(2)) {
-					
-				}
 				
 				//System.out.println(camera.getPosition());
 				//sun.update();
@@ -278,11 +272,9 @@ public class VoxelScreenManager {
 				//	loader.deleteVAO(Chunk.deleteables.get(i));
 				//}
 				
-				MusicMaster.update();
+				//MusicMaster.update();
 				DisplayManager.updateDisplay();
-				// calculate the fps and put it on the screen.
-				double lastFrame = Sys.getTime() * 1000 / Sys.getTimerResolution();
-				deltaTime += lastFrame - startTime;
+				deltaTime += DisplayManager.getFrameTimeMilis();
 				frames++;
 				if(deltaTime > 1000) {
 					frameRate = (double)frames*0.5d + frameRate*0.5d;
@@ -317,14 +309,14 @@ public class VoxelScreenManager {
 		if (VoxelWorld.isRemote)
 			VoxelWorld.localClient.disconnect();
 		isOpen = false;
-		Mouse.setGrabbed(false);
+		DisplayManager.setMouseGrabbed(false);
 		player.cleanup();
 		BlockCrafting.craft.saveInventory();
 		//testserver.close();
 		//client.close();and it will 
 		staticSource.delete();
 		AudioController.cleanup();
-		MusicMaster.cleanup();
+		//MusicMaster.cleanup();
 		//PostProcessing.cleanUp();
 		//vworld.cleanup();
 		ui.cleanup();

@@ -1,10 +1,10 @@
 package com.brett.renderer.postprocessing;
 
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import com.brett.DisplayManager;
 import com.brett.datatypes.ModelVAO;
 import com.brett.renderer.Loader;
 import com.brett.renderer.postprocessing.bloom.CombineFilter;
@@ -29,8 +29,8 @@ public class PostProcessing {
 	public static void init(Loader loader){
 		quad = loader.loadToVAO(POSITIONS, 2);
 		//contrastChanger = new ContrastChanger();
-		hBlur = new HorizontalBlur(Display.getWidth()/5, Display.getHeight()/5);
-		vBlur = new VerticalBlur(Display.getWidth()/5, Display.getHeight()/5);
+		hBlur = new HorizontalBlur(DisplayManager.WIDTH/5, DisplayManager.HEIGHT/5);
+		vBlur = new VerticalBlur(DisplayManager.WIDTH/5, DisplayManager.HEIGHT/5);
 		combineFilter = new CombineFilter();
 	}
 	

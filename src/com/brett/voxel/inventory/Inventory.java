@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.util.vector.Vector2f;
+import org.joml.Vector2f;
 
+import com.brett.DisplayManager;
 import com.brett.datatypes.GUITexture;
 import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.IMenu;
@@ -235,13 +235,13 @@ public class Inventory implements IMenu, Serializable {
 		enabled = !enabled;
 		// enables / disables text.
 		if (enabled) {
-			Mouse.setGrabbed(false);
+			DisplayManager.setGrabbed(false);
 			for (Slot s : slots){
 				if (s.text != null)
 					s.text.enableText();
 			}
 		}else {
-			Mouse.setGrabbed(true);
+			DisplayManager.setGrabbed(true);
 			for (Slot s : slots) {
 				if (s.text != null)
 					s.text.disableText();

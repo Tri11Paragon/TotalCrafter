@@ -5,12 +5,13 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+
+import com.brett.DisplayManager;
 
 
 /**
@@ -98,7 +99,7 @@ public class Fbo {
 	 */
 	public void unbindFrameBuffer() {
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
-		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+		GL11.glViewport(0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT);
 	}
 
 	/**
@@ -136,7 +137,7 @@ public class Fbo {
 		GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
 		GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, this.frameBuffer);
 		GL11.glDrawBuffer(GL11.GL_BACK);
-		GL30.glBlitFramebuffer(0, 0, width, height, 0, 0, Display.getWidth(), Display.getHeight(), GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
+		GL30.glBlitFramebuffer(0, 0, width, height, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
 		this.unbindFrameBuffer();
 	}
 	

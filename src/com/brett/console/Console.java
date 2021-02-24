@@ -7,7 +7,6 @@ import java.util.List;
 import org.joml.Vector2f;
 
 import com.brett.DisplayManager;
-import com.brett.KeyMaster;
 import com.brett.console.commands.ClearCommand;
 import com.brett.renderer.Loader;
 import com.brett.renderer.font.FontType;
@@ -77,10 +76,6 @@ public class Console implements IKeyState {
 	
 	public void update() {
 		// this makes sure that it only runs once per button press.
-		if (KeyMaster.state) {
-			// only add to the line if the console is open
-			
-		}
 		// render if we are open.
 		if (isOpen) {
 			// enables the shaders

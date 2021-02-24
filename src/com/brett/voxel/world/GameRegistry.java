@@ -105,88 +105,88 @@ public class GameRegistry {
 		registerBlock(Block.AIR, new BlockAir());
 		
 		registerBlock(Block.STONE, new Block(new Texture(loader.loadTexture("stone")), 2
-				).setBreakSound(AudioController.loadSound("stone1.ogg")).setBlockDropped(Block.COBBLE).setHardness(3).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+				).setBlockDropped(Block.COBBLE).setHardness(3).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
 		registerBlock(Block.DIRT, new Block(new Texture(loader.loadTexture("dirt")), 1
-				).setBreakSound(AudioController.loadSound("gravel1.ogg")).setHardness(1.14f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
+				).setHardness(1.14f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
 		
 		registerBlock(Block.WILL, new Block(new Texture(loader.loadTexture("icon/logo")), 7
-				).setBreakSound(AudioController.loadSound("cloth1.ogg")).setHardness(Short.MAX_VALUE*2).setMiningLevel(Short.MAX_VALUE*2).setEffectiveTool(ItemTool.TOOL_SWORD));
+				).setHardness(Short.MAX_VALUE*2).setMiningLevel(Short.MAX_VALUE*2).setEffectiveTool(ItemTool.TOOL_SWORD));
 		
 		registerBlock(Block.GRASS, new BlockGrass(new Texture(loader.loadTexture("grassy2"))
-				).setBreakSound(AudioController.loadSound("grass1.ogg")).setHardness(2).setEffectiveTool(ItemTool.TOOL_SHOVEL).setMiningLevel(0));
+				).setHardness(2).setEffectiveTool(ItemTool.TOOL_SHOVEL).setMiningLevel(0));
 		
 		registerBlock(Block.SAND, new BlockSand(new Texture(loader.loadTexture("sand"))
-				).setBreakSound(AudioController.loadSound("sand1.ogg")).setHardness(0.9f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
+				).setHardness(0.9f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
 		
 		registerBlock(Block.CLAY, new Block(new Texture(loader.loadTexture("clay")), 8
-				).setBreakSound(AudioController.loadSound("gravel2.ogg")).setHardness(1.0f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
+				).setHardness(1.0f).setEffectiveTool(ItemTool.TOOL_SHOVEL));
 		
 		registerBlock(Block.SNOW, new Block(new Texture(loader.loadTexture("snow")), 5
-				).setBreakSound(AudioController.loadSound("snow1.ogg")).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SWORD));
+				).setHardness(0.5f).setEffectiveTool(ItemTool.TOOL_SWORD));
 		
 		registerBlock(Block.COBBLE, new Block(new Texture(loader.loadTexture("cobble")), 3
-				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(2.5f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+				).setHardness(2.5f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
 		registerBlock(Block.GLASS, new Block(new Texture(loader.loadTexture("glass")), 9
-				).setBreakSound(AudioController.loadSound("glass3.ogg")).setHardness(2.5f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE)
+				).setHardness(2.5f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE)
 				.setRendermode(RENDERMODE.TRANSPARENT).setBlockDropped((short)-1));
 		
 		registerBlock(Block.GLOWSTONE, new Block(new Texture(loader.loadTexture("glowstone")), 10
-				).setBreakSound(AudioController.loadSound("glass1.ogg")).setHardness(0.78f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE).setLightLevel((byte) 15));
+				).setHardness(0.78f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE).setLightLevel((byte) 15));
 		
 		registerBlock(Block.IRONORE, new Block(new Texture(loader.loadTexture("iron_ore")), 19
-				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(1.38f).setMiningLevel(2).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+				).setHardness(1.38f).setMiningLevel(2).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
 		registerBlock(Block.GOLDORE, new Block(new Texture(loader.loadTexture("gold_ore")), 11
-				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(1.68f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+				).setHardness(1.68f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
 		registerBlock(Block.REDSTONEORE, new Block(new Texture(loader.loadTexture("redstone_ore")), 12
-				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(2.48f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+				).setHardness(2.48f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
 		registerBlock(Block.EMERALDORE, new Block(new Texture(loader.loadTexture("emerald_ore")), 13
-				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(4.79f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE)
+				).setHardness(4.79f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE)
 				.setBlockDropped(Item.EMERALD));
 		
 		registerBlock(Block.DIAMONDORE, new Block(new Texture(loader.loadTexture("diamond_ore")), 14
-				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(3.72f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE)
+				).setHardness(3.72f).setMiningLevel(3).setEffectiveTool(ItemTool.TOOL_PICKAXE)
 				.setBlockDropped(Item.DIAMOND));
 		
 		registerBlock(Block.COALORE, new Block(new Texture(loader.loadTexture("coal_ore")), 15
-				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(1.78f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE)
+				).setHardness(1.78f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE)
 				.setBlockDropped(Item.COAL));
 		
 		registerBlock(Block.LOG, new Block(new Texture(loader.loadTexture("pine")), 22
-				).setBreakSound(AudioController.loadSound("wood1.ogg")).setHardness(0.78f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
+				).setHardness(0.78f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
 		
 		registerBlock(Block.LEAVES, new BlockLeaves(new Texture(loader.loadTexture("leaves_oak")), 23
-				).setBreakSound(AudioController.loadSound("bounce.ogg")).setHardness(0.60f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_SWORD)
+				).setHardness(0.60f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_SWORD)
 				.setRendermode(RENDERMODE.TRANSPARENT));
 		
 		registerBlock(Block.PLANKS, new Block(new Texture(loader.loadTexture("planks")), 6
-				).setBreakSound(AudioController.loadSound("wood2.ogg")).setHardness(0.59f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
+				).setHardness(0.59f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
 		
 		registerBlock(Block.CRAFT, new BlockCrafting(new Texture(loader.loadTexture("crafting_table_front"))
-				).setBreakSound(AudioController.loadSound("wood1.ogg")).setHardness(0.39f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
+				).setHardness(0.39f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
 		
 		registerBlock(Block.COPPER, new Block(new Texture(loader.loadTexture("copper_ore")), 28
-				).setBreakSound(AudioController.loadSound("stone1.ogg")).setHardness(0.99f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+				).setHardness(0.99f).setMiningLevel(1).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
 		registerBlock(Block.YELLOWFLOWER, new BlockFlower(new Texture(loader.loadTexture("flower_yellow")), 29
-				).setBreakSound(AudioController.loadSound("grass2.ogg")).setHardness(0.1f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_HAND));
+				).setHardness(0.1f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_HAND));
 		
 		registerBlock(Block.REDFLOWER, new BlockFlower(new Texture(loader.loadTexture("flower_red")), 30
-				).setBreakSound(AudioController.loadSound("grass2.ogg")).setHardness(0.1f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_HAND));
+				).setHardness(0.1f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_HAND));
 		
 		registerBlock(Block.TALLGRASS, new BlockFlower(new Texture(loader.loadTexture("tallgrass")), 31
-				).setBreakSound(AudioController.loadSound("grass2.ogg")).setHardness(0.1f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_HAND)
+				).setHardness(0.1f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_HAND)
 				.setBlockDropped((short)-1));
 		
 		registerBlock(Block.FURNACE, new BlockFurnace(new Texture(loader.loadTexture("furnace_front_off")))
-				.setBreakSound(AudioController.loadSound("stone1.ogg")).setBlockDropped(Block.FURNACE).setHardness(2.98f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE));
+				.setBlockDropped(Block.FURNACE).setHardness(2.98f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_PICKAXE));
 		
 		registerBlock(Block.CHEST, new BlockChest(new Texture(loader.loadTexture("chest_front")))
-				.setBreakSound(AudioController.loadSound("wood1.ogg")).setBlockDropped(Block.CHEST).setHardness(2.98f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
+				.setBlockDropped(Block.CHEST).setHardness(2.98f).setMiningLevel(0).setEffectiveTool(ItemTool.TOOL_AXE));
 		
 	}
 	

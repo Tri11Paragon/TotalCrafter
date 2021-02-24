@@ -10,4 +10,5 @@ username: brett
 ip: 72.39.134.185
 samples: 4
 anisotropy: 4
+vsync: 0
 music: 0.551612913608551

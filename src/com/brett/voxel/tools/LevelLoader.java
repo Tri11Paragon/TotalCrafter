@@ -9,7 +9,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 import com.brett.voxel.gui.MainMenu;
 import com.brett.voxel.world.VoxelWorld;
@@ -41,7 +42,7 @@ public class LevelLoader {
 				return;
 			}
 			// load position
-			ply.setPosition(new Vector3f(is.readFloat(), is.readFloat(), is.readFloat()));
+			ply.setPosition(new Vector3d(is.readFloat(), is.readFloat(), is.readFloat()));
 			// load rotation
 			ply.setPitch(is.readFloat());
 			ply.setYaw(is.readFloat());
@@ -68,9 +69,9 @@ public class LevelLoader {
 		try {
 			// write all the important data about this level.
 			os.writeLong(seed);
-			os.writeFloat(ply.getPosition().x);
-			os.writeFloat(ply.getPosition().y);
-			os.writeFloat(ply.getPosition().z);
+			os.writeFloat((float) ply.getPosition().x);
+			os.writeFloat((float) ply.getPosition().y);
+			os.writeFloat((float) ply.getPosition().z);
 			os.writeFloat(ply.getPitch());
 			os.writeFloat(ply.getYaw());
 		} catch (IOException e1) {}

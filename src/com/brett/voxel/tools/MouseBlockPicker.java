@@ -1,14 +1,13 @@
 package com.brett.voxel.tools;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import com.brett.DisplayManager;
 import com.brett.cameras.Camera;
+import com.brett.tools.InputMaster;
 import com.brett.tools.Maths;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.renderer.VOverlayRenderer;
@@ -58,12 +57,15 @@ public class MouseBlockPicker {
 	 * except they return different variables. I'm not going to do the same thing over and over for each of them
 	 */
 	
+	private Vector3f pos = new Vector3f();
+	
 	/**
 	 * sets the current block to the input block id
 	 */
 	private int setCurrentBlockPoint(short block) {
 		// generate our rays
-		Vector3f pos = camera.getPosition();
+		
+		pos.set(camera.getPosition());
 		Vector3f pointRay = new Vector3f(currentRay.x/10, currentRay.y/10,currentRay.z/10);
 		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
 		// generate the amount we step in each dir
@@ -131,7 +133,7 @@ public class MouseBlockPicker {
 	public int getCurrentBlockPoint() {
 		// again this stuff is exactly the same as ^ but with a different return
 		
-		Vector3f pos = camera.getPosition();
+		pos.set(camera.getPosition());
 		Vector3f pointRay = new Vector3f(currentRay.x/10, currentRay.y/10, currentRay.z/10);
 		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
 		float xStep = (currentRay.x-pointRay.x)/RECURSION_AMOUNT;
@@ -170,7 +172,7 @@ public class MouseBlockPicker {
 	 */
 	public int[] getCurrentBlockPointPos() {
 		// again this stuff is exactly the same as ^ but with a different return
-		Vector3f pos = camera.getPosition();
+		pos.set(camera.getPosition());
 		int[] blockPos = {(int) pos.x, (int) pos.y, (int) pos.z, 0};
 		Vector3f pointRay = new Vector3f(currentRay.x/10, currentRay.y/10,currentRay.z/10);
 		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
@@ -213,7 +215,7 @@ public class MouseBlockPicker {
 		// again this stuff is exactly the same as ^ but with a different return
 		// I actually don't currently know what this is used for
 		// guess I'll find out when I find it.
-		Vector3f pos = camera.getPosition();
+		pos.set(camera.getPosition());
 		Vector3f pointRay = new Vector3f(MouseBlockPicker.currentRay.x/10, MouseBlockPicker.currentRay.y/10,MouseBlockPicker.currentRay.z/10);
 		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
 		float xStep = (currentRay.x-pointRay.x)/RECURSION_AMOUNT;
@@ -258,7 +260,7 @@ public class MouseBlockPicker {
 	 * Returns the mined id
 	 */
 	public int mineBlock() {
-		if (Mouse.isGrabbed())
+		if (DisplayManager.isMouseGrabbed)
 			return this.setCurrentBlockPoint((short)0);
 		return 0;
 	}
@@ -267,9 +269,9 @@ public class MouseBlockPicker {
 	 * Places a block at the current point the player is looking at
 	 */
 	public boolean placeBlock(short block) {
-		if (!Mouse.isGrabbed())
+		if (!DisplayManager.isMouseGrabbed)
 			return false;
-		Vector3f pos = camera.getPosition();
+		pos.set(camera.getPosition());
 		Vector3f pointRay = new Vector3f(MouseBlockPicker.currentRay.x/10, MouseBlockPicker.currentRay.y/10,MouseBlockPicker.currentRay.z/10);
 		// makes the ray only what we can go
 		Vector3f currentRay = findRange();
@@ -328,7 +330,7 @@ public class MouseBlockPicker {
 	 * finds the max range the ray can go
 	 */
 	private Vector3f findRange() {
-		Vector3f pos = camera.getPosition();
+		pos.set(camera.getPosition());
 		Vector3f pointRay = new Vector3f(MouseBlockPicker.currentRay.x/10, MouseBlockPicker.currentRay.y/10,MouseBlockPicker.currentRay.z/10);
 		Vector3f currentRay = biasVector(MouseBlockPicker.currentRay, RAY_RANGE);
 		float xStep = (currentRay.x-pointRay.x)/RECURSION_AMOUNT;
@@ -379,8 +381,8 @@ public class MouseBlockPicker {
 		 * If I recall correctly I did this late at night.
 		 * Like I kind of get it but its a mess of random variables like q and mq (Changed these)
 		 */
-		if (Mouse.isButtonDown(0)) {
-			if (!Mouse.isGrabbed())
+		if (InputMaster.keyDown[0]) {
+			if (!DisplayManager.isMouseGrabbed)
 				return;
 			// get some stuff we need
 			int id = getCurrentBlockPoint();
@@ -414,7 +416,7 @@ public class MouseBlockPicker {
 			} else {
 				// if the block has changed then we need to reset the values
 				if (blockChanged(current)) {
-					totalProg = hardness * 10 * DisplayManager.getFrameTimeSeconds();
+					totalProg = (float) (hardness * 10 * DisplayManager.getFrameTimeSeconds());
 					// makes it harder to mine if not using proper tool.
 					if (toolType != tool)
 						totalProg *= 10;
@@ -513,8 +515,8 @@ public class MouseBlockPicker {
 	 * http://antongerdelan.net/opengl/raycasting.html
 	 */
 	private Vector3f calculateMouseRay() {
-		float mouseX = Display.getWidth()/2;
-		float mouseY = Display.getHeight()/2;
+		float mouseX = DisplayManager.WIDTH/2;
+		float mouseY = DisplayManager.HEIGHT/2;
 		Vector2f normalizedCoords = getNormalisedDeviceCoordinates(mouseX, mouseY);
 		Vector4f clipCoords = new Vector4f(normalizedCoords.x, normalizedCoords.y, -1.0f, 1.0f);
 		Vector4f eyeCoords = toEyeCoords(clipCoords);
@@ -523,22 +525,22 @@ public class MouseBlockPicker {
 	}
 
 	private Vector3f toWorldCoords(Vector4f eyeCoords) {
-		Matrix4f invertedView = Matrix4f.invert(viewMatrix, null);
-		Vector4f rayWorld = Matrix4f.transform(invertedView, eyeCoords, null);
+		Matrix4f invertedView = viewMatrix.invert();
+		Vector4f rayWorld = invertedView.transform(eyeCoords);
 		Vector3f mouseRay = new Vector3f(rayWorld.x, rayWorld.y, rayWorld.z);
-		mouseRay.normalise();
+		mouseRay.normalize();
 		return mouseRay;
 	}
 
 	private Vector4f toEyeCoords(Vector4f clipCoords) {
-		Matrix4f invertedProjection = Matrix4f.invert(projectionMatrix, null);
-		Vector4f eyeCoords = Matrix4f.transform(invertedProjection, clipCoords, null);
+		Matrix4f invertedProjection = projectionMatrix.invert(projectionMatrix);
+		Vector4f eyeCoords = invertedProjection.transform(clipCoords);
 		return new Vector4f(eyeCoords.x, eyeCoords.y, -1f, 0f);
 	}
 
 	private Vector2f getNormalisedDeviceCoordinates(float mouseX, float mouseY) {
-		float x = (2.0f * mouseX) / Display.getWidth() - 1f;
-		float y = (2.0f * mouseY) / Display.getHeight() - 1f;
+		float x = (2.0f * mouseX) / DisplayManager.WIDTH - 1f;
+		float y = (2.0f * mouseY) / DisplayManager.HEIGHT - 1f;
 		return new Vector2f(x, y);
 	}
 }

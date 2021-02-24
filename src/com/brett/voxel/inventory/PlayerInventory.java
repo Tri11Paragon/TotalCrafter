@@ -4,15 +4,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
+import org.lwjgl.glfw.GLFW;
+
+import com.brett.DisplayManager;
 
 import com.brett.IInventoryDisable;
-import com.brett.IKeyState;
 import com.brett.console.Console;
 import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.UIMaster;
+import com.brett.tools.IKeyState;
 import com.brett.voxel.inventory.recipe.PlayerCrafting;
 import com.brett.voxel.tools.LevelLoader;
 import com.brett.voxel.world.blocks.BlockCrafting;
@@ -41,8 +41,8 @@ public class PlayerInventory implements IKeyState, Serializable {
 		this.ui = ui;
 		float sizeX = 48*15;
 		float sizeY = 48*7;
-		float x = Display.getWidth()/2 - sizeX/2;
-		float y = Display.getHeight()/2 - sizeY/2 + 100;
+		float x = DisplayManager.WIDTH/2 - sizeX/2;
+		float y = DisplayManager.HEIGHT/2 - sizeY/2 + 100;
 		// crates a ne ivenorty
 		i = new Inventory((int)LevelLoader.seed, "player");
 		// maek some backhtound
@@ -121,9 +121,9 @@ public class PlayerInventory implements IKeyState, Serializable {
 	}
 
 	@Override
-	public void onKeyPressed() {
+	public void onKeyPressed(int key) {
 		// toggles the inventories for the player
-		if ((Keyboard.isKeyDown(Keyboard.KEY_E)) && !Console.getIsOpen()) {
+		if ((key == GLFW.GLFW_KEY_E) && !Console.getIsOpen()) {
 			boolean inved = false;
 			// the all disable keystate listeners
 			for (int i = 0; i < disableKeyState.size(); i++) {
@@ -132,7 +132,7 @@ public class PlayerInventory implements IKeyState, Serializable {
 					this.i.disable();
 					this.craft.disable();
 					inved = true;
-					Mouse.setGrabbed(true);
+					DisplayManager.setGrabbed(true);
 					isOpen = false;
 					continue;
 				}
@@ -148,7 +148,7 @@ public class PlayerInventory implements IKeyState, Serializable {
 					this.i.disable();
 					this.craft.disable();
 					isOpen = false;
-					Mouse.setGrabbed(true);
+					DisplayManager.setGrabbed(true);
 				} else {
 					this.i.toggleEnabled();
 					this.craft.toggleEnabled();
@@ -163,7 +163,7 @@ public class PlayerInventory implements IKeyState, Serializable {
 	}
 
 	@Override
-	public void onKeyReleased() {
+	public void onKeyReleased(int key) {
 	}
 	
 	public static void registerDisableState(IInventoryDisable state) {

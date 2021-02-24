@@ -7,9 +7,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
+import com.brett.DisplayManager;
 import com.brett.cameras.Camera;
 import com.brett.renderer.DisplaySource;
 import com.brett.renderer.Loader;
@@ -72,9 +72,9 @@ public class MainMenu implements DisplaySource {
 	
 	public void init() {
 		// create and add the main menu
-		int localWidth = Display.getWidth()/2;
+		int localWidth = DisplayManager.WIDTH/2;
 		// add the background dirt
-		elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+		elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, DisplayManager.WIDTH/32, DisplayManager.HEIGHT/32));
 		// add the banner image
 		elements.add(master.createUITexture(loader.loadSpecialTexture("gui/banner"), -1, -1, localWidth-640/2, 100, 640, 360/2));
 		// add all the buttons and their text.
@@ -118,15 +118,15 @@ public class MainMenu implements DisplaySource {
 		@Override
 		public void event(String data) {
 			// clear the screen
-			int width = Display.getWidth()/2;
-			int height = Display.getHeight();
+			int width = DisplayManager.WIDTH/2;
+			int height = DisplayManager.HEIGHT;
 			for (UIText t : texts)
 				StaticText.removeText(t);
 			elements.clear();
 			buttons.clear();
 			texts.clear();
 			// add in the dirt texture
-			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, DisplayManager.WIDTH/32, DisplayManager.HEIGHT/32));
 			// add in back button
 			UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Main(), master, width-200, height-65, 400, 60);
 			UIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, width-200, height-50, 400, true);
@@ -161,15 +161,15 @@ public class MainMenu implements DisplaySource {
 		@Override
 		public void event(String data) {
 			// clear the screen
-			int width = Display.getWidth()/2;
-			int height = Display.getHeight();
+			int width = DisplayManager.WIDTH/2;
+			int height = DisplayManager.HEIGHT;
 			for (UIText t : texts)
 				StaticText.removeText(t);
 			elements.clear();
 			buttons.clear();
 			texts.clear();
 			// add dirt texture
-			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, DisplayManager.WIDTH/32, DisplayManager.HEIGHT/32));
 			// back button
 			UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Main(), master, width+200, height-65, 400, 60);
 			UIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, width+200, height-50, 400, true);
@@ -283,15 +283,15 @@ public class MainMenu implements DisplaySource {
 		@Override
 		public void event(String d) {
 			// clear screen
-			int width = Display.getWidth()/2;
-			int height = Display.getHeight();
+			int width = DisplayManager.WIDTH/2;
+			int height = DisplayManager.HEIGHT;
 			for (UIText t : texts)
 				StaticText.removeText(t);
 			elements.clear();
 			buttons.clear();
 			texts.clear();
 			// dirt and back buttons.
-			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, DisplayManager.WIDTH/32, DisplayManager.HEIGHT/32));
 			UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Main(), master, width-200, height-65, 400, 60);
 			UIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, width-200, height-50, 400, true);
 			StaticText.loadText(bbt);
@@ -410,10 +410,10 @@ public class MainMenu implements DisplaySource {
 			elements.clear();
 			buttons.clear();
 			texts.clear();
-			int width = Display.getWidth()/2;
-			int height = Display.getHeight();
+			int width = DisplayManager.WIDTH/2;
+			int height = DisplayManager.HEIGHT;
 			// add the dirt texture
-			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, DisplayManager.WIDTH/32, DisplayManager.HEIGHT/32));
 			// back button
 			UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Main(), master, width-200, height-65, 400, 60);
 			UIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, width-200, height-50, 400, true);
@@ -587,11 +587,11 @@ public class MainMenu implements DisplaySource {
 				VoxelScreenManager.ui.addCenteredTexture(loader.loadTexture("crosshair"), -1, -1, 0, 0, 16, 16);
 				EventQueue.doEvent(0);
 			} else {
-				int width = Display.getWidth()/2;
-				int height = Display.getHeight();
+				int width = DisplayManager.WIDTH/2;
+				int height = DisplayManager.HEIGHT;
 				
 				// add dirt and back buttons
-				elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+				elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, DisplayManager.WIDTH/32, DisplayManager.HEIGHT/32));
 				UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new SinglePlayer(), master, width-200, height-65, 400, 60);
 				UIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, width-200, height-50, 400, true);
 				StaticText.loadText(bbt);
@@ -650,10 +650,10 @@ public class MainMenu implements DisplaySource {
 		}
 		
 		public void init() {
-			int localWidth = Display.getWidth()/2;
-			int height = Display.getHeight();
+			int localWidth = DisplayManager.WIDTH/2;
+			int height = DisplayManager.HEIGHT;
 			// dirt and back button
-			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight(), Display.getWidth()/32, Display.getHeight()/32));
+			elements.add(master.createUITexture(loader.loadSpecialTexture("gui/dirt"), -1, -1, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, DisplayManager.WIDTH/32, DisplayManager.HEIGHT/32));
 			UIButton b = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Main(), master, localWidth-200, height-65, 400, 60);
 			UIText bbt = master.createDynamicText("Back", 1.5f, VoxelScreenManager.monospaced, localWidth-200, height-50, 400, true);
 			StaticText.loadText(bbt);

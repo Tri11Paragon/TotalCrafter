@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.lwjgl.opengl.Display;
+import com.brett.DisplayManager;
 
 /**
  * 
@@ -46,7 +46,8 @@ public class MetaFile implements Serializable {
 	private Map<String, String> values = new HashMap<String, String>();
 	
 	protected MetaFile(File file) {
-		this.aspectRatio = (double) Display.getWidth() / (double) Display.getHeight();
+		//TODO: this;
+		this.aspectRatio = (double) DisplayManager.WIDTH / (double) DisplayManager.HEIGHT;
 		openFile(file);
 		loadPaddingData();
 		loadLineSizes();

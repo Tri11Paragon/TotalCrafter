@@ -2,7 +2,7 @@ package com.brett.voxel.world.blocks;
 
 import java.util.HashMap;
 
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector3f;
 
 import com.brett.datatypes.Texture;
 import com.brett.tools.Maths;

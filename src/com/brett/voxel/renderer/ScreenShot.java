@@ -10,11 +10,11 @@ import java.time.format.DateTimeFormatter;
 import javax.imageio.ImageIO;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import com.brett.DisplayManager;
-import com.brett.IKeyState;
+import com.brett.tools.IKeyState;
 
 /**
 *
@@ -34,8 +34,8 @@ public class ScreenShot implements IKeyState {
 	public ScreenShot() {}
 
 	@Override
-	public void onKeyPressed() {
-		if (Keyboard.isKeyDown(Keyboard.KEY_F2)) {
+	public void onKeyPressed(int key) {
+		if (key == GLFW.GLFW_KEY_F2) {
 			// number of bytes per image
 			// 4 fits nicely inside a int but you really only need 3 as there won't be any alpha.
 			// also wikipedia says that pngs are in 4 byte chunks
@@ -91,7 +91,7 @@ public class ScreenShot implements IKeyState {
 	}
 
 	@Override
-	public void onKeyReleased() {
+	public void onKeyReleased(int key) {
 	}
 	
 }

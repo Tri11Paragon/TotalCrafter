@@ -21,14 +21,14 @@ public class ProjectionMatrix {
 	public static final float NEAR_PLANE = 0.1f;
 	public static final float FAR_PLANE = 1000;
 	
-	public static Matrix4f projectionMatrix;
-	public static Matrix4f projectionMatrixOrtho;
+	public static final Matrix4f projectionMatrix = new Matrix4f();
+	public static final Matrix4f projectionMatrixOrtho = new Matrix4f();
 	
 	public static HashMap<Integer, WorldShader> shaders = new HashMap<Integer, WorldShader>();
 	private static int lastIndex = 0;
 	
 	public static void updateProjectionMatrix(){
-    	projectionMatrix = new Matrix4f();
+    	projectionMatrix.identity();
 		float aspectRatio = (float) DisplayManager.WIDTH / (float) DisplayManager.HEIGHT;
 		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))));
 		float x_scale = y_scale / aspectRatio;
@@ -46,11 +46,11 @@ public class ProjectionMatrix {
 		while (shaderIt.hasNext()) {
 			WorldShader localShader = shaderIt.next().getValue(); 
 			localShader.start();
-			localShader.loadProjectionMatrox(projectionMatrix);
+			localShader.loadProjectionMatrix(projectionMatrix);
 			localShader.stop();
 		}
 		
-		projectionMatrixOrtho = Maths.ortho();
+		projectionMatrixOrtho.set(Maths.ortho());
 		
 		//GUIShader guishader = VoxelScreenManager.ui.getRenderer().getShader();
 		//guishader.start();

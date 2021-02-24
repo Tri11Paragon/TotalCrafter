@@ -69,7 +69,7 @@ public class Main {
 		if (processors < 4)
 			processors = 4;
 		/**
-		 * Display important info about OS
+		 * DisplayManager important info about OS
 		 */
 		System.out.println("---------------------------------------");
 		System.out.println("OS: " + os + " " + os_version + " " + os_arch);

@@ -2,11 +2,11 @@ package com.brett.voxel.inventory;
 
 import java.io.Serializable;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
+import com.brett.DisplayManager;
 
 import com.brett.renderer.font.UIDynamicText;
 import com.brett.renderer.gui.UIButton;
+import com.brett.tools.InputMaster;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.world.items.Item;
 import com.brett.voxel.world.items.ItemStack;
@@ -33,12 +33,12 @@ public class Slot extends UIButton implements Serializable {
 	
 	public Slot(float x, float y, float width, float height) {
 		super(texture, hovertexture, null, x, y, width, height);
-		text = new UIDynamicText("", 0.8f, VoxelScreenManager.monospaced, calcVec(x+width-21, y+height-19), width/Display.getWidth(), false);
+		text = new UIDynamicText("", 0.8f, VoxelScreenManager.monospaced, calcVec(x+width-21, y+height-19), width/DisplayManager.WIDTH, false);
 	}
 	
 	public Slot(String name, float x, float y, float width, float height) {
 		super(texture, hovertexture, null, x, y, width, height);
-		text = new UIDynamicText("", 0.8f, VoxelScreenManager.monospaced, calcVec(x+width-21, y+height-19), width/Display.getWidth(), false);
+		text = new UIDynamicText("", 0.8f, VoxelScreenManager.monospaced, calcVec(x+width-21, y+height-19), width/DisplayManager.WIDTH, false);
 		this.name = name;
 	}
 	
@@ -140,17 +140,17 @@ public class Slot extends UIButton implements Serializable {
 	private boolean prevState;
 	private boolean prevState2;
 	public void update() {
-		float mx = Mouse.getX();
-		float my = Mouse.getY();
+		float mx = (float)DisplayManager.mouseX;
+		float my = (float)DisplayManager.mouseY;
 		// adjusts for mouse pos being in bottom coner instead of top
-		my = Display.getHeight() - my;
+		//my = DisplayManager.HEIGHT - my;
 		// make sure we are over the slot
 		if (mx > px && mx < (px + pw)) {
 			if (my > py && my < (py + ph)) {
 				// change to hover texture
 				super.texture2 = ht;
 				// make sure we are only pressing the button once
-				if (!prevState && Mouse.isButtonDown(0)) {
+				if (!prevState && InputMaster.mouseDown[0]) {
 					if (stack == null) {
 						// if there is item in the player hand then add it to the slot
 						if (PlayerSlot.getStack() != null && !name.contains("o")) {
@@ -226,7 +226,7 @@ public class Slot extends UIButton implements Serializable {
 					}
 				}
 				// make sure we are only running once per button press.
-				if(!prevState2 && Mouse.isButtonDown(1)) {
+				if(!prevState2 && InputMaster.mouseDown[1]) {
 					// make sure the stack exists
 					if (stack != null) {
 						// make sure we are not an output slot
@@ -283,8 +283,8 @@ public class Slot extends UIButton implements Serializable {
 						}
 					}
 				}
-				prevState = Mouse.isButtonDown(0);
-				prevState2 = Mouse.isButtonDown(1);
+				prevState = InputMaster.mouseDown[0];
+				prevState2 = InputMaster.mouseDown[1];
 			} else {
 				// no more hover texture
 				super.texture2 = -1;

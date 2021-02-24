@@ -1,23 +1,14 @@
 package com.brett.sound;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.ALC;
-
-import sun.rmi.runtime.Log;
 
 /**
 *
@@ -42,7 +33,7 @@ public class AudioController {
 		listndata.put( 5, 0 );
 		try {
 			// creates OpenAL instance
-			ALC.create();
+			//ALC.create();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -55,14 +46,14 @@ public class AudioController {
 		try {
 			// sets position. OpenAL has support for stuff like doppler effect.
 			// im not using it.
-			AL10.alListener3f(AL10.AL_POSITION, x, y, z);
-			AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
+			//AL10.alListener3f(AL10.AL_POSITION, x, y, z);
+			//AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
 			// set the rotation of the camera
-			listndata.put( 0, rx);
-			listndata.put( 1, ry );
-			listndata.put( 2, rz );
+			//listndata.put( 0, rx);
+			//listndata.put( 1, ry );
+			//listndata.put( 2, rz );
 			// apply it to OpenAl
-			AL10.alListenerfv(AL10.AL_ORIENTATION, listndata);
+			//AL10.alListenerfv(AL10.AL_ORIENTATION, listndata);
 			} catch (Exception e) {}
 	}
 	
@@ -72,12 +63,12 @@ public class AudioController {
 	public static void setListenerPosition(Vector3f f, float rx, float ry, float rz) {
 		try {
 			// same thing as ^ but with a vec3
-			AL10.alListener3f(AL10.AL_POSITION, f.x, f.y, f.z);
-			AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
-			listndata.put( 0, rx);
-			listndata.put( 1, ry );
-			listndata.put( 2, rz );
-			AL10.alListenerfv(AL10.AL_ORIENTATION, listndata);
+			//AL10.alListener3f(AL10.AL_POSITION, f.x, f.y, f.z);
+			//AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);
+			//listndata.put( 0, rx);
+			//listndata.put( 1, ry );
+			//listndata.put( 2, rz );
+			//AL10.alListenerfv(AL10.AL_ORIENTATION, listndata);
 		} catch (Exception e) {}
 	}
 	

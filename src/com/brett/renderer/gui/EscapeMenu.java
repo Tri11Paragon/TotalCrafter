@@ -3,8 +3,7 @@ package com.brett.renderer.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.opengl.Display;
-
+import com.brett.DisplayManager;
 import com.brett.renderer.Loader;
 import com.brett.renderer.font.UIDynamicText;
 import com.brett.renderer.font.fontRendering.StaticText;
@@ -31,9 +30,10 @@ public class EscapeMenu implements IMenu {
 	@SuppressWarnings("unused")
 	public EscapeMenu(UIMaster master, Loader loader) {
 		//elements.add(master.createCenteredTexture(-1, -1, -1, 0, 0, 200, 200, new Vector3f(0,0,0)));
-		elements.add(master.createUITexture(loader.loadTexture("gui/opac"), -1, -1, 0, 0, Display.getWidth(), Display.getHeight()));
-		int width = Display.getWidth()/2;
-		int height = Display.getHeight()/2;
+		//TODO: this;
+		elements.add(master.createUITexture(loader.loadTexture("gui/opac"), -1, -1, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT));
+		int width = DisplayManager.WIDTH/2;
+		int height = DisplayManager.HEIGHT/2;
 		// i really don't know what to put for this
 		// its literally just constructors for these classes
 		// Paired with some anonymous inner types for event response

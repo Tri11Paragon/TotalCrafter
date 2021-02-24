@@ -1,10 +1,8 @@
 package com.brett.renderer.gui.screens;
 
-import org.lwjgl.opengl.Display;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector2f;
-
 import com.brett.DisplayManager;
 import com.brett.renderer.Loader;
 import com.brett.renderer.gui.GUIRenderer;
@@ -38,8 +36,8 @@ public class LoadingScreen {
 		this.darkgrey = loader.loadTexture("darkgrey");
 		this.lightgrey = loader.loadTexture("lightgrey");
 		this.logoTexture = loader.loadTexture("icon/logo");
-		float w = Display.getWidth();
-		float h = Display.getHeight();
+		float w = DisplayManager.WIDTH;
+		float h = DisplayManager.HEIGHT;
 		this.translationMatrix = Maths.createTransformationMatrix(new Vector2f(0,0), new Vector2f(1,1));
 		this.logoMatrix = Maths.createTransformationMatrixCenteredSTATIC(w, h, 200, 200, 45);
 		this.renderer = renderer;
@@ -56,8 +54,6 @@ public class LoadingScreen {
 		current+=progress;
 		renderer.render(lightgrey, 0, 0, 200*(current/max), 50);
 		renderer.stoprender();
-		Display.update();
-		Display.sync(DisplayManager.FPS_MAX);
 	}
 	
 }

@@ -1,7 +1,6 @@
 package com.brett.voxel.inventory.recipe;
 
-import org.lwjgl.opengl.Display;
-
+import com.brett.DisplayManager;
 import com.brett.voxel.inventory.Inventory;
 import com.brett.voxel.inventory.Slot;
 import com.brett.voxel.inventory.SlotChange;
@@ -26,8 +25,8 @@ public class PlayerCrafting extends Inventory implements SlotChange {
 		super((int)LevelLoader.seed, "crafting");
 		float sizeX = 48*2;
 		float sizeY = 48*2;
-		float x = Display.getWidth()/2 - sizeX/2 + 120;
-		float y = Display.getHeight()/2 - sizeY/2 - 180;
+		float x = DisplayManager.WIDTH/2 - sizeX/2 + 120;
+		float y = DisplayManager.HEIGHT/2 - sizeY/2 - 180;
 		s1 = new Slot(x-48/2, y, 48, 48).setSc(this);
 		s2 = new Slot(x+48/2, y, 48, 48).setSc(this);
 		s3 = new Slot(x-48/2, y+48, 48, 48).setSc(this);

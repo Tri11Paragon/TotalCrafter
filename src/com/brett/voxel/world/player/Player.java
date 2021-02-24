@@ -1,12 +1,15 @@
 package com.brett.voxel.world.player;
 
+import org.joml.Vector3d;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 
 import com.brett.DisplayManager;
 import com.brett.cameras.Camera;
 import com.brett.renderer.Loader;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.sound.AudioController;
+import com.brett.tools.InputMaster;
 import com.brett.tools.SettingsLoader;
 import com.brett.voxel.inventory.PlayerInventory;
 import com.brett.voxel.renderer.COLLISIONTYPE;
@@ -69,7 +72,7 @@ public class Player extends Camera {
 	public Player(Loader loader, UIMaster ui) {
 		this.loader = loader;
 		this.ui = ui;
-		this.position = new Vector3f(0, 120, 0);
+		this.position = new Vector3d(0, 120, 0);
 	}
 	
 	public void init() {
@@ -84,9 +87,9 @@ public class Player extends Camera {
 	@Override
 	public void move() {
 		// don't move if the mouse isn't grabbed.
-		if (Mouse.isGrabbed()) {
+		if (DisplayManager.isMouseGrabbed) {
 			// set the crouching when pressing control
-			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+			if (InputMaster.keyDown[(GLFW.GLFW_KEY_LEFT_CONTROL)]) {
 				// start crouching if we are not crouching before
 				if (!crouching) {
 					crouching = true;
@@ -98,7 +101,7 @@ public class Player extends Camera {
 					int passed = 0;
 					// check to make sure we can get up
 					for (int i = 0; i < cords.length; i++) {
-						if (world.chunk.getBlock(this.position.x + cords[i].x, this.position.y + 1.0f, this.position.z + cords[i].z) == 0)
+						if (world.chunk.getBlock((float)(this.position.x + cords[i].x), (float)(this.position.y + 1.0f), (float)this.position.z + cords[i].z) == 0)
 							passed++;
 					}
 					// only un crouch if we can
@@ -111,7 +114,7 @@ public class Player extends Camera {
 			}
 			
 			// slow down if pressing shift
-			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+			if (InputMaster.keyDown[(GLFW.GLFW_KEY_LEFT_SHIFT)]) {
 				speed = normalSpeed/2;
 			} else
 				speed = normalSpeed;
@@ -121,46 +124,46 @@ public class Player extends Camera {
 				speed = 0;
 			
 			// change where we are moving based on what keys are pressed.
-			if (Keyboard.isKeyDown(Keyboard.KEY_W))
+			if (InputMaster.keyDown[(GLFW.GLFW_KEY_W)])
 				moveAtX = -speed * DisplayManager.getFrameTimeSeconds();
-			else if (Keyboard.isKeyDown(Keyboard.KEY_S))
+			else if (InputMaster.keyDown[(GLFW.GLFW_KEY_S)])
 				moveAtX = speed * DisplayManager.getFrameTimeSeconds();
 			else {
 				moveAtX = 0;
 			}
 			
 			// change the move ats based on what keys are pressed
-			if (Keyboard.isKeyDown(Keyboard.KEY_A))
+			if (InputMaster.keyDown[GLFW.GLFW_KEY_A])
 				moveatZ = speed * DisplayManager.getFrameTimeSeconds();
 			else
-			if (Keyboard.isKeyDown(Keyboard.KEY_D))
+			if (InputMaster.keyDown[GLFW.GLFW_KEY_D])
 				moveatZ = -speed * DisplayManager.getFrameTimeSeconds();
 			else 
 				moveatZ = 0;
 	
 			if (!flight) {
 				// allow for jumping if we are not flying
-				if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && onGround) {
+				if (InputMaster.keyDown[GLFW.GLFW_KEY_SPACE] && onGround) {
 					moveAtY += 0.5f/5;
 					onGround = false;
 				}
 			}
 		
 			// change where you are looking based on how much the mouse has moved.
-			pitch += -Mouse.getDY() * (turnSpeed*SettingsLoader.SENSITIVITY)/100;
-			yaw += Mouse.getDX() * (turnSpeed*SettingsLoader.SENSITIVITY)/100;
+			pitch += -DisplayManager.getDX() * (turnSpeed*SettingsLoader.SENSITIVITY)/100;
+			yaw += DisplayManager.getDX() * (turnSpeed*SettingsLoader.SENSITIVITY)/100;
 			
 			// turn speed
 			float speed = 30;
 			
 			// allows for keypad control of the where you are looking
-			if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
+			if (InputMaster.keyDown[GLFW.GLFW_KEY_LEFT])
 				yaw += -speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
-			if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+			if (InputMaster.keyDown[GLFW.GLFW_KEY_RIGHT])
 				yaw += speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
-			if (Keyboard.isKeyDown(Keyboard.KEY_UP))
+			if (InputMaster.keyDown[GLFW.GLFW_KEY_UP])
 				pitch += -speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
-			if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+			if (InputMaster.keyDown[GLFW.GLFW_KEY_DOWN])
 				pitch += speed * turnSpeed * DisplayManager.getFrameTimeSeconds();
 		} else {
 			moveAtX = 0;
@@ -169,12 +172,12 @@ public class Player extends Camera {
 		
 		if (flight) {
 			// enables the ability to do creative fly (no gravity)
-			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+			if (InputMaster.keyDown[GLFW.GLFW_KEY_SPACE])
 				moveAtY = speed * DisplayManager.getFrameTimeSeconds();
 			else
 				moveAtY = 0;
 				
-			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+			if (InputMaster.keyDown[GLFW.GLFW_KEY_LEFT_SHIFT])
 				moveAtY = -speed * DisplayManager.getFrameTimeSeconds();
 		} else {
 			// apply gravity.
@@ -225,11 +228,11 @@ public class Player extends Camera {
 				// add to the step amount
 				wx += xStep;
 				// check it first
-				if (world.chunk.getBlockCollision(position.x + ((float)wx), position.y, position.z) != COLLISIONTYPE.SOLID) {
+				if (world.chunk.getBlockCollision((float)position.x + ((float)wx), (float)position.y, (float)position.z) != COLLISIONTYPE.SOLID) {
 					int amt = 0;
 					// check all position in our local position array
 					for (int i = 0; i < cords.length; i++) {
-						if (world.chunk.getBlockCollision(position.x + cords[i].x + ((float)wx), position.y + cords[i].y, position.z + cords[i].z) != COLLISIONTYPE.SOLID)
+						if (world.chunk.getBlockCollision((float)position.x + cords[i].x + ((float)wx), (float)position.y + cords[i].y, (float)position.z + cords[i].z) != COLLISIONTYPE.SOLID)
 							amt++;
 						else // no neep to loop more if any failed.
 							break x1;
@@ -244,10 +247,10 @@ public class Player extends Camera {
 			// same as ^ but for x
 			z1: for (int d = 0; d < RECUR_AMT; d++) {
 				wz += zStep;
-				if (world.chunk.getBlockCollision(position.x, position.y, position.z + ((float)wz)) != COLLISIONTYPE.SOLID) {
+				if (world.chunk.getBlockCollision((float)position.x, (float)position.y, (float)position.z + ((float)wz)) != COLLISIONTYPE.SOLID) {
 					int amt = 0;
 					for (int i = 0; i < cords.length; i++) {
-						if (world.chunk.getBlockCollision(position.x + cords[i].x, position.y + cords[i].y, position.z + cords[i].z + ((float)wz)) != COLLISIONTYPE.SOLID)
+						if (world.chunk.getBlockCollision((float)position.x + cords[i].x, (float)position.y + cords[i].y, (float)position.z + cords[i].z + ((float)wz)) != COLLISIONTYPE.SOLID)
 							amt++;
 						else
 							break z1;
@@ -261,10 +264,10 @@ public class Player extends Camera {
 			// same as ^ but for y
 			y1: for (int d = 0; d < RECUR_AMT; d++) {
 				wy += yStep;
-				if (world.chunk.getBlockCollision(position.x, position.y + ((float)wy), position.z) != COLLISIONTYPE.SOLID) {
+				if (world.chunk.getBlockCollision((float)position.x, (float)position.y + ((float)wy), (float)position.z) != COLLISIONTYPE.SOLID) {
 					int amty = 0;
 					for (int i = 0; i < cords.length; i++) {
-						if (world.chunk.getBlockCollision((position.x + cords[i].x),(position.y + cords[i].y + ((float)wy)),(position.z + cords[i].z)) != COLLISIONTYPE.SOLID)
+						if (world.chunk.getBlockCollision(((float)position.x + cords[i].x),(float)(position.y + cords[i].y + ((float)wy)),(float)(position.z + cords[i].z)) != COLLISIONTYPE.SOLID)
 							amty++;
 						else
 							break y1;
@@ -311,7 +314,7 @@ public class Player extends Camera {
 		}
 		
 		// update the listener position
-		AudioController.setListenerPosition(this.position, MouseBlockPicker.currentRay.x, MouseBlockPicker.currentRay.y, MouseBlockPicker.currentRay.z);
+		AudioController.setListenerPosition(this.position.get(new Vector3f()), MouseBlockPicker.currentRay.x, MouseBlockPicker.currentRay.y, MouseBlockPicker.currentRay.z);
 	}
 	
 	/**
@@ -344,7 +347,7 @@ public class Player extends Camera {
 	/**
 	 * returns true if the vectors are the same in integer space.
 	 */
-	public boolean vectorC_I(float x, float y, float z, Vector3f v2) {
+	public boolean vectorC_I(double x, double y, double z, Vector3f v2) {
 		return ((int)x == (int)v2.x) && ((int)y == (int)v2.y) && ((int)z == (int)v2.z);
 	}
 	

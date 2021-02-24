@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import com.brett.renderer.ProjectionMatrix;
 import com.brett.tools.IKeyState;
 import com.brett.tools.InputMaster;
 import com.brett.tools.Maths;
@@ -57,6 +58,7 @@ public class PointShader extends WorldShader implements IKeyState {
 		vbo = storeDataInAttributeList(0, 3, plane);
 		GL30.glBindVertexArray(0);
 		InputMaster.keyboard.add(this);
+		ProjectionMatrix.addShader(this);
 	}
 
 	@Override

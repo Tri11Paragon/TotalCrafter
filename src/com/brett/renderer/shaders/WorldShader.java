@@ -31,12 +31,16 @@ public class WorldShader extends ShaderProgram {
 	protected void bindAttributes() {
 	}
 	
-	public void loadProjectionMatrox(Matrix4f matrix) {
+	public void loadProjectionMatrix(Matrix4f matrix) {
 		super.loadMatrix(location_projectionMatrix, matrix);
 	}
 	
 	public void loadTranslationMatrix(Matrix4f matrix) {
 		super.loadMatrix(location_translationMatrix, matrix);
+	}
+	
+	public void loadTransformationMatrix(Matrix4f matrix){
+		loadTranslationMatrix(matrix);
 	}
 	
 	public void loadViewMatrix(Matrix4f matrix) {

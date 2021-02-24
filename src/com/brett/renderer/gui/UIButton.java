@@ -2,11 +2,11 @@ package com.brett.renderer.gui;
 
 import java.io.Serializable;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Vector2f;
+import org.joml.Vector2f;
 
+import com.brett.DisplayManager;
 import com.brett.datatypes.GUITexture;
+import com.brett.tools.InputMaster;
 
 /**
 *
@@ -58,7 +58,7 @@ public class UIButton extends GUITexture implements UIElement, Serializable {
 			// over the button.
 			super.texture2 = ht;
 			// do the button event if the user presses the mouse button.
-			if (Mouse.isButtonDown(0)) {
+			if (InputMaster.mouseDown[0]) {
 				if (event != null)
 					event.event(null);
 			}
@@ -72,11 +72,12 @@ public class UIButton extends GUITexture implements UIElement, Serializable {
 	 * if you are getting errors make sure you assign the px,py,pw,ph
 	 */
 	public boolean isButtonSelected() {
-		float mx = Mouse.getX();
-		float my = Mouse.getY();
+		float mx = (float) DisplayManager.mouseX;
+		float my = (float) DisplayManager.mouseY;
 		// OpenGL/LWJGL like to put its mouseY starting from the bottom right corner
 		// so to put it in a normal coords we take the height and remove the mouse pos.
-		my = Display.getHeight() - my;
+		// TODO: this
+		//my = DisplayManager.HEIGHT - my;
 		// just a simple boundaries check.
 		if (mx > px && mx < (px + pw)) {
 			if (my > py && my < (py + ph)) {

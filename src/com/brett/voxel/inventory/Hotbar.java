@@ -2,14 +2,13 @@ package com.brett.voxel.inventory;
 
 import java.io.Serializable;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
+import com.brett.DisplayManager;
 
-import com.brett.IKeyState;
-import com.brett.KeyMaster;
 import com.brett.renderer.gui.GUIRenderer;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.tools.EventQueue;
+import com.brett.tools.IKeyState;
+import com.brett.tools.InputMaster;
 import com.brett.voxel.tools.IEventListener;
 import com.brett.voxel.world.items.ItemStack;
 
@@ -36,14 +35,14 @@ public class Hotbar extends Inventory implements IEventListener, IKeyState, Seri
 		this.pl = pl;
 		this.rend = ui.getRenderer();
 		float sizeX = 64*9;
-		this.x = Display.getWidth()/2 - sizeX/2;
+		this.x = DisplayManager.WIDTH/2 - sizeX/2;
 		// register slot stuff
 		for (int i = 0; i < 9; i++) {
-			super.addSlot(new Slot(x + (i*64), Display.getHeight()-70, 64, 64));
+			super.addSlot(new Slot(x + (i*64), DisplayManager.HEIGHT-70, 64, 64));
 		}
 		super.loadInventory();
 		EventQueue.regiserEvent(0, this);
-		KeyMaster.registerKeyRequester(this);
+		InputMaster.keyboard.add(this);
 	}
 	
 	public ItemStack getItemSelected() {
@@ -59,13 +58,13 @@ public class Hotbar extends Inventory implements IEventListener, IKeyState, Seri
 		if (this.isEnabled()) {
 			// Renders are selected texture on the selected slot
 			rend.startrender();
-			rend.render(hoverTexture, x + (selectedSlot*64), Display.getHeight()-70, 64, 64);
+			rend.render(hoverTexture, x + (selectedSlot*64), DisplayManager.HEIGHT-70, 64, 64);
 			rend.stoprender();
 		}
 		if (pl.getEnabled())
 			super.update();
 		else {
-			float delta = Mouse.getDWheel();
+			float delta = InputMaster.lastScrollState;
 			// moves the selected slot up and down.
 			if (delta < 0 ) {
 				selectedSlot++;
@@ -86,12 +85,12 @@ public class Hotbar extends Inventory implements IEventListener, IKeyState, Seri
 	}
 
 	@Override
-	public void onKeyPressed() {
+	public void onKeyPressed(int key) {
 		
 	}
 
 	@Override
-	public void onKeyReleased() {
+	public void onKeyReleased(int key) {
 		
 	}
 	

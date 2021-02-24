@@ -10,6 +10,7 @@ import com.brett.cameras.ICamera;
 import com.brett.datatypes.ModelVAO;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
+import com.brett.renderer.ProjectionMatrix;
 import com.brett.tools.Maths;
 import com.brett.voxel.renderer.shaders.VOverlayShader;
 import com.brett.voxel.world.MeshStore;
@@ -33,7 +34,7 @@ public class VOverlayRenderer {
 		this.camera = (Camera) camera;
 		this.shader = new VOverlayShader();
 		this.shader.start();
-		this.shader.loadProjectionMatrix(renderer.getProjectionMatrix());
+		this.shader.loadProjectionMatrix(ProjectionMatrix.projectionMatrix);
 		this.shader.stop();
 		Loader loader = world.getLoader();
 		this.model = loader.loadToVAO(MeshStore.vertsBig, MeshStore.uv, MeshStore.indicies);

@@ -67,8 +67,8 @@ public class MousePicker {
 	}
 
 	private Vector2f getNormalisedDeviceCoordinates(float mouseX, float mouseY) {
-		float x = (2.0f * mouseX) / Display.getWidth() - 1f;
-		float y = (2.0f * mouseY) / Display.getHeight() - 1f;
+		float x = (2.0f * mouseX) / DisplayManager.WIDTH - 1f;
+		float y = (2.0f * mouseY) / DisplayManager.HEIGHT - 1f;
 		return new Vector2f(x, y);
 	}
 	

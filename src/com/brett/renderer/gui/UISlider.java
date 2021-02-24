@@ -2,7 +2,8 @@ package com.brett.renderer.gui;
 
 import java.io.Serializable;
 
-import org.lwjgl.input.Mouse;
+import com.brett.DisplayManager;
+import com.brett.tools.InputMaster;
 
 /**
 *
@@ -33,9 +34,9 @@ public class UISlider extends UIButton implements UIElement, Serializable {
 	
 	@Override
 	public void update() {
-		float mx = Mouse.getX();
+		float mx = (float) DisplayManager.mouseX;
 		if (isButtonSelected()) {
-			if (Mouse.isButtonDown(0)) {
+			if (InputMaster.mouseDown[0]) {
 				// if the slider is pressed then we need to change where its slider
 				// position is at. this is what this does.
 				percent = (mx-px) / (pw);

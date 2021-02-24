@@ -1,6 +1,6 @@
 package com.brett.voxel.world.tileentity;
 
-import org.lwjgl.opengl.Display;
+import com.brett.DisplayManager;
 
 import com.brett.voxel.inventory.Slot;
 import com.brett.voxel.inventory.container.Container;
@@ -22,8 +22,8 @@ public class TileChest extends Container {
 		// add all the slots to the inventory for the chest
 		float sizeX = 48*12;
 		float sizeY = 48*4;
-		float xz = Display.getWidth()/2 - sizeX/2;
-		float yz = Display.getHeight()/2 - sizeY/2 - 200;
+		float xz = DisplayManager.WIDTH/2 - sizeX/2;
+		float yz = DisplayManager.HEIGHT/2 - sizeY/2 - 200;
 		for (int j = 0; j < 12; j++) {
 			for (int k = 0; k < 4; k++) {
 				i.addSlot(new Slot(xz + (j*48),yz + (k*48), 48, 48));

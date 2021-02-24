@@ -1,9 +1,8 @@
 package com.brett.voxel.inventory;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Vector2f;
+import org.joml.Vector2f;
 
+import com.brett.DisplayManager;
 import com.brett.renderer.Loader;
 import com.brett.renderer.gui.GUIRenderer;
 
@@ -33,10 +32,10 @@ public class InventoryMaster {
 		if (PlayerSlot.getStack() != null) {
 			if (PlayerSlot.getStack().getItem() != null) { // lol thats a lot of getters
 				// render the item texture
-				renderer.render(PlayerSlot.getStack().getItem().getTexture().getID(), Mouse.getX(), Display.getHeight() - Mouse.getY(), 32, 32);
+				renderer.render(PlayerSlot.getStack().getItem().getTexture().getID(), (int)DisplayManager.mouseX, (int)DisplayManager.mouseY, 32, 32);
 				// set its position based on mouse pos
-				pos.x = (float)(Mouse.getX() + 27)/(float)Display.getWidth();
-				pos.y = (float)(Display.getHeight() - Mouse.getY() + 29)/(float)Display.getHeight();
+				pos.x = (float)(DisplayManager.mouseX + 27)/(float)DisplayManager.WIDTH;
+				pos.y = (float)(DisplayManager.mouseY + 29)/(float)DisplayManager.HEIGHT;
 				// set the text position
 				PlayerSlot.text.setPosition(pos);
 				PlayerSlot.change();

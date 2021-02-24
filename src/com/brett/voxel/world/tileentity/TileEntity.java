@@ -3,7 +3,7 @@ package com.brett.voxel.world.tileentity;
 import java.io.File;
 import java.io.Serializable;
 
-import com.brett.IKeyState;
+import com.brett.tools.IKeyState;
 import com.brett.voxel.inventory.Inventory;
 import com.brett.voxel.nbt.NBTStorage;
 import com.brett.voxel.tools.LevelLoader;
@@ -122,12 +122,12 @@ public class TileEntity implements IKeyState, Serializable {
 	}
 
 	@Override
-	public void onKeyPressed() {
+	public void onKeyPressed(int key) {
 		
 	}
 
 	@Override
-	public void onKeyReleased() {
+	public void onKeyReleased(int key) {
 		
 	}
 	

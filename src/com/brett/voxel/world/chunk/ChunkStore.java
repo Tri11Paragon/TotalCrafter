@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
-import org.lwjgl.util.vector.Matrix4f;
+import org.joml.Matrix4f;
 
 import com.brett.cameras.Camera;
 import com.brett.renderer.Loader;
@@ -326,8 +326,10 @@ public class ChunkStore implements IChunkProvider {
 				last = current;
 			}
 		}
-		view.setIdentity();
-		Matrix4f.mul(project, Maths.createViewMatrixROT(cam), view);
+		//view.identity();
+		shader.loadProjectionMatrix(project);
+		shader.loadViewMatrix(Maths.createViewMatrixROT(cam));
+		//project.mul(Maths.createViewMatrixROT(cam), view);
 		//shader.loadViewMatrix(Maths.createViewMatrixROT(cam));
 		// render all the chunks in the players view distance
 		for (int i = -renderDistance; i <= renderDistance; i++) {

@@ -119,7 +119,8 @@ public class DisplayManager {
 		glfwSetWindowSizeCallback(window, (window, x, y) -> {
 			DisplayManager.WIDTH = x;
 			DisplayManager.HEIGHT = y;
-			GL11.glViewport(0, 0, x, y); ProjectionMatrix.updateProjectionMatrix();
+			GL11.glViewport(0, 0, x, y); 
+			ProjectionMatrix.updateProjectionMatrix();
 			for (int i = 0; i < rescales.size(); i++)
 				rescales.get(i).rescale();
 			//ScreenManager.monospaced = new FontType(ScreenManager.loader.loadTexture("fonts/monospaced-72", 0), new File("resources/textures/fonts/monospaced-72.fnt"));
@@ -164,7 +165,7 @@ public class DisplayManager {
 		
 		GLIcon gli = new GLIcon("resources/textures/icon/icon16.png", "resources/textures/icon/icon32.png");
 		glfwSetWindowIcon(window, gli.getBuffer());
-		
+		ProjectionMatrix.updateProjectionMatrix();
 	}
 
 	public static double getDX() {
@@ -213,6 +214,10 @@ public class DisplayManager {
 		} else {
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
+	}
+	
+	public static void setGrabbed(boolean gr) {
+		setMouseGrabbed(gr);
 	}
 	
 	private static long getCurrentTime() {

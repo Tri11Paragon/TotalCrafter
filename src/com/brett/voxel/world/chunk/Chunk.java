@@ -3,10 +3,11 @@ package com.brett.voxel.world.chunk;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.util.vector.Matrix4f;
 
 import com.brett.datatypes.ModelVAO;
 import com.brett.renderer.Loader;
@@ -620,7 +621,7 @@ public class Chunk {
 			// delete the old VAO off the GPU if it exists
 			if(rawID != null)
 				loader.deleteVAO(rawID);
-			// delete the old transparnt VAO off the GPU if it exists
+			// delete the old transparent VAO off the GPU if it exists
 			if(rawIDTrans != null)
 				loader.deleteVAO(rawIDTrans);
 			// load the newly defined verts into the GPU
@@ -653,8 +654,6 @@ public class Chunk {
 		// create the transformation matrix based on localized position
 		Matrix4f trans = Maths.createTransformationMatrixCube(czx,0,czz);
 		// multiplies the matrix here on the CPU instead of doing it per vertex on the GPU
-		Matrix4f.mul(view, trans, trans);
-		// load this to the shader
 		shader.loadTransformationMatrix(trans);
 		// draws all the vertices found in the VBOs
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, rawID.getVertexCount());
@@ -686,7 +685,7 @@ public class Chunk {
 		int czz = z*cz;
 		
 		Matrix4f trans = Maths.createTransformationMatrixCube(czx,0,czz);
-		Matrix4f.mul(view, trans, trans);
+		view.mul(trans, trans);
 		shader.loadTransformationMatrix(trans);
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, rawIDTrans.getVertexCount());
 		

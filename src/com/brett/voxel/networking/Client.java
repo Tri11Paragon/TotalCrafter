@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector3f;
 
 import com.brett.datatypes.Tuple;
 import com.brett.renderer.MasterRenderer;
@@ -129,7 +129,8 @@ public class Client extends Thread {
 	 */
 	public void updatePosition(Player ply) {
 		StringBuilder bu = new StringBuilder();
-		Vector3f pos = ply.getPosition();
+		Vector3f pos = new Vector3f();
+		ply.getPosition().get(pos);
 		// send pos as a pos format
 		bu.append(pos.x);
 		bu.append(";");

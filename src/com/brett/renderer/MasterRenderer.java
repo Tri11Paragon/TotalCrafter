@@ -1,9 +1,6 @@
 package com.brett.renderer;
 
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Matrix4f;
-
 import com.brett.cameras.Camera;
 
 /**
@@ -24,37 +21,19 @@ public class MasterRenderer {
 	public static final float GREEN = 0.62f;
 	public static final float BLUE = 0.69f;
 	
-	public static Matrix4f projectionMatrix;
-	
 	public MasterRenderer(Loader loader, Camera cam){
 		MasterRenderer.global_loader = loader;
 		enableCulling();
-		createProjectionMatrix();
+		ProjectionMatrix.updateProjectionMatrix();
 	}
 	
 	/**
 	 * creates a neat projection matrix
 	 */
-	private void createProjectionMatrix(){
-    	projectionMatrix = new Matrix4f();
-		float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
-		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))));
-		float x_scale = y_scale / aspectRatio;
-		float frustum_length = FAR_PLANE - NEAR_PLANE;
-
-		// matrix math is fun :/
-		// there are some great websites on this stuff.
-		projectionMatrix.m00 = x_scale;
-		projectionMatrix.m11 = y_scale;
-		projectionMatrix.m22 = -((FAR_PLANE + NEAR_PLANE) / frustum_length);
-		projectionMatrix.m23 = -1;
-		projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
-		projectionMatrix.m33 = 0;
-    }
 	
 	// old projection matrix code.
 	/*private void createProjectionMatrix() {
-		float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
+		float aspectRatio = (float) DisplayManager.WIDTH / (float) DisplayManager.HEIGHT;
 		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
 		float x_scale = y_scale / aspectRatio;
 		float frustum_length = FAR_PLANE - NEAR_PLANE;
@@ -67,10 +46,6 @@ public class MasterRenderer {
 		projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
 		projectionMatrix.m33 = 0;
 	}*/
-	
-	public Matrix4f getProjectionMatrix() {
-		return projectionMatrix;
-	}
 	
 	public static void enableCulling() {
 		GL11.glEnable(GL11.GL_CULL_FACE);

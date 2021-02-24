@@ -14,6 +14,7 @@ import com.brett.datatypes.ModelVAO;
 import com.brett.datatypes.Tuple;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
+import com.brett.renderer.ProjectionMatrix;
 import com.brett.tools.Maths;
 import com.brett.tools.obj.OBJLoader;
 import com.brett.voxel.renderer.shaders.VEntityShader;
@@ -39,7 +40,7 @@ public class VEntityRenderer {
 		this.world = world;
 		this.shader = new VEntityShader();
 		this.shader.start();
-		this.shader.loadProjectionMatrix(renderer.getProjectionMatrix());
+		this.shader.loadProjectionMatrix(ProjectionMatrix.projectionMatrix);
 		this.shader.stop();
 		this.camera = camera;
 		player = loader.loadToVAO(OBJLoader.loadOBJ("player2"));

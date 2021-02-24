@@ -2,7 +2,7 @@ package com.brett.voxel.world.tileentity;
 
 import java.util.List;
 
-import org.lwjgl.opengl.Display;
+import com.brett.DisplayManager;
 
 import com.brett.voxel.inventory.Slot;
 import com.brett.voxel.inventory.container.Container;
@@ -32,8 +32,8 @@ public class TileFurnace extends Container {
 		// create the tile inventory.
 		float sizeX = 48*1;
 		float sizeY = 48*1;
-		float xz = Display.getWidth()/2 - sizeX/2;
-		float yz = Display.getHeight()/2 - sizeY/2 + 80;
+		float xz = DisplayManager.WIDTH/2 - sizeX/2;
+		float yz = DisplayManager.HEIGHT/2 - sizeY/2 + 80;
 		super.i.addSlot(new Slot(xz - 100,yz - 375, 48, 48));
 		super.i.addSlot(new Slot(xz - 100,yz - 250, 48, 48));
 		super.i.addSlot(new Slot(xz + 100,yz - 300, 48, 48));

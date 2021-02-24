@@ -1,9 +1,9 @@
 package com.brett.voxel.renderer.shaders;
 
-import org.lwjgl.util.vector.Matrix4f;
+import org.joml.Matrix4f;
 
 import com.brett.cameras.ICamera;
-import com.brett.renderer.shaders.ShaderProgram;
+import com.brett.renderer.shaders.WorldShader;
 import com.brett.tools.Maths;
 
 /**
@@ -13,14 +13,10 @@ import com.brett.tools.Maths;
 * Overlay shader for blocks. Also pretty standard shader.
 */
 
-public class VOverlayShader extends ShaderProgram {
+public class VOverlayShader extends WorldShader {
 	
 	private static final String VERTEX_FILE = "voxelOverlayVertexShader.vert";
 	private static final String FRAGMENT_FILE = "voxelOverlayFragmentShader.frag";
-	
-	private int location_transformationMatrix;
-	private int location_projectionMatrix;
-	private int location_viewMatrix;
 
 	
 	public VOverlayShader() {
@@ -29,9 +25,7 @@ public class VOverlayShader extends ShaderProgram {
 
 	@Override
 	protected void getAllUniformLocations() {
-		location_transformationMatrix = super.getUniformLocation("transformationMatrix");
-		location_projectionMatrix = super.getUniformLocation("projectionMatrix");
-		location_viewMatrix = super.getUniformLocation("viewMatrix");
+		super.getAllUniformLocations();
 	}
 
 	@Override
@@ -41,7 +35,7 @@ public class VOverlayShader extends ShaderProgram {
 	}
 	
 	public void loadTransformationMatrix(Matrix4f matrix){
-		super.loadMatrix(location_transformationMatrix, matrix);
+		super.loadMatrix(location_translationMatrix, matrix);
 	}
 	
 	public void loadProjectionMatrix(Matrix4f projection){

@@ -4,6 +4,7 @@ import com.brett.cameras.Camera;
 import com.brett.cameras.ICamera;
 import com.brett.renderer.DisplaySource;
 import com.brett.renderer.MasterRenderer;
+import com.brett.renderer.ProjectionMatrix;
 import com.brett.tools.Maths;
 import com.brett.voxel.world.VoxelWorld;
 
@@ -31,7 +32,7 @@ public class VoxelRenderer implements DisplaySource {
 		renderer.prepare();
 		// update the camera
 		camera.move();
-		camera.calculateFrustum(renderer.getProjectionMatrix(), Maths.createViewMatrixOTHER(camera));
+		camera.calculateFrustum(ProjectionMatrix.projectionMatrix, Maths.createViewMatrixOTHER(camera));
 		
 		//AudioController.setListenerPosition(camera.getPosition(), camera.getYaw(), camera.getPitch(), camera.getRoll());
 		

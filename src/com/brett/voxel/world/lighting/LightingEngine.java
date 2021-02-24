@@ -3,8 +3,8 @@ package com.brett.voxel.world.lighting;
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
-import org.lwjgl.Sys;
 
+import com.brett.DisplayManager;
 import com.brett.cameras.Camera;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.renderer.RENDERMODE;
@@ -79,7 +79,7 @@ public class LightingEngine {
 					if (lightSources.size() == 0)
 						continue;
 					try {
-						startTime = Sys.getTime();
+						startTime = System.currentTimeMillis();
 						MapIterator<MultiKey<? extends Integer>, Byte> it = lightSources.mapIterator();
 						while (it.hasNext()) {
 							MultiKey<? extends Integer> key = it.next();
@@ -90,7 +90,7 @@ public class LightingEngine {
 
 						lightSources.clear();
 						
-						lastTime = Sys.getTime();
+						lastTime = System.currentTimeMillis();
 						Thread.sleep(32 - (lastTime - startTime) > 0 ? 32 - (lastTime - startTime) : 0);
 					} catch (Exception e) {e.printStackTrace();}
 				}

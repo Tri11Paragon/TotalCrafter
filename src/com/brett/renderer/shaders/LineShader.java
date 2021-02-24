@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import com.brett.renderer.MasterRenderer;
+import com.brett.renderer.ProjectionMatrix;
 import com.brett.tools.IKeyState;
 import com.brett.tools.InputMaster;
 import com.brett.tools.Maths;
@@ -52,6 +53,7 @@ public class LineShader extends WorldShader implements IKeyState {
 		this.loadTranslationMatrix();
 		this.stop();
 		InputMaster.keyboard.add(this);
+		ProjectionMatrix.addShader(this);
 	}
 
 	@Override

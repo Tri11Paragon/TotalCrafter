@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
-import org.lwjgl.util.vector.Matrix4f;
+import org.joml.Matrix4f;
 
 import com.brett.datatypes.Tuple;
 import com.brett.renderer.Loader;

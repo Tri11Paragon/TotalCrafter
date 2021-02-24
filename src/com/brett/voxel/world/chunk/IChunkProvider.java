@@ -1,6 +1,6 @@
 package com.brett.voxel.world.chunk;
 
-import org.lwjgl.util.vector.Matrix4f;
+import org.joml.Matrix4f;
 
 import com.brett.voxel.renderer.COLLISIONTYPE;
 import com.brett.voxel.renderer.shaders.VoxelShader;
