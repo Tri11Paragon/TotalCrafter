@@ -311,11 +311,11 @@ public class Maths {
 		// this just allows you to move in individual blocks
 		// we modify the actual camera pos because it has a y
 		cameraPos.x %= (double) 16;
-		cameraPos.y %= (double) 16;
+		//cameraPos.y %= (double) 16;
 		cameraPos.z %= (double) 16;
 		cameraPos.negate();
 		viewMatrixC.translate(cameraPos.get(pos));
-		cameraPos.negate();
+		cameraPos.negate(cameraPos);
 		// resets back to the saved pos that we saved ^
 		cameraPos.x = x;
 		cameraPos.z = z;

@@ -25,7 +25,7 @@ void main(void){
 	vec3 posadj = vec3(posi & 0xFF, (posi >> 16), (posi >> 8) & 0xFF) - 0.5f;
 	//gl_Position = translationMatrix * vec4(posadj,1.0);
 	
-	vec4 worldPosition = translationMatrix * vec4(posadj - 0.5f,1.0);
+	vec4 worldPosition = translationMatrix * vec4(posadj,1.0);
 	vec4 positionRelativeToCam = viewMatrix * worldPosition;
 	gl_Position = projectionMatrix * positionRelativeToCam;
 	

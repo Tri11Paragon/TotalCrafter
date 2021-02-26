@@ -34,6 +34,7 @@ public class MouseBlockPicker {
 	public static Vector3f currentRay = new Vector3f();
 
 	private Matrix4f projectionMatrix;
+	private Matrix4f invertedProjection = new Matrix4f();
 	private Matrix4f viewMatrix;
 	private Camera camera;
 	private PlayerInventory i;
@@ -44,12 +45,13 @@ public class MouseBlockPicker {
 
 	public MouseBlockPicker(Camera cam, Matrix4f projection, VoxelWorld terrain, Player ply, VOverlayRenderer renderer) {
 		camera = cam;
-		projectionMatrix = projection;
+		projectionMatrix = new Matrix4f().set(projection);
 		viewMatrix = Maths.createViewMatrix(camera);
 		this.world = terrain;
 		this.i = ply.getInventory();
 		this.ply = ply;
 		this.renderer = renderer;
+		projectionMatrix.invert(invertedProjection);
 	}
 	
 	/*
@@ -381,7 +383,7 @@ public class MouseBlockPicker {
 		 * If I recall correctly I did this late at night.
 		 * Like I kind of get it but its a mess of random variables like q and mq (Changed these)
 		 */
-		if (InputMaster.keyDown[0]) {
+		if (InputMaster.mouseDown[0]) {
 			if (!DisplayManager.isMouseGrabbed)
 				return;
 			// get some stuff we need
@@ -533,7 +535,6 @@ public class MouseBlockPicker {
 	}
 
 	private Vector4f toEyeCoords(Vector4f clipCoords) {
-		Matrix4f invertedProjection = projectionMatrix.invert(projectionMatrix);
 		Vector4f eyeCoords = invertedProjection.transform(clipCoords);
 		return new Vector4f(eyeCoords.x, eyeCoords.y, -1f, 0f);
 	}

@@ -227,7 +227,7 @@ public class MainMenu implements DisplaySource {
 			elements.add(tbuser);
 			
 			// connect button
-			UIButton bg = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Connect(), master, width-200, height/2+200, 400, 60);
+			UIButton bg = new UIButton(loader.loadSpecialTexture("gui/button"), loader.loadSpecialTexture("gui/buttonsel"), new Connect(username, ip), master, width-200, height/2+200, 400, 60);
 			UIText bbtg = master.createDynamicText("Connect", 1.5f, VoxelScreenManager.monospaced, width-200, height/2+200+15, 400, true);
 			StaticText.loadText(bbtg);
 			texts.add(bbtg);
@@ -237,7 +237,19 @@ public class MainMenu implements DisplaySource {
 		
 	}
 	
+	public void connect(String username, String ip) {
+		new Connect(username, ip).event("");
+	}
+	
 	public class Connect implements UIControl{
+		
+		private String username;
+		private String ip;
+		
+		public Connect(String username, String ip) {
+			this.username = username;
+			this.ip = ip;
+		}
 		
 		@Override
 		public void event(String data) {

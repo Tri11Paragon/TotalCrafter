@@ -1,5 +1,7 @@
 package com.brett.voxel.renderer;
 
+import org.joml.Matrix4f;
+
 import com.brett.cameras.Camera;
 import com.brett.cameras.ICamera;
 import com.brett.renderer.DisplaySource;
@@ -32,7 +34,7 @@ public class VoxelRenderer implements DisplaySource {
 		renderer.prepare();
 		// update the camera
 		camera.move();
-		camera.calculateFrustum(ProjectionMatrix.projectionMatrix, Maths.createViewMatrixOTHER(camera));
+		camera.calculateFrustum(new Matrix4f().set(ProjectionMatrix.projectionMatrix), Maths.createViewMatrixOTHER(camera));
 		
 		//AudioController.setListenerPosition(camera.getPosition(), camera.getYaw(), camera.getPitch(), camera.getRoll());
 		

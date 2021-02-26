@@ -3,6 +3,7 @@ package com.brett.renderer.gui;
 import java.io.Serializable;
 
 import org.joml.Vector2f;
+import org.lwjgl.glfw.GLFW;
 
 import com.brett.tools.IKeyState;
 import com.brett.tools.InputMaster;
@@ -73,24 +74,30 @@ public class UITextBox extends UIButton implements UIElement, Serializable, IKey
 	@Override
 	public void onKeyReleased(int keys) {
 		if (isSelected) {
-			// this is the same idea as the console
-			// actually i just copied the code from the console class
-			// the idea is if we are selected and the user has pused a button
-			// then update the text with what was pressed.
 			char c = (char) keys;
-			if (c == SettingsLoader.KEY_CONSOLE)
+			// make sure we don't add if we are pressing the console open key.
+			if (keys == SettingsLoader.KEY_CONSOLE)
 				return;
-			if (c == 8) {
-				if (inputTextBuffer.length() > 0)
+			// this is backspace. we use it to remove text.
+			if (keys == GLFW.GLFW_KEY_BACKSPACE) {
+				if (inputTextBuffer.length() > 1)
 					inputTextBuffer = inputTextBuffer.substring(0, inputTextBuffer.length() - 1);
-			} else if (inputTextBuffer.length() >= maxLength) {
-				return;
-			} else if (c == 10 || c == 13) {
+			// enters the command when enter is pressed.
+			} else if (c == 10 || c == 13 || keys == GLFW.GLFW_KEY_ENTER) {
 				isSelected = false;
+			// we don't want to write anything if we are pressing a key that isn't a character.
 			} else if (c < 32) {
-				return;
-			} else
-				inputTextBuffer += c;
+			// add in the character to the input line
+			} else {
+				char[] dhr = (c + "").replaceAll("[^a-zA-Z0-9\\- ]", "").toCharArray();
+				if (dhr == null || dhr.length == 0)
+					return;
+				char cd = dhr[0];
+				if (InputMaster.keyDown[GLFW.GLFW_KEY_LEFT_SHIFT] || InputMaster.keyDown[GLFW.GLFW_KEY_RIGHT_SHIFT])
+					inputTextBuffer += cd;
+				else
+					inputTextBuffer += Character.toLowerCase(cd);
+			}
 			if (event != null)
 				event.event(inputTextBuffer);
 		}

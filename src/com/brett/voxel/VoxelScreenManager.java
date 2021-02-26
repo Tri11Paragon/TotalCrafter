@@ -13,6 +13,7 @@ import com.brett.DisplayManager;
 import com.brett.console.Console;
 import com.brett.console.commands.CloseServerCommand;
 import com.brett.console.commands.CollisionCommand;
+import com.brett.console.commands.ConnectCommand;
 import com.brett.console.commands.FlightCommand;
 import com.brett.console.commands.GiveCommand;
 import com.brett.console.commands.TeleportCommand;
@@ -20,6 +21,7 @@ import com.brett.renderer.DisplaySource;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.renderer.ProjectionMatrix;
+import com.brett.renderer.SyncSave;
 import com.brett.renderer.font.FontType;
 import com.brett.renderer.font.UIDynamicText;
 import com.brett.renderer.font.fontRendering.StaticText;
@@ -238,6 +240,7 @@ public class VoxelScreenManager {
 		
 		mainmenu = new MainMenu(ui, renderer, player, world, loader);
 		scene = mainmenu;
+		console.registerCommand("connect", new ConnectCommand(mainmenu));
 		//scene = new VoxelRenderer(renderer, camera, world);
 		
 		//System.out.println(MeshStore.models.get(VoxelWorld.createSixBooleans(true, true, true, true, true, true)) == MeshStore.models.get(VoxelWorld.createSixBooleans(true, true, true, true, true, true)));
@@ -273,6 +276,7 @@ public class VoxelScreenManager {
 				//}
 				
 				//MusicMaster.update();
+				SyncSave.sync(DisplayManager.FPS_MAX);
 				DisplayManager.updateDisplay();
 				deltaTime += DisplayManager.getFrameTimeMilis();
 				frames++;

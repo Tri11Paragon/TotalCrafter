@@ -3,8 +3,8 @@
 FOV: 70.0
 FPS: 120
 renderDistance: 12
-key_console: 41
-key_clear: 64
+key_console: 96
+key_clear: 295
 sensitivity: 0.800000011920929
 username: brett
 ip: 72.39.134.185

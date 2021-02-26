@@ -191,6 +191,7 @@ public class DisplayManager {
 		
 		lx = mouseX;
 		ly = mouseY;
+		InputMaster.update();
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();

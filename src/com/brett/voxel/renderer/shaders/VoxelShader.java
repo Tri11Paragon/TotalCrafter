@@ -27,6 +27,9 @@ public class VoxelShader extends WorldShader {
 	@Override
 	protected void getAllUniformLocations() {
 		super.getAllUniformLocations();
+		System.out.println(location_projectionMatrix);
+		System.out.println(location_translationMatrix);
+		System.out.println(location_viewMatrix);
 	}
 	
 }

@@ -327,7 +327,7 @@ public class ChunkStore implements IChunkProvider {
 			}
 		}
 		//view.identity();
-		shader.loadProjectionMatrix(project);
+		//shader.loadProjectionMatrix(project);
 		shader.loadViewMatrix(Maths.createViewMatrixROT(cam));
 		//project.mul(Maths.createViewMatrixROT(cam), view);
 		//shader.loadViewMatrix(Maths.createViewMatrixROT(cam));

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.joml.Vector2f;
+import org.lwjgl.glfw.GLFW;
 
 import com.brett.DisplayManager;
 import com.brett.console.commands.ClearCommand;
@@ -159,6 +160,7 @@ public class Console implements IKeyState {
 	public void onKeyPressed(int key) {
 		// open the console if we press the console key.
 		if (key == SettingsLoader.KEY_CONSOLE) {
+			System.out.println("HELLO " + isOpen);
 			// grab the mouse if its open
 			DisplayManager.setMouseGrabbed(isOpen);
 			// invert the console state
@@ -178,14 +180,14 @@ public class Console implements IKeyState {
 		if (isOpen) {
 			char c = (char) keys;
 			// make sure we don't add if we are pressing the console open key.
-			if (c == 96 || c == SettingsLoader.KEY_CONSOLE)
+			if (keys == SettingsLoader.KEY_CONSOLE)
 				return;
 			// this is backspace. we use it to remove text.
-			if (c == 8) {
+			if (keys == GLFW.GLFW_KEY_BACKSPACE) {
 				if (inputTextBuffer.length() > 1)
 					inputTextBuffer = inputTextBuffer.substring(0, inputTextBuffer.length() - 1);
 			// enters the command when enter is pressed.
-			} else if (c == 10 || c == 13) {
+			} else if (c == 10 || c == 13 || keys == GLFW.GLFW_KEY_ENTER) {
 				// clears the body text if it is larger then the console window pane.
 				if (texts.get(1).getHeight() > 7.8) {
 					texts.get(1).changeText(""); 
@@ -197,8 +199,16 @@ public class Console implements IKeyState {
 			// we don't want to write anything if we are pressing a key that isn't a character.
 			} else if (c < 32) {
 			// add in the character to the input line
-			} else 
-				inputTextBuffer += c;
+			} else {
+				char[] dhr = (c + "").replaceAll("[^a-zA-Z0-9\\- ]", "").toCharArray();
+				if (dhr == null || dhr.length == 0)
+					return;
+				char cd = dhr[0];
+				if (InputMaster.keyDown[GLFW.GLFW_KEY_LEFT_SHIFT] || InputMaster.keyDown[GLFW.GLFW_KEY_RIGHT_SHIFT])
+					inputTextBuffer += cd;
+				else
+					inputTextBuffer += Character.toLowerCase(cd);
+			}
 			// change the text
 			texts.get(0).changeText(inputTextBuffer);
 		}

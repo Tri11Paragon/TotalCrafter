@@ -67,11 +67,12 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				long last = 0;
 				while(VoxelScreenManager.isOpen) {
 					long start = System.currentTimeMillis();
 					MapIterator<MultiKey<? extends Integer>, ConnectedClient> it = ungeneratedChunks.mapIterator();
 					try {
+						if (ungeneratedChunks.size() > 0)
+							System.out.println("Processing data; " + ungeneratedChunks.size());
 						while (it.hasNext()) {
 							MultiKey<? extends Integer> mk = it.next();
 							Chunk c = generateChunk(mk.getKey(0), mk.getKey(1));
@@ -86,18 +87,41 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 					} catch (ConcurrentModificationException e) {}
 					long end = System.currentTimeMillis();
 					long delta = Maths.preventNegs(32 - (end - start));
-					if (end - last > 10) {
-						if (unsentChunks.size() > 0) {
-							Tuple<Chunk, ConnectedClient> c = unsentChunks.get(0);
-							Server.server.sendCompressedChunk(c.getX(), c.getY());
-							unsentChunks.remove(0);
-							last = end;
-						}
+					
+					long d = 0;
+					long ls = System.nanoTime();
+					while (ungenChunkData.size() < 10 && d < 2000000) {
+						d += (System.nanoTime()-ls);
+						Thread.yield();
 					}
-					try {
-						Thread.sleep(delta);
-					} catch (InterruptedException e) {}
+					if (ungeneratedChunks.size() > 0)
+						System.out.println(d + " " + delta);
+					//try {
+					//	Thread.sleep(delta);
+					//} catch (InterruptedException e) {}
 				} 
+			}
+		}).start();
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				long last = 0;
+				while (VoxelScreenManager.isOpen) {
+					long end = System.currentTimeMillis();
+					if (end - last > 10) {
+						try {
+							if (unsentChunks.size() > 0) {
+								Tuple<Chunk, ConnectedClient> c = unsentChunks.get(0);
+								Server.server.sendCompressedChunk(c.getX(), c.getY());
+								unsentChunks.remove(0);
+								last = end;
+							}
+						} catch (Exception e) {}
+					} else {
+						Thread.yield();
+					}
+				}
 			}
 		}).start();
 	}

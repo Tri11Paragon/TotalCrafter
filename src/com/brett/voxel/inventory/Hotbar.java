@@ -65,6 +65,8 @@ public class Hotbar extends Inventory implements IEventListener, IKeyState, Seri
 			super.update();
 		else {
 			float delta = InputMaster.lastScrollState;
+			if (!InputMaster.scrolledLastFrame)
+				return;
 			// moves the selected slot up and down.
 			if (delta < 0 ) {
 				selectedSlot++;

@@ -9,6 +9,7 @@ import com.brett.cameras.Camera;
 import com.brett.renderer.Loader;
 import com.brett.renderer.gui.UIMaster;
 import com.brett.sound.AudioController;
+import com.brett.tools.IKeyState;
 import com.brett.tools.InputMaster;
 import com.brett.tools.SettingsLoader;
 import com.brett.voxel.inventory.PlayerInventory;
@@ -22,7 +23,7 @@ import com.brett.voxel.world.VoxelWorld;
 * @date May 21, 2020
 */
 
-public class Player extends Camera {
+public class Player extends Camera implements IKeyState {
 	
 	private static final int RECUR_AMT = 1;
 	private static final float LOWESTPOINT = -1.75f;
@@ -73,6 +74,7 @@ public class Player extends Camera {
 		this.loader = loader;
 		this.ui = ui;
 		this.position = new Vector3d(0, 120, 0);
+		InputMaster.keyboard.add(this);
 	}
 	
 	public void init() {
@@ -140,17 +142,9 @@ public class Player extends Camera {
 				moveatZ = -speed * DisplayManager.getFrameTimeSeconds();
 			else 
 				moveatZ = 0;
-	
-			if (!flight) {
-				// allow for jumping if we are not flying
-				if (InputMaster.keyDown[GLFW.GLFW_KEY_SPACE] && onGround) {
-					moveAtY += 0.5f/5;
-					onGround = false;
-				}
-			}
 		
 			// change where you are looking based on how much the mouse has moved.
-			pitch += -DisplayManager.getDX() * (turnSpeed*SettingsLoader.SENSITIVITY)/100;
+			pitch += DisplayManager.getDY() * (turnSpeed*SettingsLoader.SENSITIVITY)/100;
 			yaw += DisplayManager.getDX() * (turnSpeed*SettingsLoader.SENSITIVITY)/100;
 			
 			// turn speed
@@ -378,6 +372,21 @@ public class Player extends Camera {
 
 	public UIMaster getUi() {
 		return ui;
+	}
+
+	@Override
+	public void onKeyPressed(int keys) {
+		if (!flight) {
+			// allow for jumping if we are not flying
+			if (keys == GLFW.GLFW_KEY_SPACE && onGround) {
+				moveAtY += (0.5/40);
+				onGround = false;
+			}
+		}
+	}
+
+	@Override
+	public void onKeyReleased(int keys) {
 	}
 	
 }

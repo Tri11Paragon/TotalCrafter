@@ -1,0 +1,12 @@
+FOV: 90.0
+FPS: 120
+renderDistance: 12
+key_console: 96
+key_clear: 295
+sensitivity: 0.5
+username: 
+ip: 
+samples: 4
+anisotropy: 4
+vsync: 0
+music: 0.5

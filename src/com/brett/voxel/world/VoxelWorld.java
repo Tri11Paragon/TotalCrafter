@@ -1,6 +1,5 @@
 package com.brett.voxel.world;
 
-import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
@@ -37,7 +36,7 @@ public class VoxelWorld extends IWorldProvider implements IMouseState {
 	
 	private static final long serialVersionUID = 4794008908629628949L;
 	
-	public static final float GRAVITY = 9.8f;
+	public static final float GRAVITY = (float) Math.sqrt(9.8f/6f);
 	// is this a remote server?
 	public static boolean isRemote = false;
 	public static Client localClient;
