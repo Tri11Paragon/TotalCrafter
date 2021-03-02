@@ -3,6 +3,8 @@ package com.mainclass;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import com.brett.opencl.CLInit;
 import com.brett.voxel.VoxelScreenManager;
 import com.brett.voxel.networking.server.Server;
 
@@ -32,6 +34,7 @@ public class ServerTest {
 		
 		sr.sworld.saveChunks();
 		VoxelScreenManager.isOpen = false;
+		CLInit.cleanup();
 		
 		
 		try {

@@ -1,16 +1,36 @@
 package com.brett.voxel.networking.server;
 
+
+import static org.jocl.CL.*;
+
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
+import org.jocl.CL;
+import org.jocl.Pointer;
+import org.jocl.Sizeof;
+import org.jocl.cl_command_queue;
+import org.jocl.cl_context;
+import org.jocl.cl_context_properties;
+import org.jocl.cl_device_id;
+import org.jocl.cl_kernel;
+import org.jocl.cl_mem;
+import org.jocl.cl_platform_id;
+import org.jocl.cl_program;
+import org.jocl.cl_queue_properties;
 import org.joml.Matrix4f;
 
 import com.brett.datatypes.Tuple;
+import com.brett.opencl.CLBuffer;
+import com.brett.opencl.CLInit;
+import com.brett.opencl.StaticCLKernel;
+import com.brett.opencl.StaticCLProgram;
 import com.brett.renderer.Loader;
 import com.brett.renderer.MasterRenderer;
 import com.brett.tools.Maths;
@@ -54,6 +74,16 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 	private WorldGenerator gen;
 	private Loader loader;
 	
+	private static String programSource =
+	        "__kernel void "+
+	        "sampleKernel(__global const float *a,"+
+	        "             __global const float *b,"+
+	        "             __global float *c)"+
+	        "{"+
+	        "    int gid = get_global_id(0);"+
+	        "    c[gid] = a[gid] * b[gid];"+
+	        "}";
+	
 	public ServerWorld() {
 		super.chunk = this;
 		this.gen = new WorldGenerator(this);
@@ -64,6 +94,72 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 		new File(worldLocation + "ents").mkdirs();
 		new File(worldLocation + "players").mkdirs();
 		GameRegistry.init(loader);
+		
+		// Create input- and output data 
+        int n = 500;
+        float srcArrayA[] = new float[n];
+        float srcArrayB[] = new float[n];
+        float dstArray[] = new float[n];
+        for (int i=0; i<n; i++)
+        {
+            srcArrayA[i] = i;
+            srcArrayB[i] = i;
+        }
+        CLInit.init();
+        
+        CLBuffer in1 = StaticCLKernel.createBuffer(srcArrayA);
+        CLBuffer in2 = StaticCLKernel.createBuffer(srcArrayB);
+        CLBuffer out = StaticCLKernel.createBuffer(dstArray);
+        
+        StaticCLProgram program = new StaticCLProgram(new String[] {programSource});
+        
+        StaticCLKernel kernel = new StaticCLKernel(program, "sampleKernel", n, in1, in2, out);
+        
+        kernel.execute(out);
+        System.out.println("Result: "+Arrays.toString(dstArray));
+        
+        for(int i = 0; i < n; i++)
+        	srcArrayA[i] = i*2;
+        in2.update(srcArrayA);
+        kernel.writeFloatBuffer(in2);
+        
+        kernel.execute(out);
+        System.out.println("Result: "+Arrays.toString(dstArray));
+        
+        kernel.cleanup();
+        
+        program.cleanup();
+        
+        /*cl_program program = clCreateProgramWithSource(CLInit.context,
+                1, new String[]{ programSource }, null, null);
+        
+        clBuildProgram(program, 0, null, null, null, null);
+        
+        cl_kernel kernel = clCreateKernel(program, "sampleKernel", null);
+        
+        int a = 0;
+        clSetKernelArg(kernel, a++, Sizeof.cl_mem, Pointer.to(srcMemA));
+        clSetKernelArg(kernel, a++, Sizeof.cl_mem, Pointer.to(srcMemB));
+        clSetKernelArg(kernel, a++, Sizeof.cl_mem, Pointer.to(dstMem));
+        
+        // Set the work-item dimensions
+        long global_work_size[] = new long[]{n};
+        
+        // Execute the kernel
+        clEnqueueNDRangeKernel(CLInit.commandQueue, kernel, 1, null,
+            global_work_size, null, 0, null, null);
+        
+        // Read the output data
+        clEnqueueReadBuffer(CLInit.commandQueue, dstMem, CL_TRUE, 0,
+            n * Sizeof.cl_float, dst, 0, null, null);
+        
+        // Release kernel, program, and memory objects
+        clReleaseMemObject(srcMemA);
+        clReleaseMemObject(srcMemB);
+        clReleaseMemObject(dstMem);
+        clReleaseKernel(kernel);
+        clReleaseProgram(program);*/
+        
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
