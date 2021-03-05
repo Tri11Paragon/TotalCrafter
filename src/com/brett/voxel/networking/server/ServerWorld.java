@@ -80,6 +80,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 			public void run() {
 				CLInit.init();
 				dstArray = new int[16 * 16 * 128];
+				// setup arrays
 				CLBuffer p = StaticCLKernel.createBufferInt(gen.lf.p);
 				ref = StaticCLKernel.createBufferInt(new int[16 * 16]);
 				cpos = StaticCLKernel.createBufferInt(new int[] {1, 0});
