@@ -28,11 +28,11 @@ public class Player extends Camera implements IKeyState {
 	private static final int RECUR_AMT = 1;
 	private static final float LOWESTPOINT = -1.75f;
 	private static final float LOWESTPOINTCROUCH = -0.75f;
-	public static boolean flight = false;
+	public static boolean flight = true;
 	public static boolean collision = true;
 	
-	private double speed = 5;
-	public static double normalSpeed = 6;
+	private double speed = 50;
+	public static double normalSpeed = 50;
 	private double turnSpeed = 10.0;
 	private double moveAtX = 0;
 	private double moveAtY = 0;

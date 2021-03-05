@@ -50,7 +50,15 @@ public class StaticCLKernel {
 		clEnqueueWriteBuffer(CLInit.commandQueue, buffer.getBuffer(), CL_TRUE, 0, size * Sizeof.cl_float, buffer.getPointer(), 0, null, null);
 	}
 	
+	public void writeFloatBuffer(CLBuffer buffer, int size) {
+		clEnqueueWriteBuffer(CLInit.commandQueue, buffer.getBuffer(), CL_TRUE, 0, size * Sizeof.cl_float, buffer.getPointer(), 0, null, null);
+	}
+	
 	public void writeIntBuffer(CLBuffer buffer) {
+		clEnqueueWriteBuffer(CLInit.commandQueue, buffer.getBuffer(), CL_TRUE, 0, size * Sizeof.cl_int, buffer.getPointer(), 0, null, null);
+	}
+	
+	public void writeIntBuffer(CLBuffer buffer, int size) {
 		clEnqueueWriteBuffer(CLInit.commandQueue, buffer.getBuffer(), CL_TRUE, 0, size * Sizeof.cl_int, buffer.getPointer(), 0, null, null);
 	}
 	
@@ -62,12 +70,28 @@ public class StaticCLKernel {
 	            size * Sizeof.cl_float, out.getPointer(), 0, null, null);
 	}
 	
+	public void execute(CLBuffer out, Pointer arrOut) {
+		long global_work_size[] = new long[]{size};
+		clEnqueueNDRangeKernel(CLInit.commandQueue, kernel, 1, null,
+	            global_work_size, null, 0, null, null);
+		clEnqueueReadBuffer(CLInit.commandQueue, out.getBuffer(), CL_TRUE, 0,
+	            size * Sizeof.cl_float, arrOut, 0, null, null);
+	}
+	
 	public void executeInt(CLBuffer out) {
 		long global_work_size[] = new long[]{size};
 		clEnqueueNDRangeKernel(CLInit.commandQueue, kernel, 1, null,
 	            global_work_size, null, 0, null, null);
 		clEnqueueReadBuffer(CLInit.commandQueue, out.getBuffer(), CL_TRUE, 0,
 	            size * Sizeof.cl_int, out.getPointer(), 0, null, null);
+	}
+	
+	public void executeInt(CLBuffer out, Pointer arrOut) {
+		long global_work_size[] = new long[]{size};
+		clEnqueueNDRangeKernel(CLInit.commandQueue, kernel, 1, null,
+	            global_work_size, null, 0, null, null);
+		clEnqueueReadBuffer(CLInit.commandQueue, out.getBuffer(), CL_TRUE, 0,
+	            size * Sizeof.cl_int, arrOut, 0, null, null);
 	}
 	
 	public void cleanup() {

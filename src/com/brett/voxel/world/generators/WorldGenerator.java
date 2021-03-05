@@ -1,7 +1,10 @@
 package com.brett.voxel.world.generators;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+import com.brett.voxel.networking.server.ServerWorld;
 import com.brett.voxel.tools.LevelLoader;
 import com.brett.voxel.world.IWorldProvider;
 import com.brett.voxel.world.blocks.Block;
@@ -20,9 +23,9 @@ import com.brett.voxel.world.generators.worldgenmineable.WorldGenMineable;
 
 public class WorldGenerator {
 	
-	private LevelNoise lf;
-	private DetailNoise df;
-	private RoughnessNoise rf;
+	public LevelNoise lf;
+	public DetailNoise df;
+	public RoughnessNoise rf;
 	private WorldGenMineable ores;
 	private Random rnd;
 	private IWorldProvider world;
@@ -91,7 +94,79 @@ public class WorldGenerator {
 		System.out.println("Time to do divide(avg1000): " + (averageDivide/1000d));*/
 	}
 	
+	public static final List<Long> timeToComplete = new ArrayList<Long>();
+	public static final List<Long> timeToComplete2 = new ArrayList<Long>();
+	
+	// takes 587340ns
+	// this is 3x faster. even with array delineraization
+	// ... time1: 719663ns
+	// ... time2: 111348ns
 	public short[][][] getChunkBlocks(int x, int z){
+		long start = System.nanoTime();
+		int xp = x, zp = z;
+		if (x < 0)
+			xp = -x;
+		if (z < 0)
+			zp = -z;
+		// generate a random seed for this chunk
+		rnd.setSeed(((xp * LevelLoader.seed * 4923492) + (zp * LevelLoader.seed * 59234)) + LevelLoader.seed);
+		// make a new block array
+		short[][][] blks = new short[Chunk.x][Chunk.y][Chunk.z];
+		
+		int[] refs = new int[16 * 16];
+		
+		// make reference to chunk pos
+		int cx = x*Chunk.x;
+		int cz = z*Chunk.z;
+		
+		int[] cpos = new int[] {cx,cz};
+		
+		for (int i = 0; i < 16; i++) {
+			for (int k = 0; k < 16; k++) {
+				// reference numbers 
+				int cax = i + cx;
+				int caz = k + cz;
+				
+				refs[i * 16 + k] = ((int) getBiomeMix(cax, caz, 1));
+			}
+		}
+		ServerWorld.ref.update(refs);
+		ServerWorld.cpos.update(cpos);
+		ServerWorld.kernel.writeIntBuffer(ServerWorld.ref, refs.length);
+		ServerWorld.kernel.writeIntBuffer(ServerWorld.cpos, cpos.length);
+		
+		ServerWorld.kernel.execute(ServerWorld.out);
+		int[] out = ServerWorld.dstArray;
+		long startd = System.nanoTime();
+		for (int i = 0; i < 16; i++) {
+			for (int j = 0; j < 128; j++) {
+				for (int k = 0; k < 16; k++) {
+					//if (j > 100)
+						//System.out.println(out[(k * 16 * 128) + (j * 16) + i]);
+					blks[i][j][k] = (short) out[(k * 16 * 128) + (j * 16) + i];
+				}
+			}
+		}
+		// this is required
+		// do i know why?
+		// no.
+		// OOP maybe?
+		// for some reason the output array isn't protected and if we don't do this
+		// then it doesn't get correctly written to
+		int[] arr = new int[16 * 16 * 128];
+		ServerWorld.dstArray = arr;
+		ServerWorld.out.update(arr);
+		ServerWorld.kernel.writeIntBuffer(ServerWorld.out);
+		
+		timeToComplete2.add(System.nanoTime() - startd);
+		ores.generateOres(blks);
+		timeToComplete.add(System.nanoTime() - start);
+		return blks;
+	}
+	
+	// function takes 1720075ns
+	public short[][][] getChunkBlocksdd(int x, int z){
+		long start = System.nanoTime();
 		int xp = x, zp = z;
 		if (x < 0)
 			xp = -x;
@@ -165,7 +240,7 @@ public class WorldGenerator {
 				// make sure we can't mine outside the world.
 				blks[i][0][k] = Block.WILL;
 				
-				// get a random int for the trees
+				/*// get a random int for the trees
 				int tree = rnd.nextInt((int) (800 / getForestAmount(cax, caz)));
 				// check if we generate a tree here and that it is in range
 				if (tree == 5 && realref < 100 && realref > 52) {
@@ -200,13 +275,15 @@ public class WorldGenerator {
 					for (int t = realref; t <= realref + height; t++) {
 						blks[i][t][k] = Block.LOG;
 					}
-				}
+				}*/
 				
 			}
 		}
 		ores.generateOres(blks);
+		timeToComplete.add(System.nanoTime() - start);
 		return blks;
 	}
+	
 	
 	/**
 	 * gets the height of a block at a point

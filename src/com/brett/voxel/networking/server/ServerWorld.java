@@ -1,29 +1,13 @@
 package com.brett.voxel.networking.server;
 
-
-import static org.jocl.CL.*;
-
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
-import org.jocl.CL;
-import org.jocl.Pointer;
-import org.jocl.Sizeof;
-import org.jocl.cl_command_queue;
-import org.jocl.cl_context;
-import org.jocl.cl_context_properties;
-import org.jocl.cl_device_id;
-import org.jocl.cl_kernel;
-import org.jocl.cl_mem;
-import org.jocl.cl_platform_id;
-import org.jocl.cl_program;
-import org.jocl.cl_queue_properties;
 import org.joml.Matrix4f;
 
 import com.brett.datatypes.Tuple;
@@ -48,42 +32,38 @@ import com.brett.voxel.world.chunk.NulChunk;
 import com.brett.voxel.world.generators.WorldGenerator;
 
 /**
-*
-* @author brett
-* @date Jun. 1, 2020
-* 
-* IMPORTANT NOTE:
-* im not re documenting the chunk stuff. if you want documentation goto the chunkstore class.
-* its the same code.
-*/
+ *
+ * @author brett
+ * @date Jun. 1, 2020
+ * 
+ *       IMPORTANT NOTE: im not re documenting the chunk stuff. if you want
+ *       documentation goto the chunkstore class. its the same code.
+ */
 
 public class ServerWorld extends IWorldProvider implements IChunkProvider {
-	
+
 	private static final long serialVersionUID = -7269680346286023585L;
-	
+
 	public static int renderDistance = 12;
 	public static String worldLocation = "worlds/server/";
 	public static String dimLocation = worldLocation + "DIM";
-	
+
 	private volatile MultiKeyMap<Integer, Region> chunks = new MultiKeyMap<Integer, Region>();
 	private volatile MultiKeyMap<Integer, NulChunk> ungenChunkData = new MultiKeyMap<Integer, NulChunk>();
 	@SuppressWarnings("unused")
 	private volatile MultiKeyMap<Integer, Region> chunksCopy = null;
 	private volatile MultiKeyMap<Integer, ConnectedClient> ungeneratedChunks = new MultiKeyMap<Integer, ConnectedClient>();
-	private volatile List<Tuple<Chunk, ConnectedClient>> unsentChunks = new ArrayList<Tuple<Chunk,ConnectedClient>>();
+	private volatile List<Tuple<Chunk, ConnectedClient>> unsentChunks = new ArrayList<Tuple<Chunk, ConnectedClient>>();
 	private WorldGenerator gen;
 	private Loader loader;
 	
-	private static String programSource =
-	        "__kernel void "+
-	        "sampleKernel(__global const float *a,"+
-	        "             __global const float *b,"+
-	        "             __global float *c)"+
-	        "{"+
-	        "    int gid = get_global_id(0);"+
-	        "    c[gid] = a[gid] * b[gid];"+
-	        "}";
-	
+	public static StaticCLProgram program;
+	public static StaticCLKernel kernel;
+	public static CLBuffer ref;
+	public static CLBuffer cpos;
+	public static int[] dstArray;
+	public static CLBuffer out;
+
 	public ServerWorld() {
 		super.chunk = this;
 		this.gen = new WorldGenerator(this);
@@ -94,112 +74,82 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 		new File(worldLocation + "ents").mkdirs();
 		new File(worldLocation + "players").mkdirs();
 		GameRegistry.init(loader);
-		
-		// Create input- and output data 
-        int n = 500;
-        float srcArrayA[] = new float[n];
-        float srcArrayB[] = new float[n];
-        float dstArray[] = new float[n];
-        for (int i=0; i<n; i++)
-        {
-            srcArrayA[i] = i;
-            srcArrayB[i] = i;
-        }
-        CLInit.init();
-        
-        CLBuffer in1 = StaticCLKernel.createBuffer(srcArrayA);
-        CLBuffer in2 = StaticCLKernel.createBuffer(srcArrayB);
-        CLBuffer out = StaticCLKernel.createBuffer(dstArray);
-        
-        StaticCLProgram program = new StaticCLProgram(new String[] {programSource});
-        
-        StaticCLKernel kernel = new StaticCLKernel(program, "sampleKernel", n, in1, in2, out);
-        
-        kernel.execute(out);
-        System.out.println("Result: "+Arrays.toString(dstArray));
-        
-        for(int i = 0; i < n; i++)
-        	srcArrayA[i] = i*2;
-        in2.update(srcArrayA);
-        kernel.writeFloatBuffer(in2);
-        
-        kernel.execute(out);
-        System.out.println("Result: "+Arrays.toString(dstArray));
-        
-        kernel.cleanup();
-        
-        program.cleanup();
-        
-        /*cl_program program = clCreateProgramWithSource(CLInit.context,
-                1, new String[]{ programSource }, null, null);
-        
-        clBuildProgram(program, 0, null, null, null, null);
-        
-        cl_kernel kernel = clCreateKernel(program, "sampleKernel", null);
-        
-        int a = 0;
-        clSetKernelArg(kernel, a++, Sizeof.cl_mem, Pointer.to(srcMemA));
-        clSetKernelArg(kernel, a++, Sizeof.cl_mem, Pointer.to(srcMemB));
-        clSetKernelArg(kernel, a++, Sizeof.cl_mem, Pointer.to(dstMem));
-        
-        // Set the work-item dimensions
-        long global_work_size[] = new long[]{n};
-        
-        // Execute the kernel
-        clEnqueueNDRangeKernel(CLInit.commandQueue, kernel, 1, null,
-            global_work_size, null, 0, null, null);
-        
-        // Read the output data
-        clEnqueueReadBuffer(CLInit.commandQueue, dstMem, CL_TRUE, 0,
-            n * Sizeof.cl_float, dst, 0, null, null);
-        
-        // Release kernel, program, and memory objects
-        clReleaseMemObject(srcMemA);
-        clReleaseMemObject(srcMemB);
-        clReleaseMemObject(dstMem);
-        clReleaseKernel(kernel);
-        clReleaseProgram(program);*/
-        
+
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				while(VoxelScreenManager.isOpen) {
+				CLInit.init();
+				dstArray = new int[16 * 16 * 128];
+				CLBuffer p = StaticCLKernel.createBufferInt(gen.lf.p);
+				ref = StaticCLKernel.createBufferInt(new int[16 * 16]);
+				cpos = StaticCLKernel.createBufferInt(new int[] {1, 0});
+				out = StaticCLKernel.createBufferInt(dstArray);
+				program = new StaticCLProgram("worldgen.cl");
+				kernel = new StaticCLKernel(program, "worldgen", 16 * 16 * 128, p, ref, cpos, out);
+				kernel.writeIntBuffer(p, gen.lf.p.length);
+				//kernel.execute(out);
+				//System.out.println("Out: " + Arrays.toString(dstArray));
+				
+				while (VoxelScreenManager.isOpen) {
 					long start = System.currentTimeMillis();
 					MapIterator<MultiKey<? extends Integer>, ConnectedClient> it = ungeneratedChunks.mapIterator();
 					try {
-						if (ungeneratedChunks.size() > 0)
-							System.out.println("Processing data; " + ungeneratedChunks.size());
+						//if (ungeneratedChunks.size() > 0)
+							//System.out.println("Processing data; " + ungeneratedChunks.size());
 						while (it.hasNext()) {
 							MultiKey<? extends Integer> mk = it.next();
 							Chunk c = generateChunk(mk.getKey(0), mk.getKey(1));
 							if (c != null) {
 								ConnectedClient cl = it.getValue();
-								
+
 								unsentChunks.add(new Tuple<Chunk, ConnectedClient>(c, cl));
-								//Server.server.sendCompressedChunk(c, cl);
+								// Server.server.sendCompressedChunk(c, cl);
 								ungeneratedChunks.removeMultiKey(mk.getKey(0), mk.getKey(1));
 							}
 						}
-					} catch (ConcurrentModificationException e) {}
+					} catch (ConcurrentModificationException e) {
+					}
 					long end = System.currentTimeMillis();
 					long delta = Maths.preventNegs(32 - (end - start));
-					
 					long d = 0;
 					long ls = System.nanoTime();
 					while (ungenChunkData.size() < 10 && d < 2000000) {
-						d += (System.nanoTime()-ls);
+						d += (System.nanoTime() - ls);
 						Thread.yield();
 					}
-					if (ungeneratedChunks.size() > 0)
-						System.out.println(d + " " + delta);
-					//try {
-					//	Thread.sleep(delta);
-					//} catch (InterruptedException e) {}
-				} 
+					//if (ungeneratedChunks.size() > 0)
+						//System.out.println(d + " " + delta);
+					// try {
+					// Thread.sleep(delta);
+					// } catch (InterruptedException e) {}
+				}
+				// two (2.172939) milliseconds on average to generate a chunk
+				long time = 0;
+				for (int i =0; i < WorldGenerator.timeToComplete.size(); i++) {
+					time += WorldGenerator.timeToComplete.get(i);
+				}
+				long size = WorldGenerator.timeToComplete.size();
+				if (size == 0)
+					size = 1;
+				long sized = (time / size);
+				System.out.println("Time: " + sized);
+				time = 0;
+				for (int i =0; i < WorldGenerator.timeToComplete2.size(); i++) {
+					time += WorldGenerator.timeToComplete2.get(i);
+				}
+				size = WorldGenerator.timeToComplete2.size();
+				if (size == 0)
+					size = 1;
+				sized = (time / size);
+				System.out.println("Time2: " + sized);
+				
+				kernel.cleanup();
+				program.cleanup();
+				CLInit.cleanup();
 			}
 		}).start();
 		new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				long last = 0;
@@ -213,7 +163,8 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 								unsentChunks.remove(0);
 								last = end;
 							}
-						} catch (Exception e) {}
+						} catch (Exception e) {
+						}
 					} else {
 						Thread.yield();
 					}
@@ -221,7 +172,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 			}
 		}).start();
 	}
-	
+
 	public Chunk generateChunk(int x, int z) {
 		if (VoxelWorld.isRemote)
 			return null;
@@ -233,12 +184,12 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 			regionPosZ -= 1;
 		if (chunks.containsKey(regionPosX, regionPosZ)) {
 			if (chunks.get(regionPosX, regionPosZ) == null)
-				return genChunkUngen(x,z);
+				return genChunkUngen(x, z);
 			else {
 				try {
 					Chunk c = chunks.get(regionPosX, regionPosZ).getChunk(x, z);
 					if (c == null) {
-						c = genChunkUngen(x,z);
+						c = genChunkUngen(x, z);
 						chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
 						return c;
 					} else {
@@ -246,7 +197,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 					}
 				} catch (NullPointerException e) {
 					System.out.println("Hey we got a broken pipe here!");
-					return genChunkUngen(x,z);
+					return genChunkUngen(x, z);
 				}
 			}
 		} else {
@@ -254,14 +205,14 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 			chunks.put(regionPosX, regionPosZ, r);
 			Chunk c = r.getChunk(x, z);
 			if (c == null) {
-				c = genChunkUngen(x,z);
+				c = genChunkUngen(x, z);
 				r.setChunk(x, z, c);
 				return c;
-			}else
+			} else
 				return c;
 		}
 	}
-	
+
 	private Chunk genChunkUngen(int x, int z) {
 		Chunk c = new Chunk(MasterRenderer.global_loader, this, gen.getChunkBlocks(x, z), x, z);
 		NulChunk nc = ungenChunkData.get(x, z);
@@ -271,7 +222,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 		}
 		return c;
 	}
-	
+
 	public void saveChunks() {
 		PlayerSaver.savePlayers(Server.server.clients);
 		System.out.println("Saving World");
@@ -279,14 +230,17 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 		while (regionIt.hasNext()) {
 			try {
 				regionIt.next();
-			} catch (ConcurrentModificationException e) {System.err.println("Tried saving map while loading it. \nPlease wait for map to complete loading before exiting game.");}
+			} catch (ConcurrentModificationException e) {
+				System.err.println(
+						"Tried saving map while loading it. \nPlease wait for map to complete loading before exiting game.");
+			}
 			Region val = regionIt.getValue();
 			if (val != null)
 				val.saveRegion(worldLocation, false);
 		}
 		System.out.println("World Saved");
 	}
-	
+
 	public void queChunk(int cx, int cz, ConnectedClient cl) {
 		try {
 			Chunk c = getChunk(cx, cz);
@@ -300,7 +254,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 			queChunk(cx, cz, cl);
 		}
 	}
-	
+
 	public void cleanup() {
 		new Thread(new Runnable() {
 			@Override
@@ -309,7 +263,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 			}
 		}).start();
 	}
-	
+
 	public void setChunk(Chunk c, int x, int z) {
 		int regionPosX = x / Region.x;
 		int regionPosZ = z / Region.z;
@@ -319,14 +273,14 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 			regionPosZ -= 1;
 		if (chunks.containsKey(regionPosX, regionPosZ)) {
 			Region r = chunks.get(regionPosX, regionPosZ);
-			if (r != null) 
+			if (r != null)
 				r.setChunk(x, z, c);
 			return;
 		}
 		chunks.put(regionPosX, regionPosZ, new Region(regionPosX, regionPosZ));
 		chunks.get(regionPosX, regionPosZ).setChunk(x, z, c);
 	}
-	
+
 	/**
 	 * Note this is in chunk pos and not world pos.
 	 */
@@ -343,141 +297,143 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 				if (r == null)
 					return null;
 				return r.getChunk(x, z);
-			}else
+			} else
 				return null;
-		} catch (NullPointerException e) {return null;}
+		} catch (NullPointerException e) {
+			return null;
+		}
 	}
-	
+
 	public short getBlock(float x, float y, float z) {
 		if (y < 0)
 			return 0;
 		if (y > Chunk.y)
 			return 0;
-		int xoff = 0,zoff = 0;
+		int xoff = 0, zoff = 0;
 		if (x < 0)
 			xoff = -1;
 		if (z < 0)
 			zoff = -1;
-		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
+		Chunk c = getChunk((int) (x / Chunk.x + xoff), (int) (z / Chunk.z + zoff));
 		if (c == null)
 			return 0;
-		x%=Chunk.x;
-		z%=Chunk.z;
+		x %= Chunk.x;
+		z %= Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
-		return c.getBlock((int)x, (int)y, (int)z);
+		return c.getBlock((int) x, (int) y, (int) z);
 	}
-	
+
 	public byte getBlockState(float x, float y, float z) {
 		if (y < 0)
 			return 0;
 		if (y > Chunk.y)
 			return 0;
-		int xoff = 0,zoff = 0;
+		int xoff = 0, zoff = 0;
 		if (x < 0)
 			xoff = -1;
 		if (z < 0)
 			zoff = -1;
-		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
+		Chunk c = getChunk((int) (x / Chunk.x + xoff), (int) (z / Chunk.z + zoff));
 		if (c == null)
 			return 0;
-		x%=Chunk.x;
-		z%=Chunk.z;
+		x %= Chunk.x;
+		z %= Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
-		return c.getBlockState((int)x, (int)y, (int)z);
+		return c.getBlockState((int) x, (int) y, (int) z);
 	}
-	
+
 	public COLLISIONTYPE getBlockCollision(float x, float y, float z) {
 		if (y < 0)
 			return COLLISIONTYPE.NOT;
 		if (y > Chunk.y)
 			return COLLISIONTYPE.NOT;
-		int xoff = 0,zoff = 0;
+		int xoff = 0, zoff = 0;
 		if (x < 0)
 			xoff = -1;
 		if (z < 0)
 			zoff = -1;
-		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
+		Chunk c = getChunk((int) (x / Chunk.x + xoff), (int) (z / Chunk.z + zoff));
 		if (c == null)
 			return COLLISIONTYPE.SOLID;
-		x%=Chunk.x;
-		z%=Chunk.z;
+		x %= Chunk.x;
+		z %= Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
-		return Block.blocks.get(c.getBlock((int)x, (int)y, (int)z)).getCollisiontype();
+		return Block.blocks.get(c.getBlock((int) x, (int) y, (int) z)).getCollisiontype();
 	}
-	
+
 	public void setBlock(float x, float y, float z, short block) {
 		if (y < 0)
 			return;
 		if (y > Chunk.y)
 			return;
-		int xoff = 0,zoff = 0;
+		int xoff = 0, zoff = 0;
 		if (x < 0)
 			xoff = -1;
 		if (z < 0)
 			zoff = -1;
-		int cxpos = ((int)(x/(float)Chunk.x) + xoff), czpos = ((int)(z/(float)Chunk.z) + zoff);
+		int cxpos = ((int) (x / (float) Chunk.x) + xoff), czpos = ((int) (z / (float) Chunk.z) + zoff);
 		Chunk c = getChunk(cxpos, czpos);
 		if (c == null) {
 			NulChunk nc = ungenChunkData.get(cxpos, czpos);
 			if (nc == null)
 				nc = new NulChunk(this);
-			int rx = (int)x;
-			int rz = (int)z;
-			x%=Chunk.x;
-			z%=Chunk.z;
+			int rx = (int) x;
+			int rz = (int) z;
+			x %= Chunk.x;
+			z %= Chunk.z;
 			if (x < 0)
 				x = biasNegative(x, -Chunk.x);
 			if (z < 0)
 				z = biasNegative(z, -Chunk.z);
-			nc.setBlock((int)x,(int)y, (int)z, rx, rz, block);
+			nc.setBlock((int) x, (int) y, (int) z, rx, rz, block);
 			return;
 		}
-		int rx = (int)x;
-		int rz = (int)z;
-		x%=Chunk.x;
-		z%=Chunk.z;
+		int rx = (int) x;
+		int rz = (int) z;
+		x %= Chunk.x;
+		z %= Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
-		c.setBlock((int)x,(int)y, (int)z, rx, rz, block);
+		c.setBlock((int) x, (int) y, (int) z, rx, rz, block);
 	}
-	
+
 	public void setBlockState(float x, float y, float z, byte state) {
 		if (y < 0)
 			return;
 		if (y > Chunk.y)
 			return;
-		int xoff = 0,zoff = 0;
+		int xoff = 0, zoff = 0;
 		if (x < 0)
 			xoff = -1;
 		if (z < 0)
 			zoff = -1;
-		int cxpos = ((int)(x/(float)Chunk.x) + xoff), czpos = ((int)(z/(float)Chunk.z) + zoff);
+		int cxpos = ((int) (x / (float) Chunk.x) + xoff), czpos = ((int) (z / (float) Chunk.z) + zoff);
 		Chunk c = getChunk(cxpos, czpos);
 		if (c == null) {
 			return;
 		}
-		int rx = (int)x;
-		int rz = (int)z;
-		x%=Chunk.x;
-		z%=Chunk.z;
+		int rx = (int) x;
+		int rz = (int) z;
+		x %= Chunk.x;
+		z %= Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
-		c.setBlockState((int)x,(int)y, (int)z, rx, rz, state);
+		c.setBlockState((int) x, (int) y, (int) z, rx, rz, state);
 	}
-	
+
 	public void setBlockStateBIAS(float x, float y, float z, byte state) {
 		if (x < 0)
 			x -= 1;
@@ -485,139 +441,139 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 			z -= 1;
 		setBlockState(x, y, z, state);
 	}
-	
+
 	public void setLightLevel(float x, float y, float z, byte level) {
 		if (y < 0)
 			return;
 		if (y > Chunk.y)
 			return;
-		int xoff = 0,zoff = 0;
+		int xoff = 0, zoff = 0;
 		if (x < 0)
 			xoff = -1;
 		if (z < 0)
 			zoff = -1;
-		Chunk c = getChunk((int)(x/(float)Chunk.x) + xoff, (int)(z/(float)Chunk.z) + zoff);
+		Chunk c = getChunk((int) (x / (float) Chunk.x) + xoff, (int) (z / (float) Chunk.z) + zoff);
 		if (c == null)
 			return;
-		x%=Chunk.x;
-		z%=Chunk.z;
+		x %= Chunk.x;
+		z %= Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
-		c.setLightLevel((int)x,(int)y, (int)z, level);
+		c.setLightLevel((int) x, (int) y, (int) z, level);
 	}
-	
+
 	public void setLightLevelTorch(float x, float y, float z, int level) {
 		if (y < 0)
 			return;
 		if (y > Chunk.y)
 			return;
-		int xoff = 0,zoff = 0;
+		int xoff = 0, zoff = 0;
 		if (x < 0)
 			xoff = -1;
 		if (z < 0)
 			zoff = -1;
-		Chunk c = getChunk((int)(x/(float)Chunk.x) + xoff, (int)(z/(float)Chunk.z) + zoff);
+		Chunk c = getChunk((int) (x / (float) Chunk.x) + xoff, (int) (z / (float) Chunk.z) + zoff);
 		if (c == null)
 			return;
-		x%=Chunk.x;
-		z%=Chunk.z;
+		x %= Chunk.x;
+		z %= Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
-		c.setLightLevelTorch((int)x,(int)y, (int)z, level);
+		c.setLightLevelTorch((int) x, (int) y, (int) z, level);
 	}
-	
+
 	public void setLightLevelSun(float x, float y, float z, int level) {
 		if (y < 0)
 			return;
 		if (y > Chunk.y)
 			return;
-		int xoff = 0,zoff = 0;
+		int xoff = 0, zoff = 0;
 		if (x < 0)
 			xoff = -1;
 		if (z < 0)
 			zoff = -1;
-		Chunk c = getChunk((int)(x/(float)Chunk.x) + xoff, (int)(z/(float)Chunk.z) + zoff);
+		Chunk c = getChunk((int) (x / (float) Chunk.x) + xoff, (int) (z / (float) Chunk.z) + zoff);
 		if (c == null)
 			return;
-		x%=Chunk.x;
-		z%=Chunk.z;
+		x %= Chunk.x;
+		z %= Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
-		c.setLightLevelSun((int)x,(int)y, (int)z, level);
+		c.setLightLevelSun((int) x, (int) y, (int) z, level);
 	}
-	
+
 	public byte getLightLevel(float x, float y, float z) {
 		if (y < 0)
 			return 0;
 		if (y > Chunk.y)
 			return 0;
-		int xoff = 0,zoff = 0;
+		int xoff = 0, zoff = 0;
 		if (x < 0)
 			xoff = -1;
 		if (z < 0)
 			zoff = -1;
-		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
+		Chunk c = getChunk((int) (x / Chunk.x + xoff), (int) (z / Chunk.z + zoff));
 		if (c == null)
 			return 0;
-		x%=Chunk.x;
-		z%=Chunk.z;
+		x %= Chunk.x;
+		z %= Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
-		return c.getLightLevel((int)x, (int)y, (int)z);
+		return c.getLightLevel((int) x, (int) y, (int) z);
 	}
-	
+
 	public byte getLightLevelSun(float x, float y, float z) {
 		if (y < 0)
 			return 0;
 		if (y > Chunk.y)
 			return 0;
-		int xoff = 0,zoff = 0;
+		int xoff = 0, zoff = 0;
 		if (x < 0)
 			xoff = -1;
 		if (z < 0)
 			zoff = -1;
-		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
+		Chunk c = getChunk((int) (x / Chunk.x + xoff), (int) (z / Chunk.z + zoff));
 		if (c == null)
 			return 0;
-		x%=Chunk.x;
-		z%=Chunk.z;
+		x %= Chunk.x;
+		z %= Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
-		return c.getLightLevelSun((int)x, (int)y, (int)z);
+		return c.getLightLevelSun((int) x, (int) y, (int) z);
 	}
-	
+
 	public byte getLightLevelTorch(float x, float y, float z) {
 		if (y < 0)
 			return 0;
 		if (y > Chunk.y)
 			return 0;
-		int xoff = 0,zoff = 0;
+		int xoff = 0, zoff = 0;
 		if (x < 0)
 			xoff = -1;
 		if (z < 0)
 			zoff = -1;
-		Chunk c = getChunk((int) (x/Chunk.x + xoff), (int) (z/Chunk.z + zoff));
+		Chunk c = getChunk((int) (x / Chunk.x + xoff), (int) (z / Chunk.z + zoff));
 		if (c == null)
 			return 0;
-		x%=Chunk.x;
-		z%=Chunk.z;
+		x %= Chunk.x;
+		z %= Chunk.z;
 		if (x < 0)
 			x = biasNegative(x, -Chunk.x);
 		if (z < 0)
 			z = biasNegative(z, -Chunk.z);
-		return c.getLightLevelTorch((int)x, (int)y, (int)z);
+		return c.getLightLevelTorch((int) x, (int) y, (int) z);
 	}
-	
+
 	public void setBlockBIAS(float x, float y, float z, short block) {
 		if (x < 0)
 			x -= 1;
@@ -625,7 +581,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 			z -= 1;
 		setBlock(x, y, z, block);
 	}
-	
+
 	public void setBlockBIAS(float x, float y, float z, int block) {
 		if (x < 0)
 			x -= 1;
@@ -633,7 +589,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 			z -= 1;
 		setBlock(x, y, z, block);
 	}
-	
+
 	public short getBlockBIAS(float x, float y, float z) {
 		// fix for something that is not broken but this is needed
 		// yes
@@ -645,7 +601,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 			z -= 1;
 		return getBlock(x, y, z);
 	}
-	
+
 	public void setLightLevelBIAS(float x, float y, float z, byte level) {
 		if (x < 0)
 			x -= 1;
@@ -653,7 +609,7 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 			z -= 1;
 		setLightLevel(x, y, z, level);
 	}
-	
+
 	public byte getLightLevelBIAS(float x, float y, float z) {
 		if (x < 0)
 			x -= 1;
@@ -661,11 +617,11 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 			z -= 1;
 		return getLightLevel(x, y, z);
 	}
-	
+
 	public void setBlock(float x, float y, float z, int block) {
-		setBlock(x, y, z, (short)block);
+		setBlock(x, y, z, (short) block);
 	}
-	
+
 	private float biasNegative(float f, int unitSize) {
 		return unitSize - f;
 	}
@@ -723,5 +679,5 @@ public class ServerWorld extends IWorldProvider implements IChunkProvider {
 	@Override
 	public void setBlockServer(float x, float y, float z, short block) {
 	}
-	
+
 }

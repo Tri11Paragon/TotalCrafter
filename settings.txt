@@ -7,7 +7,7 @@ key_console: 96
 key_clear: 295
 sensitivity: 0.800000011920929
 username: brett
-ip: 72.39.134.185
+ip: localhost
 samples: 4
 anisotropy: 4
 vsync: 0

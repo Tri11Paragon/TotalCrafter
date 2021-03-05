@@ -32,6 +32,8 @@ import com.brett.renderer.shaders.PointShader;
 import com.brett.sound.AudioController;
 import com.brett.sound.AudioSource;
 import com.brett.sound.MusicMaster;
+import com.brett.tools.IKeyState;
+import com.brett.tools.InputMaster;
 import com.brett.tools.SettingsLoader;
 import com.brett.voxel.gui.MainMenu;
 import com.brett.voxel.inventory.InventoryMaster;
@@ -246,6 +248,29 @@ public class VoxelScreenManager {
 		//System.out.println(MeshStore.models.get(VoxelWorld.createSixBooleans(true, true, true, true, true, true)) == MeshStore.models.get(VoxelWorld.createSixBooleans(true, true, true, true, true, true)));
 		UIDynamicText badjava = new UIDynamicText("", 0.9f, VoxelScreenManager.monospaced, new Vector2f(0.0f, 0.0f), 400, false);
 		badjava.enableText();
+		
+		InputMaster.keyboard.add(new IKeyState() {
+			
+			@Override
+			public void onKeyReleased(int keys) {
+				if (keys == GLFW.GLFW_KEY_T) {
+					double x = player.getPosition().x;
+					double z = player.getPosition().z;
+					int xoff = 0,zoff = 0;
+					// adjust for negatives
+					if (x < 0)
+						xoff = -1;
+					if (z < 0)
+						zoff = -1;
+					// get the chunk
+					System.out.println( "X: " + (int) (x/Chunk.x + xoff) + " :: Z: " + (int) (z/Chunk.z + zoff) );
+				}
+			}
+			
+			@Override
+			public void onKeyPressed(int keys) {
+			}
+		});
 		
 		Chunk.init();
 
