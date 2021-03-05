@@ -1,6 +1,7 @@
 # !! March 2021 Update !!
 A lot has change this I made this. This is a copy of the main repo (TotalCrafter) which focuses on the OpenCL asepcts of TotalCrafter / Minecraft3 (I have merged the two games into one). <br>
 Please refer to the main branch for info about the OpenCL aspect of this. <br>
+
 <br>
 # How to play
 Майнкрафт³ (Minecraft3) doesn’t have a goal to it. It is just like early versions of Minecraft in which you can well mine and craft blocks. There is no final boss for you to defeat and your only ‘goal’ is to have fun! Through the use of console commands (see wiki) you are able to give yourself items if you don’t want to mine for them. Build what you’d like as the only limitation is your imagination!<br>
