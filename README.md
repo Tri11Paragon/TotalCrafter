@@ -1,7 +1,14 @@
-# !! March 2021 Update !!
-A lot has change this I made this. This is a copy of the main repo (TotalCrafter) which focuses on the OpenCL asepcts of TotalCrafter / Minecraft3 (I have merged the two games into one). <br>
-Please refer to the main branch for info about the OpenCL aspect of this. <br>
-
+# !! April 2021 Update !!
+The game and releases are currently working. I've merged my grade 12 final project (Майнкрафт³ (Minecraft3)) into TotalCrafter. What is this means is that I have to manually merge the code from TotalCrafter. Currently the only code to have this done is updating to LWJGL3.<br>
+###Whats left?
+* Cubic chunks
+* rescaleable windows
+* better UI system
+# OpenCL
+Currently, the server in the main branch uses OpenCL to generate its chunks on the GPU. This is part of the MinecraftCL project, and serves as the testing grounds for further OpenCL integration. Why? Because it is easier to implement with a codebase you understand. <br>
+<br>
+#Old readme below:
+---------------------------- <br>
 <br>
 # How to play
 Майнкрафт³ (Minecraft3) doesn’t have a goal to it. It is just like early versions of Minecraft in which you can well mine and craft blocks. There is no final boss for you to defeat and your only ‘goal’ is to have fun! Through the use of console commands (see wiki) you are able to give yourself items if you don’t want to mine for them. Build what you’d like as the only limitation is your imagination!<br>
