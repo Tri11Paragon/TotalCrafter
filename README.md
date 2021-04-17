@@ -1,13 +1,13 @@
 # !! April 2021 Update !!
 The game and releases are currently working. I've merged my grade 12 final project (Майнкрафт³ (Minecraft3)) into TotalCrafter. What is this means is that I have to manually merge the code from TotalCrafter. Currently the only code to have this done is updating to LWJGL3.<br>
-##Whats left?
+### Whats left?
 * Cubic chunks
 * rescaleable windows
 * better UI system
 # OpenCL
 Currently, the server in the main branch uses OpenCL to generate its chunks on the GPU. This is part of the MinecraftCL project, and serves as the testing grounds for further OpenCL integration. Why? Because it is easier to implement with a codebase you understand. <br>
 <br>
-#Old readme below:
+# Old readme below:
 ---------------------------- <br>
 <br>
 # How to play
