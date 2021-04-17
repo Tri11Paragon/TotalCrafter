@@ -1,6 +1,6 @@
 # !! April 2021 Update !!
 The game and releases are currently working. I've merged my grade 12 final project (Майнкрафт³ (Minecraft3)) into TotalCrafter. What is this means is that I have to manually merge the code from TotalCrafter. Currently the only code to have this done is updating to LWJGL3.<br>
-###Whats left?
+##Whats left?
 * Cubic chunks
 * rescaleable windows
 * better UI system
