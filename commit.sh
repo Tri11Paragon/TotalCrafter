@@ -7,4 +7,4 @@ if [ -n "$1" ]; then
 else
 	git commit -m "automated commit $((9956 + RANDOM % 100000))"
 fi
-git push -u origin master
+git push -u origin totalcrafter-main
