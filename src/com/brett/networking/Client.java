@@ -13,7 +13,7 @@ import org.joml.Vector3d;
 
 import com.brett.networking.server.NetworkTransmitEvent;
 import com.brett.networking.server.Server;
-import com.brett.utils.ClientAuth;
+import com.brett.utils.Auth;
 import com.brett.utils.RunLengthEncoding;
 import com.brett.world.chunks.Chunk;
 
@@ -119,7 +119,7 @@ public class Client extends Thread {
 					username = dis.readUTF();
 					String token = dis.readUTF();
 					
-					int level = ClientAuth.check_auth_token(username, token);
+					int level = Auth.check_auth_token(username, token);
 					
 					if (level == 0) {
 						transmit_events.add((DataOutputStream dos) -> {

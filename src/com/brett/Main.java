@@ -18,7 +18,7 @@ import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.tools.Settings;
 import com.brett.engine.ui.console.Console;
 import com.brett.engine.ui.screen.MainMenu;
-import com.brett.utils.ClientAuth;
+import com.brett.utils.Auth;
 
 public class Main {
 
@@ -64,7 +64,7 @@ public class Main {
 			if (vars[0].contentEquals("password"))
 				password = vars[1];
 		}
-		token = ClientAuth.setToken(username, password);
+		token = Auth.setToken(username, password);
 		
 		/**
 		 * Assign system variables

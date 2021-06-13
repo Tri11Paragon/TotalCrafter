@@ -59,7 +59,7 @@ public class Region {
 		try {
 			DataInputStream dis = new DataInputStream(new GZIPInputStream(new BufferedInputStream(new FileInputStream(loc), 8192)));
 			
-			while (dis.available() > 0) {
+			while (dis.available() > 1) {
 				try {
 					int x = dis.readByte();
 					int y = dis.readByte();
@@ -79,7 +79,7 @@ public class Region {
 									//if (blk != 0)
 									//	GameRegistry.getBlock(blk).onBlockPlaced(world, blk, cx + i, cy + j, cz + k);
 								} catch (Exception e) {
-									System.err.println("Tiny Error: " + e.getCause());
+									System.err.println("Tiny Error: " + e.getLocalizedMessage());
 									break;
 								}
 							}
@@ -95,7 +95,8 @@ public class Region {
 			}
 			
 			dis.close();
-		} catch (Exception e) {System.err.println("BIG ERROR " + e.getCause()); }
+		} catch (Exception e) {
+			System.err.println("BIG ERROR " + e.getLocalizedMessage() ); }
 		return this;
 	}
 	
