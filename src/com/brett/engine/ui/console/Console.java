@@ -69,9 +69,8 @@ public class Console {
 				if (keys == GLFW.GLFW_KEY_GRAVE_ACCENT)
 					menu.toggle();
 				if (menu.isEnabled()) {
-					startTime = System.currentTimeMillis();
+					startTime = 0;
 					if (keys == GLFW.GLFW_KEY_BACKSPACE) {
-						startTime = System.currentTimeMillis();
 						if (textBuffer.length() < 2)
 							return;
 						if (textBuffer.toCharArray()[textBuffer.length()-1] == '_')
@@ -131,13 +130,13 @@ public class Console {
 					if (textBuffer.length()-1 > -1)
 						if (textBuffer.toCharArray()[textBuffer.length()-1] == '_')
 							textBuffer = textBuffer.substring(0, textBuffer.length()-1);
-					if (keys >= 65 && keys <= 90) {
-						if (InputMaster.keyDown[GLFW.GLFW_KEY_LEFT_SHIFT] || InputMaster.keyDown[GLFW.GLFW_KEY_RIGHT_SHIFT]) 
-							textBuffer+=(char)keys;
-						else
-							textBuffer+=(char)(keys+32);
-					} else 
-						textBuffer+=(char)keys;
+					//if (keys >= 65 && keys <= 90) {
+					if (InputMaster.keyDown[GLFW.GLFW_KEY_LEFT_SHIFT] || InputMaster.keyDown[GLFW.GLFW_KEY_RIGHT_SHIFT]) 
+						textBuffer+=Character.toUpperCase((char)(keys));
+					else
+						textBuffer+=Character.toLowerCase((char)(keys));
+					//} else 
+					//	textBuffer+=(char)keys;
 					//textBuffer = "_";
 					//commandtext.changeText(textBuffer);
 				}
@@ -145,7 +144,9 @@ public class Console {
 			
 			@Override
 			public void onKeyPressed(int keys) {
-				
+				if (keys == GLFW.GLFW_KEY_BACKSPACE) {
+					startTime = System.currentTimeMillis();
+				}
 			}
 		});
 		
@@ -191,14 +192,16 @@ public class Console {
 			int tmp = ((pastCommands.getNumberOfLines()-1)/2);
 			bodyHeight = tmp*39 + (3 * tmp);
 			if (InputMaster.keyDown[GLFW.GLFW_KEY_BACKSPACE]) {
-				long time = System.currentTimeMillis() - startTime;
-				if (time > 800 && time < 1600) {
-					if (System.currentTimeMillis() - lastKeyTime > 40) {
-						if (textBuffer.length() < 2)
-							return;
-						textBuffer = textBuffer.substring(0, textBuffer.length()-2);
-						lastKeyTime = System.currentTimeMillis();
-						commandtext.changeText(textBuffer);
+				if (startTime != 0) {
+					long time = System.currentTimeMillis() - startTime;
+					if (time > 800) {
+						if (System.currentTimeMillis() - lastKeyTime > 40) {
+							if (textBuffer.length() < 2)
+								return;
+							textBuffer = textBuffer.substring(0, textBuffer.length()-2);
+							lastKeyTime = System.currentTimeMillis();
+							commandtext.changeText(textBuffer);
+						}
 					}
 				}
 			}
