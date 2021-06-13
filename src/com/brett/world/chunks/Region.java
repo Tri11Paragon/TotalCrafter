@@ -54,10 +54,21 @@ public class Region {
 	
 	public Region load(World world) {
 		String loc = new StringBuilder().append(location).append(rx).append("_").append(ry).append("_").append(rz).append(".rg").toString();
-		if (!new File(loc).exists())
+		File fr = new File(loc);
+		if (!fr.exists())
+			return this;
+		// some kind of error while writing file
+		// so we won't load  it.
+		if (fr.length() < 10)
 			return this;
 		try {
-			DataInputStream dis = new DataInputStream(new GZIPInputStream(new BufferedInputStream(new FileInputStream(loc), 8192)));
+			
+			DataInputStream dis = new DataInputStream(
+					new GZIPInputStream(
+							new BufferedInputStream(
+									new FileInputStream(loc), 8192)
+							)
+					);
 			
 			while (dis.available() > 1) {
 				try {
@@ -96,6 +107,7 @@ public class Region {
 			
 			dis.close();
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.err.println("BIG ERROR " + e.getLocalizedMessage() ); }
 		return this;
 	}
