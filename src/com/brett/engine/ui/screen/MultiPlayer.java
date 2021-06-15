@@ -80,11 +80,11 @@ public class MultiPlayer extends Screen implements IMouseState {
 		shader = new VoxelShader();
 		gshader = new GBufferShader();
 		shader.start();
-		shader.loadProjectionMatrox(ProjectionMatrix.projectionMatrix);
+		shader.loadProjectionMatrix(ProjectionMatrix.projectionMatrix);
 		shader.stop();
 		gshader.start();
 		gshader.connectTextureUnits();
-		gshader.loadProjectionMatrox(ProjectionMatrix.projectionMatrix);
+		gshader.loadProjectionMatrix(ProjectionMatrix.projectionMatrix);
 		gshader.stop();
 	}
 	

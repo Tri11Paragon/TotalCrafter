@@ -47,7 +47,7 @@ public class ProjectionMatrix {
 		while (shaderIt.hasNext()) {
 			WorldShader localShader = shaderIt.next().getValue(); 
 			localShader.start();
-			localShader.loadProjectionMatrox(projectionMatrix);
+			localShader.loadProjectionMatrix(projectionMatrix);
 			localShader.stop();
 		}
 		

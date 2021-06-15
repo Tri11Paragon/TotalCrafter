@@ -22,11 +22,12 @@ import com.brett.engine.tools.Maths;
 
 public class GUIRenderer {
 	
-	private final VAO quad;
+	public static VAO quadPUBLIC;
+	public final VAO quad;
 	public GUIShader shader;
 	private int SWIDTH = 800;
 	private int SHEIGHT = 600;
-	private Vector3f nullvec = new Vector3f(-1, 0, 0);
+	public static final Vector3f nullvec = new Vector3f(-1, 0, 0);
 	
 	public GUIRenderer(Loader loader) {
 		// TODO THIS
@@ -40,6 +41,7 @@ public class GUIRenderer {
 		// could use layouts instead but whatever
 		shader.connectTextureUnits();
 		shader.stop();
+		quadPUBLIC = quad;
 	}
 	
 	public void render(List<UIElement> textures) {

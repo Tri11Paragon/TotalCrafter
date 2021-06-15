@@ -6,26 +6,34 @@ import java.util.List;
 import java.util.Map;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import com.brett.Main;
 import com.brett.engine.DebugInfo;
 import com.brett.engine.cameras.CreativeCamera;
 import com.brett.engine.data.IMouseState;
+import com.brett.engine.data.datatypes.VAO;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.InputMaster;
 import com.brett.engine.managers.ScreenManager;
-import com.brett.engine.shaders.GBufferShader;
+import com.brett.engine.shaders.DeferredPass1Shader;
+import com.brett.engine.shaders.DeferredPass2Shader;
 import com.brett.engine.shaders.ProjectionMatrix;
 import com.brett.engine.shaders.VoxelShader;
+import com.brett.engine.shaders.WorldShader;
 import com.brett.engine.tools.Maths;
 import com.brett.engine.tools.Settings;
 import com.brett.engine.ui.AnchorPoint;
+import com.brett.engine.ui.GUIRenderer;
 import com.brett.engine.ui.UIElement;
 import com.brett.engine.ui.UIMenu;
 import com.brett.engine.ui.UITexture;
@@ -55,8 +63,10 @@ public class SinglePlayer extends Screen implements IMouseState {
 	public CreativeCamera camera;
 	public int textureAtlas;
 	public World world;
-	public VoxelShader shader;
-	public GBufferShader gshader;
+	private VoxelShader shader;
+	//public GBufferShader gshader;
+	private DeferredPass1Shader gshader;
+	private DeferredPass2Shader sshader;
 	private UIMenu console;
 	private static int gBuffer = -1, rboDepth, gPosition, gNormal, gColorSpec;
 	private Thread th;
@@ -97,14 +107,28 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		
 		shader = new VoxelShader();
-		gshader = new GBufferShader();
+		
+		//gshader = new GBufferShader();
+		
 		shader.start();
-		shader.loadProjectionMatrox(ProjectionMatrix.projectionMatrix);
+		shader.loadProjectionMatrix(ProjectionMatrix.projectionMatrix);
 		shader.stop();
+		
+		//gshader.start();
+		//gshader.connectTextureUnits();
+		//gshader.loadProjectionMatrox(ProjectionMatrix.projectionMatrix);
+		//gshader.stop();
+		
+		gshader = new DeferredPass1Shader();
 		gshader.start();
-		gshader.connectTextureUnits();
-		gshader.loadProjectionMatrox(ProjectionMatrix.projectionMatrix);
+		gshader.loadProjectionMatrix(ProjectionMatrix.projectionMatrix);
 		gshader.stop();
+		
+		sshader = new DeferredPass2Shader();
+		sshader.start();
+		sshader.loadProjectionMatrix(ProjectionMatrix.projectionMatrix);
+		sshader.connectTextureUnits();
+		sshader.stop();
 		
 		//ShortBlockStorage shrt2 = new ShortBlockStorage();
 		
@@ -120,9 +144,9 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		genBuffers();
 		
-		//elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gColorSpec, -1, 0, 0, 500, 500));
-		//elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gNormal, -1, 500, 0, 500, 500));
-		//elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gPosition, -1, 0, 0, 500, 500));
+		elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gColorSpec, -1, 0, 250, 250, -250));
+		elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gNormal, -1, 0, 500, 250, -250));
+		elements.add(new UITexture(ScreenManager.loader.loadTexture("stone"), gPosition, -1, 0, 750, 250, -250));
 		
 		//GL13.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		th = new Thread(new Runnable() {
@@ -176,8 +200,127 @@ public class SinglePlayer extends Screen implements IMouseState {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, textureAtlas);
 		
-		shader.start();
-		shader.loadViewMatrix(chunkViewMatrix);
+		//shader.start();
+		//shader.loadViewMatrix(chunkViewMatrix);
+		
+		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		
+		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, gBuffer);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		
+		gshader.start();
+		gshader.loadViewMatrix(chunkViewMatrix);
+		
+		drawLoop(gshader);
+		
+		//shader.stop();
+		gshader.stop();
+		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+		
+		GL11.glClearColor(Main.RED, Main.GREEN, Main.BLUE, 1);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		
+		sshader.start();
+		sshader.loadViewMatrix(chunkViewMatrix);
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gPosition);
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gNormal);
+		GL13.glActiveTexture(GL13.GL_TEXTURE2);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gColorSpec);
+		// rewrite first pass to include light data in sperate texture
+		// (store in a float16)
+		// then in second pass we don't need to load light
+		// just use light data from the image
+		
+		// not sure why only Y needs bitshift to work?
+		int x = ((int)((int)(1 / 16) - ((camera.getX()) / 16) )) * 16 + (18 % 16);
+		int y = ((int)((int)(83 >> 4) - ((int)(camera.getY()) >> 4) )) * 16 + (83 % 16);
+		System.out.println(y);
+		int z = ((int)((int)(4 / 16) - ((camera.getZ()) / 16) )) * 16 + (4 % 16);
+		
+		for (int i = 0; i < DeferredPass2Shader.MAX_LIGHTS; i++) {
+			sshader.loadVector("lights[" + i + "].Position", x, y, z);
+			sshader.loadVector("lights[" + i + "].Color", 0.5f, 1.0f, 1.0f);
+			final float constant = 1.0f; // note that we don't send this to the shader, we assume it is always 1.0 (in our case)
+            final float linear = 0.7f;
+            final float quadratic = 1.8f;
+            sshader.loadFloat("lights[" + i + "].Linear", linear);
+            sshader.loadFloat("lights[" + i + "].Quadratic", quadratic);
+            final float maxBrightness = Math.max(Math.max(0.5f, 1.0f), 1.0f);
+            float radius = (float) ((-linear + Math.sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic)) + 100000;
+            sshader.loadFloat("lights[" + i + "].Radius", radius);
+		}
+		sshader.loadViewPos(camera.getPosition());
+		sshader.loadVector("viewd", camera.getPitch(), camera.getRoll(), camera.getYaw());
+		
+		renderQuad();
+		/*GL11.glDisable(GL11.GL_CULL_FACE);
+		GL30.glBindVertexArray(GUIRenderer.quadPUBLIC.getVaoID());
+		GL20.glEnableVertexAttribArray(0);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		
+		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, GUIRenderer.quadPUBLIC.getVaoID());
+		
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL20.glDisableVertexAttribArray(0);
+		GL30.glBindVertexArray(0);
+		GL11.glEnable(GL11.GL_CULL_FACE);*/
+		
+		sshader.stop();
+		
+		//GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, gBuffer);
+		//GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
+		//GL30.glBlitFramebuffer(0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, GL30.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST);
+		//GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+		
+		//shader.start();
+		//shader.loadViewMatrix(chunkViewMatrix);
+		//drawLoop(shader);
+		//shader.stop();
+		
+		ScreenManager.disableCulling();
+		ScreenManager.disableTransparentcy();
+		
+		return super.render();
+	}
+	
+	//TODO: not steal this please
+	// make better too
+	//VAO quadVAO = null;
+	int quadVAO = 0;
+	int quadVBO;
+	private void renderQuad() {
+		if (quadVAO == 0)
+	    {
+			float quadVertices[] = {
+		            // positions        // texture Coords
+		            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+		            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+		             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+		             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+		       };
+			quadVAO = GL30.glGenVertexArrays();
+			quadVBO = GL30.glGenBuffers();
+			GL30.glBindVertexArray(quadVAO);
+			GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, quadVBO);
+			GL30.glBufferData(GL30.GL_ARRAY_BUFFER, quadVertices, GL30.GL_STATIC_DRAW);
+			GL30.glEnableVertexAttribArray(0);
+			GL30.glVertexAttribPointer(0, 3, GL30.GL_FLOAT, false, 5 * 4, 0);
+			GL30.glEnableVertexAttribArray(1);
+			GL30.glVertexAttribPointer(1, 2, GL30.GL_FLOAT, false, 5 * 4, (3 * 4));
+	    }
+	    GL30.glBindVertexArray(quadVAO);
+	    GL11.glDrawArrays(GL20.GL_TRIANGLE_STRIP, 0, 4);
+	    GL30.glBindVertexArray(0);
+	}
+	
+	private void drawLoop(WorldShader sh) {
 		pos = camera.getPosition();
 		
 		for (int i = -Settings.RENDER_DISTANCE; i <= Settings.RENDER_DISTANCE; i++) {
@@ -201,7 +344,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 					if (c == null)
 						world.queueChunk(cx, cy, cz);
 					else {
-						c.render(shader, i, j, k);
+						c.render(sh, i, j, k);
 						// this is cancer pls ignore
 						if (System.currentTimeMillis() - lastCheckTime > 500) {
 							checked = true;
@@ -219,14 +362,6 @@ public class SinglePlayer extends Screen implements IMouseState {
 			lastCheckTime = System.currentTimeMillis();
 			checked = false;
 		}
-		
-		shader.stop();
-		
-		
-		ScreenManager.disableCulling();
-		ScreenManager.disableTransparentcy();
-		
-		return super.render();
 	}
 	
 	@Override
@@ -272,14 +407,14 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		gPosition = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gPosition);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA16, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (ByteBuffer) null);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL30.GL_RGBA16F, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (ByteBuffer) null);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT2, GL11.GL_TEXTURE_2D, gPosition, 0);
+		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, gPosition, 0);
 		
 		gNormal = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, gNormal);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA16, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (ByteBuffer) null);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL30.GL_RGBA16F, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (ByteBuffer) null);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT1, GL11.GL_TEXTURE_2D, gNormal, 0);
@@ -289,15 +424,16 @@ public class SinglePlayer extends Screen implements IMouseState {
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, gColorSpec, 0);
+		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT2, GL11.GL_TEXTURE_2D, gColorSpec, 0);
 
-		IntBuffer drawBuffers = BufferUtils.createIntBuffer(3);
-		drawBuffers.put(GL30.GL_COLOR_ATTACHMENT0);
-		drawBuffers.put(GL30.GL_COLOR_ATTACHMENT1);
-		drawBuffers.put(GL30.GL_COLOR_ATTACHMENT2);
+		//IntBuffer drawBuffers = BufferUtils.createIntBuffer(3);
+		//drawBuffers.put(GL30.GL_COLOR_ATTACHMENT0);
+		//drawBuffers.put(GL30.GL_COLOR_ATTACHMENT1);
+		//drawBuffers.put(GL30.GL_COLOR_ATTACHMENT2);
 		
-		drawBuffers.flip();
-		GL20.glDrawBuffers(drawBuffers);
+		//drawBuffers.flip();
+		//GL20.glDrawBuffers(drawBuffers);
+		GL20.glDrawBuffers(new int[] {GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1, GL30.GL_COLOR_ATTACHMENT2});
 		
 		rboDepth = GL30.glGenRenderbuffers();
 		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, rboDepth);

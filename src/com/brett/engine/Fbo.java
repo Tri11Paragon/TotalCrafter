@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL30;
 import com.brett.engine.managers.DisplayManager;
 
 /**
-* @author Brett
+* @author Brett & Karl
 * @date Jun. 20, 2020
 */
 

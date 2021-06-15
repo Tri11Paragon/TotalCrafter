@@ -13,7 +13,9 @@ import org.lwjgl.opengl.GL30;
 import com.brett.engine.data.datatypes.Face;
 import com.brett.engine.data.datatypes.VAO;
 import com.brett.engine.managers.ScreenManager;
+import com.brett.engine.shaders.DeferredPass1Shader;
 import com.brett.engine.shaders.VoxelShader;
+import com.brett.engine.shaders.WorldShader;
 import com.brett.engine.tools.Maths;
 import com.brett.utils.NdHashMap;
 import com.brett.world.GameRegistry;
@@ -552,7 +554,7 @@ public class Chunk {
 		return new float[] { found, commons };
 	}
 	
-	public void render(VoxelShader shader, int cx, int cy, int cz) {
+	public void render(WorldShader shader, int cx, int cy, int cz) {
 		if (waitingForMesh && !isMeshing) {
 			isMeshing = true;
 			isEmpty = false;

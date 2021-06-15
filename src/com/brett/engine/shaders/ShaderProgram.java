@@ -3,6 +3,8 @@ package com.brett.engine.shaders;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3d;
@@ -178,6 +180,124 @@ public abstract class ShaderProgram {
 		GL20.glUniformMatrix4fv(location, false, matrixBuffer);
 	}
 
+	/*
+	 * following functions should not be used during main loops. please get the uniform location first then use the above functions.
+	 */
+	// cache
+	// using a cache makes this faster, especially if a programmer isn't smart and doesn't listen to above
+	// but is still slower then using the above functions
+	private HashMap<String, Integer> locations = new HashMap<String, Integer>();
+	
+	public void loadFloat(String location, float value) {
+		Integer l = locations.get(location);
+		if (l != null)
+			loadFloat(l, value);
+		else {
+			l = getUniformLocation(location);
+			loadFloat(l, value);
+			locations.put(location, l);
+		}
+	}
+
+	public void loadInt(String location, int value) {
+		Integer l = locations.get(location);
+		if (l != null)
+			loadInt(l, value);
+		else {
+			l = getUniformLocation(location);
+			loadInt(l, value);
+			locations.put(location, l);
+		}
+	}
+
+	public void loadVector(String location, Vector3f vector) {
+		Integer l = locations.get(location);
+		if (l != null)
+			loadVector(l, vector);
+		else {
+			l = getUniformLocation(location);
+			loadVector(l, vector);
+			locations.put(location, l);
+		}
+	}
+	
+	public void loadVector(String location, Vector3d vector) {
+		Integer l = locations.get(location);
+		if (l != null)
+			loadVector(l, vector);
+		else {
+			l = getUniformLocation(location);
+			loadVector(l, vector);
+			locations.put(location, l);
+		}
+	}
+	
+	public void loadVector(String location, float x, float y, float z) {
+		Integer l = locations.get(location);
+		if (l != null)
+			loadVector(l, x, y, z);
+		else {
+			l = getUniformLocation(location);
+			loadVector(l, x, y, z);
+			locations.put(location, l);
+		}
+	}
+
+	public void load4DVector(String location, Vector4f vector) {
+		Integer l = locations.get(location);
+		if (l != null)
+			load4DVector(l, vector);
+		else {
+			l = getUniformLocation(location);
+			load4DVector(l, vector);
+			locations.put(location, l);
+		}
+	}
+
+	public void load2DVector(String location, Vector2f vector) {
+		Integer l = locations.get(location);
+		if (l != null)
+			load2DVector(l, vector);
+		else {
+			l = getUniformLocation(location);
+			load2DVector(l, vector);
+			locations.put(location, l);
+		}
+	}
+
+	public void load2DVector(String location, float x, float y) {
+		Integer l = locations.get(location);
+		if (l != null)
+			load2DVector(l, x, y);
+		else {
+			l = getUniformLocation(location);
+			load2DVector(l, x, y);
+			locations.put(location, l);
+		}
+	}
+
+	public void loadBoolean(String location, boolean value) {
+		Integer l = locations.get(location);
+		if (l != null)
+			loadBoolean(l, value);
+		else {
+			l = getUniformLocation(location);
+			loadBoolean(l, value);
+			locations.put(location, l);
+		}
+	}
+
+	public void loadMatrix(String location, Matrix4f matrix) {
+		Integer l = locations.get(location);
+		if (l != null)
+			loadMatrix(l, matrix);
+		else {
+			l = getUniformLocation(location);
+			loadMatrix(l, matrix);
+			locations.put(location, l);
+		}
+	}
+	
 	/**
 	 * 
 	 * @param file - File location inside resources/shaders

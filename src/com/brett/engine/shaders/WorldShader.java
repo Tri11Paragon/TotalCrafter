@@ -29,7 +29,7 @@ public class WorldShader extends ShaderProgram {
 	protected void bindAttributes() {
 	}
 	
-	public void loadProjectionMatrox(Matrix4f matrix) {
+	public void loadProjectionMatrix(Matrix4f matrix) {
 		super.loadMatrix(location_projectionMatrix, matrix);
 	}
 	

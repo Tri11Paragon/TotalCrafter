@@ -22,14 +22,14 @@ public class UITexture implements UIElement, RescaleEvent {
 	public Vector3f color = new Vector3f(-1,0,0);
 	public AnchorPoint anchorPoint = AnchorPoint.TOPLEFT;
 	
-	public UITexture(int t1, int t2, int t3, float x, float y, float w, float h) {
+	public UITexture(int texture1, int texture2, int texture3, float x, float y, float w, float h) {
 		this.x = x;
 		this.y = y;
 		this.width = w;
 		this.height = h;
-		this.t1 = t1;
-		this.t2 = t2;
-		this.t3 = t3;
+		this.t1 = texture1;
+		this.t2 = texture2;
+		this.t3 = texture3;
 		recalculateVectors();
 	}
 
