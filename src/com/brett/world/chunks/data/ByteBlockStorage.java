@@ -1,6 +1,7 @@
 package com.brett.world.chunks.data;
 
 import com.brett.world.block.Block;
+import com.brett.world.chunks.Chunk;
 
 /**
 * @author Brett
@@ -9,9 +10,7 @@ import com.brett.world.block.Block;
 
 public class ByteBlockStorage {
 	
-	public static final int SIZE = 16;
-	
-	public byte[][][] blocks = new byte[SIZE][SIZE][SIZE];
+	public byte[][][] blocks = new byte[Chunk.SIZE][Chunk.SIZE][Chunk.SIZE];
 	
 	/**
 	 * returns the block at a position in the array

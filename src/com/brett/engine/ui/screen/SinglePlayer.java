@@ -1,19 +1,14 @@
 package com.brett.engine.ui.screen;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.List;
 import java.util.Map;
 
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.joml.Vector3d;
-import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
@@ -21,7 +16,6 @@ import com.brett.Main;
 import com.brett.engine.DebugInfo;
 import com.brett.engine.cameras.CreativeCamera;
 import com.brett.engine.data.IMouseState;
-import com.brett.engine.data.datatypes.VAO;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.InputMaster;
 import com.brett.engine.managers.ScreenManager;
@@ -33,7 +27,6 @@ import com.brett.engine.shaders.WorldShader;
 import com.brett.engine.tools.Maths;
 import com.brett.engine.tools.Settings;
 import com.brett.engine.ui.AnchorPoint;
-import com.brett.engine.ui.GUIRenderer;
 import com.brett.engine.ui.UIElement;
 import com.brett.engine.ui.UIMenu;
 import com.brett.engine.ui.UITexture;
@@ -64,7 +57,6 @@ public class SinglePlayer extends Screen implements IMouseState {
 	public int textureAtlas;
 	public World world;
 	private VoxelShader shader;
-	//public GBufferShader gshader;
 	private DeferredPass1Shader gshader;
 	private DeferredPass2Shader sshader;
 	private UIMenu console;
@@ -108,16 +100,9 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		shader = new VoxelShader();
 		
-		//gshader = new GBufferShader();
-		
 		shader.start();
 		shader.loadProjectionMatrix(ProjectionMatrix.projectionMatrix);
 		shader.stop();
-		
-		//gshader.start();
-		//gshader.connectTextureUnits();
-		//gshader.loadProjectionMatrox(ProjectionMatrix.projectionMatrix);
-		//gshader.stop();
 		
 		gshader = new DeferredPass1Shader();
 		gshader.start();
@@ -129,18 +114,6 @@ public class SinglePlayer extends Screen implements IMouseState {
 		sshader.loadProjectionMatrix(ProjectionMatrix.projectionMatrix);
 		sshader.connectTextureUnits();
 		sshader.stop();
-		
-		//ShortBlockStorage shrt2 = new ShortBlockStorage();
-		
-		//for (int i = 0; i < 16; i++) {
-		//	for (int k = 0; k < 16; k++) {
-		//		shrt2.setWorld(i, 1, k, Block.STONE);
-		//	}
-		//}
-		
-		//Chunk c2 = new Chunk(world, shrt2, null, 1, 0, 0);
-		//world.setChunk(c2);
-		//c2.meshChunk();
 		
 		genBuffers();
 		
@@ -235,42 +208,40 @@ public class SinglePlayer extends Screen implements IMouseState {
 		// then in second pass we don't need to load light
 		// just use light data from the image
 		
-		// not sure why only Y needs bitshift to work?
-		int x = ((int)((int)(1 / 16) - ((camera.getX()) / 16) )) * 16 + (18 % 16);
-		int y = ((int)((int)(83 >> 4) - ((int)(camera.getY()) >> 4) )) * 16 + (83 % 16);
-		System.out.println(y);
-		int z = ((int)((int)(4 / 16) - ((camera.getZ()) / 16) )) * 16 + (4 % 16);
-		
 		for (int i = 0; i < DeferredPass2Shader.MAX_LIGHTS; i++) {
+			// not sure why only Y needs bitshift to work?
+			int lx = 1;
+			int ly = 81;
+			int lz = 4;
+			int x = ((int)((lx/16) - ((camera.getX()) / 16) )) * 16 + (lx % 16);
+			int y = ((int)((ly >> 4) - ((int)(camera.getY()) >> 4) )) * 16 + (ly % 16);
+			int z = ((int)((lz/16) - ((camera.getZ()) / 16) )) * 16 + (lz % 16);
 			sshader.loadVector("lights[" + i + "].Position", x, y, z);
 			sshader.loadVector("lights[" + i + "].Color", 0.5f, 1.0f, 1.0f);
 			final float constant = 1.0f; // note that we don't send this to the shader, we assume it is always 1.0 (in our case)
             final float linear = 0.7f;
-            final float quadratic = 1.8f;
+            final float quadratic = 1.2f;
             sshader.loadFloat("lights[" + i + "].Linear", linear);
             sshader.loadFloat("lights[" + i + "].Quadratic", quadratic);
             final float maxBrightness = Math.max(Math.max(0.5f, 1.0f), 1.0f);
             float radius = (float) ((-linear + Math.sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic)) + 100000;
             sshader.loadFloat("lights[" + i + "].Radius", radius);
 		}
+		int lx = (int)camera.getX();
+		int ly = (int)camera.getY();
+		int lz = (int)camera.getZ();
+		float cx = (float) (camera.getX() - lx);
+		float cy = (float) (camera.getY() - ly);
+		float cz = (float) (camera.getZ() - lz);
+		int x = ((int)((lx/16) - ((camera.getX()) / 16) )) * 16 + (lx % 16);
+		int y = ((int)((ly >> 4) - ((int)(camera.getY()) >> 4) )) * 16 + (ly % 16);
+		int z = ((int)((lz/16) - ((camera.getZ()) / 16) )) * 16 + (lz % 16);
+		sshader.loadVector("lights[" + 0 + "].Position", x + cx, y + cy, z + cz);
+		sshader.loadVector("lights[" + 0 + "].Color", 10.0f, 10.0f, 10.0f);
 		sshader.loadViewPos(camera.getPosition());
-		sshader.loadVector("viewd", camera.getPitch(), camera.getRoll(), camera.getYaw());
+		sshader.loadVector("directlight", -0.2f, -1.0f, -0.3f);
 		
 		renderQuad();
-		/*GL11.glDisable(GL11.GL_CULL_FACE);
-		GL30.glBindVertexArray(GUIRenderer.quadPUBLIC.getVaoID());
-		GL20.glEnableVertexAttribArray(0);
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		
-		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, GUIRenderer.quadPUBLIC.getVaoID());
-		
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glDisable(GL11.GL_BLEND);
-		GL20.glDisableVertexAttribArray(0);
-		GL30.glBindVertexArray(0);
-		GL11.glEnable(GL11.GL_CULL_FACE);*/
 		
 		sshader.stop();
 		
@@ -278,11 +249,6 @@ public class SinglePlayer extends Screen implements IMouseState {
 		//GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
 		//GL30.glBlitFramebuffer(0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT, GL30.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST);
 		//GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
-		
-		//shader.start();
-		//shader.loadViewMatrix(chunkViewMatrix);
-		//drawLoop(shader);
-		//shader.stop();
 		
 		ScreenManager.disableCulling();
 		ScreenManager.disableTransparentcy();

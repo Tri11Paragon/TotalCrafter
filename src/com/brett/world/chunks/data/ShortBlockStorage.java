@@ -3,6 +3,7 @@ package com.brett.world.chunks.data;
 import com.brett.world.GameRegistry;
 import com.brett.world.World;
 import com.brett.world.block.Block;
+import com.brett.world.chunks.Chunk;
 
 /**
 * @author Brett
@@ -11,9 +12,7 @@ import com.brett.world.block.Block;
 
 public class ShortBlockStorage {
 	
-	public static final int SIZE = 16;
-	
-	public short[][][] blocks = new short[SIZE][SIZE][SIZE];
+	public short[][][] blocks = new short[Chunk.SIZE][Chunk.SIZE][Chunk.SIZE];
 	// information about if the chunk has been changed but not saved to disk
 	// only true if not saved to disk**
 	public volatile boolean hasChanged = false;
@@ -23,9 +22,9 @@ public class ShortBlockStorage {
 	 * this is slow and shouldn't be called from the main thread.
 	 */
 	public ShortBlockStorage integrate(ShortBlockStorage other) {
-		for (int i = 0; i < SIZE; i++) {
-			for (int j = 0; j < SIZE; j++) {
-				for (int k = 0; k < SIZE; k++) {
+		for (int i = 0; i < Chunk.SIZE; i++) {
+			for (int j = 0; j < Chunk.SIZE; j++) {
+				for (int k = 0; k < Chunk.SIZE; k++) {
 					if (blocks[i][j][k] == Block.AIR) {
 						blocks[i][j][k] = other.blocks[i][j][k];
 					}

@@ -13,8 +13,6 @@ import org.lwjgl.opengl.GL30;
 import com.brett.engine.data.datatypes.Face;
 import com.brett.engine.data.datatypes.VAO;
 import com.brett.engine.managers.ScreenManager;
-import com.brett.engine.shaders.DeferredPass1Shader;
-import com.brett.engine.shaders.VoxelShader;
 import com.brett.engine.shaders.WorldShader;
 import com.brett.engine.tools.Maths;
 import com.brett.utils.NdHashMap;
@@ -39,6 +37,8 @@ public class Chunk {
 	public static final byte FRONT = 0b001000;
 	public static final byte TOP = 0b010000;
 	public static final byte BOTTOM = 0b100000;
+	
+	public static final int SIZE = 16;
 
 	public ShortBlockStorage blocks = new ShortBlockStorage();
 	public ByteBlockStorage lightLevel = new ByteBlockStorage();
@@ -136,9 +136,9 @@ public class Chunk {
 		data = new float[0];
 		normals = new float[0];
 
-		for (int i = 0; i < ShortBlockStorage.SIZE; i++) {
-			for (int j = 0; j < ShortBlockStorage.SIZE; j++) {
-				for (int k = 0; k < ShortBlockStorage.SIZE; k++) {
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				for (int k = 0; k < SIZE; k++) {
 					short block = blocks.get(i, j, k);
 					if (block == Block.AIR)
 						continue;
@@ -245,9 +245,9 @@ public class Chunk {
 		data = new float[0];
 		normals = new float[0];
 
-		for (int i = 0; i < ShortBlockStorage.SIZE; i++) {
-			for (int j = 0; j < ShortBlockStorage.SIZE; j++) {
-				for (int k = 0; k < ShortBlockStorage.SIZE; k++) {
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				for (int k = 0; k < SIZE; k++) {
 					short block = blocks.get(i, j, k);
 					if (block == Block.AIR)
 						continue;
