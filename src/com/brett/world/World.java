@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.brett.engine.data.collision.AxisAlignedBB;
+import com.brett.engine.data.datatypes.VAO;
 import com.brett.engine.managers.ThreadPool;
 import com.brett.networking.Client;
 import com.brett.networking.ServerConnection;
@@ -15,9 +16,10 @@ import com.brett.utils.Noise;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.Chunk;
 import com.brett.world.chunks.Region;
+import com.brett.world.chunks.biome.Biome;
 import com.brett.world.chunks.data.ByteBlockStorage;
 import com.brett.world.chunks.data.RenderMode;
-import com.brett.world.chunks.data.ShortBlockStorage;
+import com.brett.world.chunks.data.BlockStorage;
 
 /**
  * @author Brett
@@ -27,6 +29,7 @@ import com.brett.world.chunks.data.ShortBlockStorage;
 public class World {
 
 	public static World world;
+	public static ArrayList<VAO> deleteVAOS = new ArrayList<VAO>();
 
 	public volatile NdHashMap<Integer, Region> regions = new NdHashMap<Integer, Region>();
 	public volatile NdHashMap<Integer, Chunk> ungeneratedChunks = new NdHashMap<Integer, Chunk>();
@@ -82,7 +85,7 @@ public class World {
 		if (ungeneratedChunks.containsKey(x, y, z)) {
 			return;
 		}
-		Chunk c = new Chunk(this, new ShortBlockStorage(), new ByteBlockStorage(), x, y, z);
+		Chunk c = new Chunk(this, new BlockStorage(), new ByteBlockStorage(), x, y, z);
 		ungeneratedChunks.set(x, y, z, c);
 		if (world.isRemote) {
 			serverConnection.sendChunkReq(x, y, z);
@@ -111,7 +114,9 @@ public class World {
 				ungeneratedChunks.remove(x, y, z);
 				return;
 			}
-			ShortBlockStorage blks = c.blocks;
+			//long start = System.nanoTime();
+			Biome b = GameRegistry.getBiomeById(Biome.GRASSLANDS);
+			BlockStorage blks = c.blocks;
 			int cxw = x * 16;
 			int cyw = y * 16;
 			int czw = z * 16;
@@ -119,31 +124,37 @@ public class World {
 				for (int k = 0; k < 16; k++) {
 					int wx = cxw + i;
 					int wz = czw + k;
-					double nfxz = 0;
-					if (cyw > -120)
-						nfxz = noise1.noise(wx / 128d + noise2.nNoise(wx / 32d, 4 / 3492d, wz / 32d + noise1.noise(wx, wz), 8, 4d), wz / 128d) * 64 + 64;
+					double wheight = 0;
+					
+					if (cyw > b.getLowHeight())
+						wheight = b.generateHeight(wx, wz);
 					for (int j = 0; j < 16; j++) {
 						int wy = cyw + j;
 
-						if (wy > nfxz) {
+						if (wy > wheight) {
 							
 						} else {
-
-							double nf = noise1.noise(wx / 32d, wy / 32d, wz / 32d);
+							// noise1.noise(wx / 32d, wy / 32d, wz / 32d)
+							double nf = b.generateNoise(wx, wy, wz);
+							// -Noise.RANGE_3D / 2
 							if (nf > -Noise.RANGE_3D / 2) {
-								if (wy < nfxz && wy > nfxz - 1)
+								if (wy < wheight+1 && wy >= wheight)
 									blks.setWorld(wx, wy, wz, Block.GRASS);
-								else if (wy < nfxz - 1 && wy > (nfxz - 4))
+								else if (wy < wheight && wy > (wheight - (b.getDirtAmount() + 1)))
 									blks.setWorld(wx, wy, wz, Block.DIRT);
-								else if (wy > -120)
+								else if (wy > b.getLowHeight())
 									blks.setWorld(wx, wy, wz, Block.STONE);
 								else
 									blks.setWorld(wx, wy, wz, Block.BASALT);
+								blks.set(i, j, k, b.generateOres(wx, wy, wz, blks.get(i, j, k)));
 							}
 						}
 					}
 				}
 			}
+			b.generate(blks, this);
+			//long end = System.nanoTime();
+			//System.out.println("Took: " + (end - start) + "ns or " + ((end-start)/1000000) + "ms to generate chunk");
 			r.setChunk(x, y, z, c);
 			if (playerRequestedChunks.containsKey(x, y, z) && isServer) {
 				List<Client> clients = playerRequestedChunks.get(x, y, z);
@@ -159,7 +170,7 @@ public class World {
 	/**
 	 * sets a block in block space.
 	 */
-	public void setBlock(int x, int y, int z, short id) {
+	public void setBlock(int x, int y, int z, int id) {
 		int cx = x >> 4;
 		int cy = y >> 4;
 		int cz = z >> 4;
@@ -168,7 +179,7 @@ public class World {
 			if (ungeneratedChunks.containsKey(cx, cy, cz)) {
 				c = ungeneratedChunks.get(cx, cy, cz);
 			} else {
-				c = new Chunk(this, new ShortBlockStorage(), new ByteBlockStorage(), cx, cy, cz);
+				c = new Chunk(this, new BlockStorage(), new ByteBlockStorage(), cx, cy, cz);
 				ungeneratedChunks.set(cx, cy, cz, c);
 			}
 		} else
@@ -228,7 +239,7 @@ public class World {
 	public RenderMode getRenderMode(int x, int y, int z) {
 		Chunk c = getChunkWorld(x, y, z);
 		if (c == null)
-			return GameRegistry.getBlock((short) 0).getRenderMode();
+			return GameRegistry.getBlock((short)0).getRenderMode();
 		short block = c.blocks.getWorld(x, y, z);
 		return GameRegistry.getBlock(block).getRenderMode();
 	}

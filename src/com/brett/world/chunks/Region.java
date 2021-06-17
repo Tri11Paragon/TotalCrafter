@@ -13,7 +13,7 @@ import java.util.zip.GZIPOutputStream;
 
 import com.brett.world.World;
 import com.brett.world.chunks.data.ByteBlockStorage;
-import com.brett.world.chunks.data.ShortBlockStorage;
+import com.brett.world.chunks.data.BlockStorage;
 
 /**
 * @author Brett
@@ -80,7 +80,7 @@ public class Region {
 					int cy = ry * 8 + y;
 					int cz = rz * 8 + z;
 					
-					ShortBlockStorage shbk = new ShortBlockStorage();
+					BlockStorage shbk = new BlockStorage();
 					for (int i = 0; i < 16; i++) {
 						for (int j = 0; j < 16; j++) {
 							for (int k = 0; k < 16; k++) {
@@ -179,8 +179,21 @@ public class Region {
 			dos.writeByte(-2);
 			dos.close();
 			f.delete();
-		} catch (Exception e) {}
+		} catch (Exception e) {e.printStackTrace();}
 		return this;
+	}
+	
+	public void cleanup() {
+		for (int i = 0; i < regionSize; i++) {
+			for (int j = 0; j < regionSize; j++) {
+				for (int k = 0; k < regionSize; k++) {
+					Chunk c = chunks[i][j][k];
+					if (c == null)
+						continue;
+					c.qdelete();
+				}
+			}
+		}
 	}
 	
 }

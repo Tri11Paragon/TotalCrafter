@@ -8,6 +8,7 @@ import java.lang.management.ThreadMXBean;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 
 import com.brett.engine.DebugInfo;
 import com.brett.engine.SyncSave;

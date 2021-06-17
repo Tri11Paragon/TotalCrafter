@@ -208,7 +208,7 @@ public final class Noise {
     	double total = 0;
     	
     	for (int i = 1; i <= octaves; i++) {
-    		total += noise(x/i, y/i, z/i);
+    		total += noise(x/i, y/i, z/i) * roughness;
     	}
     	
     	return total;

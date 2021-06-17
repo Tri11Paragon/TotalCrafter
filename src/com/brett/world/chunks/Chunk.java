@@ -21,7 +21,7 @@ import com.brett.world.World;
 import com.brett.world.block.Block;
 import com.brett.world.chunks.data.ByteBlockStorage;
 import com.brett.world.chunks.data.RenderMode;
-import com.brett.world.chunks.data.ShortBlockStorage;
+import com.brett.world.chunks.data.BlockStorage;
 import com.brett.world.mesh.MeshStore;
 
 /**
@@ -40,7 +40,7 @@ public class Chunk {
 	
 	public static final int SIZE = 16;
 
-	public ShortBlockStorage blocks = new ShortBlockStorage();
+	public BlockStorage blocks = new BlockStorage();
 	public ByteBlockStorage lightLevel = new ByteBlockStorage();
 	public NdHashMap<Integer, Byte> lights = new NdHashMap<Integer, Byte>();
 
@@ -64,15 +64,15 @@ public class Chunk {
 
 	public World world;
 
-	public Chunk(World world, short[][][] blocks, byte[] lightLevel, byte[] lights, int x_pos, int y_pos, int z_pos) {
+	/*public Chunk(World world, int[][][] blocks, byte[] lightLevel, byte[] lights, int x_pos, int y_pos, int z_pos) {
 		this.blocks.blocks = blocks;
 		this.x_pos = x_pos;
 		this.y_pos = y_pos;
 		this.z_pos = z_pos;
 		this.world = world;
-	}
+	}*/
 
-	public Chunk(World world, ShortBlockStorage blocks, ByteBlockStorage lightLevel, int x_pos, int y_pos, int z_pos) {
+	public Chunk(World world, BlockStorage blocks, ByteBlockStorage lightLevel, int x_pos, int y_pos, int z_pos) {
 		if (blocks != null)
 			this.blocks = blocks;
 		if (lightLevel != null)
@@ -86,7 +86,7 @@ public class Chunk {
 	public void iNeedMesh() {
 		if (isMeshing || waitingForMesh)
 			return;
-		
+		//long start = System.nanoTime();
 		if (hasMeshed) {
 		//if ((chunkInfo & LEFT) == LEFT) {
 			Chunk dc = world.getChunk(x_pos - 1, y_pos, z_pos);
@@ -230,12 +230,15 @@ public class Chunk {
 		waitingForMesh = true;
 		isMeshing = false;
 		yesMan = true;
+		//long end = System.nanoTime();
+		//System.out.println("Took: " + (end - start) + "ns or " + ((end-start)/1000000) + "ms to mesh chunk");
 	}
 	
 	public void meshChunk(boolean isDoneMeshing) {
 		if (isMeshing || waitingForMesh)
 			return;
 
+		
 		isMeshing = true;
 		lastIndex = 0;
 		lastIndexData = 0;
@@ -558,14 +561,23 @@ public class Chunk {
 		if (waitingForMesh && !isMeshing) {
 			isMeshing = true;
 			isEmpty = false;
-			if (vao != null)
-				ScreenManager.loader.deleteVAO(vao);
+			//if (vao != null)
+			//	vao = ScreenManager.loader.deleteVAO(vao);
 			
-			if (positions != null && data != null) {
-				if (positions.length > 0 && data.length > 0)
-					vao = ScreenManager.loader.loadToVAOChunk(positions, normals, data);
-				else
-					isEmpty = true;
+			if (vao == null) {
+				if (positions != null && data != null) {
+					if (positions.length > 0 && data.length > 0)
+						vao = ScreenManager.loader.loadToVAOChunk(positions, normals, data);
+					else
+						isEmpty = true;
+				}
+			} else {
+				if (positions != null && data != null) {
+					if (positions.length > 0 && data.length > 0)
+						ScreenManager.loader.updateChunkVAO(vao, positions, normals, data);
+					else
+						isEmpty = true;
+				}
 			}
 			
 			if (yesMan) {
@@ -597,11 +609,29 @@ public class Chunk {
 			GL30.glBindVertexArray(0);
 		}
 	}
+	
+	protected void finalize() throws Throwable  
+	{  
+		super.finalize();
+		if (vao != null)
+			World.deleteVAOS.add(vao);
+		vao = null;
+	}
+	
+	public void qdelete() {
+		//if (vao != null)
+		//	World.deleteVAOS.add(vao);
+		//vao = null;
+		delete();
+	}
 
 	public void delete() {
 		isEmpty = true;
 		isMeshing = true;
-		vao = ScreenManager.loader.deleteVAO(vao);
+		//vao = ScreenManager.loader.deleteVAO(vao);
+		if (vao != null)
+			World.deleteVAOS.add(vao);
+		vao = null;
 		positions = null;
 		data = null;
 	}

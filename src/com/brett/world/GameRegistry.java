@@ -5,6 +5,14 @@ import java.util.HashMap;
 import com.brett.world.block.Block;
 import com.brett.world.block.BlockAir;
 import com.brett.world.block.BlockGlowstone;
+import com.brett.world.chunks.biome.Biome;
+import com.brett.world.chunks.biome.BiomeExtremeHills;
+import com.brett.world.chunks.biome.BiomeForest;
+import com.brett.world.chunks.biome.BiomeGrasslands;
+import com.brett.world.chunks.biome.BiomeMountains;
+import com.brett.world.chunks.biome.BiomeOld;
+import com.brett.world.chunks.biome.BiomePlains;
+import com.brett.world.chunks.biome.BiomeSavana;
 import com.brett.world.item.Item;
 
 /**
@@ -14,19 +22,31 @@ import com.brett.world.item.Item;
 
 public class GameRegistry {
 	
-	private static short highestID = 0;
+	private static int highestID = 0;
 	
-	public static HashMap<Integer, String> blockTextures = new HashMap<Integer, String>();
-	public static HashMap<String, Integer> blockTextureIDs = new HashMap<String, Integer>();
+	public static HashMap<Short, String> blockTextures = new HashMap<Short, String>();
+	public static HashMap<String, Short> blockTextureIDs = new HashMap<String, Short>();
+	public static HashMap<Integer, Biome> biomes = new HashMap<Integer, Biome>();
 	
-	public static HashMap<Integer, String> registerTextures() {
-		registerTexture(0, "stone2", "stone");
-		registerTexture(1, "dirt", "dirt");
-		registerTexture(2, "grass", "grass");
-		registerTexture(3, "stone3", "basalt");
-		registerTexture(4, "cobble", "cracked");
-		registerTexture(5, "glowstone", "glowstone");
+	public static HashMap<Short, String> registerTextures() {
+		registerTexture((short)0, "stone2", "stone");
+		registerTexture((short)1, "dirt", "dirt");
+		registerTexture((short)2, "grass", "grass");
+		registerTexture((short)3, "stone3", "basalt");
+		registerTexture((short)4, "cobble", "cracked");
+		registerTexture((short)5, "glowstone", "glowstone");
 		return blockTextures;
+	}
+	
+	public static void registerBiomes() {
+		// TODO: this seed
+		registerBiome(new BiomeGrasslands(Biome.GRASSLANDS, "Grasslands", 694));
+		registerBiome(new BiomeMountains(Biome.MOUNTAINS, "Mountains", 694));
+		registerBiome(new BiomeOld(Biome.OLD, "old generator", 694));
+		registerBiome(new BiomeForest(Biome.FOREST, "Forest", 694));
+		registerBiome(new BiomePlains(Biome.PLAINS, "Plains", 694));
+		registerBiome(new BiomeSavana(Biome.SAVANA, "Savana", 694));
+		registerBiome(new BiomeExtremeHills(Biome.EXTREME_HILLS, "Extreme Hills", 694));
 	}
 	
 	public static void registerBlocks() {
@@ -42,12 +62,12 @@ public class GameRegistry {
 		
 	}
 	
-	public static void registerTexture(int id, String texture) {
+	public static void registerTexture(short id, String texture) {
 		blockTextures.put(id, texture);
 		blockTextureIDs.put(texture, id);
 	}
 	
-	public static void registerTexture(int id, String texture, String textureName) {
+	public static void registerTexture(short id, String texture, String textureName) {
 		blockTextures.put(id, texture);
 		blockTextureIDs.put(textureName, id);
 	}
@@ -92,7 +112,15 @@ public class GameRegistry {
 		Block.inverseBlocks.put(b, b.id);
 	}
 	
-	public static short getIdByBlock(Block b) {
+	public static void registerBiome(Biome b) {
+		biomes.put(b.getId(), b);
+	}
+	
+	public static Biome getBiomeById(int id) {
+		return biomes.get(id);
+	}
+	
+	public static int getIdByBlock(Block b) {
 		return Block.inverseBlocks.get(b);
 	}
 	

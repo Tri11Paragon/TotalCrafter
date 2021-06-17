@@ -181,8 +181,10 @@ public class Client extends Thread {
 		});
 	}
 	
+	// TODO: this
 	public void sendChunk(Chunk c) {
-		transmit_events.add((DataOutputStream dos) -> {
+		return;
+		/*transmit_events.add((DataOutputStream dos) -> {
 			try {
 				ArrayList<Short> compressed_blocks = RunLengthEncoding.encode_chunk(c.blocks.blocks);
 				dos.writeByte(Flags.B_CHUNKREQ);
@@ -197,7 +199,7 @@ public class Client extends Thread {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		});
+		});*/
 	}
 	
 	public void sendPos(Vector3d pos, String username) {

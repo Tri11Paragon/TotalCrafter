@@ -42,6 +42,18 @@ public class Loader {
 	// map of loaded textures.
 	public Map<String, Integer> textureMap = new HashMap<String, Integer>();
 	
+	public int getVAOsSize() {
+		return vaos.size();
+	}
+	
+	public int getVBOsSize() {
+		return vbos.size();
+	}
+	
+	public int getTexturesSize() {
+		return textures.size();
+	}
+	
 	/**
 	 * prints the sizes of all the maps
 	 */
@@ -101,21 +113,6 @@ public class Loader {
 		return new VAO(vaoID, vbos, positions.length);
 	}
 	
-	public VAO loadToVAOChunk(float[] positions, float[] normals, float[] textureCoords){
-		// standard stuff that this point
-		// create VAO
-		int vaoID = createVAO();
-		// we want to keep reference of vbos for runtime deletion
-		int[] vbos = new int[3];
-		// store the data into the vbos
-		vbos[0] = this.storeDataInAttributeList(0, 3, positions);
-		vbos[1] = this.storeDataInAttributeList(1, 1, textureCoords);
-		vbos[2] = this.storeDataInAttributeList(2, 3, normals);
-		// unbind the VAO
-		unbindVAO();
-		return new VAO(vaoID, vbos, positions.length);
-	}
-	
 	/**
 	 * loads to VAO using ModelData
 	 */
@@ -157,11 +154,54 @@ public class Loader {
 		
 	}
 	
+	public VAO loadToVAOChunk(float[] positions, float[] normals, float[] textureCoords){
+		// standard stuff that this point
+		// create VAO
+		int vaoID = createVAO();
+		// we want to keep reference of vbos for runtime deletion
+		int[] vbos = new int[3];
+		// store the data into the vbos
+		vbos[0] = this.storeDataInAttributeList(0, 3, positions);
+		vbos[1] = this.storeDataInAttributeList(1, 1, textureCoords);
+		vbos[2] = this.storeDataInAttributeList(2, 3, normals);
+		// unbind the VAO
+		unbindVAO();
+		return new VAO(vaoID, vbos, positions.length);
+	}
+	
+	public void updateChunkVAO(VAO vao, float[] positions, float[] normals, float[] textureCoords) {
+		GL30.glBindVertexArray(vao.getVaoID());
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vao.getVbos()[0]);
+		GL30.glBufferData(GL15.GL_ARRAY_BUFFER, storeDataInFloatBuffer(positions), GL15.GL_STATIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vao.getVbos()[1]);
+		GL30.glBufferData(GL15.GL_ARRAY_BUFFER, storeDataInFloatBuffer(textureCoords), GL15.GL_STATIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vao.getVbos()[2]);
+		GL30.glBufferData(GL15.GL_ARRAY_BUFFER, storeDataInFloatBuffer(normals), GL15.GL_STATIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		GL30.glBindVertexArray(0);
+		vao.setVertexCount(positions.length);
+	}
+	
 	/**
 	 * deletes an actual model from the graphics card
 	 */
 	public VAO deleteVAO(VAO model) {
+		if (model == null)
+			return null;
 		try {
+			try {
+				// make sure we remove it from the VAO list
+				for (int i = 0; i < vaos.size(); i++) {
+					if (vaos.get(i) == model.getVaoID()) {
+						vaos.remove(i);
+						break;
+					}
+				}
+			} catch (Exception e) {e.printStackTrace();}
+			// delete the VAO
+			GL30.glDeleteVertexArrays(model.getVaoID());
+			//if (model.getVbos().length > 2)
+			//	this.updateChunkVAO(model, new float[] {}, new float[] {}, new float[] {});
 			try {
 				// if this is a block then we will delete the VBOs
 				// list of all the VBOs for this model
@@ -171,22 +211,14 @@ public class Loader {
 					GL15.glDeleteBuffers(vbos[i]);
 					// make sure we remove them from the list.
 					for (int j = 0; j < this.vbos.size(); j++) {
-						if (this.vbos.get(i) == vbos[i])
+						if (this.vbos.get(j) == vbos[i]) {
 							this.vbos.remove(j);
+							break;
+						}
 					}
 				}
-			} catch (Exception e) {}
-			try {
-				// make sure we remove it from the VAO list
-				for (int i = 0; i < vaos.size(); i++) {
-					if (vaos.get(i) == model.getVaoID()) {
-						vaos.remove(i);
-					}
-				}
-			} catch (Exception e) {}
-			// delete the VAO
-			GL30.glDeleteVertexArrays(model.getVaoID());
-		} catch (Exception e) {}
+			} catch (Exception e) {e.printStackTrace();}
+		} catch (Exception e) {e.printStackTrace();}
 		return null;
 	}
 	
@@ -436,7 +468,7 @@ public class Loader {
 			float anisf = Math.min(4, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
 			// map of textures that need to be put into the texture array.
 			// they should be in order from 0 to #
-			HashMap<Integer, String> texs = GameRegistry.registerTextures();
+			HashMap<Short, String> texs = GameRegistry.registerTextures();
 			// generate a texture id like normal
 			int id = GL11.glGenTextures();
 			
@@ -455,7 +487,7 @@ public class Loader {
 	        GL42.glTexStorage3D(GL30.GL_TEXTURE_2D_ARRAY, 4, GL11.GL_RGBA8, width, height, texs.size());
 	        
 	        // loop through all textures.
-	        for (Entry<Integer, String> s : texs.entrySet()) {
+	        for (Entry<Short, String> s : texs.entrySet()) {
 	        	// i don't understand why this is in gl12 but to allocate this is in gl42
 	        	GL12.glTexSubImage3D(GL30.GL_TEXTURE_2D_ARRAY,
 	        			// level

@@ -3,6 +3,7 @@ package com.brett.engine.ui.font;
 import java.io.Serializable;
 import org.joml.Vector3f;
 
+import com.brett.engine.data.datatypes.VAO;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.ScreenManager;
 import com.brett.engine.ui.AnchorPoint;
@@ -21,8 +22,7 @@ public class UIText implements Serializable, RescaleEvent {
 	public float fontSizeX;
 	public float fontSizeY;
 
-	private int textMeshVao;
-	private int vertexCount;
+	private VAO textMeshVao;
 	// inner color of the text
 	public Vector3f color = new Vector3f(0f, 0f, 0f);
 	// outline color of the text
@@ -225,17 +225,16 @@ public class UIText implements Serializable, RescaleEvent {
 	}
 
 
-	public int getMesh() {
+	public VAO getVAO() {
 		return textMeshVao;
 	}
 
-	public void setMeshInfo(int vao, int verticesCount) {
+	public void setMeshInfo(VAO vao) {
 		this.textMeshVao = vao;
-		this.vertexCount = verticesCount;
 	}
 
 	public int getVertexCount() {
-		return this.vertexCount;
+		return textMeshVao.getVertexCount();
 	}
 
 	protected float getFontSizeX() {
@@ -276,11 +275,11 @@ public class UIText implements Serializable, RescaleEvent {
 	public static UIText updateTextMesh(UIText text){
 		// load the text data
 		TextMeshData data = ScreenManager.fonts.get(text.font).loadText(text);
-		ScreenManager.loader.deleteVAO(text.getMesh());
+		text.setMeshInfo(ScreenManager.loader.deleteVAO(text.getVAO()));
 		// get a vao from the text mesh data
-		int vao = ScreenManager.loader.loadToVAO(data.getVertexPositions(), data.getTextureCoords(), 2).getVaoID();
+		VAO vao = ScreenManager.loader.loadToVAO(data.getVertexPositions(), data.getTextureCoords(), 2);
 		// update the text with the mesh
-		text.setMeshInfo(vao, data.getVertexCount());
+		text.setMeshInfo(vao);
 		
 		text.maxHeight = data.maxHeight;
 		text.maxWidth = data.totalWidth;

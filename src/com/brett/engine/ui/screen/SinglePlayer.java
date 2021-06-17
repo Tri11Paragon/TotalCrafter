@@ -12,10 +12,11 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import com.brett.Main;
 import com.brett.engine.DebugInfo;
+import com.brett.engine.Loader;
 import com.brett.engine.cameras.CreativeCamera;
 import com.brett.engine.data.IMouseState;
+import com.brett.engine.data.datatypes.VAO;
 import com.brett.engine.managers.DisplayManager;
 import com.brett.engine.managers.InputMaster;
 import com.brett.engine.managers.ScreenManager;
@@ -66,6 +67,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 	
 	public SinglePlayer(UIMenu console) {
 		textureAtlas = ScreenManager.loader.loadSpecialTextureATLAS(16, 16);
+		GameRegistry.registerBiomes();
 		GameRegistry.registerBlocks();
 		GameRegistry.registerItems();
 		this.console = console;
@@ -140,6 +142,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 						
 						if (dist > rgDist) {
 							System.out.println("Unloading region: " + rx + " " + ry + " " + rz + " || " + dist);
+							world.regions.get(rx, ry, rz).cleanup();
 							world.regions.remove(rx, ry, rz);
 						}
 					});
@@ -161,6 +164,13 @@ public class SinglePlayer extends Screen implements IMouseState {
 	
 	@Override
 	public List<UIElement> render() {
+		if (World.deleteVAOS.size() > 0) {
+			VAO v = World.deleteVAOS.get(0);
+			if (v != null) {
+				Loader.l.deleteVAO(v);
+			}
+			World.deleteVAOS.remove(0);
+		}
 		camera.move();
 		chunkViewMatrix = Maths.createViewMatrixROT(camera);
 		viewMatrix = Maths.createViewMatrix(camera);
@@ -176,10 +186,8 @@ public class SinglePlayer extends Screen implements IMouseState {
 		//shader.start();
 		//shader.loadViewMatrix(chunkViewMatrix);
 		
-		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, gBuffer);
+		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		
 		gshader.start();
@@ -191,7 +199,6 @@ public class SinglePlayer extends Screen implements IMouseState {
 		gshader.stop();
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 		
-		GL11.glClearColor(Main.RED, Main.GREEN, Main.BLUE, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		
 		sshader.start();

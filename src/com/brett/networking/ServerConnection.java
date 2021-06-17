@@ -18,7 +18,7 @@ import com.brett.utils.RunLengthEncoding;
 import com.brett.world.World;
 import com.brett.world.chunks.Chunk;
 import com.brett.world.chunks.data.ByteBlockStorage;
-import com.brett.world.chunks.data.ShortBlockStorage;
+import com.brett.world.chunks.data.BlockStorage;
 
 /**
 * @author Brett
@@ -50,7 +50,8 @@ public class ServerConnection extends Socket {
 					blocks_compressed.add(dis.readShort());
 				}
 				short[][][] blks = RunLengthEncoding.decode_chunk(blocks_compressed);
-				World.world.setChunk(new Chunk(World.world, new ShortBlockStorage().setBlocks(blks), new ByteBlockStorage(), x, y, z));
+				// TODO: this
+				//World.world.setChunk(new Chunk(World.world, new PaletteBlockStorage().setBlocks(blks), new ByteBlockStorage(), x, y, z));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

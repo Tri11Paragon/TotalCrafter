@@ -10,7 +10,7 @@ import com.brett.world.chunks.Chunk;
 * @date Jun. 27, 2020
 */
 
-public class ShortBlockStorage {
+public class BlockStorage {
 	
 	public short[][][] blocks = new short[Chunk.SIZE][Chunk.SIZE][Chunk.SIZE];
 	// information about if the chunk has been changed but not saved to disk
@@ -21,7 +21,7 @@ public class ShortBlockStorage {
 	 * integrates another chunk's block into this one, but only replaces if the block in this is air.
 	 * this is slow and shouldn't be called from the main thread.
 	 */
-	public ShortBlockStorage integrate(ShortBlockStorage other) {
+	public BlockStorage integrate(BlockStorage other) {
 		for (int i = 0; i < Chunk.SIZE; i++) {
 			for (int j = 0; j < Chunk.SIZE; j++) {
 				for (int k = 0; k < Chunk.SIZE; k++) {
@@ -34,7 +34,7 @@ public class ShortBlockStorage {
 		return this;
 	}
 	
-	public ShortBlockStorage setBlocks(short[][][] blocks) {
+	public BlockStorage setBlocks(short[][][] blocks) {
 		this.blocks = blocks;
 		return this;
 	}
@@ -44,6 +44,10 @@ public class ShortBlockStorage {
 	 */
 	public short get(int x, int y, int z) {
 		return blocks[x][y][z];
+	}
+	
+	public void set(int x, int y, int z, short id) {
+		blocks[x][y][z] = id;
 	}
 	
 	public short getWorld(int x, int y, int z) {

@@ -7,6 +7,7 @@ import org.joml.Vector3d;
 import com.brett.engine.cameras.Camera;
 import com.brett.engine.ui.UIMenu;
 import com.brett.engine.ui.font.UIText;
+import com.brett.world.World;
 
 /**
 * @author Brett
@@ -22,6 +23,7 @@ public class DebugInfo {
 	private static UIText MEMORYINFO;
 	private static UIText ROTINFO;
 	private static UIText REGINFO;
+	private static UIText OGLINFO;
 	private static long lastTime = 0;
 	private static long lastTimeUpdate = 0;
 	private static long frames = 0;
@@ -41,17 +43,20 @@ public class DebugInfo {
 				.append("Total Memory: ").append((Runtime.getRuntime().totalMemory()/1024)/1024).append(" MB").toString(), 250, "mono", 0, 120, 500, 5);
 		ROTINFO = new UIText("Yaw: 0", 250, "mono", 0, 180, 500, 5);
 		REGINFO = new UIText("Region: 0 0 0", 250, "mono", 0, 210, 500, 5);
+		OGLINFO = new UIText("Unloading VAOS: 0 || Loader: VAOS: 0 | VBOS: 0 | TEXTURES: 0", 200, "mono", 0, 240, 500, 5);
 		UIText.updateTextMesh(FPS);
 		UIText.updateTextMesh(MEMORYINFO);
 		UIText.updateTextMesh(POSITION);
 		UIText.updateTextMesh(ROTINFO);
 		UIText.updateTextMesh(REGINFO);
+		UIText.updateTextMesh(OGLINFO);
 		menu = new UIMenu();
 		menu.addText(FPS);
 		menu.addText(POSITION);
 		menu.addText(MEMORYINFO);
 		menu.addText(ROTINFO);
 		menu.addText(REGINFO);
+		menu.addText(OGLINFO);
 		return menu;
 	}
 	
@@ -75,6 +80,9 @@ public class DebugInfo {
 				int rpy = ((int)(pos.y) >> 4) >> 3;
 				int rpz = ((int)(pos.z) >> 4) >> 3; 
 				REGINFO.changeText(new StringBuilder().append("Region: ").append(rpx).append(" ").append(rpy).append(" ").append(rpz).toString());
+				OGLINFO.changeText(new StringBuilder().append("Unloading VAOS: ").append(World.deleteVAOS.size())
+						.append(" || Loader: VAOS: ").append(Loader.l.getVAOsSize()).append(" | VBOS: ").append(Loader.l.getVBOsSize())
+						.append(" | TEXTURES: ").append(Loader.l.getTexturesSize()).toString());
 				lastTimeUpdate = System.currentTimeMillis();
 			}
 		}

@@ -66,7 +66,9 @@ public class FontRenderer {
 	private void renderText(UIText text){
 		// this stuff should be like standard by now. Not much really changes for how things are rendered
 		// bind the text VAO
-		GL30.glBindVertexArray(text.getMesh());
+		if (text.getVAO() == null)
+			return;
+		GL30.glBindVertexArray(text.getVAO().getVaoID());
 		// enable the VBOs
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
