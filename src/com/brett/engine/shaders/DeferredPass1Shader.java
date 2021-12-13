@@ -16,6 +16,7 @@ public class DeferredPass1Shader extends WorldShader {
 		bindAttribute(0, "position");
 		bindAttribute(1, "data");
 		bindAttribute(2, "normal");
+		bindAttribute(3, "scale");
 	}
 
 	@Override

@@ -92,13 +92,13 @@ public class MeshStore {
 		float[] tr = new float[fa.length];
 		for (int i = 0; i < fa.length; i++) {
 			int fai = (int)fa[i];
-			// move the layer over by 10 bits so that its xxxx xxxx xxxx xxxx 0000 0000 00
+			// move the layer over by 10 bits so that its xxxx xxxx xxxx xxxx 00 0000 0000
 			int la = layer << 10;
-			int lla = light << 2;
+			//int lla = light << 2;
 			// or them in so that way no values are changed.
 			// since we moved them over into 0s we are not replacing any information.
 			fai |= la;
-			fai |= lla;
+			//fai |= lla;
 			tr[i] = fai;
 		}
 		return tr;
@@ -501,27 +501,27 @@ public class MeshStore {
 		for (int i = 0; i < uvFrontComplete.length; i+= 2) {
 			// this puts it into 2 bits.
 			// via bit shifting and or operators.
-			float fr = ((int)uvFrontComplete[i] << 1) | (int)uvFrontComplete[i+1];
+			float fr = ((int)uvFrontComplete[i] << 5) | (int)uvFrontComplete[i+1];
 			uvFrontCompleteCompress[i/2] = fr;
 		}
 		for (int i = 0; i < uvBackComplete.length; i+= 2) {
-			float fr = ((int)uvBackComplete[i] << 1) | (int)uvBackComplete[i+1];
+			float fr = ((int)uvBackComplete[i] << 5) | (int)uvBackComplete[i+1];
 			uvBackCompleteCompress[i/2] = fr;
 		}
 		for (int i = 0; i < uvRightComplete.length; i+= 2) {
-			float fr = ((int)uvRightComplete[i] << 1) | (int)uvRightComplete[i+1];
+			float fr = ((int)uvRightComplete[i] << 5) | (int)uvRightComplete[i+1];
 			uvRightCompleteCompress[i/2] = fr;
 		}
 		for (int i = 0; i < uvLeftComplete.length; i+= 2) {
-			float fr = ((int)uvLeftComplete[i] << 1) | (int)uvLeftComplete[i+1];
+			float fr = ((int)uvLeftComplete[i] << 5) | (int)uvLeftComplete[i+1];
 			uvLeftCompleteCompress[i/2] = fr;
 		}
 		for (int i = 0; i < uvTopComplete.length; i+= 2) {
-			float fr = ((int)uvTopComplete[i] << 1) | (int)uvTopComplete[i+1];
+			float fr = ((int)uvTopComplete[i] << 5) | (int)uvTopComplete[i+1];
 			uvTopCompleteCompress[i/2] = fr;
 		}
 		for (int i = 0; i < uvBottomComplete.length; i+= 2) {
-			float fr = ((int)uvBottomComplete[i] << 1) | (int)uvBottomComplete[i+1];
+			float fr = ((int)uvBottomComplete[i] << 5) | (int)uvBottomComplete[i+1];
 			uvBottomCompleteCompress[i/2] = fr;
 		}
 		// compress the flower but like due to the way it was defined
@@ -545,7 +545,7 @@ public class MeshStore {
 			// since the UVs are always going to be either 1 or 0.
 			// we can get away with this level of amazing data compression
 			// and resource saving.
-			float fr = (amt1 << 1) | amt2;
+			float fr = (amt1 << 5) | amt2;
 			uvFlowerCompleteCompress[i/2] = fr;
 		}
 	}

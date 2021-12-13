@@ -9,17 +9,19 @@ import org.lwjgl.opengl.GL11;
 
 public class PolygonCommand implements Command {
 	
+	public static int renderMode = GL11.GL_FILL;
+	
 	@Override
 	public String commandEntered(String full, String[] args) {
 		if (args.length < 1)
 			return "PLEASE ENTER MODE ((P)OINT, (F)ILL, (L)INE)";
 		String mode = args[0].toLowerCase();
 		if (mode.contentEquals("p") || mode.contentEquals("point"))
-			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_POINT);
+			renderMode = GL11.GL_POINT;
 		if (mode.contentEquals("l") || mode.contentEquals("line"))
-			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+			renderMode = GL11.GL_LINE;
 		if (mode.contentEquals("f") || mode.contentEquals("fill"))
-			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+			renderMode = GL11.GL_FILL;
 		return "Mode set!";
 	}
 	

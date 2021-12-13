@@ -92,7 +92,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		world = new World("w1");
 		Lighting.init(world);
-		camera = new CreativeCamera(new Vector3d(0,140,0), world);
+		camera = new CreativeCamera(new Vector3d(0,30,0), world);
 		Console.registerCommand(new String[] {"tp", "teleport"}, new TeleportCommand(camera));
 		Console.registerCommand(new String[] {"poly", "pmode", "rend.p", "renderer.p"}, new PolygonCommand());
 		
@@ -190,6 +190,8 @@ public class SinglePlayer extends Screen implements IMouseState {
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		
+		if (PolygonCommand.renderMode != GL11.GL_FILL)
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, PolygonCommand.renderMode);
 		gshader.start();
 		gshader.loadViewMatrix(chunkViewMatrix);
 		
@@ -201,6 +203,8 @@ public class SinglePlayer extends Screen implements IMouseState {
 		
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		
+		if (PolygonCommand.renderMode != GL11.GL_FILL)
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		sshader.start();
 		sshader.loadViewMatrix(chunkViewMatrix);
 		
@@ -241,12 +245,15 @@ public class SinglePlayer extends Screen implements IMouseState {
 		float cy = (float) (camera.getY() - ly);
 		float cz = (float) (camera.getZ() - lz);
 		int x = ((int)((lx/16) - ((camera.getX()) / 16) )) * 16 + (lx % 16);
-		int y = ((int)((ly >> 4) - ((int)(camera.getY()) >> 4) )) * 16 + (ly % 16);
+		int y = ((int)((ly / 16) - ((camera.getY()) / 16) )) * 16 + (ly % 16);
 		int z = ((int)((lz/16) - ((camera.getZ()) / 16) )) * 16 + (lz % 16);
 		sshader.loadVector("lights[" + 0 + "].Position", x + cx, y + cy, z + cz);
 		sshader.loadVector("lights[" + 0 + "].Color", 10.0f, 10.0f, 10.0f);
 		sshader.loadViewPos(camera.getPosition());
+		sshader.loadFloat("lights[" + 0 + "].Linear", 0.7f);
+        sshader.loadFloat("lights[" + 0 + "].Quadratic", 1.1f);
 		sshader.loadVector("directlight", -0.2f, -1.0f, -0.3f);
+		sshader.loadFloat("lights[" + 0 + "].Radius", 80);
 		
 		renderQuad();
 		
@@ -271,7 +278,7 @@ public class SinglePlayer extends Screen implements IMouseState {
 	private void renderQuad() {
 		if (quadVAO == 0)
 	    {
-			float quadVertices[] = {
+			final float quadVertices[] = {
 		            // positions        // texture Coords
 		            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
 		            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
@@ -315,7 +322,8 @@ public class SinglePlayer extends Screen implements IMouseState {
 					
 					Chunk c = world.getChunk(cx, cy, cz);
 					if (c == null)
-						world.queueChunk(cx, cy, cz);
+						continue;
+						//world.queueChunk(cx, cy, cz);
 					else {
 						c.render(sh, i, j, k);
 						// this is cancer pls ignore

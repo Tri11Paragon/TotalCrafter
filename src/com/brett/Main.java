@@ -8,8 +8,6 @@ import java.lang.management.ThreadMXBean;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
-
 import com.brett.engine.DebugInfo;
 import com.brett.engine.SyncSave;
 import com.brett.engine.data.IKeyState;
@@ -52,6 +50,7 @@ public class Main {
 	 */
 	
 	public static void main(String[] args) {
+		
 		for (int i = 0; i < args.length; i++) {
 			if (args[i] == null)
 				continue;

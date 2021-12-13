@@ -415,6 +415,126 @@ public class Chunk {
 		return this;
 	}
 	
+	private RenderMode getRenderMode(short b) {
+		return GameRegistry.getBlock(b).getRenderMode();
+	}
+	
+	private RenderMode getRenderMode(int x, int y, int z) {
+		if (x >= Chunk.SIZE || y >= Chunk.SIZE || z >= Chunk.SIZE)
+			return RenderMode.TRANSPARENT;
+		if (x < 0 || y < 0 || z < 0)
+			return RenderMode.TRANSPARENT;
+		return getRenderMode(blocks.get(x, y, z));
+	}
+	
+	public static float[] createFace(float[] verts, int xTrans, int yTrans, int zTrans, int sizeX) {
+		float[] newVerts = new float[verts.length];
+		for (int i = 0; i < verts.length; i += 3) {
+			newVerts[i] = (verts[i] * sizeX);
+			newVerts[i + 1] = (verts[i + 1]);
+			newVerts[i + 2] = (verts[i + 2]);
+		}
+		for (int i = 0; i < verts.length; i += 3) {
+			newVerts[i] = (newVerts[i] + xTrans);
+			newVerts[i + 1] = (newVerts[i + 1] + yTrans);
+			newVerts[i + 2] = (newVerts[i + 2] + zTrans);
+		}
+		return newVerts;
+	}
+	
+	public static float[] createTextureFace(float[] verts, int sizeX) {
+		float[] newVerts = new float[verts.length];
+		for (int i = 0; i < verts.length; i++) {
+			//newVerts[i] = (verts[i] * sizeX);
+			//newVerts[i + 1] = (verts[i + 1]);
+			//newVerts[i + 2] = (verts[i + 2]);
+			int v = (int)verts[i];
+			int y = v & 0x1F;
+			int x = v >> 5;
+			
+			newVerts[i] = (y) << 5 | (x * sizeX);
+		}
+		return newVerts;
+	}
+	
+	public void applyX(int y, int z) {
+		try {
+		for (int i = 0; i < Chunk.SIZE; i++) {
+			short b = blocks.get(i, y, z);
+			Block blk = GameRegistry.getBlock(b);
+			int sizeX = 0;
+			int apply = i;
+			for (int j = 0; j < Chunk.SIZE; j++) {
+				System.out.println(i + " :: " + j);
+				if (i + j >= Chunk.SIZE) {
+					apply = j + 1;
+					break;
+				}
+				short bi = blocks.get(i + j, y, z);
+				System.out.println(b + " || " + bi);
+				apply = j;
+				if (b != bi)
+					break;
+				sizeX++;
+				System.out.println(sizeX);
+			}
+			i = apply;
+			if (blk.renderMode == RenderMode.SOLID) {
+				positions = addArray(positions, createFace(MeshStore.vertsLeftComplete, i - sizeX, y, z, sizeX));
+				data = addArrayData(data, MeshStore.updateCompression(createTextureFace(MeshStore.uvLeftCompleteCompress, 1), (byte)(15 | 15 << 4), blk.textureLeft));
+				normals = addArrayNormal(normals, MeshStore.normalsLeft);
+				
+				positions = addArray(positions, createFace(MeshStore.vertsRightComplete, i - sizeX, y, z, sizeX));
+				data = addArrayData(data, MeshStore.updateCompression(createTextureFace(MeshStore.uvRightCompleteCompress, 1), (byte)(15 | 15 << 4), blk.textureRight));
+				normals = addArrayNormal(normals, MeshStore.normalsRight);
+				
+				positions = addArray(positions, createFace(MeshStore.vertsFrontComplete, i - sizeX, y, z, sizeX));
+				data = addArrayData(data, MeshStore.updateCompression(createTextureFace(MeshStore.uvFrontCompleteCompress, sizeX), (byte)(15 | 15 << 4), blk.textureFront));
+				normals = addArrayNormal(normals, MeshStore.normalsFront);
+				
+				positions = addArray(positions, createFace(MeshStore.vertsBackComplete, i - sizeX, y, z, sizeX));
+				data = addArrayData(data, MeshStore.updateCompression(createTextureFace(MeshStore.uvBackCompleteCompress, sizeX), (byte)(15 | 15 << 4), blk.textureBack));
+				normals = addArrayNormal(normals, MeshStore.normalsBack);
+				
+				positions = addArray(positions, createFace(MeshStore.vertsTopComplete, i - sizeX, y, z, sizeX));
+				data = addArrayData(data, MeshStore.updateCompression(createTextureFace(MeshStore.uvTopCompleteCompress, sizeX), (byte)(15 | 15 << 4), blk.textureTop));
+				normals = addArrayNormal(normals, MeshStore.normalsTop);
+				
+				positions = addArray(positions, createFace(MeshStore.vertsBottomComplete, i - sizeX, y, z, sizeX));
+				data = addArrayData(data, MeshStore.updateCompression(createTextureFace(MeshStore.uvBottomCompleteCompress, sizeX), (byte)(15 | 15 << 4), blk.textureBottom));
+				normals = addArrayNormal(normals, MeshStore.normalsBottom);
+			}
+		}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
+	
+	public void greedy2() {
+		if (isMeshing || waitingForMesh)
+			return;
+
+		
+		isMeshing = true;
+		lastIndex = 0;
+		lastIndexData = 0;
+		lastIndexNormal = 0;
+		chunkInfo = 0;
+		positions = new float[0];
+		data = new float[0];
+		normals = new float[0];
+		
+		for (int i = 0; i < Chunk.SIZE; i++) {
+			for (int j = 0; j < Chunk.SIZE; j++) {
+				applyX(i, j);
+			}
+		}
+		yesMan = true;
+		isMeshing = false;
+		waitingForMesh = true;
+	}
+	
 	/**
 	 * Proof of concept greedy mesher.
 	 */

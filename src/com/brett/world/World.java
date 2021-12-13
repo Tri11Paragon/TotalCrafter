@@ -54,6 +54,30 @@ public class World {
 		threads = ThreadPool.reserveQuarterThreads() + ThreadPool.reserveQuarterThreads();
 		worldExecutor = Executors.newFixedThreadPool(threads);
 		World.world = this;
+		
+		Region r = new Region(0, 0, 0, worldName);
+		regions.set(0, 0, 0, r);
+		
+		BlockStorage block = new BlockStorage();
+		Chunk c = new Chunk(this, block, new ByteBlockStorage(), 0, 0, 0);
+		//c.meshChunk();
+		Chunk e = new Chunk(this, new BlockStorage(), new ByteBlockStorage(), 0, 0, 0);
+		e.meshChunk();
+		r.setChunk(1, 0, 1, c);
+		r.setChunk(1, 0, 0, e);
+		r.setChunk(0, 0, 1, e);
+		r.setChunk(2, 0, 0, e);
+		r.setChunk(0, 0, 2, e);
+		r.setChunk(0, 0, 0, c);
+		
+		for (int i = 0; i < Chunk.SIZE; i++) {
+			for (int j = 0; j < Chunk.SIZE; j++) {
+				for(int k = 0; k < Chunk.SIZE; k++) {
+					block.set(i, 3, k, Block.STONE);
+				}
+			}
+		}
+		c.greedy2();
 	}
 	
 	public World() {
@@ -98,7 +122,7 @@ public class World {
 			Region r = regions.get(rx, ry, rz);
 			if (r == null) {
 				if (lockedRegions.containsKey(rx, ry, rz)) {
-					while (lockedRegions.containsKey(rx, ry, rz)) {try{ Thread.sleep(1); } catch (Exception e) {}}
+					while (lockedRegions.containsKey(rx, ry, rz)) {try{ Thread.yield(); } catch (Exception e) {}}
 					r = regions.get(rx, ry, rz);
 					if (r == null)
 						System.err.println("we got an issue with a null region after loading :(");
@@ -218,7 +242,7 @@ public class World {
 					if (r != null) {
 						Chunk c = r.getChunk(wx, wy, wz);
 						if (c != null)
-							c.meshChunk();
+							c.greedy2();
 					}
 				}
 			}

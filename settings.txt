@@ -1,7 +1,7 @@
-sensitivity: 0.5
-samples: 4
-anisotropy: 4
+sensitivity: 0.8
+samples: 0
+anisotropy: 0
 music: 0.5
 fps: 0
 vsync: 0
-rd: 12
+rd: 5

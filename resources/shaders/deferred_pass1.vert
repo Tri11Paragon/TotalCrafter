@@ -23,13 +23,13 @@ void main(){
     gl_Position = projectionMatrix * positionRelativeToCam;
 
 	int idata = int(data);
-	textureCoords = vec2((idata >> 1) & 0x1, idata & 0x1);
+	textureCoords = vec2((idata >> 5) & 0x1F, idata & 0x1F);
 
-	lightLevel = (idata >> 2 & 0xF) + (idata >> 6 & 0xF);
+	//lightLevel = (idata >> 2 & 0xF) + (idata >> 6 & 0xF);
 	
-	if (lightLevel > 15){
+	//if (lightLevel > 15){
 		lightLevel = 15;
-	}
+	//}
 	layerF = (idata >> 10) & 0x2FF;
 	
 
